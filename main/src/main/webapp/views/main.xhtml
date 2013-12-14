@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/mainLayout.xhtml">
+    <ui:define name="moduleContent">
+        <!--TODO : parameters columns on user preference -->
+        <div align="center" style="vertical-align: middle">
+            <ui:repeat value="#{directoriesDashboardController.dashboardColumn}" var="column">
+                <br/><br/><br/>
+                <p:carousel id="basicCarousel" value="#{directoriesDashboardController.getColumnWidgets(column)}" var="widget" itemStyle="width:350px" numVisible="4">
+                    <f:facet name="header">
+                        <h:outputText value="#{directoriesDashboardController.getColumnName(column)}" />
+                    </f:facet>
+                    <h:outputLink value="#{directoriesDashboardController.getWidgetAddress(widget)}">
+                        <h:panelGrid columns="2" cellpadding="1" style="width:80%; vertical-align: middle; text-align: center;">
+                            <i class="#{directoriesDashboardController.getWidgetIcon(widget)}"/>
+                            <h:panelGroup>
+                                <h:outputText value="#{directoriesDashboardController.getWidgetValue(widget)}" style="vertical-align: middle; font-weight: bold"/><br/>
+                                <h:outputText value="#{directoriesDashboardController.getWidgetDescription(widget)}" style="vertical-align: middle"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </h:outputLink>
+                </p:carousel>
+            </ui:repeat>
+        </div>
+        <br/><br/>
+    </ui:define>
+</ui:composition>
+</html>

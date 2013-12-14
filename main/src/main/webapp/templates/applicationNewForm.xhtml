@@ -1,0 +1,45 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<ui:composition>
+    <h:panelGrid id="applicationNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
+
+        <h:outputText value="Name : " styleClass="inputTitle"/>
+        <p:inputText id="name" label="Name" required="true" value="#{applicationNewController.name}"/>
+
+        <h:outputText value="Short name : " styleClass="inputTitle"/>
+        <p:inputText id="shortName" label="shortName" required="true" value="#{applicationNewController.shortName}"/>
+
+        <h:outputText value="Color code : " styleClass="inputTitle" />
+        <p:colorPicker id="popupCP" value="#{applicationNewController.colorCode}"/>
+
+        <h:outputText value="Supporting company : " styleClass="inputTitle"/>
+        <h:panelGroup>
+            <p:commandLink onclick="companyCreateDialog.show()">
+                <h:outputText value=" create new company"/>
+            </p:commandLink><br/>
+            <h:selectOneMenu label="Select the company" value="#{applicationNewController.appCompany}">
+                <f:selectItems value="#{companysListController.getAllForSelector()}"  var="cmp"
+                               itemLabel="#{cmp.name}" itemValue="#{cmp.name}"/>
+            </h:selectOneMenu>
+        </h:panelGroup>
+
+        <h:outputText value="Supporting team : " styleClass="inputTitle"/>
+        <h:panelGroup>
+            <p:commandLink onclick="teamCreateDialog.show()">
+                <h:outputText value=" create new team"/>
+            </p:commandLink><br/>
+            <h:selectOneMenu label="Select the team" value="#{applicationNewController.appTeam}">
+                <f:selectItems value="#{teamsListController.getAllForSelector()}"  var="team"
+                               itemLabel="#{team.name}" itemValue="#{team.name}"/>
+            </h:selectOneMenu>
+        </h:panelGroup>
+
+        <h:outputText value="Description : " styleClass="inputTitle"/>
+        <p:inputText id="description" label="Description" required="true" value="#{applicationNewController.description}"/>
+
+    </h:panelGrid>
+</ui:composition>
+</html>

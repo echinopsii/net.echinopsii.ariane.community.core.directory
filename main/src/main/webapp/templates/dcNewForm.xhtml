@@ -1,0 +1,25 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+<ui:composition>
+    <h:panelGrid id="dcNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
+        <h:outputText value="Name : " styleClass="inputTitle"/>
+        <p:inputText id="name" label="Name" required="true" value="#{datacenterNewController.name}"/>
+        <h:outputText value="Address : " styleClass="inputTitle"/>
+        <p:inputText id="address" label="Description" required="true" value="#{datacenterNewController.address}"/>
+        <h:outputText value="Zip Code : " styleClass="inputTitle"/>
+        <p:inputText id="zipCode" label="ZipCode" required="true" value="#{datacenterNewController.zipCode}"/>
+        <h:outputText value="Town : " styleClass="inputTitle"/>
+        <p:inputText id="town" label="Town" required="true" value="#{datacenterNewController.town}"/>
+        <h:outputText value="Country : " styleClass="inputTitle"/>
+        <p:inputText id="country" label="Country" required="true" value="#{datacenterNewController.country}"/>
+        <h:outputText value="GPS latitude : " styleClass="inputTitle"/>
+        <p:inputText id="gpsLatitude"  label="GpsLatitude" required="true" value="#{datacenterNewController.gpsLatitude}"/>
+        <h:outputText value="GPS longitude : " styleClass="inputTitle"/>
+        <p:inputText id="gpsLongitude" label="GpsLongitude" required="true" value="#{datacenterNewController.gpsLongitude}"/>
+        <h:outputText value="Description : " styleClass="inputTitle"/>
+        <p:inputText id="description" label="Description" required="true" value="#{datacenterNewController.description}"/>
+    </h:panelGrid>
+</ui:composition>
+</html>

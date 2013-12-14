@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<ui:composition>
+    <h:panelGrid id="mareaNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
+        <h:outputText value="Name : " styleClass="inputTitle"/>
+        <p:inputText id="name" label="Name" required="true" value="#{multicastAreaNewController.name}"/>
+
+        <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+        <h:panelGroup>
+            <p:commandLink onclick="dcCreateDialog.show()">
+                <h:outputText value=" create new datacenter"/>
+            </p:commandLink><br/>
+            <p:selectManyMenu id="basic" value="#{multicastAreaNewController.datacentersToBind}" style="width:150px;height:100px">
+                <f:selectItems value="#{datacentersListController.getAll()}"  var="dc"
+                               itemLabel="#{dc.name}" itemValue="#{dc.name}"/>
+            </p:selectManyMenu>
+        </h:panelGroup>
+
+        <h:outputText value="Description : " styleClass="inputTitle"/>
+        <p:inputText id="description" label="Description" required="true" value="#{multicastAreaNewController.description}"/>
+
+    </h:panelGrid>
+</ui:composition>
+</html>

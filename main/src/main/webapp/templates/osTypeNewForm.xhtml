@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<ui:composition>
+    <h:panelGrid id="osTypeNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
+        <h:outputText value="Name : " styleClass="inputTitle"/>
+        <p:inputText id="name" label="Name" required="true" value="#{OSTypeNewController.name}"/>
+
+        <h:outputText value="Supporting company : " styleClass="inputTitle"/>
+        <h:panelGroup>
+            <p:commandLink onclick="companyCreateDialog.show()">
+                <h:outputText value=" create new company"/>
+            </p:commandLink><br/>
+            <h:selectOneMenu label="Select the company" value="#{OSTypeNewController.osiCompany}">
+                <f:selectItems value="#{companysListController.getAllForSelector()}"  var="cmp"
+                               itemLabel="#{cmp.name}" itemValue="#{cmp.name}"/>
+            </h:selectOneMenu>
+        </h:panelGroup>
+
+        <h:outputText value="Architecture : " styleClass="inputTitle"/>
+        <p:inputText id="architecture" label="Architecture" required="true" value="#{OSTypeNewController.architecture}"/>
+
+    </h:panelGrid>
+</ui:composition>
+</html>
