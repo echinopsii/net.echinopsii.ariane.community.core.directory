@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.main.controller.technical.network.lan;
 
-import com.spectral.cc.core.directory.main.model.technical.network.Lan;
+import com.spectral.cc.core.directory.commons.model.technical.network.Lan;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;

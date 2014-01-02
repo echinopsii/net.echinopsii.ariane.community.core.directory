@@ -19,12 +19,12 @@
 
 package com.spectral.cc.core.directory.main.controller.organisational.company;
 
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.main.controller.organisational.application.ApplicationsListController;
 import com.spectral.cc.core.directory.main.controller.technical.system.OSType.OSTypesListController;
-import com.spectral.cc.core.directory.main.model.organisational.Application;
-import com.spectral.cc.core.directory.main.model.organisational.Company;
-import com.spectral.cc.core.directory.main.model.technical.system.OSType;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.model.organisational.Application;
+import com.spectral.cc.core.directory.commons.model.organisational.Company;
+import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
@@ -64,7 +64,7 @@ public class CompanysListController implements Serializable {
 
     @PostConstruct
     private void init() {
-        lazyModel = new CompanyLazyModel().setEntityManager(TXPersistenceConsumer.getSharedEM());
+        lazyModel = new CompanyLazyModel().setEntityManager(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM());
     }
 
     /*
@@ -181,34 +181,36 @@ public class CompanysListController implements Serializable {
 
     public void update(Company company) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
+           // JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
             for (OSType osType : rollback.get(company.getId()).getOsTypes()) {
                 if (!company.getOsTypes().contains(osType)) {
                     osType.setCompany(null);
-                    TXPersistenceConsumer.getSharedEM().merge(osType);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osType);
                 }
             }
             for (OSType osType : company.getOsTypes()) {
                 if (!rollback.get(company.getId()).getOsTypes().contains(osType)){
                     osType.setCompany(company);
-                    TXPersistenceConsumer.getSharedEM().merge(osType);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osType);
                 }
             }
             for (Application application : rollback.get(company.getId()).getApplications()) {
                 if (!company.getApplications().contains(application)) {
                     application.setCompany(null);
-                    TXPersistenceConsumer.getSharedEM().merge(application);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application);
                 }
             }
             for (Application osType : company.getApplications()) {
                 if (!rollback.get(company.getId()).getApplications().contains(osType)){
                     osType.setCompany(company);
-                    TXPersistenceConsumer.getSharedEM().merge(osType);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osType);
                 }
             }
-            TXPersistenceConsumer.getSharedEM().merge(company);
-            TXPersistenceConsumer.getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(company);
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             rollback.put(company.getId(), company);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Company updated successfully !",
@@ -221,9 +223,12 @@ public class CompanysListController implements Serializable {
                                                        "Throwable raised while updating Company " + rollback.get(company.getId()).getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
 
+/*
             FacesMessage msg2;
-            int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+            int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
             switch(txStatus) {
                 case Status.STATUS_NO_TRANSACTION:
                     msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -233,7 +238,7 @@ public class CompanysListController implements Serializable {
                 case Status.STATUS_MARKED_ROLLBACK:
                     try {
                         log.debug("Rollback operation !");
-                        TXPersistenceConsumer.getSharedUX().rollback();
+                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                        "Operation rollbacked !",
                                                        "Operation : Company " + rollback.get(company.getId()) + " update.");
@@ -252,6 +257,7 @@ public class CompanysListController implements Serializable {
                     break;
             }
             FacesContext.getCurrentInstance().addMessage(null, msg2);
+*/
         }
     }
 
@@ -262,10 +268,12 @@ public class CompanysListController implements Serializable {
         log.debug("Remove selected Company !");
         for (Company environment: selectedCompanyList) {
             try {
-                TXPersistenceConsumer.getSharedUX().begin();
-                TXPersistenceConsumer.getSharedEM().joinTransaction();
-                TXPersistenceConsumer.getSharedEM().remove(environment);
-                TXPersistenceConsumer.getSharedUX().commit();
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().remove(environment);
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "Company deleted successfully !",
                                                            "Company name : " + environment.getName());
@@ -277,10 +285,12 @@ public class CompanysListController implements Serializable {
                                                            "Throwable raised while creating Company " + environment.getName() + " !",
                                                            "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-
+                if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+/*
                 try {
                     FacesMessage msg2;
-                    int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                    int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                     switch(txStatus) {
                         case Status.STATUS_NO_TRANSACTION:
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -290,7 +300,7 @@ public class CompanysListController implements Serializable {
                         case Status.STATUS_MARKED_ROLLBACK:
                             try {
                                 log.debug("Rollback operation !");
-                                TXPersistenceConsumer.getSharedUX().rollback();
+                                JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                                 msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                                "Operation rollbacked !",
                                                                "Operation : Company " + environment.getName() + " deletion.");
@@ -313,6 +323,7 @@ public class CompanysListController implements Serializable {
                 } catch (SystemException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
+*/
             }
         }
         selectedCompanyList=null;
@@ -322,20 +333,20 @@ public class CompanysListController implements Serializable {
      * Company join tool
      */
     public static List<Company> getAll() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder = TXPersistenceConsumer.getSharedEM().getCriteriaBuilder();
+        CriteriaBuilder builder = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
         CriteriaQuery<Company> criteria = builder.createQuery(Company.class);
         Root<Company> root = criteria.from(Company.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        return TXPersistenceConsumer.getSharedEM().createQuery(criteria).getResultList();
+        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
     }
 
     public static List<Company> getAllForSelector() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder  = TXPersistenceConsumer.getSharedEM().getCriteriaBuilder();
+        CriteriaBuilder builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
         CriteriaQuery<Company> criteria = builder.createQuery(Company.class);
         Root<Company> root = criteria.from(Company.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        List<Company> list =  TXPersistenceConsumer.getSharedEM().createQuery(criteria).getResultList();
+        List<Company> list =  JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
         list.add(0, new Company().setNameR("Select company"));
         return list;
     }

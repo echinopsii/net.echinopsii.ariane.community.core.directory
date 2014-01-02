@@ -17,50 +17,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.spectral.cc.core.directory.main.runtime;
+package com.spectral.cc.core.directory.commons.persistence.iPojo;
 
-import com.spectral.cc.core.directory.main.model.technical.network.LanType;
+import com.spectral.cc.core.directory.commons.model.technical.network.LanType;
+import com.spectral.cc.core.directory.commons.persistence.JPAProvider;
+import org.apache.felix.ipojo.annotations.*;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.transaction.UserTransaction;
+import javax.persistence.spi.PersistenceProvider;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-public class TXPersistenceConsumer implements Runnable {
+@Component
+@Provides
+@Instantiate
+public class JPAProviderImpl implements JPAProvider {
 
     private static final String DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME = "Directory TX Persistence Consumer";
-    private static final Logger log = LoggerFactory.getLogger(TXPersistenceConsumer.class);
-
-    private BundleContext  context       = null;
-    private ServiceTracker utxSceTracker = null;
+    private static final Logger log = LoggerFactory.getLogger(JPAProviderImpl.class);
 
     private static EntityManagerFactory sharedEMF = null;
-    private static EntityManager        sharedEM = null;
-    private static UserTransaction      sharedUX = null;
+    private static EntityManager        sharedEM  = null;
+    //private static UserTransaction      sharedUX  = null;
 
-    private static ArrayList<EntityManager>        emPool     = new ArrayList<>();
-    private static HashMap<EntityManager, Boolean> lockEMPool = new HashMap<>();
+    //private static ArrayList<EntityManager>        emPool     = new ArrayList<>();
+    //private static HashMap<EntityManager, Boolean> lockEMPool = new HashMap<>();
 
-    public TXPersistenceConsumer setContext(BundleContext context) {
-        this.context = context;
-        return this;
-    }
-
-    public synchronized static EntityManagerFactory getSharedEMF() {
+    public EntityManagerFactory getSharedEMF() {
         return sharedEMF;
     }
 
-    public synchronized static EntityManager getSharedEM() {
+    public EntityManager getSharedEM() {
         return sharedEM;
     }
 
+    /*
     public synchronized static UserTransaction getSharedUX() {
         return sharedUX;
     }
@@ -81,14 +78,17 @@ public class TXPersistenceConsumer implements Runnable {
     public synchronized static void unlockEM(EntityManager em) {
         lockEMPool.put(em,false);
     }
+    */
 
-    public static void close() {
-        if (sharedEM !=null) sharedEM.close();
-        if (sharedEMF !=null) sharedEMF.close();
+    @Invalidate
+    public static void invalidate() {
+        if (sharedEM != null) sharedEM.close();
+        if (sharedEMF != null) sharedEMF.close();
     }
 
-    @Override
-    public void run() {
+    @Validate
+    public void validate() {
+        /*
         log.debug("{} is getting user transaction service", new Object[]{DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
         utxSceTracker = new ServiceTracker(context, UserTransaction.class.getName(), null);
         if (utxSceTracker!=null) {
@@ -101,8 +101,13 @@ public class TXPersistenceConsumer implements Runnable {
         } else {
             log.error(DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME + " failed to init UserTransaction ServiceTracker !!!");
         }
-
+        */
+        BundleContext context = FrameworkUtil.getBundle(JPAProviderImpl.class).getBundleContext();
         log.debug("{} is getting persistence entity manager factory service", new Object[]{DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
+        ServiceReference    serviceReference    = context.getServiceReference( PersistenceProvider.class.getName() );
+        PersistenceProvider persistenceProvider = (PersistenceProvider) context.getService( serviceReference );
+
+        /*
         ServiceReference sref = context.getServiceReference(EntityManagerFactory.class.getName());
         while (sref==null)
             try {
@@ -111,7 +116,8 @@ public class TXPersistenceConsumer implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-        sharedEMF = (EntityManagerFactory)context.getService(sref);
+        */
+        sharedEMF = persistenceProvider.createEntityManagerFactory("cc-directory",null);
         log.debug("{} is creating persistence entity manager", new Object[]{DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
         sharedEM = sharedEMF.createEntityManager();
 
@@ -122,13 +128,14 @@ public class TXPersistenceConsumer implements Runnable {
         LanType lanT = new LanType().setNameR("LAN").setDescriptionR("LAN type Lan"); lanTypes.add(lanT);
 
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
+            //JPAProviderImpl.getSharedUX().begin();
+            //JPAProviderImpl.getSharedEM().joinTransaction();
+            this.getSharedEM().getTransaction().begin();
             for (LanType ltype : lanTypes)
-                TXPersistenceConsumer.getSharedEM().persist(ltype);
-            TXPersistenceConsumer.getSharedUX().commit();
+                this.getSharedEM().persist(ltype);
+            this.getSharedEM().getTransaction().commit();
         } catch (Exception E) {
-            log.error("Fail to init lantype db!");
+            log.error("Fail to init lantype db! " + E.getMessage());
         }
 
         /*
@@ -211,12 +218,12 @@ public class TXPersistenceConsumer implements Runnable {
                                                                                                                                                       setCountryR("China").setDescriptionR("Hong Kong DC9").setGpsLatitudeR(0).setGpsLongitudeR(0));
 
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
+            JPAProviderImpl.getSharedUX().begin();
+            JPAProviderImpl.getSharedEM().joinTransaction();
             for (Datacenter dc : datacenterList)
-                TXPersistenceConsumer.getSharedEM().persist(dc);
-            TXPersistenceConsumer.getSharedEM().flush();
-            TXPersistenceConsumer.getSharedUX().commit();
+                JPAProviderImpl.getSharedEM().persist(dc);
+            JPAProviderImpl.getSharedEM().flush();
+            JPAProviderImpl.getSharedUX().commit();
         } catch (Exception E) {
             log.error("Failed to init datacenter test db!");
         }
@@ -226,12 +233,12 @@ public class TXPersistenceConsumer implements Runnable {
         MulticastArea ma2 = new MulticastArea().setNameR("Moulticast02").setDescriptionR("Lobe temporal gauche"); multicastAreaList.add(ma2);
 
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
+            JPAProviderImpl.getSharedUX().begin();
+            JPAProviderImpl.getSharedEM().joinTransaction();
             for (MulticastArea marea : multicastAreaList)
-                TXPersistenceConsumer.getSharedEM().persist(marea);
-            TXPersistenceConsumer.getSharedEM().flush();
-            TXPersistenceConsumer.getSharedUX().commit();
+                JPAProviderImpl.getSharedEM().persist(marea);
+            JPAProviderImpl.getSharedEM().flush();
+            JPAProviderImpl.getSharedUX().commit();
         } catch (Exception E) {
             log.error("Fail to init multicast area test db!");
         }
@@ -272,37 +279,48 @@ public class TXPersistenceConsumer implements Runnable {
         lans.add(new Lan().setNameR("LAN10").setDescriptionR("A LAN Lan").setSubnetIPR("192.168.50.0").setSubnetMaskR("255.255.255.0").setTypeR(lanT).setMareaR(ma2));
 
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
+            JPAProviderImpl.getSharedUX().begin();
+            JPAProviderImpl.getSharedEM().joinTransaction();
             for (LanType ltype : lanTypes)
-                TXPersistenceConsumer.getSharedEM().persist(ltype);
-            TXPersistenceConsumer.getSharedEM().flush();
-            TXPersistenceConsumer.getSharedUX().commit();
+                JPAProviderImpl.getSharedEM().persist(ltype);
+            JPAProviderImpl.getSharedEM().flush();
+            JPAProviderImpl.getSharedUX().commit();
 
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
+            JPAProviderImpl.getSharedUX().begin();
+            JPAProviderImpl.getSharedEM().joinTransaction();
             for (Lan lan : lans) {
-                TXPersistenceConsumer.getSharedEM().persist(lan);
+                JPAProviderImpl.getSharedEM().persist(lan);
                 if (lan.getType()!=null) {
                     lan.getType().getLans().add(lan);
                     if (lan.getType().getId()==null)
-                        TXPersistenceConsumer.getSharedEM().persist(lan.getType());
+                        JPAProviderImpl.getSharedEM().persist(lan.getType());
                     else
-                        TXPersistenceConsumer.getSharedEM().merge(lan.getType());
+                        JPAProviderImpl.getSharedEM().merge(lan.getType());
                 }
                 if (lan.getMarea()!=null) {
                     lan.getMarea().getLans().add(lan);
                     if (lan.getType().getId()==null)
-                        TXPersistenceConsumer.getSharedEM().persist(lan.getMarea());
+                        JPAProviderImpl.getSharedEM().persist(lan.getMarea());
                     else
-                        TXPersistenceConsumer.getSharedEM().merge(lan.getMarea());
+                        JPAProviderImpl.getSharedEM().merge(lan.getMarea());
                 }
             }
-            TXPersistenceConsumer.getSharedEM().flush();
-            TXPersistenceConsumer.getSharedUX().commit();
+            JPAProviderImpl.getSharedEM().flush();
+            JPAProviderImpl.getSharedUX().commit();
 
         } catch (Exception E) {
             log.error("Fail to init lan test db!");
-        } */
+        }
+        */
+    }
+
+    @Override
+    public EntityManager getLockedEM() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void unlockEM(EntityManager em) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

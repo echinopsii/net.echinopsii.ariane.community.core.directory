@@ -1,6 +1,6 @@
 package com.spectral.cc.core.directory.main.rest;
 
-import com.spectral.cc.core.directory.main.model.organisational.Environment;
+import com.spectral.cc.core.directory.commons.model.organisational.Environment;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -18,7 +18,7 @@ import java.util.List;
 @Path("/environments")
 public class EnvironmentEndpoint
 {
-   @PersistenceContext(unitName = "cc-directories-main")
+   @PersistenceContext(unitName = "cc-directory")
    private EntityManager em;
 
    @POST

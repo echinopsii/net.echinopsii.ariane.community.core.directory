@@ -19,8 +19,8 @@
 
 package com.spectral.cc.core.directory.main.controller.organisational.team;
 
-import com.spectral.cc.core.directory.main.model.organisational.Team;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
+import com.spectral.cc.core.directory.commons.model.organisational.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,10 +62,12 @@ public class TeamNewController implements Serializable {
         team.setName(name);
         team.setDescription(description);
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
-            TXPersistenceConsumer.getSharedEM().persist(team);
-            TXPersistenceConsumer.getSharedUX().commit();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(team);
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Team created successfully !",
                                                        "Team name : " + team.getName());
@@ -77,9 +79,11 @@ public class TeamNewController implements Serializable {
                                                        "Throwable raised while creating team " + team.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-
+            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+/*
             FacesMessage msg2;
-            int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+            int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
             switch(txStatus) {
                 case Status.STATUS_NO_TRANSACTION:
                     msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -89,7 +93,7 @@ public class TeamNewController implements Serializable {
                 case Status.STATUS_MARKED_ROLLBACK:
                     try {
                         log.debug("Rollback operation !");
-                        TXPersistenceConsumer.getSharedUX().rollback();
+                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                        "Operation rollbacked !",
                                                        "Operation : team " + team.getName() + " creation.");
@@ -109,6 +113,7 @@ public class TeamNewController implements Serializable {
                     break;
             }
             FacesContext.getCurrentInstance().addMessage(null, msg2);
+*/
         }
     }
 }

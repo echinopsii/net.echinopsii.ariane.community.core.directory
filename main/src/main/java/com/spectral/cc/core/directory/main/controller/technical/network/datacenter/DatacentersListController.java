@@ -19,12 +19,12 @@
 
 package com.spectral.cc.core.directory.main.controller.technical.network.datacenter;
 
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.main.controller.technical.network.lan.LansListController;
 import com.spectral.cc.core.directory.main.controller.technical.network.multicastArea.MulticastAreasListController;
-import com.spectral.cc.core.directory.main.model.technical.network.Datacenter;
-import com.spectral.cc.core.directory.main.model.technical.network.Lan;
-import com.spectral.cc.core.directory.main.model.technical.network.MulticastArea;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
+import com.spectral.cc.core.directory.commons.model.technical.network.Lan;
+import com.spectral.cc.core.directory.commons.model.technical.network.MulticastArea;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
@@ -65,7 +65,7 @@ public class DatacentersListController implements Serializable {
 
     @PostConstruct
     private void init() {
-        lazyModel = new DatacenterLazyModel().setEntityManager(TXPersistenceConsumer.getSharedEM());
+        lazyModel = new DatacenterLazyModel().setEntityManager(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM());
     }
 
     /*
@@ -177,34 +177,36 @@ public class DatacentersListController implements Serializable {
     public void update(Datacenter dc) {
 
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
-            TXPersistenceConsumer.getSharedEM().merge(dc);
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
             for (Lan lan : dc.getLans()) {
                 if (!rollback.get(dc.getId()).getLans().contains(lan)){
                     lan.getDatacenters().add(dc);
-                    TXPersistenceConsumer.getSharedEM().merge(lan);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan);
                 }
             }
             for (Lan lan : rollback.get(dc.getId()).getLans()) {
                 if (!dc.getLans().contains(lan)) {
                     lan.getDatacenters().remove(dc);
-                    TXPersistenceConsumer.getSharedEM().merge(lan);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan);
                 }
             }
             for (MulticastArea marea : dc.getMulticastAreas()) {
                 if (!rollback.get(dc.getId()).getMulticastAreas().contains(marea)) {
                     marea.getDatacenters().add(dc);
-                    TXPersistenceConsumer.getSharedEM().merge(marea);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(marea);
                 }
             }
             for (MulticastArea marea : rollback.get(dc.getId()).getMulticastAreas()) {
                 if (!dc.getMulticastAreas().contains(marea)) {
                     marea.getDatacenters().remove(dc);
-                    TXPersistenceConsumer.getSharedEM().merge(marea);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(marea);
                 }
             }
-            TXPersistenceConsumer.getSharedUX().commit();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             rollback.put(dc.getId(), dc);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Datacenter updated successfully !",
@@ -217,10 +219,12 @@ public class DatacentersListController implements Serializable {
                                                        "Throwable raised while updating datacenter " + rollback.get(dc.getId()).getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-
+            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+/*
             try {
                 FacesMessage msg2;
-                int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                 switch(txStatus) {
                     case Status.STATUS_NO_TRANSACTION:
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -230,7 +234,7 @@ public class DatacentersListController implements Serializable {
                     case Status.STATUS_MARKED_ROLLBACK:
                         try {
                             log.debug("Rollback operation !");
-                            TXPersistenceConsumer.getSharedUX().rollback();
+                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                                         "Operation rollbacked !",
                                                                         "Operation : datacenter " + rollback.get(dc.getId()).getName() + " update.");
@@ -253,6 +257,7 @@ public class DatacentersListController implements Serializable {
             } catch (SystemException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
+*/
         }
     }
 
@@ -263,18 +268,20 @@ public class DatacentersListController implements Serializable {
         log.debug("Remove selected DC !");
         for (Datacenter dc2BeRemoved: selectedDCList) {
             try {
-                TXPersistenceConsumer.getSharedUX().begin();
-                TXPersistenceConsumer.getSharedEM().joinTransaction();
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
                 for (Lan lan : dc2BeRemoved.getLans()) {
                     lan.getDatacenters().remove(dc2BeRemoved);
-                    TXPersistenceConsumer.getSharedEM().merge(lan);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan);
                 }
                 for (MulticastArea marea : dc2BeRemoved.getMulticastAreas()) {
                     marea.getDatacenters().remove(dc2BeRemoved);
-                    TXPersistenceConsumer.getSharedEM().merge(marea);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(marea);
                 }
-                TXPersistenceConsumer.getSharedEM().remove(dc2BeRemoved);
-                TXPersistenceConsumer.getSharedUX().commit();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().remove(dc2BeRemoved);
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                     "Datacenter deleted successfully !",
                                                     "Datacenter name : " + dc2BeRemoved.getName());
@@ -286,10 +293,12 @@ public class DatacentersListController implements Serializable {
                                                            "Throwable raised while deleting datacenter " + dc2BeRemoved.getName() + " !",
                                                            "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-
+                if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+/*
                 try {
                     FacesMessage msg2;
-                    int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                    int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                     switch(txStatus) {
                         case Status.STATUS_NO_TRANSACTION:
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -299,7 +308,7 @@ public class DatacentersListController implements Serializable {
                         case Status.STATUS_MARKED_ROLLBACK:
                             try {
                                 log.debug("Rollback operation !");
-                                TXPersistenceConsumer.getSharedUX().rollback();
+                                JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                                 msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                                             "Operation rollbacked !",
                                                                             "Operation : datacenter " + dc2BeRemoved.getName() + " deletion.");
@@ -322,17 +331,18 @@ public class DatacentersListController implements Serializable {
                 } catch (SystemException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
+*/
             }
         }
         selectedDCList=null;
     }
 
     public static List<Datacenter> getAll() throws SystemException, NotSupportedException {
-        CriteriaBuilder           builder  = TXPersistenceConsumer.getSharedEM().getCriteriaBuilder();
+        CriteriaBuilder           builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
         CriteriaQuery<Datacenter> criteria = builder.createQuery(Datacenter.class);
         Root<Datacenter>          root     = criteria.from(Datacenter.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        return TXPersistenceConsumer.getSharedEM().createQuery(criteria).getResultList();
+        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
     }
 }

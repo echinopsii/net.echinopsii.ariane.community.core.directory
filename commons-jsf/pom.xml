@@ -76,8 +76,9 @@
                         <Import-Package>
                             com.spectral.cc.core.portal.commons.model;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.portal.commons.service;version=${version.com.spectral.cc.core.portal},
-                            com.spectral.cc.core.directory.commons.registry;version=${project.version},
                             com.spectral.cc.core.directory.commons.model;version=${project.version},
+                            com.spectral.cc.core.directory.commons.registry;version=${project.version},
+                            com.spectral.cc.core.directory.commons.persistence;version=${project.version},
                             javax.el;version="${version.javax.el}",
                             javax.servlet;version="${version.javax.servlet.servlet-api}",
                             javax.faces;version="${version.javax.faces.api}",

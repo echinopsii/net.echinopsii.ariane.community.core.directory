@@ -1,6 +1,6 @@
-package com.spectral.cc.core.directory.main.model.organisational;
+package com.spectral.cc.core.directory.commons.model.organisational;
 
-import com.spectral.cc.core.directory.main.model.technical.system.OSInstance;
+import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,8 +11,8 @@ import java.util.Set;
 
 @Entity
 @XmlRootElement
-@Table(name="team",uniqueConstraints = @UniqueConstraint(columnNames = {"teamName"}))
-public class Team implements Serializable {
+@Table(name="application",uniqueConstraints = @UniqueConstraint(columnNames = {"applicationName"}))
+public class Application implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,9 +22,17 @@ public class Team implements Serializable {
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="teamName",unique=true)
+    @Column(name="applicationName",unique=true)
     @NotNull
     private String name;
+
+    @Column
+    @NotNull
+    private String shortName;
+
+    @Column
+    @NotNull
+    private String colorCode;
 
     @Column
     private String description;
@@ -32,8 +40,11 @@ public class Team implements Serializable {
     @ManyToMany
     private Set<OSInstance> osInstances = new HashSet<OSInstance>();
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
-    private Set<Application> applications = new HashSet<Application>();
+    @ManyToOne
+    private Team team;
+
+    @ManyToOne
+    private Company company;
 
     public Long getId() {
         return this.id;
@@ -43,7 +54,7 @@ public class Team implements Serializable {
         this.id = id;
     }
 
-    public Team setIdR(final Long id) {
+    public Application setIdR(final Long id) {
         this.id = id;
         return this;
     }
@@ -56,7 +67,7 @@ public class Team implements Serializable {
         this.version = version;
     }
 
-    public Team setVersionR(final int version) {
+    public Application setVersionR(final int version) {
         this.version = version;
         return this;
     }
@@ -73,7 +84,7 @@ public class Team implements Serializable {
             return false;
         }
         if (id != null) {
-            return id.equals(((Team) that).id);
+            return id.equals(((Application) that).id);
         }
         return super.equals(that);
     }
@@ -94,8 +105,34 @@ public class Team implements Serializable {
         this.name = name;
     }
 
-    public Team setNameR(final String name) {
+    public Application setNameR(final String name) {
         this.name = name;
+        return this;
+    }
+
+    public String getShortName() {
+        return this.shortName;
+    }
+
+    public void setShortName(final String shortName) {
+        this.shortName = shortName;
+    }
+
+    public Application setShortNameR(final String shortName) {
+        this.shortName = shortName;
+        return this;
+    }
+
+    public String getColorCode() {
+        return this.colorCode;
+    }
+
+    public void setColorCode(final String colorCode) {
+        this.colorCode = colorCode;
+    }
+
+    public Application setColorCodeR(final String colorCode) {
+        this.colorCode = colorCode;
         return this;
     }
 
@@ -107,7 +144,7 @@ public class Team implements Serializable {
         this.description = description;
     }
 
-    public Team setDescriptionR(final String description) {
+    public Application setDescriptionR(final String description) {
         this.description = description;
         return this;
     }
@@ -117,6 +154,10 @@ public class Team implements Serializable {
         String result = getClass().getSimpleName() + " ";
         if (name != null && !name.trim().isEmpty())
             result += "name: " + name;
+        if (shortName != null && !shortName.trim().isEmpty())
+            result += ", shortName: " + shortName;
+        if (colorCode != null && !colorCode.trim().isEmpty())
+            result += ", colorCode: " + colorCode;
         if (description != null && !description.trim().isEmpty())
             result += ", description: " + description;
         return result;
@@ -130,26 +171,39 @@ public class Team implements Serializable {
         this.osInstances = osInstances;
     }
 
-    public Team setOsInstancesR(final Set<OSInstance> osInstances) {
+    public Application setOsInstancesR(final Set<OSInstance> osInstances) {
         this.osInstances = osInstances;
         return this;
     }
 
-    public Set<Application> getApplications() {
-        return applications;
+    public Team getTeam() {
+        return this.team;
     }
 
-    public void setApplications(Set<Application> applications) {
-        this.applications = applications;
+    public void setTeam(final Team team) {
+        this.team = team;
     }
 
-    public Team setApplicationsR(Set<Application> applications) {
-        this.applications = applications;
+    public Application setTeamR(final Team team) {
+        this.team = team;
         return this;
     }
 
-    public Team clone() {
-        return new Team().setIdR(id).setVersionR(version).setNameR(name).setDescriptionR(description).setOsInstancesR(new HashSet<>(osInstances)).
-                          setApplicationsR(new HashSet<Application>(applications));
+    public Company getCompany() {
+        return this.company;
+    }
+
+    public void setCompany(final Company company) {
+        this.company = company;
+    }
+
+    public Application setCompanyR(final Company company) {
+        this.company = company;
+        return this;
+    }
+
+    public Application clone() {
+        return new Application().setIdR(id).setVersionR(version).setNameR(name).setDescriptionR(description).setCompanyR(company).
+                                 setTeamR(team).setColorCodeR(colorCode).setOsInstancesR(new HashSet<OSInstance>(osInstances)).setShortNameR(shortName);
     }
 }

@@ -20,7 +20,7 @@
 
 package com.spectral.cc.core.directory.main.runtime;
 
-import com.spectral.cc.core.directory.commons.consumer.RootDirectoryRegistryConsumer;
+import com.spectral.cc.core.directory.commons.consumer.RootDirectoryRegistryServiceConsumer;
 import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
 import com.spectral.cc.core.portal.commons.consumer.MainMenuRegistryConsumer;
 import com.spectral.cc.core.portal.commons.model.MainMenuEntity;
@@ -55,7 +55,7 @@ public class Registrator implements Runnable {
         }
 
         //TODO : check a better way to start war after OSGI layer
-        while(RootDirectoryRegistryConsumer.getInstance().getRootDirectoryRegistry()==null)
+        while(RootDirectoryRegistryServiceConsumer.getInstance().getRootDirectoryRegistry()==null)
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
@@ -64,7 +64,7 @@ public class Registrator implements Runnable {
         try {
             DirectoryEntity commonRootDirectoryEntity = new DirectoryEntity().setId("commonsDir").setValue("Common referential").setType(MenuEntityType.TYPE_MENU_SUBMENU);
             OsgiActivator.directoryTreeEntityList.add(commonRootDirectoryEntity);
-            RootDirectoryRegistryConsumer.getInstance().getRootDirectoryRegistry().registerRootDirectoryEntity(commonRootDirectoryEntity);
+            RootDirectoryRegistryServiceConsumer.getInstance().getRootDirectoryRegistry().registerRootDirectoryEntity(commonRootDirectoryEntity);
 
 
             DirectoryEntity organisationalDirectoryEntity = new DirectoryEntity().setId("commonsOrgDir").setValue("Organisation").

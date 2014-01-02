@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.main.controller.technical.system.OSInstance;
 
-import com.spectral.cc.core.directory.main.model.technical.system.OSInstance;
+import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;

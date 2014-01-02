@@ -18,7 +18,7 @@
  */
 package com.spectral.cc.core.directory.commons.controller;
 
-import com.spectral.cc.core.directory.commons.consumer.RootDirectoryRegistryConsumer;
+import com.spectral.cc.core.directory.commons.consumer.RootDirectoryRegistryServiceConsumer;
 import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
 import org.primefaces.component.menuitem.MenuItem;
 import org.primefaces.model.DefaultMenuModel;
@@ -76,8 +76,8 @@ public class DirectoriesBreadCrumController {
         log.debug("requestServletPath : {} ; value : {}", new Object[]{requestServletPath,id});
         log.debug("Get Menu Model...");
         ArrayList<DirectoryEntity> orderedBreadScrumMenuFromRootToLeaf = new ArrayList<DirectoryEntity>();
-        if (RootDirectoryRegistryConsumer.getInstance()!=null) {
-            DirectoryEntity leaf   = RootDirectoryRegistryConsumer.getInstance().getRootDirectoryRegistry().getDirectoryEntityFromID(id);
+        if (RootDirectoryRegistryServiceConsumer.getInstance()!=null) {
+            DirectoryEntity leaf   = RootDirectoryRegistryServiceConsumer.getInstance().getRootDirectoryRegistry().getDirectoryEntityFromID(id);
             if (leaf!=null) {
                 orderedBreadScrumMenuFromRootToLeaf.add(0,leaf);
                 DirectoryEntity parent = leaf.getParentDirectory();

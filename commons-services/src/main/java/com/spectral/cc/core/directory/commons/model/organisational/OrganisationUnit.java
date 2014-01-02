@@ -1,4 +1,4 @@
-package com.spectral.cc.core.directory.main.model.organisational;
+package com.spectral.cc.core.directory.commons.model.organisational;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

@@ -19,13 +19,13 @@
 
 package com.spectral.cc.core.directory.main.controller.technical.network.lan;
 
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.main.controller.technical.network.datacenter.DatacentersListController;
 import com.spectral.cc.core.directory.main.controller.technical.network.multicastArea.MulticastAreasListController;
-import com.spectral.cc.core.directory.main.model.technical.network.Datacenter;
-import com.spectral.cc.core.directory.main.model.technical.network.Lan;
-import com.spectral.cc.core.directory.main.model.technical.network.LanType;
-import com.spectral.cc.core.directory.main.model.technical.network.MulticastArea;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
+import com.spectral.cc.core.directory.commons.model.technical.network.Lan;
+import com.spectral.cc.core.directory.commons.model.technical.network.LanType;
+import com.spectral.cc.core.directory.commons.model.technical.network.MulticastArea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -204,22 +204,24 @@ public class LanNewController implements Serializable {
         newLan.setMarea(marea);
         newLan.setDatacenters(this.datacenters);
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
-            TXPersistenceConsumer.getSharedEM().persist(newLan);
-            if (type!=null)  {type.getLans().add(newLan);  TXPersistenceConsumer.getSharedEM().merge(type);}
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(newLan);
+            if (type!=null)  {type.getLans().add(newLan);  JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(type);}
             if (this.datacenters.size()!=0)
                 for (Datacenter dc: this.datacenters) {
                     dc.getLans().add(newLan);
-                    TXPersistenceConsumer.getSharedEM().merge(dc);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
                     if (marea!=null) {
                         if (!marea.getDatacenters().contains(dc)) {
                             marea.getDatacenters().add(dc);
                         }
                     }
                 }
-            if (marea!=null) {marea.getLans().add(newLan); TXPersistenceConsumer.getSharedEM().merge(marea);}
-            TXPersistenceConsumer.getSharedUX().commit();
+            if (marea!=null) {marea.getLans().add(newLan); JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(marea);}
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Lan created successfully !",
                                                        "Lan name : " + newLan.getName());
@@ -231,10 +233,12 @@ public class LanNewController implements Serializable {
                                                        "Throwable raised while creating lan " + newLan.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-
+            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+/*
             try {
                 FacesMessage msg2;
-                int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                 switch(txStatus) {
                     case Status.STATUS_NO_TRANSACTION:
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -244,7 +248,7 @@ public class LanNewController implements Serializable {
                     case Status.STATUS_MARKED_ROLLBACK:
                         try {
                             log.debug("Rollback operation !");
-                            TXPersistenceConsumer.getSharedUX().rollback();
+                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                                         "Operation rollbacked !",
                                                                         "Operation : lan " + newLan.getName() + " creation.");
@@ -267,6 +271,7 @@ public class LanNewController implements Serializable {
             } catch (SystemException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
+*/
         }
     }
 }

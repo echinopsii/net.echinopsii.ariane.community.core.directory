@@ -1,6 +1,6 @@
 /**
  * Directory Main bundle
- * Directories MulticastArea Entity
+ * Directories LanType Entity
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.spectral.cc.core.directory.main.model.technical.network;
+package com.spectral.cc.core.directory.commons.model.technical.network;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -27,9 +27,8 @@ import java.util.Set;
 
 @Entity
 @XmlRootElement
-@Table(name="multicastArea",uniqueConstraints = @UniqueConstraint(columnNames = {"mareaName"}))
-public class MulticastArea implements Serializable
-{
+@Table(name="lanType",uniqueConstraints = @UniqueConstraint(columnNames = {"lanTypeName"}))
+public class LanType implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -39,18 +38,15 @@ public class MulticastArea implements Serializable
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="mareaName",unique=true)
+    @Column(name="lanTypeName",unique=true)
     @NotNull
     private String name;
 
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "marea", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
     private Set<Lan> lans = new HashSet<Lan>();
-
-    @ManyToMany(mappedBy = "multicastAreas")
-    private Set<Datacenter> datacenters = new HashSet<Datacenter>();
 
     public Long getId() {
         return this.id;
@@ -60,7 +56,7 @@ public class MulticastArea implements Serializable
         this.id = id;
     }
 
-    public MulticastArea setIdR(final Long id) {
+    public LanType setIdR(final Long id) {
         this.id = id;
         return this;
     }
@@ -73,14 +69,13 @@ public class MulticastArea implements Serializable
         this.version = version;
     }
 
-    public MulticastArea setVersionR(final int version) {
-        this.version = version ;
+    public LanType setVersionR(final int version) {
+        this.version = version;
         return this;
     }
 
     @Override
-    public boolean equals(Object that)
-    {
+    public boolean equals(Object that) {
         if (this == that) {
             return true;
         }
@@ -91,7 +86,7 @@ public class MulticastArea implements Serializable
             return false;
         }
         if (id != null) {
-            return id.equals(((MulticastArea) that).id);
+            return id.equals(((LanType) that).id);
         }
         return super.equals(that);
     }
@@ -112,20 +107,20 @@ public class MulticastArea implements Serializable
         this.name = name;
     }
 
-    public MulticastArea setNameR(final String name) {
+    public LanType setNameR(final String name) {
         this.name = name;
         return this;
     }
 
     public String getDescription() {
-        return this.description;
+        return description;
     }
 
-    public void setDescription(final String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public MulticastArea setDescriptionR(final String description) {
+    public LanType setDescriptionR(String description) {
         this.description = description;
         return this;
     }
@@ -135,8 +130,6 @@ public class MulticastArea implements Serializable
         String result = getClass().getSimpleName() + " ";
         if (name != null && !name.trim().isEmpty())
             result += "name: " + name;
-        if (description != null && !description.trim().isEmpty())
-            result += ", description: " + description;
         return result;
     }
 
@@ -148,26 +141,13 @@ public class MulticastArea implements Serializable
         this.lans = lans;
     }
 
-    public MulticastArea setLansR(final Set<Lan> lans) {
+    public LanType setLansR(final Set<Lan> lans) {
         this.lans = lans;
         return this;
     }
 
-    public Set<Datacenter> getDatacenters() {
-        return this.datacenters;
-    }
-
-    public void setDatacenters(final Set<Datacenter> datacenters) {
-        this.datacenters = datacenters;
-    }
-
-    public MulticastArea setDatacentersR(final Set<Datacenter> datacenters) {
-        this.datacenters = datacenters;
-        return this;
-    }
-
-    public MulticastArea clone() {
-        return new MulticastArea().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).
-                                   setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setLansR(new HashSet<Lan>(this.lans));
+    @Override
+    public LanType clone () {
+        return new LanType().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setLansR(new HashSet<Lan>(this.lans));
     }
 }

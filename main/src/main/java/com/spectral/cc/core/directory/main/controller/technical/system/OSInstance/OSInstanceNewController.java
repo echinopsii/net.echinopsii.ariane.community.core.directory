@@ -18,18 +18,18 @@
  */
 package com.spectral.cc.core.directory.main.controller.technical.system.OSInstance;
 
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.main.controller.organisational.application.ApplicationsListController;
 import com.spectral.cc.core.directory.main.controller.organisational.environment.EnvironmentsListController;
 import com.spectral.cc.core.directory.main.controller.organisational.team.TeamsListController;
 import com.spectral.cc.core.directory.main.controller.technical.network.lan.LansListController;
 import com.spectral.cc.core.directory.main.controller.technical.system.OSType.OSTypesListController;
-import com.spectral.cc.core.directory.main.model.organisational.Application;
-import com.spectral.cc.core.directory.main.model.organisational.Environment;
-import com.spectral.cc.core.directory.main.model.organisational.Team;
-import com.spectral.cc.core.directory.main.model.technical.network.Lan;
-import com.spectral.cc.core.directory.main.model.technical.system.OSInstance;
-import com.spectral.cc.core.directory.main.model.technical.system.OSType;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.model.organisational.Application;
+import com.spectral.cc.core.directory.commons.model.organisational.Environment;
+import com.spectral.cc.core.directory.commons.model.organisational.Team;
+import com.spectral.cc.core.directory.commons.model.technical.network.Lan;
+import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
+import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.transaction.NotSupportedException;
-import javax.transaction.Status;
 import javax.transaction.SystemException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -296,28 +295,30 @@ public class OSInstanceNewController implements Serializable{
         osInstance.setTeams(teams);
         osInstance.setApplications(apps);
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
-            TXPersistenceConsumer.getSharedEM().persist(osInstance);
-            if (type!=null)  {type.getOsInstances().add(osInstance);  TXPersistenceConsumer.getSharedEM().merge(type);}
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(osInstance);
+            if (type!=null)  {type.getOsInstances().add(osInstance);  JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(type);}
             for(Application application : this.apps) {
                 application.getOsInstances().add(osInstance);
-                TXPersistenceConsumer.getSharedEM().merge(application);
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application);
             }
             for(Team team : this.teams) {
                 team.getOsInstances().add(osInstance);
-                TXPersistenceConsumer.getSharedEM().merge(team);
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(team);
             }
             for(Environment env : this.envs) {
                 env.getOsInstances().add(osInstance);
-                TXPersistenceConsumer.getSharedEM().merge(env);
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(env);
             }
             for (Lan lan : this.lans) {
                 lan.getOsInstances().add(osInstance);
-                TXPersistenceConsumer.getSharedEM().merge(lan);
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan);
             }
-            if (embingOSI!=null) {embingOSI.getEmbeddedOSInstances().add(osInstance); TXPersistenceConsumer.getSharedEM().merge(embingOSI);}
-            TXPersistenceConsumer.getSharedUX().commit();
+            if (embingOSI!=null) {embingOSI.getEmbeddedOSInstances().add(osInstance); JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(embingOSI);}
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "OSInstance created successfully !",
                                                        "OSInstance name : " + osInstance.getName());
@@ -329,10 +330,12 @@ public class OSInstanceNewController implements Serializable{
                                                        "Throwable raised while creating OS Instance " + osInstance.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-
+            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+/*
             try {
                 FacesMessage msg2;
-                int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                 switch(txStatus) {
                     case Status.STATUS_NO_TRANSACTION:
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -342,7 +345,7 @@ public class OSInstanceNewController implements Serializable{
                     case Status.STATUS_MARKED_ROLLBACK:
                         try {
                             log.debug("Rollback operation !");
-                            TXPersistenceConsumer.getSharedUX().rollback();
+                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                            "Operation rollbacked !",
                                                            "Operation : OS Instance " + osInstance.getName() + " creation.");
@@ -365,6 +368,7 @@ public class OSInstanceNewController implements Serializable{
             } catch (SystemException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
+*/
         }
     }
 }

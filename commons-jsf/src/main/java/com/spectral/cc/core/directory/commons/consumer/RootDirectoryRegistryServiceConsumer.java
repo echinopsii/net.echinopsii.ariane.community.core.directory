@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
 
 @Component(publicFactory = false, factoryMethod = "getInstance")
 @Instantiate
-public class RootDirectoryRegistryConsumer {
-    private static final Logger log = LoggerFactory.getLogger(RootDirectoryRegistryConsumer.class);
-    private static RootDirectoryRegistryConsumer INSTANCE;
+public class RootDirectoryRegistryServiceConsumer {
+    private static final Logger log = LoggerFactory.getLogger(RootDirectoryRegistryServiceConsumer.class);
+    private static RootDirectoryRegistryServiceConsumer INSTANCE;
 
     @Requires
     private RootDirectoryRegistry rootDirectoryRegistry = null;
@@ -49,9 +49,9 @@ public class RootDirectoryRegistryConsumer {
         return rootDirectoryRegistry;
     }
 
-    public static RootDirectoryRegistryConsumer getInstance() {
+    public static RootDirectoryRegistryServiceConsumer getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new RootDirectoryRegistryConsumer();
+            INSTANCE = new RootDirectoryRegistryServiceConsumer();
         }
         return INSTANCE;
     }

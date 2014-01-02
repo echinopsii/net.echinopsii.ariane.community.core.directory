@@ -1,6 +1,6 @@
 /**
  * Directory Main bundle
- * Directories Environment Entity
+ * Directories OSType Entity
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.spectral.cc.core.directory.main.model.organisational;
+package com.spectral.cc.core.directory.commons.model.technical.system;
 
-import com.spectral.cc.core.directory.main.model.technical.system.OSInstance;
+import com.spectral.cc.core.directory.commons.model.organisational.Company;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -29,8 +29,8 @@ import java.util.Set;
 
 @Entity
 @XmlRootElement
-@Table(name="environment",uniqueConstraints = @UniqueConstraint(columnNames = {"environmentName"}))
-public class Environment implements Serializable
+@Table(name="osType", uniqueConstraints = @UniqueConstraint(columnNames = {"osTypeName"}))
+public class OSType implements Serializable
 {
 
     @Id
@@ -41,14 +41,17 @@ public class Environment implements Serializable
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="environmentName",unique=true)
+    @Column(name="osTypeName",unique=true)
     @NotNull
     private String name;
 
     @Column
-    private String description;
+    private String architecture;
 
-    @ManyToMany
+    @ManyToOne
+    private Company company;
+
+    @OneToMany(mappedBy = "osType", cascade = CascadeType.ALL)
     private Set<OSInstance> osInstances = new HashSet<OSInstance>();
 
     public Long getId() {
@@ -59,7 +62,7 @@ public class Environment implements Serializable
         this.id = id;
     }
 
-    public Environment setIdR(final Long id){
+    public OSType setIdR(final Long id) {
         this.id = id;
         return this;
     }
@@ -72,8 +75,8 @@ public class Environment implements Serializable
         this.version = version;
     }
 
-    public Environment setVersionR(final int version) {
-        this.version = version;
+    public OSType setVersionR(final int version) {
+        this.version = version ;
         return this;
     }
 
@@ -89,7 +92,7 @@ public class Environment implements Serializable
             return false;
         }
         if (id != null) {
-            return id.equals(((Environment) that).id);
+            return id.equals(((OSType) that).id);
         }
         return super.equals(that);
     }
@@ -110,21 +113,34 @@ public class Environment implements Serializable
         this.name = name;
     }
 
-    public Environment setNameR(final String name) {
-        this.name = name;
+    public OSType setNameR(final String name) {
+        this.name = name ;
         return this;
     }
 
-    public String getDescription() {
-        return this.description;
+    public String getArchitecture() {
+        return this.architecture;
     }
 
-    public void setDescription(final String description) {
-        this.description = description;
+    public void setArchitecture(final String architecture) {
+        this.architecture = architecture;
     }
 
-    public Environment setDescriptionR(final String description) {
-        this.description = description;
+    public OSType setArchitectureR(final String architecture) {
+        this.architecture = architecture;
+        return this;
+    }
+
+    public Company getCompany() {
+        return this.company;
+    }
+
+    public void setCompany(final Company company) {
+        this.company = company;
+    }
+
+    public OSType setCompanyR(final Company company) {
+        this.company = company;
         return this;
     }
 
@@ -133,8 +149,8 @@ public class Environment implements Serializable
         String result = getClass().getSimpleName() + " ";
         if (name != null && !name.trim().isEmpty())
             result += "name: " + name;
-        if (description != null && !description.trim().isEmpty())
-            result += ", description: " + description;
+        if (architecture != null && !architecture.trim().isEmpty())
+            result += ", architecture: " + architecture;
         return result;
     }
 
@@ -146,13 +162,13 @@ public class Environment implements Serializable
         this.osInstances = osInstances;
     }
 
-    public Environment setOSInstancesR(final Set<OSInstance> systems) {
-        this.osInstances = systems;
+    public OSType setOsInstancesR(final Set<OSInstance> osInstances) {
+        this.osInstances = osInstances;
         return this;
     }
 
-    public Environment clone() {
-        return new Environment().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).
-                                 setOSInstancesR(new HashSet<OSInstance>(this.osInstances));
+    public OSType clone() {
+        return new OSType().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setArchitectureR(this.architecture).setCompanyR(this.company).
+                            setOsInstancesR(new HashSet<OSInstance>(this.osInstances));
     }
 }

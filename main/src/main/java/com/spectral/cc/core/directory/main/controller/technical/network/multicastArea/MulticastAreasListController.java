@@ -19,12 +19,12 @@
 
 package com.spectral.cc.core.directory.main.controller.technical.network.multicastArea;
 
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.main.controller.technical.network.datacenter.DatacentersListController;
 import com.spectral.cc.core.directory.main.controller.technical.network.lan.LansListController;
-import com.spectral.cc.core.directory.main.model.technical.network.Datacenter;
-import com.spectral.cc.core.directory.main.model.technical.network.Lan;
-import com.spectral.cc.core.directory.main.model.technical.network.MulticastArea;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
+import com.spectral.cc.core.directory.commons.model.technical.network.Lan;
+import com.spectral.cc.core.directory.commons.model.technical.network.MulticastArea;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
@@ -64,7 +64,7 @@ public class MulticastAreasListController implements Serializable {
 
     @PostConstruct
     private void init() {
-        lazyModel = new MulticastAreaLazyModel().setEntityManager(TXPersistenceConsumer.getSharedEM());
+        lazyModel = new MulticastAreaLazyModel().setEntityManager(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM());
     }
 
     /*
@@ -177,19 +177,20 @@ public class MulticastAreasListController implements Serializable {
 
     public void update(MulticastArea multicastArea) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
-            TXPersistenceConsumer.getSharedEM().merge(multicastArea);
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(multicastArea);
             for (Datacenter dc : multicastArea.getDatacenters()){
                 if (!rollback.get(multicastArea.getId()).getDatacenters().contains(dc)) {
                     dc.getMulticastAreas().add(multicastArea);
-                    TXPersistenceConsumer.getSharedEM().merge(dc);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
                 }
             }
             for (Datacenter dc : rollback.get(multicastArea.getId()).getDatacenters()) {
                 if (!multicastArea.getDatacenters().contains(dc)) {
                     dc.getMulticastAreas().remove(multicastArea);
-                    TXPersistenceConsumer.getSharedEM().merge(dc);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
                 }
             }
             for (Lan lan : multicastArea.getLans()) {
@@ -197,19 +198,20 @@ public class MulticastAreasListController implements Serializable {
                     MulticastArea previousLanMarea = lan.getMarea();
                     if (previousLanMarea!=null && previousLanMarea.getName()!=multicastArea.getName()) {
                         previousLanMarea.getLans().remove(lan);
-                        TXPersistenceConsumer.getSharedEM().merge(previousLanMarea);
+                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(previousLanMarea);
                     }
                     lan.setMarea(multicastArea);
-                    TXPersistenceConsumer.getSharedEM().merge(lan);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan);
                 }
             }
             for (Lan lan : rollback.get(multicastArea.getId()).getLans()) {
                 if (!multicastArea.getLans().contains(lan)) {
                     lan.setMarea(null);
-                    TXPersistenceConsumer.getSharedEM().merge(lan);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan);
                 }
             }
-            TXPersistenceConsumer.getSharedUX().commit();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             rollback.put(multicastArea.getId(), multicastArea);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Multicast area updated successfully !",
@@ -222,9 +224,11 @@ public class MulticastAreasListController implements Serializable {
                                                        "Throwable raised while updeting multicast area " + rollback.get(multicastArea.getId()).getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-
+            if(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+            /*
             FacesMessage msg2;
-            int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+            int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
             switch(txStatus) {
                 case Status.STATUS_NO_TRANSACTION:
                     msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -234,7 +238,7 @@ public class MulticastAreasListController implements Serializable {
                 case Status.STATUS_MARKED_ROLLBACK:
                     try {
                         log.debug("Rollback operation !");
-                        TXPersistenceConsumer.getSharedUX().rollback();
+                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                                     "Operation rollbacked !",
                                                                     "Operation : multicast area " + rollback.get(multicastArea.getId()) + " update.");
@@ -253,6 +257,7 @@ public class MulticastAreasListController implements Serializable {
                     break;
             }
             FacesContext.getCurrentInstance().addMessage(null, msg2);
+            */
         }
     }
 
@@ -263,18 +268,20 @@ public class MulticastAreasListController implements Serializable {
         log.debug("Remove selected Multicast Area !");
         for (MulticastArea marea2BeRemoved: selectedMareaList) {
             try {
-                TXPersistenceConsumer.getSharedUX().begin();
-                TXPersistenceConsumer.getSharedEM().joinTransaction();
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
                 for (Lan lan : marea2BeRemoved.getLans()) {
                     lan.setMarea(null);
-                    TXPersistenceConsumer.getSharedEM().merge(lan);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan);
                 }
                 for (Datacenter dc : marea2BeRemoved.getDatacenters()) {
                     dc.getMulticastAreas().remove(marea2BeRemoved);
-                    TXPersistenceConsumer.getSharedEM().merge(dc.getMulticastAreas());
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc.getMulticastAreas());
                 }
-                TXPersistenceConsumer.getSharedEM().remove(marea2BeRemoved);
-                TXPersistenceConsumer.getSharedUX().commit();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().remove(marea2BeRemoved);
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "Multicast area deleted successfully !",
                                                            "Multicast area name : " + marea2BeRemoved.getName());
@@ -286,10 +293,12 @@ public class MulticastAreasListController implements Serializable {
                                                            "Throwable raised while creating multicast area " + marea2BeRemoved.getName() + " !",
                                                            "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-
+                if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+/*
                 try {
                     FacesMessage msg2;
-                    int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                    int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                     switch(txStatus) {
                         case Status.STATUS_NO_TRANSACTION:
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -299,7 +308,7 @@ public class MulticastAreasListController implements Serializable {
                         case Status.STATUS_MARKED_ROLLBACK:
                             try {
                                 log.debug("Rollback operation !");
-                                TXPersistenceConsumer.getSharedUX().rollback();
+                                JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                                 msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                                "Operation rollbacked !",
                                                                "Operation : multicast area " + marea2BeRemoved.getName() + " deletion.");
@@ -322,6 +331,7 @@ public class MulticastAreasListController implements Serializable {
                 } catch (SystemException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
+*/
             }
         }
         selectedMareaList=null;
@@ -331,32 +341,32 @@ public class MulticastAreasListController implements Serializable {
      * Multicast Area join tool
      */
     public static List<MulticastArea> getAll() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder = TXPersistenceConsumer.getSharedEM().getCriteriaBuilder();
+        CriteriaBuilder builder = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
         CriteriaQuery<MulticastArea> criteria = builder.createQuery(MulticastArea.class);
         Root<MulticastArea> root = criteria.from(MulticastArea.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        return TXPersistenceConsumer.getSharedEM().createQuery(criteria).getResultList();
+        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
     }
 
     public static List<MulticastArea> getAllForSelector() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder  = TXPersistenceConsumer.getSharedEM().getCriteriaBuilder();
+        CriteriaBuilder builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
         CriteriaQuery<MulticastArea> criteria = builder.createQuery(MulticastArea.class);
         Root<MulticastArea> root = criteria.from(MulticastArea.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        List<MulticastArea> list =  TXPersistenceConsumer.getSharedEM().createQuery(criteria).getResultList();
+        List<MulticastArea> list =  JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
         list.add(0, new MulticastArea().setNameR("No multicast area"));
         list.add(0, new MulticastArea().setNameR("Select multicast area for this lan"));
         return list;
     }
 
     public static List<MulticastArea> getAllForInplace() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder  = TXPersistenceConsumer.getSharedEM().getCriteriaBuilder();
+        CriteriaBuilder builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
         CriteriaQuery<MulticastArea> criteria = builder.createQuery(MulticastArea.class);
         Root<MulticastArea> root = criteria.from(MulticastArea.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        List<MulticastArea> list =  TXPersistenceConsumer.getSharedEM().createQuery(criteria).getResultList();
+        List<MulticastArea> list =  JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
         list.add(0, new MulticastArea().setNameR("No multicast area"));
         return list;
     }

@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.spectral.cc.core.directory.main.model.technical.system;
+package com.spectral.cc.core.directory.commons.model.technical.system;
 
-import com.spectral.cc.core.directory.main.model.organisational.Application;
-import com.spectral.cc.core.directory.main.model.organisational.Environment;
-import com.spectral.cc.core.directory.main.model.organisational.Team;
-import com.spectral.cc.core.directory.main.model.technical.network.Lan;
+import com.spectral.cc.core.directory.commons.model.organisational.Application;
+import com.spectral.cc.core.directory.commons.model.organisational.Environment;
+import com.spectral.cc.core.directory.commons.model.organisational.Team;
+import com.spectral.cc.core.directory.commons.model.technical.network.Lan;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

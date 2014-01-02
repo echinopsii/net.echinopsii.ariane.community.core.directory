@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.main.controller.technical.network.multicastArea;
 
-import com.spectral.cc.core.directory.main.model.technical.network.MulticastArea;
+import com.spectral.cc.core.directory.commons.model.technical.network.MulticastArea;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;

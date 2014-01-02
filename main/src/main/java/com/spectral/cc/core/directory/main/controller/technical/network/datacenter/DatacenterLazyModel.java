@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.main.controller.technical.network.datacenter;
 
-import com.spectral.cc.core.directory.main.model.technical.network.Datacenter;
+import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;

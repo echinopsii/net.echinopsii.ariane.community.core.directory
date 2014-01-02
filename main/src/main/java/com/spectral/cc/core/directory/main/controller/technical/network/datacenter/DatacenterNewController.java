@@ -19,8 +19,8 @@
 
 package com.spectral.cc.core.directory.main.controller.technical.network.datacenter;
 
-import com.spectral.cc.core.directory.main.model.technical.network.Datacenter;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
+import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
-import javax.transaction.*;
 import java.io.Serializable;
 
 @ManagedBean
@@ -123,10 +122,12 @@ public class DatacenterNewController implements Serializable {
         newDatacenter.setGpsLatitudeR(gpsLatitude);
         newDatacenter.setGpsLongitude(gpsLongitude);
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
-            TXPersistenceConsumer.getSharedEM().persist(newDatacenter);
-            TXPersistenceConsumer.getSharedUX().commit();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(newDatacenter);
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Datacenter created successfully !",
                                                        "Datacenter name : " + newDatacenter.getName());
@@ -138,10 +139,12 @@ public class DatacenterNewController implements Serializable {
                                                        "Throwable raised while creating datacenter " + newDatacenter.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-
+            if(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+/*
             try {
                 FacesMessage msg2;
-                int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                 switch(txStatus) {
                     case Status.STATUS_NO_TRANSACTION:
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -151,7 +154,7 @@ public class DatacenterNewController implements Serializable {
                     case Status.STATUS_MARKED_ROLLBACK:
                         try {
                             log.debug("Rollback operation !");
-                            TXPersistenceConsumer.getSharedUX().rollback();
+                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                                         "Operation rollbacked !",
                                                                         "Operation : datacenter " + newDatacenter.getName() + " creation.");
@@ -174,6 +177,7 @@ public class DatacenterNewController implements Serializable {
             } catch (SystemException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
+*/
         }
     }
 }

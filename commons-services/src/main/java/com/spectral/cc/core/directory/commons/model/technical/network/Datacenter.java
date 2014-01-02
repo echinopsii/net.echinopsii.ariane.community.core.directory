@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.spectral.cc.core.directory.main.model.technical.network;
+package com.spectral.cc.core.directory.commons.model.technical.network;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

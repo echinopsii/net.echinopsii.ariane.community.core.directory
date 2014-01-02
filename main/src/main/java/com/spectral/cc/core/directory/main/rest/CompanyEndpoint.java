@@ -1,6 +1,6 @@
 package com.spectral.cc.core.directory.main.rest;
 
-import com.spectral.cc.core.directory.main.model.organisational.Company;
+import com.spectral.cc.core.directory.commons.model.organisational.Company;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -18,7 +18,7 @@ import java.util.List;
 @Path("/companys")
 public class CompanyEndpoint
 {
-   @PersistenceContext(unitName = "cc-directories-main")
+   @PersistenceContext(unitName = "cc-directory")
    private EntityManager em;
 
    @POST

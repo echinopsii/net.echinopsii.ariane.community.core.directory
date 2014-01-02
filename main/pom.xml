@@ -47,12 +47,6 @@
 
         <!-- Dependencies packaged with the war -->
         <dependency>
-            <groupId>org.primefaces</groupId>
-            <artifactId>primefaces</artifactId>
-            <version>${version.org.primefaces.primefaces}</version>
-            <scope>compile</scope> <!-- default parent pom is provided ! -->
-        </dependency>
-        <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>primefaces-extensions</artifactId>
             <scope>runtime</scope>
@@ -118,34 +112,21 @@
                         <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <Import-Package>
-                            org.osgi.framework;version="[${version.osgimin.org.osgi.framework},${version.osgimax.org.osgi.framework})",
-                            org.osgi.util.tracker;version="[${version.osgimin.org.osgi.util.tracker},${version.osgimax.org.osgi.util.tracker})",
-                            javax.servlet.jsp.jstl.tlv;version="${version.javax.servlet.jstl}",
                             com.spectral.cc.core.directory.commons.consumer;version=${project.version},
                             com.spectral.cc.core.directory.commons.controller;version=${project.version},
                             com.spectral.cc.core.directory.commons.model;version=${project.version},
+                            com.spectral.cc.core.directory.commons.model.organisational;version=${project.version},
+                            com.spectral.cc.core.directory.commons.model.technical.network;version=${project.version},
+                            com.spectral.cc.core.directory.commons.model.technical.system;version=${project.version},
                             com.spectral.cc.core.directory.commons.registry;version=${project.version},
+                            com.spectral.cc.core.directory.commons.persistence;version=${project.version},
                             com.spectral.cc.core.directory.commons.tools;version=${project.version},
                             com.spectral.cc.core.portal.commons.consumer;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.portal.commons.controller;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.portal.commons.model;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.portal.commons.registry;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.portal.commons.tools;version=${version.com.spectral.cc.core.portal},
-                            org.apache.shiro.web.config;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.env;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.filter;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.filter.authc;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.filter.authz;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.filter.mgt;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.filter.session;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.mgt;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.servlet;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.session;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.session.mgt;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.subject;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.subject.support;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.tags;version="${version.org.apache.shiro}",
-                            org.apache.shiro.web.util;version="${version.org.apache.shiro}",
+                            com.sun.el;version="${version.org.glassfish.web.el-impl}"
                             com.sun.faces;version="${version.javax.faces.api}",
                             com.sun.faces.application;version="${version.javax.faces.api}",
                             com.sun.faces.application.annotation;version="${version.javax.faces.api}",
@@ -214,23 +195,35 @@
                             javax.faces.view;version="${version.javax.faces.api}",
                             javax.faces.view.facelets;version="${version.javax.faces.api}",
                             javax.faces.webapp;version="${version.javax.faces.api}",
+                            javax.servlet.jsp.jstl.tlv;version="${version.javax.servlet.jstl}",
+                            javax.persistence;version="[${version.osgimin.javax.persistence},${version.osgimax.javax.persistence})",
+                            javax.persistence.criteria;version="[${version.osgimin.javax.persistence},${version.osgimax.javax.persistence})",
+                            javax.transaction;version="${version.javax.transaction.jta}",
+                            javax.ws.rs;version="[${version.osgimin.org.jboss.resteasy},${version.osgimax.org.jboss.resteasy})",
+                            javax.ws.rs.core;version="[${version.osgimin.org.jboss.resteasy},${version.osgimax.org.jboss.resteasy})",
+                            javax.ws.rs.ext;version="[${version.osgimin.org.jboss.resteasy},${version.osgimax.org.jboss.resteasy})",
                             org.apache.commons.fileupload;version="${version.commons.fileupload}",
                             org.apache.commons.fileupload.disk;version="${version.commons.fileupload}",
                             org.apache.commons.fileupload.portlet;version="${version.commons.fileupload}",
                             org.apache.commons.fileupload.servlet;version="${version.commons.fileupload}",
                             org.apache.commons.fileupload.util;version="${version.commons.fileupload}",
-                            org.apache.commons.lang3;version="${version.org.apache.commons.commons-lang3}",
-                            org.apache.commons.lang3.builder;version="${version.org.apache.commons.commons-lang3}",
-                            org.apache.commons.lang3.concurrent;version="${version.org.apache.commons.commons-lang3}",
-                            org.apache.commons.lang3.event;version="${version.org.apache.commons.commons-lang3}",
-                            org.apache.commons.lang3.exception;version="${version.org.apache.commons.commons-lang3}",
-                            org.apache.commons.lang3.math;version="${version.org.apache.commons.commons-lang3}",
-                            org.apache.commons.lang3.mutable;version="${version.org.apache.commons.commons-lang3}",
-                            org.apache.commons.lang3.reflect;version="${version.org.apache.commons.commons-lang3}",
-                            org.apache.commons.lang3.text;version="${version.org.apache.commons.commons-lang3}",
-                            org.apache.commons.lang3.text.translate;version="${version.org.apache.commons.commons-lang3}",
-                            org.apache.commons.lang3.time;version="${version.org.apache.commons.commons-lang3}",
-                            org.apache.commons.lang3.tuple;version="${version.org.apache.commons.commons-lang3}",
+                            org.apache.shiro.web.config;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.env;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.filter;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.filter.authc;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.filter.authz;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.filter.mgt;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.filter.session;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.mgt;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.servlet;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.session;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.session.mgt;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.subject;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.subject.support;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.tags;version="${version.org.apache.shiro}",
+                            org.apache.shiro.web.util;version="${version.org.apache.shiro}",
+                            org.osgi.framework;version="[${version.osgimin.org.osgi.framework},${version.osgimax.org.osgi.framework})",
+                            org.osgi.util.tracker;version="[${version.osgimin.org.osgi.util.tracker},${version.osgimax.org.osgi.util.tracker})",
                             org.primefaces;version="${version.org.primefaces.primefaces}",
                             org.primefaces.application;version="${version.org.primefaces.primefaces}",
                             org.primefaces.component.accordionpanel;version="${version.org.primefaces.primefaces}",
@@ -387,7 +380,7 @@
                             org.primefaces.visit;version="${version.org.primefaces.primefaces}",
                             org.primefaces.webapp;version="${version.org.primefaces.primefaces}",
                             org.primefaces.webapp.filter;version="${version.org.primefaces.primefaces}",
-                            com.sun.el;version="${version.org.glassfish.web.el-impl}"
+                            org.slf4j;version="${version.org.slf4j}"
                         </Import-Package>
                         <Export-Package/>
                     </instructions>

@@ -18,12 +18,12 @@
  */
 package com.spectral.cc.core.directory.main.controller.technical.system.OSType;
 
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.main.controller.organisational.company.CompanysListController;
 import com.spectral.cc.core.directory.main.controller.technical.system.OSInstance.OSInstancesListController;
-import com.spectral.cc.core.directory.main.model.organisational.Company;
-import com.spectral.cc.core.directory.main.model.technical.system.OSInstance;
-import com.spectral.cc.core.directory.main.model.technical.system.OSType;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.model.organisational.Company;
+import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
+import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ public class OSTypesListController implements Serializable {
 
     @PostConstruct
     private void init() {
-        lazyModel = new OSTypeLazyModel().setEntityManager(TXPersistenceConsumer.getSharedEM());
+        lazyModel = new OSTypeLazyModel().setEntityManager(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM());
     }
 
     /*
@@ -158,23 +158,24 @@ public class OSTypesListController implements Serializable {
 
     public void update(OSType osType) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
             if (osType.getCompany()!=rollback.get(osType.getId()).getCompany()) {
                 if (rollback.get(osType.getId()).getCompany()!=null) {
                     rollback.get(osType.getId()).getCompany().getOsTypes().remove(osType);
-                    TXPersistenceConsumer.getSharedEM().merge(rollback.get(osType.getId()).getCompany());
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(rollback.get(osType.getId()).getCompany());
                 }
                 if (osType.getCompany()!=null) {
                     osType.getCompany().getOsTypes().add(osType);
-                    TXPersistenceConsumer.getSharedEM().merge(osType.getCompany());
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osType.getCompany());
                 }
             }
-            TXPersistenceConsumer.getSharedEM().merge(osType);
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osType);
             for (OSInstance osInstance : rollback.get(osType.getId()).getOsInstances()) {
                 if (!osType.getOsInstances().contains(osInstance)) {
                     osInstance.setOsType(null);
-                    TXPersistenceConsumer.getSharedEM().merge(osInstance);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
                 }
             }
             for (OSInstance osInstance : osType.getOsInstances()) {
@@ -182,13 +183,14 @@ public class OSTypesListController implements Serializable {
                     OSType previousOSType = osInstance.getOsType();
                     if (previousOSType!=null && previousOSType.getName()!=osType.getName()) {
                         previousOSType.getOsInstances().remove(osInstance);
-                        TXPersistenceConsumer.getSharedEM().merge(previousOSType);
+                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(previousOSType);
                     }
                     osInstance.setOsType(osType);
-                    TXPersistenceConsumer.getSharedEM().merge(osInstance);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
                 }
             }
-            TXPersistenceConsumer.getSharedUX().commit();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             rollback.put(osType.getId(), osType);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "OS Type updated successfully !",
@@ -201,9 +203,11 @@ public class OSTypesListController implements Serializable {
                                                        "Throwable raised while updeting OS Type " + rollback.get(osType.getId()).getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-
+            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+/*
             FacesMessage msg2;
-            int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+            int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
             switch(txStatus) {
                 case Status.STATUS_NO_TRANSACTION:
                     msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -213,7 +217,7 @@ public class OSTypesListController implements Serializable {
                 case Status.STATUS_MARKED_ROLLBACK:
                     try {
                         log.debug("Rollback operation !");
-                        TXPersistenceConsumer.getSharedUX().rollback();
+                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                        "Operation rollbacked !",
                                                        "Operation : OS Type " + rollback.get(osType.getId()) + " update.");
@@ -232,6 +236,7 @@ public class OSTypesListController implements Serializable {
                     break;
             }
             FacesContext.getCurrentInstance().addMessage(null, msg2);
+*/
         }
     }
 
@@ -242,10 +247,12 @@ public class OSTypesListController implements Serializable {
         log.debug("Remove selected OS Type !");
         for (OSType osType: selectedOSTypeList) {
             try {
-                TXPersistenceConsumer.getSharedUX().begin();
-                TXPersistenceConsumer.getSharedEM().joinTransaction();
-                TXPersistenceConsumer.getSharedEM().remove(osType);
-                TXPersistenceConsumer.getSharedUX().commit();
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().remove(osType);
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "OS Type deleted successfully !",
                                                            "OS Type name : " + osType.getName());
@@ -257,10 +264,12 @@ public class OSTypesListController implements Serializable {
                                                            "Throwable raised while creating OS Type " + osType.getName() + " !",
                                                            "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-
+                if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+/*
                 try {
                     FacesMessage msg2;
-                    int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                    int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                     switch(txStatus) {
                         case Status.STATUS_NO_TRANSACTION:
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -270,7 +279,7 @@ public class OSTypesListController implements Serializable {
                         case Status.STATUS_MARKED_ROLLBACK:
                             try {
                                 log.debug("Rollback operation !");
-                                TXPersistenceConsumer.getSharedUX().rollback();
+                                JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                                 msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                                "Operation rollbacked !",
                                                                "Operation : OS Type " + osType.getName() + " deletion.");
@@ -293,6 +302,7 @@ public class OSTypesListController implements Serializable {
                 } catch (SystemException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
+*/
             }
         }
         selectedOSTypeList=null;
@@ -302,20 +312,20 @@ public class OSTypesListController implements Serializable {
      * OSType join tool
      */
     public static List<OSType> getAll() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder = TXPersistenceConsumer.getSharedEM().getCriteriaBuilder();
+        CriteriaBuilder builder = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
         CriteriaQuery<OSType> criteria = builder.createQuery(OSType.class);
         Root<OSType> root = criteria.from(OSType.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        return TXPersistenceConsumer.getSharedEM().createQuery(criteria).getResultList();
+        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
     }
 
     public static List<OSType> getAllForSelector() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder  = TXPersistenceConsumer.getSharedEM().getCriteriaBuilder();
+        CriteriaBuilder builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
         CriteriaQuery<OSType> criteria = builder.createQuery(OSType.class);
         Root<OSType> root = criteria.from(OSType.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        List<OSType> list =  TXPersistenceConsumer.getSharedEM().createQuery(criteria).getResultList();
+        List<OSType> list =  JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
         list.add(0, new OSType().setNameR("Select OS Type for this OS Instance"));
         return list;
     }

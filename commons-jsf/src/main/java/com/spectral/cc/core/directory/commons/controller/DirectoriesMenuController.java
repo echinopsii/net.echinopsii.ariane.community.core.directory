@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.commons.controller;
 
-import com.spectral.cc.core.directory.commons.consumer.RootDirectoryRegistryConsumer;
+import com.spectral.cc.core.directory.commons.consumer.RootDirectoryRegistryServiceConsumer;
 import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
 import com.spectral.cc.core.portal.commons.model.MenuEntityType;
 import org.primefaces.component.menuitem.MenuItem;
@@ -82,8 +82,8 @@ public class DirectoriesMenuController {
 
     public MenuModel getModel() {
         log.debug("Get Menu Model...");
-        if (RootDirectoryRegistryConsumer.getInstance()!=null) {
-            for (DirectoryEntity entity : RootDirectoryRegistryConsumer.getInstance().getRootDirectoryRegistry().getRootDirectoryEntities()) {
+        if (RootDirectoryRegistryServiceConsumer.getInstance()!=null) {
+            for (DirectoryEntity entity : RootDirectoryRegistryServiceConsumer.getInstance().getRootDirectoryRegistry().getRootDirectoryEntities()) {
                 switch (entity.getType()) {
                     case MenuEntityType.TYPE_MENU_ITEM:
                         MenuItem item = createMenuItemFromEntity(entity);

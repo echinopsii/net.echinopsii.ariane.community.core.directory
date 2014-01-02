@@ -19,10 +19,10 @@
 
 package com.spectral.cc.core.directory.main.controller.technical.network.multicastArea;
 
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.main.controller.technical.network.datacenter.DatacentersListController;
-import com.spectral.cc.core.directory.main.model.technical.network.Datacenter;
-import com.spectral.cc.core.directory.main.model.technical.network.MulticastArea;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
+import com.spectral.cc.core.directory.commons.model.technical.network.MulticastArea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,13 +110,15 @@ public class MulticastAreaNewController implements Serializable {
         multicastArea.setDescription(description);
         multicastArea.setDatacenters(datacenters);
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
-            TXPersistenceConsumer.getSharedEM().persist(multicastArea);
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(multicastArea);
             for (Datacenter dc : multicastArea.getDatacenters()) {
-                dc.getMulticastAreas().add(multicastArea); TXPersistenceConsumer.getSharedEM().merge(dc);
+                dc.getMulticastAreas().add(multicastArea); JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
             }
-            TXPersistenceConsumer.getSharedUX().commit();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Multicast area created successfully !",
                                                        "Multicast area name : " + multicastArea.getName());
@@ -129,8 +131,9 @@ public class MulticastAreaNewController implements Serializable {
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
 
+            /*
             FacesMessage msg2;
-            int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+            int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
             switch(txStatus) {
                 case Status.STATUS_NO_TRANSACTION:
                     msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -140,7 +143,7 @@ public class MulticastAreaNewController implements Serializable {
                 case Status.STATUS_MARKED_ROLLBACK:
                     try {
                         log.debug("Rollback operation !");
-                        TXPersistenceConsumer.getSharedUX().rollback();
+                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                                     "Operation rollbacked !",
                                                                     "Operation : multicast area " + multicastArea.getName() + " creation.");
@@ -160,6 +163,7 @@ public class MulticastAreaNewController implements Serializable {
                     break;
             }
             FacesContext.getCurrentInstance().addMessage(null, msg2);
+            */
         }
     }
 }

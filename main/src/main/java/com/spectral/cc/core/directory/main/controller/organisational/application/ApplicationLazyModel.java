@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.main.controller.organisational.application;
 
-import com.spectral.cc.core.directory.main.model.organisational.Application;
+import com.spectral.cc.core.directory.commons.model.organisational.Application;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;

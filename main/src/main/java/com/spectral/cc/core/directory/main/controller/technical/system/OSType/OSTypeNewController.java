@@ -19,10 +19,10 @@
 
 package com.spectral.cc.core.directory.main.controller.technical.system.OSType;
 
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.main.controller.organisational.company.CompanysListController;
-import com.spectral.cc.core.directory.main.model.organisational.Company;
-import com.spectral.cc.core.directory.main.model.technical.system.OSType;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.model.organisational.Company;
+import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.transaction.NotSupportedException;
-import javax.transaction.Status;
 import javax.transaction.SystemException;
 import java.io.Serializable;
 
@@ -104,11 +103,13 @@ public class OSTypeNewController implements Serializable {
         }
         OSType osType = new OSType().setNameR(name).setArchitectureR(architecture).setCompanyR(company);
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
             if (this.company!=null) {this.company.getOsTypes().add(osType);}
-            TXPersistenceConsumer.getSharedEM().persist(osType);
-            TXPersistenceConsumer.getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(osType);
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "OS type created successfully !",
                                                        "OS type name : " + osType.getName());
@@ -120,10 +121,12 @@ public class OSTypeNewController implements Serializable {
                                                        "Throwable raised while creating OS type " + osType.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-
+            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+/*
             try {
                 FacesMessage msg2;
-                int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                 switch(txStatus) {
                     case Status.STATUS_NO_TRANSACTION:
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -133,7 +136,7 @@ public class OSTypeNewController implements Serializable {
                     case Status.STATUS_MARKED_ROLLBACK:
                         try {
                             log.debug("Rollback operation !");
-                            TXPersistenceConsumer.getSharedUX().rollback();
+                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                            "Operation rollbacked !",
                                                            "Operation : OS type " + osType.getName() + " creation.");
@@ -156,6 +159,7 @@ public class OSTypeNewController implements Serializable {
             } catch (SystemException e) {
                 e.printStackTrace();
             }
+*/
         }
     }
 }

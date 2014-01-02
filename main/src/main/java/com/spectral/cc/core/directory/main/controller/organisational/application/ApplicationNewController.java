@@ -19,12 +19,12 @@
 
 package com.spectral.cc.core.directory.main.controller.organisational.application;
 
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.main.controller.organisational.company.CompanysListController;
 import com.spectral.cc.core.directory.main.controller.organisational.team.TeamsListController;
-import com.spectral.cc.core.directory.main.model.organisational.Application;
-import com.spectral.cc.core.directory.main.model.organisational.Company;
-import com.spectral.cc.core.directory.main.model.organisational.Team;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.model.organisational.Application;
+import com.spectral.cc.core.directory.commons.model.organisational.Company;
+import com.spectral.cc.core.directory.commons.model.organisational.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.transaction.NotSupportedException;
-import javax.transaction.Status;
 import javax.transaction.SystemException;
 import java.io.Serializable;
 
@@ -153,12 +152,13 @@ public class ApplicationNewController implements Serializable{
         Application application = new Application().setNameR(name).setShortNameR(shortName).setColorCodeR(colorCode).setDescriptionR(description).
                                                     setCompanyR(company).setTeamR(team);
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
-            TXPersistenceConsumer.getSharedEM().persist(application);
-            if (this.company!=null) {this.company.getApplications().add(application); TXPersistenceConsumer.getSharedEM().merge(this.company);}
-            if (this.team!=null) {this.team.getApplications().add(application); TXPersistenceConsumer.getSharedEM().merge(this.team);}
-            TXPersistenceConsumer.getSharedUX().commit();
+            //JPAProviderConsumer.getSharedUX().begin();
+            //JPAProviderConsumer.getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(application);
+            if (this.company!=null) {this.company.getApplications().add(application); JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(this.company);}
+            if (this.team!=null) {this.team.getApplications().add(application); JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(this.team);}
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Application created successfully !",
                                                        "Application name : " + application.getName());
@@ -170,10 +170,13 @@ public class ApplicationNewController implements Serializable{
                                                        "Throwable raised while creating Application " + application.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
 
+            /*
             try {
                 FacesMessage msg2;
-                int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                 switch(txStatus) {
                     case Status.STATUS_NO_TRANSACTION:
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -183,7 +186,7 @@ public class ApplicationNewController implements Serializable{
                     case Status.STATUS_MARKED_ROLLBACK:
                         try {
                             log.debug("Rollback operation !");
-                            TXPersistenceConsumer.getSharedUX().rollback();
+                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                            "Operation rollbacked !",
                                                            "Operation : Application " + application.getName() + " creation.");
@@ -206,6 +209,7 @@ public class ApplicationNewController implements Serializable{
             } catch (SystemException e) {
                 e.printStackTrace();
             }
+            */
         }
     }
 }

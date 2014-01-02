@@ -20,7 +20,7 @@
 
 package com.spectral.cc.core.directory.main.runtime;
 
-import com.spectral.cc.core.directory.commons.consumer.RootDirectoryRegistryConsumer;
+import com.spectral.cc.core.directory.commons.consumer.RootDirectoryRegistryServiceConsumer;
 import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
 import com.spectral.cc.core.portal.commons.consumer.MainMenuRegistryConsumer;
 import com.spectral.cc.core.portal.commons.model.MainMenuEntity;
@@ -42,7 +42,6 @@ public class OsgiActivator implements BundleActivator {
     @Override
     public void start(BundleContext context) {
        new Thread(new Registrator()).start();
-       new Thread(new TXPersistenceConsumer().setContext(context)).start();
        log.debug("{} is started.", new Object[]{DIRECTORY_SERVICE_NAME});
     }
 
@@ -54,14 +53,12 @@ public class OsgiActivator implements BundleActivator {
             }
         }
         directoryMainMenuEntityList.clear();
-        if (RootDirectoryRegistryConsumer.getInstance().getRootDirectoryRegistry()!=null) {
+        if (RootDirectoryRegistryServiceConsumer.getInstance().getRootDirectoryRegistry()!=null) {
             for(DirectoryEntity entity : directoryTreeEntityList) {
-                RootDirectoryRegistryConsumer.getInstance().getRootDirectoryRegistry().unregisterRootDirectoryEntity(entity);
+                RootDirectoryRegistryServiceConsumer.getInstance().getRootDirectoryRegistry().unregisterRootDirectoryEntity(entity);
             }
         }
         directoryTreeEntityList.clear();
-
-        TXPersistenceConsumer.close();
 
         log.debug("{} is stopped.", new Object[]{DIRECTORY_SERVICE_NAME});
     }

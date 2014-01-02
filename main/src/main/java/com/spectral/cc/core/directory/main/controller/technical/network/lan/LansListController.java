@@ -18,15 +18,15 @@
  */
 package com.spectral.cc.core.directory.main.controller.technical.network.lan;
 
+import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.main.controller.technical.network.datacenter.DatacentersListController;
 import com.spectral.cc.core.directory.main.controller.technical.network.multicastArea.MulticastAreasListController;
 import com.spectral.cc.core.directory.main.controller.technical.system.OSInstance.OSInstancesListController;
-import com.spectral.cc.core.directory.main.model.technical.network.Datacenter;
-import com.spectral.cc.core.directory.main.model.technical.network.Lan;
-import com.spectral.cc.core.directory.main.model.technical.network.LanType;
-import com.spectral.cc.core.directory.main.model.technical.network.MulticastArea;
-import com.spectral.cc.core.directory.main.model.technical.system.OSInstance;
-import com.spectral.cc.core.directory.main.runtime.TXPersistenceConsumer;
+import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
+import com.spectral.cc.core.directory.commons.model.technical.network.Lan;
+import com.spectral.cc.core.directory.commons.model.technical.network.LanType;
+import com.spectral.cc.core.directory.commons.model.technical.network.MulticastArea;
+import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public class LansListController implements Serializable {
 
     @PostConstruct
     private void init() {
-        lazyModel = new LanLazyModel().setEntityManager(TXPersistenceConsumer.getSharedEM());
+        lazyModel = new LanLazyModel().setEntityManager(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM());
     }
 
     /*
@@ -219,16 +219,17 @@ public class LansListController implements Serializable {
 
     public void update(Lan lan) {
         try {
-            TXPersistenceConsumer.getSharedUX().begin();
-            TXPersistenceConsumer.getSharedEM().joinTransaction();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
             if (lan.getType()!=rollback.get(lan.getId()).getType()) {
                 if (rollback.get(lan.getId()).getType()!=null) {
                     rollback.get(lan.getId()).getType().getLans().remove(lan);
-                    TXPersistenceConsumer.getSharedEM().merge(rollback.get(lan.getId()).getType());
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(rollback.get(lan.getId()).getType());
                 }
                 if (lan.getType()!=null) {
                     lan.getType().getLans().add(lan);
-                    TXPersistenceConsumer.getSharedEM().merge(lan.getType());
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan.getType());
                 }
             }
             if (lan.getMarea()!=rollback.get(lan.getId()).getMarea()) {
@@ -236,36 +237,37 @@ public class LansListController implements Serializable {
                     rollback.get(lan.getId()).getMarea().getLans().remove(lan);
                 if (lan.getMarea()!=null) {
                     lan.getMarea().getLans().add(lan);
-                    TXPersistenceConsumer.getSharedEM().merge(lan.getMarea());
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan.getMarea());
 
                 }
             }
-            TXPersistenceConsumer.getSharedEM().merge(lan);
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan);
             for (Datacenter dc: lan.getDatacenters()) {
                 if (!rollback.get(lan.getId()).getDatacenters().contains(dc)) {
                     dc.getLans().add(lan);
-                    TXPersistenceConsumer.getSharedEM().merge(dc);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
                 }
             }
             for (Datacenter dc: rollback.get(lan.getId()).getDatacenters()) {
                 if (!lan.getDatacenters().contains(dc)) {
                     dc.getLans().remove(lan);
-                    TXPersistenceConsumer.getSharedEM().merge(dc);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
                 }
             }
             for (OSInstance osInstance: lan.getOsInstances()) {
                 if (!rollback.get(lan.getId()).getOsInstances().contains(osInstance)) {
                     osInstance.getNetworkLans().add(lan);
-                    TXPersistenceConsumer.getSharedEM().merge(osInstance);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
                 }
             }
             for (OSInstance osInstance: rollback.get(lan.getId()).getOsInstances()) {
                 if (!lan.getOsInstances().contains(osInstance)) {
                     osInstance.getNetworkLans().remove(lan);
-                    TXPersistenceConsumer.getSharedEM().merge(osInstance);
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
                 }
             }
-            TXPersistenceConsumer.getSharedUX().commit();
+            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
             rollback.put(lan.getId(), lan);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Lan updated successfully !",
@@ -278,10 +280,13 @@ public class LansListController implements Serializable {
                                                        "Throwable raised while updating lan " + rollback.get(lan.getId()).getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
 
+/*
             try {
                 FacesMessage msg2;
-                int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                 switch(txStatus) {
                     case Status.STATUS_NO_TRANSACTION:
                         msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -291,7 +296,7 @@ public class LansListController implements Serializable {
                     case Status.STATUS_MARKED_ROLLBACK:
                         try {
                             log.debug("Rollback operation !");
-                            TXPersistenceConsumer.getSharedUX().rollback();
+                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                                         "Operation rollbacked !",
                                                                         "Operation : lan " + rollback.get(lan.getId()).getName() + " update.");
@@ -314,6 +319,7 @@ public class LansListController implements Serializable {
             } catch (SystemException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
+*/
         }
     }
 
@@ -324,24 +330,26 @@ public class LansListController implements Serializable {
         log.debug("Remove selected Lan !");
         for (Lan lan2BeRemoved: selectedLanList) {
             try {
-                TXPersistenceConsumer.getSharedUX().begin();
-                TXPersistenceConsumer.getSharedEM().joinTransaction();
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
                 if (lan2BeRemoved.getType()!=null) {
                     lan2BeRemoved.getType().getLans().remove(lan2BeRemoved);
-                    TXPersistenceConsumer.getSharedEM().merge(lan2BeRemoved.getType());
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan2BeRemoved.getType());
                 }
                 if (lan2BeRemoved.getMarea()!=null) {
                     lan2BeRemoved.getMarea().getLans().remove(lan2BeRemoved);
-                    TXPersistenceConsumer.getSharedEM().merge(lan2BeRemoved.getMarea());
+                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(lan2BeRemoved.getMarea());
                 }
                 if (lan2BeRemoved.getDatacenters().size()!=0) {
                     for (Datacenter dc : lan2BeRemoved.getDatacenters()) {
                         dc.getLans().remove(lan2BeRemoved);
-                        TXPersistenceConsumer.getSharedEM().merge(dc);
+                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
                     }
                 }
-                TXPersistenceConsumer.getSharedEM().remove(lan2BeRemoved);
-                TXPersistenceConsumer.getSharedUX().commit();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().remove(lan2BeRemoved);
+                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
+                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "Lan deleted successfully !",
                                                            "Lan name : " + lan2BeRemoved.getName());
@@ -353,10 +361,10 @@ public class LansListController implements Serializable {
                                                            "Throwable raised while deleting lan " + lan2BeRemoved.getName() + " !",
                                                            "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-
+/*
                 try {
                     FacesMessage msg2;
-                    int txStatus = TXPersistenceConsumer.getSharedUX().getStatus();
+                    int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
                     switch(txStatus) {
                         case Status.STATUS_NO_TRANSACTION:
                             msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -366,7 +374,7 @@ public class LansListController implements Serializable {
                         case Status.STATUS_MARKED_ROLLBACK:
                             try {
                                 log.debug("Rollback operation !");
-                                TXPersistenceConsumer.getSharedUX().rollback();
+                                JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
                                 msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
                                                                             "Operation rollbacked !",
                                                                             "Operation : lan " + lan2BeRemoved.getName() + " deletion.");
@@ -389,6 +397,7 @@ public class LansListController implements Serializable {
                 } catch (SystemException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
+*/
             }
         }
         selectedLanList=null;
@@ -398,28 +407,28 @@ public class LansListController implements Serializable {
      * Lan join tools
      */
     public static List<LanType> getAllLanTypes() throws SystemException, NotSupportedException {
-        CriteriaBuilder        builder  = TXPersistenceConsumer.getSharedEM().getCriteriaBuilder();
+        CriteriaBuilder        builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
         CriteriaQuery<LanType> criteria = builder.createQuery(LanType.class);
         Root<LanType>       root     = criteria.from(LanType.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        return TXPersistenceConsumer.getSharedEM().createQuery(criteria).getResultList();
+        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
     }
 
     public static List<LanType> getAllLanTypesForSelector() throws SystemException, NotSupportedException {
-        CriteriaBuilder        builder  = TXPersistenceConsumer.getSharedEM().getCriteriaBuilder();
+        CriteriaBuilder        builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
         CriteriaQuery<LanType> criteria = builder.createQuery(LanType.class);
         Root<LanType>       root     = criteria.from(LanType.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        List<LanType> list = TXPersistenceConsumer.getSharedEM().createQuery(criteria).getResultList();
+        List<LanType> list = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
         list.add(0,new LanType().setNameR("Select the lan type"));
         return list;
     }
 
     public static List<Lan> getAll() {
-        CriteriaBuilder        builder  = TXPersistenceConsumer.getSharedEM().getCriteriaBuilder();
+        CriteriaBuilder        builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
         CriteriaQuery<Lan> criteria = builder.createQuery(Lan.class);
         Root<Lan>       root     = criteria.from(Lan.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        return TXPersistenceConsumer.getSharedEM().createQuery(criteria).getResultList();
+        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
     }
 }
