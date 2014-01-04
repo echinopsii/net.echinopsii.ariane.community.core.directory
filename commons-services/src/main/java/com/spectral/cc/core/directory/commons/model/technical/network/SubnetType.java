@@ -1,6 +1,6 @@
 /**
  * Directory Main bundle
- * Directories MulticastArea Entity
+ * Directories SubnetType Entity
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,9 +27,8 @@ import java.util.Set;
 
 @Entity
 @XmlRootElement
-@Table(name="multicastArea",uniqueConstraints = @UniqueConstraint(columnNames = {"mareaName"}))
-public class MulticastArea implements Serializable
-{
+@Table(name="subnetType",uniqueConstraints = @UniqueConstraint(columnNames = {"subnetTypeName"}))
+public class SubnetType implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -39,18 +38,15 @@ public class MulticastArea implements Serializable
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="mareaName",unique=true)
+    @Column(name="subnetTypeName",unique=true)
     @NotNull
     private String name;
 
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "marea", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
     private Set<Subnet> subnets = new HashSet<Subnet>();
-
-    @ManyToMany(mappedBy = "multicastAreas")
-    private Set<Datacenter> datacenters = new HashSet<Datacenter>();
 
     public Long getId() {
         return this.id;
@@ -60,7 +56,7 @@ public class MulticastArea implements Serializable
         this.id = id;
     }
 
-    public MulticastArea setIdR(final Long id) {
+    public SubnetType setIdR(final Long id) {
         this.id = id;
         return this;
     }
@@ -73,14 +69,13 @@ public class MulticastArea implements Serializable
         this.version = version;
     }
 
-    public MulticastArea setVersionR(final int version) {
-        this.version = version ;
+    public SubnetType setVersionR(final int version) {
+        this.version = version;
         return this;
     }
 
     @Override
-    public boolean equals(Object that)
-    {
+    public boolean equals(Object that) {
         if (this == that) {
             return true;
         }
@@ -91,7 +86,7 @@ public class MulticastArea implements Serializable
             return false;
         }
         if (id != null) {
-            return id.equals(((MulticastArea) that).id);
+            return id.equals(((SubnetType) that).id);
         }
         return super.equals(that);
     }
@@ -112,20 +107,20 @@ public class MulticastArea implements Serializable
         this.name = name;
     }
 
-    public MulticastArea setNameR(final String name) {
+    public SubnetType setNameR(final String name) {
         this.name = name;
         return this;
     }
 
     public String getDescription() {
-        return this.description;
+        return description;
     }
 
-    public void setDescription(final String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public MulticastArea setDescriptionR(final String description) {
+    public SubnetType setDescriptionR(String description) {
         this.description = description;
         return this;
     }
@@ -135,8 +130,6 @@ public class MulticastArea implements Serializable
         String result = getClass().getSimpleName() + " ";
         if (name != null && !name.trim().isEmpty())
             result += "name: " + name;
-        if (description != null && !description.trim().isEmpty())
-            result += ", description: " + description;
         return result;
     }
 
@@ -148,26 +141,13 @@ public class MulticastArea implements Serializable
         this.subnets = subnets;
     }
 
-    public MulticastArea setSubnetsR(final Set<Subnet> subnets) {
+    public SubnetType setSubnetsR(final Set<Subnet> subnets) {
         this.subnets = subnets;
         return this;
     }
 
-    public Set<Datacenter> getDatacenters() {
-        return this.datacenters;
-    }
-
-    public void setDatacenters(final Set<Datacenter> datacenters) {
-        this.datacenters = datacenters;
-    }
-
-    public MulticastArea setDatacentersR(final Set<Datacenter> datacenters) {
-        this.datacenters = datacenters;
-        return this;
-    }
-
-    public MulticastArea clone() {
-        return new MulticastArea().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).
-                                   setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setSubnetsR(new HashSet<Subnet>(this.subnets));
+    @Override
+    public SubnetType clone () {
+        return new SubnetType().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setSubnetsR(new HashSet<Subnet>(this.subnets));
     }
 }

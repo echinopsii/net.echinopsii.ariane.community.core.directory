@@ -47,7 +47,7 @@ public class MulticastAreaEndpoint
    @Produces("application/json")
    public Response findById(@PathParam("id") Long id)
    {
-      TypedQuery<MulticastArea> findByIdQuery = em.createQuery("SELECT DISTINCT m FROM MulticastArea m LEFT JOIN FETCH m.lans LEFT JOIN FETCH m.datacenters WHERE m.id = :entityId ORDER BY m.id", MulticastArea.class);
+      TypedQuery<MulticastArea> findByIdQuery = em.createQuery("SELECT DISTINCT m FROM MulticastArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters WHERE m.id = :entityId ORDER BY m.id", MulticastArea.class);
       findByIdQuery.setParameter("entityId", id);
       MulticastArea entity;
       try
@@ -69,7 +69,7 @@ public class MulticastAreaEndpoint
    @Produces("application/json")
    public List<MulticastArea> listAll()
    {
-      final List<MulticastArea> results = em.createQuery("SELECT DISTINCT m FROM MulticastArea m LEFT JOIN FETCH m.lans LEFT JOIN FETCH m.datacenters ORDER BY m.id", MulticastArea.class).getResultList();
+      final List<MulticastArea> results = em.createQuery("SELECT DISTINCT m FROM MulticastArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters ORDER BY m.id", MulticastArea.class).getResultList();
       return results;
    }
 

@@ -79,33 +79,33 @@
                             </p:dataTable>
                         </h:form>
 
-                        <h:outputText value="LANs : " styleClass="inputTitle"/>
+                        <h:outputText value="Subnets : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{forgeview:asList(marea.lans)}" var="lan" styleClass="ui-widget-content grid" rowKey="#{lan.id}"
-                                         rows="5" paginator="true" selection="#{multicastAreasListController.removedLANs[marea.id]}" selectionMode="multiple">
-                                <p:column headerText="Name" sortBy="#{lan.name}" filterBy="#{lan.name}">
-                                    <h:outputText id="lanName" value="#{lan.name}"/>
+                            <p:dataTable value="#{forgeview:asList(marea.subnets)}" var="subnet" styleClass="ui-widget-content grid" rowKey="#{subnet.id}"
+                                         rows="5" paginator="true" selection="#{multicastAreasListController.removedSubnets[marea.id]}" selectionMode="multiple">
+                                <p:column headerText="Name" sortBy="#{subnet.name}" filterBy="#{subnet.name}">
+                                    <h:outputText id="subnetName" value="#{subnet.name}"/>
                                 </p:column>
-                                <p:column headerText="Description" sortBy="#{lan.description}" filterBy="#{lan.description}">
-                                    <h:outputText id="lanDescription" value="#{lan.description}"/>
+                                <p:column headerText="Description" sortBy="#{subnet.description}" filterBy="#{subnet.description}">
+                                    <h:outputText id="subnetDescription" value="#{subnet.description}"/>
                                 </p:column>
-                                <p:column headerText="Subnet IP" sortBy="#{lan.subnetIP}" filterBy="#{lan.subnetIP}">
-                                    <h:outputText id="lanSubnetIP" value="#{lan.subnetIP}"/>
+                                <p:column headerText="Subnet IP" sortBy="#{subnet.subnetIP}" filterBy="#{subnet.subnetIP}">
+                                    <h:outputText id="subnetSubnetIP" value="#{subnet.subnetIP}"/>
                                 </p:column>
-                                <p:column headerText="Subnet Mask" sortBy="#{lan.subnetMask}" filterBy="#{lan.subnetMask}">
-                                    <h:outputText id="lanCountry" value="#{lan.subnetMask}"/>
+                                <p:column headerText="Subnet Mask" sortBy="#{subnet.subnetMask}" filterBy="#{subnet.subnetMask}">
+                                    <h:outputText id="subnetCountry" value="#{subnet.subnetMask}"/>
                                 </p:column>
                                 <f:facet name="footer">
-                                    <p:inplace label="Select lan to bind" effectSpeed="fast" editor="true">
-                                        <h:selectOneMenu value="#{multicastAreasListController.addedLAN[marea.id]}">
-                                            <f:selectItems value="#{lansListController.getAll()}" var="lan_"
-                                                           itemLabel="#{lan_.name}" itemValue="#{lan_.name}"/>
+                                    <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{multicastAreasListController.addedSubnet[marea.id]}">
+                                            <f:selectItems value="#{subnetsListController.getAll()}" var="subnet_"
+                                                           itemLabel="#{subnet_.name}" itemValue="#{subnet_.name}"/>
                                         </h:selectOneMenu>
-                                        <p:ajax event="save" listener="#{multicastAreasListController.syncAddedLan(marea)}"
+                                        <p:ajax event="save" listener="#{multicastAreasListController.syncAddedSubnet(marea)}"
                                                 update="@form"/>
                                     </p:inplace>
-                                    <p:commandButton value="Unbind selected lan" icon="ui-icon-closethick"
-                                                     process="@form" actionListener="#{multicastAreasListController.syncRemovedLans(marea)}"
+                                    <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{multicastAreasListController.syncRemovedSubnets(marea)}"
                                                      update="@form"/>
                                 </f:facet>
                             </p:dataTable>
@@ -155,8 +155,8 @@
                             </p:column>
                         </p:dataTable>
 
-                        <h:outputText value="Lans : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{forgeview:asList(selectedMarea.lans)}" var="_item"
+                        <h:outputText value="Subnets : " styleClass="inputTitle"/>
+                        <p:dataTable  value="#{forgeview:asList(selectedMarea.subnets)}" var="_item"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{_item.name}"/>

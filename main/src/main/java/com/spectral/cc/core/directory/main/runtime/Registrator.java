@@ -103,9 +103,9 @@ public class Registrator implements Runnable {
                      addChildDirectory(new DirectoryEntity().setId("datacenterDirID").setValue("Datacenter").setParentDirectory(networkDirectoryEntity).setIcon("icon-building").
                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/datacenter.jsf").
                                                              setDescription("Your datacenters definitions")).
-                     addChildDirectory(new DirectoryEntity().setId("lanDirID").setValue("Lan").setParentDirectory(networkDirectoryEntity).setIcon("icon-road").
-                                                             setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/lan.jsf").
-                                                             setDescription("Your LANs definitions")).
+                     addChildDirectory(new DirectoryEntity().setId("subnetDirID").setValue("Subnet").setParentDirectory(networkDirectoryEntity).setIcon("icon-road").
+                                                             setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/subnet.jsf").
+                                                             setDescription("Your subnets definitions")).
                      addChildDirectory(new DirectoryEntity().setId("multicastAreaDirID").setValue("Multicast area").setParentDirectory(networkDirectoryEntity).setIcon("icon-asterisk").
                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/multicastArea.jsf").
                                                              setDescription("Your multicast areas definitions"));

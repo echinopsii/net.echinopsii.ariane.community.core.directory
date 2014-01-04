@@ -4,8 +4,8 @@
              version="1.0">
     <persistence-unit name="cc-directory">
         <class>com.spectral.cc.core.directory.commons.model.technical.network.Datacenter</class>
-        <class>com.spectral.cc.core.directory.commons.model.technical.network.Lan</class>
-        <class>com.spectral.cc.core.directory.commons.model.technical.network.LanType</class>
+        <class>com.spectral.cc.core.directory.commons.model.technical.network.Subnet</class>
+        <class>com.spectral.cc.core.directory.commons.model.technical.network.SubnetType</class>
         <class>com.spectral.cc.core.directory.commons.model.technical.network.MulticastArea</class>
         <class>com.spectral.cc.core.directory.commons.model.technical.system.OSInstance</class>
         <class>com.spectral.cc.core.directory.commons.model.technical.system.OSType</class>
@@ -16,6 +16,7 @@
         <class>com.spectral.cc.core.directory.commons.model.organisational.Team</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <!--
         <properties>
             <property name="hibernate.connection.driver_class" value="org.h2.Driver"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
@@ -24,6 +25,6 @@
             <property name="hibernate.connection.password" value=""/>
             <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
         </properties>
-
+        -->
     </persistence-unit>
 </persistence>

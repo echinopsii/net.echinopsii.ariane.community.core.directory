@@ -1,6 +1,6 @@
 package com.spectral.cc.core.directory.main.rest;
 
-import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
+import com.spectral.cc.core.directory.commons.model.technical.network.Subnet;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -15,25 +15,25 @@ import java.util.List;
 /**
  * 
  */
-@Path("/datacenters")
-public class DatacenterEndpoint
+@Path("/subnets")
+public class SubnetEndpoint
 {
    @PersistenceContext(unitName = "cc-directory")
    private EntityManager em;
 
    @POST
    @Consumes("application/json")
-   public Response create(Datacenter entity)
+   public Response create(Subnet entity)
    {
       em.persist(entity);
-      return Response.created(UriBuilder.fromResource(DatacenterEndpoint.class).path(String.valueOf(entity.getId())).build()).build();
+      return Response.created(UriBuilder.fromResource(SubnetEndpoint.class).path(String.valueOf(entity.getId())).build()).build();
    }
 
    @DELETE
    @Path("/{id:[0-9][0-9]*}")
    public Response deleteById(@PathParam("id") Long id)
    {
-      Datacenter entity = em.find(Datacenter.class, id);
+      Subnet entity = em.find(Subnet.class, id);
       if (entity == null)
       {
          return Response.status(Status.NOT_FOUND).build();
@@ -47,9 +47,9 @@ public class DatacenterEndpoint
    @Produces("application/json")
    public Response findById(@PathParam("id") Long id)
    {
-      TypedQuery<Datacenter> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.multicastAreas WHERE d.id = :entityId ORDER BY d.id", Datacenter.class);
+      TypedQuery<Subnet> findByIdQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.type LEFT JOIN FETCH l.marea WHERE l.id = :entityId ORDER BY l.id", Subnet.class);
       findByIdQuery.setParameter("entityId", id);
-      Datacenter entity;
+      Subnet entity;
       try
       {
          entity = findByIdQuery.getSingleResult();
@@ -67,16 +67,16 @@ public class DatacenterEndpoint
 
    @GET
    @Produces("application/json")
-   public List<Datacenter> listAll()
+   public List<Subnet> listAll()
    {
-      final List<Datacenter> results = em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.multicastAreas ORDER BY d.id", Datacenter.class).getResultList();
+      final List<Subnet> results = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.type LEFT JOIN FETCH l.marea ORDER BY l.id", Subnet.class).getResultList();
       return results;
    }
 
    @PUT
    @Path("/{id:[0-9][0-9]*}")
    @Consumes("application/json")
-   public Response update(Datacenter entity)
+   public Response update(Subnet entity)
    {
       entity = em.merge(entity);
       return Response.noContent().build();

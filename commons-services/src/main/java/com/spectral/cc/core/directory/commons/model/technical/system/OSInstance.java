@@ -21,7 +21,7 @@ package com.spectral.cc.core.directory.commons.model.technical.system;
 import com.spectral.cc.core.directory.commons.model.organisational.Application;
 import com.spectral.cc.core.directory.commons.model.organisational.Environment;
 import com.spectral.cc.core.directory.commons.model.organisational.Team;
-import com.spectral.cc.core.directory.commons.model.technical.network.Lan;
+import com.spectral.cc.core.directory.commons.model.technical.network.Subnet;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -55,7 +55,7 @@ public class OSInstance implements Serializable {
     private String description;
 
     @ManyToMany(mappedBy = "osInstances")
-    private Set<Lan> networkLans;
+    private Set<Subnet> networkSubnets;
 
     @ManyToOne
     private OSInstance embeddingOSInstance;
@@ -176,16 +176,16 @@ public class OSInstance implements Serializable {
         return result;
     }
 
-    public Set<Lan> getNetworkLans() {
-        return this.networkLans;
+    public Set<Subnet> getNetworkSubnets() {
+        return this.networkSubnets;
     }
 
-    public void setNetworkLans(final Set<Lan> networkLans) {
-        this.networkLans = networkLans;
+    public void setNetworkSubnets(final Set<Subnet> networkSubnets) {
+        this.networkSubnets = networkSubnets;
     }
 
-    public OSInstance setNetworkLansR(final Set<Lan> networkLans) {
-        this.networkLans = networkLans;
+    public OSInstance setNetworkSubnetsR(final Set<Subnet> networkSubnets) {
+        this.networkSubnets = networkSubnets;
         return this;
     }
 
@@ -270,6 +270,6 @@ public class OSInstance implements Serializable {
     public OSInstance clone() {
         return new OSInstance().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setAdminGateURIR(this.adminGateURI).setOsTypeR(this.osType).
                    setApplicationsR(new HashSet<Application>(this.applications)).setEmbeddedOSInstancesR(new HashSet<OSInstance>(this.embeddedOSInstances)).setEmbeddingOSInstanceR(this.embeddingOSInstance).
-                   setEnvironementsR(new HashSet<Environment>(this.environments)).setNetworkLansR(new HashSet<Lan>(networkLans)).setTeamsR(new HashSet<Team>(this.teams));
+                   setEnvironementsR(new HashSet<Environment>(this.environments)).setNetworkSubnetsR(new HashSet<Subnet>(networkSubnets)).setTeamsR(new HashSet<Team>(this.teams));
     }
 }

@@ -34,13 +34,13 @@ public class JPAProviderConsumer {
     private JPAProvider jpaProvider = null;
 
     @Bind
-    public void bindRootDirectoryRegistry(JPAProvider r) {
+    public void bindJPAProvider(JPAProvider r) {
         log.debug("Consumer bound to directory JPA provider...");
         jpaProvider = r;
     }
 
     @Unbind
-    public void unbindRootDirectoryRegistry() {
+    public void unbindJPAProvider() {
         log.debug("Consumer unbound from directory JPA provider...");
         jpaProvider = null;
     }

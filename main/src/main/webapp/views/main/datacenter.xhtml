@@ -106,30 +106,30 @@
                             </p:inplace>
                         </h:form>
 
-                        <h:outputText value="LANs : " styleClass="inputTitle"/>
+                        <h:outputText value="Subnets : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{forgeview:asList(datacenter.lans)}" var="_lan" styleClass="ui-widget-content grid" rowKey="#{_lan.id}"
-                                         rows="5" paginator="true" selection="#{datacentersListController.removedLANs[datacenter.id]}" selectionMode="multiple">
-                                <p:column headerText="Name" sortBy="#{_lan.name}" filterBy="#{_lan.name}">
-                                    <h:outputText id="lanName" value="#{_lan.name}"/>
+                            <p:dataTable value="#{forgeview:asList(datacenter.subnets)}" var="_subnet" styleClass="ui-widget-content grid" rowKey="#{_subnet.id}"
+                                         rows="5" paginator="true" selection="#{datacentersListController.removedSubnets[datacenter.id]}" selectionMode="multiple">
+                                <p:column headerText="Name" sortBy="#{_subnet.name}" filterBy="#{_subnet.name}">
+                                    <h:outputText id="subnetName" value="#{_subnet.name}"/>
                                 </p:column>
-                                <p:column headerText="Subnet IP" sortBy="#{_lan.subnetip}" filterBy="#{_lan.subnetip}">
-                                    <h:outputText id="lanSubnetIP" value="#{_lan.subnetIP}"/>
+                                <p:column headerText="Subnet IP" sortBy="#{_subnet.subnetip}" filterBy="#{_subnet.subnetip}">
+                                    <h:outputText id="subnetSubnetIP" value="#{_subnet.subnetIP}"/>
                                 </p:column>
-                                <p:column headerText="Subnet Mask" sortBy="#{_lan.subnetmask}" filterBy="#{_lan.subnetmask}">
-                                    <h:outputText id="lanSubnetMask" value="#{_lan.subnetMask}"/>
+                                <p:column headerText="Subnet Mask" sortBy="#{_subnet.subnetmask}" filterBy="#{_subnet.subnetmask}">
+                                    <h:outputText id="subnetSubnetMask" value="#{_subnet.subnetMask}"/>
                                 </p:column>
                                 <f:facet name="footer">
-                                    <p:inplace label="Select lan to bind" effectSpeed="fast" editor="true">
-                                        <h:selectOneMenu value="#{datacentersListController.addedLAN[datacenter.id]}">
-                                            <f:selectItems value="#{lansListController.getAll()}" var="lan_"
-                                                           itemLabel="#{lan_.name}" itemValue="#{lan_.name}"/>
+                                    <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{datacentersListController.addedSubnet[datacenter.id]}">
+                                            <f:selectItems value="#{subnetsListController.getAll()}" var="subnet_"
+                                                               itemLabel="#{subnet_.name}" itemValue="#{subnet_.name}"/>
                                         </h:selectOneMenu>
-                                        <p:ajax event="save" listener="#{datacentersListController.syncAddedLan(datacenter)}"
+                                        <p:ajax event="save" listener="#{datacentersListController.syncAddedSubnet(datacenter)}"
                                                 update="@form"/>
                                     </p:inplace>
-                                    <p:commandButton value="Unbind selected lan" icon="ui-icon-closethick"
-                                                     process="@form" actionListener="#{datacentersListController.syncRemovedLans(datacenter)}"
+                                    <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{datacentersListController.syncRemovedSubnets(datacenter)}"
                                                      update="@form"/>
                                 </f:facet>
                             </p:dataTable>
@@ -187,8 +187,8 @@
                     <h:panelGrid columns="2" cellpadding="5">
                         <h:outputText value="Name : " styleClass="inputTitle"/>
                         <h:outputText value="#{selectedDC.name}"/>
-                        <h:outputText value="LANs : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{forgeview:asList(selectedDC.lans)}" var="_item"
+                        <h:outputText value="Subnets : " styleClass="inputTitle"/>
+                        <p:dataTable  value="#{forgeview:asList(selectedDC.subnets)}" var="_item"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{_item.name}"/>

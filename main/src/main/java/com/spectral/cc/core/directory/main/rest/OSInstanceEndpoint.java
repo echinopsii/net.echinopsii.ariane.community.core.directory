@@ -47,7 +47,7 @@ public class OSInstanceEndpoint
    @Produces("application/json")
    public Response findById(@PathParam("id") Long id)
    {
-      TypedQuery<OSInstance> findByIdQuery = em.createQuery("SELECT DISTINCT o FROM OSInstance o LEFT JOIN FETCH o.networkLan LEFT JOIN FETCH o.embeddingOSInstance LEFT JOIN FETCH o.embeddedOSInstances LEFT JOIN FETCH o.osType LEFT JOIN FETCH o.applications LEFT JOIN FETCH o.teams LEFT JOIN FETCH o.environments WHERE o.id = :entityId ORDER BY o.id", OSInstance.class);
+      TypedQuery<OSInstance> findByIdQuery = em.createQuery("SELECT DISTINCT o FROM OSInstance o LEFT JOIN FETCH o.networkSubnets LEFT JOIN FETCH o.embeddingOSInstance LEFT JOIN FETCH o.embeddedOSInstances LEFT JOIN FETCH o.osType LEFT JOIN FETCH o.applications LEFT JOIN FETCH o.teams LEFT JOIN FETCH o.environments WHERE o.id = :entityId ORDER BY o.id", OSInstance.class);
       findByIdQuery.setParameter("entityId", id);
       OSInstance entity;
       try
@@ -69,7 +69,7 @@ public class OSInstanceEndpoint
    @Produces("application/json")
    public List<OSInstance> listAll()
    {
-      final List<OSInstance> results = em.createQuery("SELECT DISTINCT o FROM OSInstance o LEFT JOIN FETCH o.networkLan LEFT JOIN FETCH o.embeddingOSInstance LEFT JOIN FETCH o.embeddedOSInstances LEFT JOIN FETCH o.osType LEFT JOIN FETCH o.applications LEFT JOIN FETCH o.teams LEFT JOIN FETCH o.environments ORDER BY o.id", OSInstance.class).getResultList();
+      final List<OSInstance> results = em.createQuery("SELECT DISTINCT o FROM OSInstance o LEFT JOIN FETCH o.networkSubnets LEFT JOIN FETCH o.embeddingOSInstance LEFT JOIN FETCH o.embeddedOSInstances LEFT JOIN FETCH o.osType LEFT JOIN FETCH o.applications LEFT JOIN FETCH o.teams LEFT JOIN FETCH o.environments ORDER BY o.id", OSInstance.class).getResultList();
       return results;
    }
 

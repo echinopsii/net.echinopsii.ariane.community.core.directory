@@ -1,0 +1,263 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:forgeview="http://jboss.org/forge/view">
+<ui:composition template="/templates/directoryLayout.xhtml">
+    <ui:define name="directoryContent">
+        <h:form id="subnetTableForm">
+            <p:growl id="subnetTableMessages" showDetail="true" />
+            <p:dataTable id="subnetTable" var="subnet" value="#{subnetsListController.lazyModel}"
+                         selectionMode="multiple" selection="#{subnetsListController.selectedSubnetList}" rowKey="#{subnet.id}"
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
+                <f:facet name="header">
+                    Subnets
+                </f:facet>
+
+                <p:ajax event="rowToggle" listener="#{subnetsListController.onRowToggle}" />
+
+                <p:column style="width:2%">
+                    <p:rowToggler/>
+                </p:column>
+
+                <p:column headerText="Name" sortBy="#{subnet.name}" filterBy="#{subnet.name}">
+                    <h:outputText value="#{subnet.name}" />
+                </p:column>
+
+                <p:column headerText="Description" sortBy="#{subnet.description}" filterBy="#{subnet.description}">
+                    <h:outputText value="#{subnet.description}" />
+                </p:column>
+
+                <p:column headerText="Type">
+                    <h:outputText value="#{subnet.type.name}" />
+                </p:column>
+
+                <p:column headerText="Multicast area">
+                    <h:outputText value="#{subnet.marea.name}" />
+                </p:column>
+
+                <p:column headerText="Subnet IP" sortBy="#{subnet.subnetIP}" filterBy="#{subnet.subnetIP}">
+                    <h:outputText value="#{subnet.subnetIP}" />
+                </p:column>
+
+                <p:column headerText="Subnet Mask" sortBy="#{subnet.subnetMask}" filterBy="#{subnet.subnetMask}">
+                    <h:outputText value="#{subnet.subnetMask}" />
+                </p:column>
+
+                <p:rowExpansion>
+                    <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                        <h:outputText value="Name : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="name" value="#{subnet.name}"/>
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Description : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="description" value="#{subnet.description}"/>
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Type : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:inplace label="#{subnet.type.name}" effectSpeed="fast" editor="true">
+                                <h:selectOneMenu value="#{subnetsListController.changedSubnetType[subnet.id]}">
+                                    <f:selectItems value="#{subnetsListController.getAllSubnetTypes()}"  var="subnetT"
+                                                   itemLabel="#{subnetT.name}" itemValue="#{subnetT.name}"/>
+                                </h:selectOneMenu>
+                                <p:ajax event="save" listener="#{subnetsListController.syncSubnetType(subnet)}" />
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Multicast area : " styleClass="inputTitle"/>
+                        <h:form>
+                            <h:outputText value="#{subnet.marea.name} - " rendered="#{subnet.marea!=null and subnet.marea.name!=null and subnet.marea.name!=''}"/>
+                            <h:outputText value="none - " rendered="#{subnet.marea==null or subnet.marea.name==null or subnet.marea.name==''}"/>
+                            <p:inplace label="Change multicast area" effectSpeed="fast" editor="true">
+                                <h:selectOneMenu value="#{subnetsListController.changedMarea[subnet.id]}">
+                                    <f:selectItems value="#{multicastAreasListController.getAllForInplace()}"  var="marea"
+                                                   itemLabel="#{marea.name}" itemValue="#{marea.name}"/>
+                                </h:selectOneMenu>
+                                <p:ajax event="save" listener="#{subnetsListController.syncMarea(subnet)}" update="@form"/>
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Subnet IP : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="subnetIP" value="#{subnet.subnetIP}"/>
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Subnet Mask : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="subnetMask" value="#{subnet.subnetMask}"/>
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:dataTable value="#{forgeview:asList(subnet.datacenters)}" var="dc" styleClass="ui-widget-content grid" rowKey="#{dc.id}"
+                                         rows="5" paginator="true" selection="#{subnetsListController.removedDCs[subnet.id]}" selectionMode="multiple">
+                                <p:column headerText="Name" sortBy="#{dc.name}" filterBy="#{dc.name}">
+                                    <h:outputText id="itemName" value="#{dc.name}"/>
+                                </p:column>
+                                <p:column headerText="Description" sortBy="#{dc.description}" filterBy="#{dc.description}">
+                                    <h:outputText id="itemDescription" value="#{dc.description}"/>
+                                </p:column>
+                                <p:column headerText="Town" sortBy="#{dc.town}" filterBy="#{dc.town}">
+                                    <h:outputText id="itemTown" value="#{dc.town}"/>
+                                </p:column>
+                                <p:column headerText="Country" sortBy="#{dc.country}" filterBy="#{dc.country}">
+                                    <h:outputText id="itemCountry" value="#{dc.country}"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:inplace label="Select datacenter to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{subnetsListController.addedDC[subnet.id]}">
+                                            <f:selectItems value="#{datacentersListController.getAll()}" var="dc_"
+                                                           itemLabel="#{dc_.name}" itemValue="#{dc_.name}"/>
+                                        </h:selectOneMenu>
+                                        <p:ajax event="save" listener="#{subnetsListController.syncAddedDC(subnet)}"
+                                                update="@form"/>
+                                    </p:inplace>
+                                    <p:commandButton value="Unbind selected datacenter" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{subnetsListController.syncRemovedDCs(subnet)}"
+                                                     update="@form"/>
+                                </f:facet>
+                            </p:dataTable>
+                        </h:form>
+
+
+                        <h:outputText value="OS Instances : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:dataTable value="#{forgeview:asList(subnet.osInstances)}" var="os" styleClass="ui-widget-content grid" rowKey="#{os.id}"
+                                         rows="5" paginator="true" selection="#{subnetsListController.removedOSIs[subnet.id]}" selectionMode="multiple">
+                                <p:column headerText="Name" sortBy="#{os.name}" filterBy="#{os.name}">
+                                    <h:outputText id="itemName" value="#{os.name}"/>
+                                </p:column>
+                                <p:column headerText="Description" sortBy="#{os.description}" filterBy="#{os.description}">
+                                    <h:outputText id="itemDescription" value="#{os.description}"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{subnetsListController.addedOSI[subnet.id]}">
+                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="os_"
+                                                           itemLabel="#{os_.name}" itemValue="#{os_.name}"/>
+                                        </h:selectOneMenu>
+                                        <p:ajax event="save" listener="#{subnetsListController.syncAddedOSI(subnet)}"
+                                                update="@form"/>
+                                    </p:inplace>
+                                    <p:commandButton value="Unbind selected OS Instance" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{subnetsListController.syncRemovedOSIs(subnet)}"
+                                                     update="@form"/>
+                                </f:facet>
+                            </p:dataTable>
+                        </h:form>
+
+                    </h:panelGrid>
+                    <p:commandButton value="Save changes" update=":subnetTableForm:subnetTable,:subnetTableForm:subnetTableMessages" id="subnetUpdate" icon="ui-icon-disk"
+                                     actionListener="#{subnetsListController.update(subnet)}" styleClass="ui-priority-primary icon-large"/>
+                </p:rowExpansion>
+                <f:facet name="footer">
+                    <p:commandButton value="Create subnet" icon="ui-icon-disk" onclick="subnetCreateDialog.show()"/>
+                    <p:commandButton value="Remove selected subnet" icon="ui-icon-closethick" onclick="subnetRemoveDialog.show()"
+                                     update=":removeSubnetDialogForm:display"/>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog header="Confirm your remove order !" widgetVar="subnetRemoveDialog"
+                         width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="removeSubnetDialogForm">
+                <h:outputText value="Are you sure you want delete following subnet ?" styleClass="inputTitle"/><br/>
+                <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{subnetsListController.delete}" oncomplete="subnetRemoveDialog.hide();"
+                                 update=":subnetTableForm:subnetTable,:subnetTableForm:subnetTableMessages"/>
+                <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="subnetRemoveDialog.hide();"/>
+                <p:separator/>
+                <p:dataList id="display"
+                            value="#{subnetsListController.selectedSubnetList}"
+                            var="selectedSubnet" type="definition">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputText value="Name : " styleClass="inputTitle"/>
+                        <h:outputText value="#{selectedSubnet.name}"/>
+
+                        <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+                        <p:dataTable  value="#{forgeview:asList(selectedSubnet.datacenters)}" var="dcR"
+                                      rows="5" paginator="true">
+                            <p:column headerText="Name">
+                                <h:outputText id="itemName" value="#{dcR.name}"/>
+                            </p:column>
+                            <p:column headerText="Description">
+                                <h:outputText id="itemDescription" value="#{dcR.description}"/>
+                            </p:column>
+                            <p:column headerText="Town">
+                                <h:outputText id="itemTown" value="#{dcR.town}"/>
+                            </p:column>
+                            <p:column headerText="Country">
+                                <h:outputText id="itemCountry" value="#{dcR.country}"/>
+                            </p:column>
+                        </p:dataTable>
+
+                        <h:outputText value="OS Instances : " styleClass="inputTitle"/>
+                        <p:dataTable  value="#{forgeview:asList(selectedSubnet.osInstances)}" var="osR"
+                                      rows="5" paginator="true">
+                            <p:column headerText="Name">
+                                <h:outputText id="itemName" value="#{osR.name}"/>
+                            </p:column>
+                            <p:column headerText="Description">
+                                <h:outputText id="itemDescription" value="#{osR.description}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                    <p:separator/>
+                </p:dataList>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new subnet" widgetVar="subnetCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="createSubnetDialogForm">
+                <ui:insert name="createSubnet" >
+                    <ui:include src="/templates/subnetNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this subnet" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{subnetNewController.save}" oncomplete="subnetCreateDialog.hide();"
+                                 update=":subnetTableForm:subnetTable,:subnetTableForm:subnetTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new multicast area" widgetVar="mareaCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="createMareaDialogForm">
+                <ui:insert name="createMulticastArea" >
+                    <ui:include src="/templates/multicastAreaNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this multicast area" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{multicastAreaNewController.save}" oncomplete="mareaCreateDialog.hide();"
+                                 update=":createSubnetDialogForm:subnetNewGrid,:subnetTableForm:subnetTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new datacenter" widgetVar="dcCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="creatDCDialogForm">
+                <ui:insert name="createDatacenter" >
+                    <ui:include src="/templates/dcNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this datacenter" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
+                                 update=":createSubnetDialogForm:subnetNewGrid,:subnetTableForm:subnetTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+</html>

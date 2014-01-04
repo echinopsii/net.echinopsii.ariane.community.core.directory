@@ -70,7 +70,7 @@ public class Datacenter implements Serializable
     private String description;
 
     @ManyToMany
-    private Set<Lan> lans = new HashSet<Lan>();
+    private Set<Subnet> subnets = new HashSet<Subnet>();
 
     @ManyToMany
     private Set<MulticastArea> multicastAreas = new HashSet<MulticastArea>();
@@ -249,16 +249,16 @@ public class Datacenter implements Serializable
         return result;
     }
 
-    public Set<Lan> getLans() {
-        return this.lans;
+    public Set<Subnet> getSubnets() {
+        return this.subnets;
     }
 
-    public void setLans(final Set<Lan> lans) {
-        this.lans = lans;
+    public void setSubnets(final Set<Subnet> subnets) {
+        this.subnets = subnets;
     }
 
-    public Datacenter setLansR(final Set<Lan> lans) {
-        this.lans = lans;
+    public Datacenter setSubnetsR(final Set<Subnet> subnets) {
+        this.subnets = subnets;
         return this;
     }
 
@@ -279,6 +279,6 @@ public class Datacenter implements Serializable
     public Datacenter clone() throws CloneNotSupportedException {
         return new Datacenter().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setAddressR(this.address).setZipCodeR(this.zipCode).setTownR(this.town).
                                 setCountryR(this.country).setDescriptionR(this.description).setGpsLatitudeR(this.gpsLatitude).setGpsLongitudeR(this.gpsLongitude).
-                                setLansR(new HashSet<Lan>(this.lans)).setMulticastAreasR(new HashSet<MulticastArea>(this.multicastAreas));
+                                                                                                                                                                                                                                                                                                                                              setSubnetsR(new HashSet<Subnet>(this.subnets)).setMulticastAreasR(new HashSet<MulticastArea>(this.multicastAreas));
     }
 }

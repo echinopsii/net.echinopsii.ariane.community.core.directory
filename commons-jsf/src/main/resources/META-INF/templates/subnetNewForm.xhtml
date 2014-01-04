@@ -1,0 +1,50 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<ui:composition>
+    <h:panelGrid id="subnetNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
+        <h:outputText value="Name : " styleClass="inputTitle"/>
+        <p:inputText id="name" label="Name" required="true" value="#{subnetNewController.name}"/>
+
+        <h:outputText value="Type : " styleClass="inputTitle"/>
+        <h:selectOneMenu label="Select the subnet type" value="#{subnetNewController.subnetType}">
+            <f:selectItems value="#{subnetsListController.getAllSubnetTypesForSelector()}"  var="subnetT"
+                           itemLabel="#{subnetT.name}" itemValue="#{subnetT.name}"/>
+        </h:selectOneMenu>
+
+        <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+        <h:panelGroup>
+            <p:commandLink onclick="dcCreateDialog.show()">
+                <h:outputText value=" create new datacenter"/>
+            </p:commandLink><br/>
+            <p:selectManyMenu id="basic" value="#{subnetNewController.datacentersToBind}" style="width:150px;height:100px">
+                <f:selectItems value="#{datacentersListController.getAll()}"  var="dc"
+                               itemLabel="#{dc.name}" itemValue="#{dc.name}"/>
+            </p:selectManyMenu>
+        </h:panelGroup>
+
+        <h:outputText value="Multicast Area : " styleClass="inputTitle"/>
+        <h:panelGroup>
+            <p:commandLink onclick="mareaCreateDialog.show()">
+                <h:outputText value=" create new multicast area"/>
+            </p:commandLink><br/>
+            <h:selectOneMenu label="Select the subnet type" value="#{subnetNewController.mArea}">
+                <f:selectItems value="#{multicastAreasListController.getAllForSelector()}"  var="marea"
+                               itemLabel="#{marea.name}" itemValue="#{marea.name}"/>
+            </h:selectOneMenu>
+        </h:panelGroup>
+
+        <h:outputText value="Subnet IP : " styleClass="inputTitle"/>
+        <p:inputText id="subnetIP" label="Subnet IP" required="true" value="#{subnetNewController.subnetIP}"/>
+
+        <h:outputText value="Subnet Mask : " styleClass="inputTitle"/>
+        <p:inputText id="subnetMask" label="Subnet Mask" required="true" value="#{subnetNewController.subnetMask}"/>
+
+        <h:outputText value="Description : " styleClass="inputTitle"/>
+        <p:inputText id="description" label="Description" required="true" value="#{subnetNewController.description}"/>
+    </h:panelGrid>
+
+</ui:composition>
+</html>

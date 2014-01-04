@@ -19,22 +19,18 @@
 
 package com.spectral.cc.core.directory.commons.persistence.iPojo;
 
-import com.spectral.cc.core.directory.commons.model.technical.network.LanType;
+import com.spectral.cc.core.directory.commons.model.technical.network.SubnetType;
 import com.spectral.cc.core.directory.commons.persistence.JPAProvider;
 import org.apache.felix.ipojo.annotations.*;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-@Component
+@Component(managedservice="com.spectral.cc.core.directory.commons.JPAProvider")
 @Provides
 @Instantiate
 public class JPAProviderImpl implements JPAProvider {
@@ -42,27 +38,105 @@ public class JPAProviderImpl implements JPAProvider {
     private static final String DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME = "Directory TX Persistence Consumer";
     private static final Logger log = LoggerFactory.getLogger(JPAProviderImpl.class);
 
-    private static EntityManagerFactory sharedEMF = null;
-    private static EntityManager        sharedEM  = null;
-    //private static UserTransaction      sharedUX  = null;
+    private static EntityManagerFactory            sharedEMF  = null;
+    private static EntityManager                   sharedEM   = null;
+    private static ArrayList<EntityManager>        emPool     = new ArrayList<>();
+    private static HashMap<EntityManager, Boolean> lockEMPool = new HashMap<>();
 
-    //private static ArrayList<EntityManager>        emPool     = new ArrayList<>();
-    //private static HashMap<EntityManager, Boolean> lockEMPool = new HashMap<>();
+    @Requires
+    private PersistenceProvider persistenceProvider = null;
 
+    private void close() {
+        if (sharedEM != null) sharedEM.close();
+        if (sharedEMF != null) sharedEMF.close();
+        for (EntityManager em : emPool) {
+            em.close();
+        }
+        emPool.clear();
+        lockEMPool.clear();
+    }
+
+    private void initSubnetType() {
+
+        List<SubnetType> subnetTypes = new ArrayList<SubnetType>();
+        SubnetType wanT = new SubnetType().setNameR("WAN").setDescriptionR("WAN type Subnet"); subnetTypes.add(wanT);
+        SubnetType manT = new SubnetType().setNameR("MAN").setDescriptionR("MAN type Subnet"); subnetTypes.add(manT);
+        SubnetType subnetT = new SubnetType().setNameR("LAN").setDescriptionR("LAN type Subnet"); subnetTypes.add(subnetT);
+
+        try {
+            this.getSharedEM().getTransaction().begin();
+            for (SubnetType ltype : subnetTypes)
+                this.getSharedEM().persist(ltype);
+            this.getSharedEM().getTransaction().commit();
+        } catch (Exception E) {
+            log.error("Fail to init subnettype db ! " + E.getMessage());
+        }
+    }
+
+    @Bind
+    public void bindPersistenceProvider(PersistenceProvider pprovider) {
+        log.debug("Bound to persistence provider...");
+        persistenceProvider = pprovider;
+    }
+
+    @Unbind
+    public void unbindPersistenceProvider() {
+        log.debug("Unbound from persistence provider...");
+        persistenceProvider = null;
+    }
+
+    @Updated
+    public void updated(final Dictionary properties) {
+        if (!Thread.currentThread().toString().contains("iPOJO")) {
+            log.debug("Container configuration manager tries to get {} updated but iPOJO is prefered ...",
+                             new Object[]{Thread.currentThread().toString(), DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
+            return;
+        }
+        this.close();
+
+        HashMap<String,String> hibernateConf = null;
+        Enumeration<String> dicEnum = properties.keys();
+        while (dicEnum.hasMoreElements()) {
+            if (hibernateConf==null)
+                hibernateConf = new HashMap<String,String>();
+            String key = (String) dicEnum.nextElement();
+            if (key.contains("hibernate")) {
+                String value = (String) properties.get(key);
+                log.debug("Hibernate conf to update : ({},{})", new Object[]{key,(key.equals("hibernate.connection.password") ? "*****" : value)});
+                hibernateConf.put(key, value);
+            }
+        }
+
+        sharedEMF = persistenceProvider.createEntityManagerFactory("cc-directory",hibernateConf);
+        sharedEM  = sharedEMF.createEntityManager();
+
+        this.initSubnetType();
+    }
+
+    @Invalidate
+    public void invalidate() {
+        this.close();
+    }
+
+    @Validate
+    public void validate() {
+        log.debug("{} is started !", new Object[]{DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
+        if (persistenceProvider==null)
+            log.warn("{} has been started but persistence provider is not bound !", new Object[]{DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
+    }
+
+    @Override
     public EntityManagerFactory getSharedEMF() {
         return sharedEMF;
     }
 
+    @Override
     public EntityManager getSharedEM() {
         return sharedEM;
     }
 
-    /*
-    public synchronized static UserTransaction getSharedUX() {
-        return sharedUX;
-    }
-
-    public synchronized static EntityManager getLockedEM() {
+    @Override
+    public EntityManager getLockedEM() {
         for (EntityManager em : emPool) {
             if (!lockEMPool.get(em)) {
                 lockEMPool.put(em, true);
@@ -75,19 +149,11 @@ public class JPAProviderImpl implements JPAProvider {
         return ret;
     }
 
-    public synchronized static void unlockEM(EntityManager em) {
+    @Override
+    public void unlockEM(EntityManager em) {
         lockEMPool.put(em,false);
     }
-    */
 
-    @Invalidate
-    public static void invalidate() {
-        if (sharedEM != null) sharedEM.close();
-        if (sharedEMF != null) sharedEMF.close();
-    }
-
-    @Validate
-    public void validate() {
         /*
         log.debug("{} is getting user transaction service", new Object[]{DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
         utxSceTracker = new ServiceTracker(context, UserTransaction.class.getName(), null);
@@ -101,13 +167,11 @@ public class JPAProviderImpl implements JPAProvider {
         } else {
             log.error(DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME + " failed to init UserTransaction ServiceTracker !!!");
         }
-        */
         BundleContext context = FrameworkUtil.getBundle(JPAProviderImpl.class).getBundleContext();
         log.debug("{} is getting persistence entity manager factory service", new Object[]{DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
         ServiceReference    serviceReference    = context.getServiceReference( PersistenceProvider.class.getName() );
         PersistenceProvider persistenceProvider = (PersistenceProvider) context.getService( serviceReference );
 
-        /*
         ServiceReference sref = context.getServiceReference(EntityManagerFactory.class.getName());
         while (sref==null)
             try {
@@ -116,29 +180,10 @@ public class JPAProviderImpl implements JPAProvider {
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-        */
         sharedEMF = persistenceProvider.createEntityManagerFactory("cc-directory",null);
         log.debug("{} is creating persistence entity manager", new Object[]{DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
         sharedEM = sharedEMF.createEntityManager();
 
-        List<LanType> lanTypes = new ArrayList<LanType>();
-
-        LanType wanT = new LanType().setNameR("WAN").setDescriptionR("WAN type Lan"); lanTypes.add(wanT);
-        LanType manT = new LanType().setNameR("MAN").setDescriptionR("MAN type Lan"); lanTypes.add(manT);
-        LanType lanT = new LanType().setNameR("LAN").setDescriptionR("LAN type Lan"); lanTypes.add(lanT);
-
-        try {
-            //JPAProviderImpl.getSharedUX().begin();
-            //JPAProviderImpl.getSharedEM().joinTransaction();
-            this.getSharedEM().getTransaction().begin();
-            for (LanType ltype : lanTypes)
-                this.getSharedEM().persist(ltype);
-            this.getSharedEM().getTransaction().commit();
-        } catch (Exception E) {
-            log.error("Fail to init lantype db! " + E.getMessage());
-        }
-
-        /*
         List<Datacenter> datacenterList = new ArrayList<Datacenter>();
 
         datacenterList.add(new Datacenter().setNameR("Paris DC 1").setAddressR("address1").setTownR("Paris").setZipCodeR((long)75001).
@@ -243,84 +288,74 @@ public class JPAProviderImpl implements JPAProvider {
             log.error("Fail to init multicast area test db!");
         }
 
-        List<Lan>     lans     = new ArrayList<Lan>();
+        List<Subnet>     subnets     = new ArrayList<Subnet>();
 
-        lans.add(new Lan().setNameR("WAN01").setDescriptionR("A WAN Lan").setSubnetIPR("192.168.31.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
-        lans.add(new Lan().setNameR("WAN02").setDescriptionR("A WAN Lan").setSubnetIPR("192.168.32.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
-        lans.add(new Lan().setNameR("WAN03").setDescriptionR("A WAN Lan").setSubnetIPR("192.168.33.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
-        lans.add(new Lan().setNameR("WAN04").setDescriptionR("A WAN Lan").setSubnetIPR("192.168.34.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
-        lans.add(new Lan().setNameR("WAN05").setDescriptionR("A WAN Lan").setSubnetIPR("192.168.35.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
-        lans.add(new Lan().setNameR("WAN06").setDescriptionR("A WAN Lan").setSubnetIPR("192.168.36.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
-        lans.add(new Lan().setNameR("WAN07").setDescriptionR("A WAN Lan").setSubnetIPR("192.168.37.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
-        lans.add(new Lan().setNameR("WAN08").setDescriptionR("A WAN Lan").setSubnetIPR("192.168.38.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
-        lans.add(new Lan().setNameR("WAN09").setDescriptionR("A WAN Lan").setSubnetIPR("192.168.39.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
-        lans.add(new Lan().setNameR("WAN10").setDescriptionR("A WAN Lan").setSubnetIPR("192.168.40.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
+        subnets.add(new Subnet().setNameR("WAN01").setDescriptionR("A WAN Subnet").setSubnetIPR("192.168.31.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
+        subnets.add(new Subnet().setNameR("WAN02").setDescriptionR("A WAN Subnet").setSubnetIPR("192.168.32.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
+        subnets.add(new Subnet().setNameR("WAN03").setDescriptionR("A WAN Subnet").setSubnetIPR("192.168.33.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
+        subnets.add(new Subnet().setNameR("WAN04").setDescriptionR("A WAN Subnet").setSubnetIPR("192.168.34.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
+        subnets.add(new Subnet().setNameR("WAN05").setDescriptionR("A WAN Subnet").setSubnetIPR("192.168.35.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
+        subnets.add(new Subnet().setNameR("WAN06").setDescriptionR("A WAN Subnet").setSubnetIPR("192.168.36.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
+        subnets.add(new Subnet().setNameR("WAN07").setDescriptionR("A WAN Subnet").setSubnetIPR("192.168.37.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
+        subnets.add(new Subnet().setNameR("WAN08").setDescriptionR("A WAN Subnet").setSubnetIPR("192.168.38.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
+        subnets.add(new Subnet().setNameR("WAN09").setDescriptionR("A WAN Subnet").setSubnetIPR("192.168.39.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
+        subnets.add(new Subnet().setNameR("WAN10").setDescriptionR("A WAN Subnet").setSubnetIPR("192.168.40.0").setSubnetMaskR("255.255.255.0").setTypeR(wanT));
 
-        lans.add(new Lan().setNameR("MAN01").setDescriptionR("A MAN Lan").setSubnetIPR("192.168.41.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
-        lans.add(new Lan().setNameR("MAN02").setDescriptionR("A MAN Lan").setSubnetIPR("192.168.42.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
-        lans.add(new Lan().setNameR("MAN03").setDescriptionR("A MAN Lan").setSubnetIPR("192.168.43.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
-        lans.add(new Lan().setNameR("MAN04").setDescriptionR("A MAN Lan").setSubnetIPR("192.168.44.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
-        lans.add(new Lan().setNameR("MAN05").setDescriptionR("A MAN Lan").setSubnetIPR("192.168.45.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
-        lans.add(new Lan().setNameR("MAN06").setDescriptionR("A MAN Lan").setSubnetIPR("192.168.46.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
-        lans.add(new Lan().setNameR("MAN07").setDescriptionR("A MAN Lan").setSubnetIPR("192.168.47.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
-        lans.add(new Lan().setNameR("MAN08").setDescriptionR("A MAN Lan").setSubnetIPR("192.168.48.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
-        lans.add(new Lan().setNameR("MAN09").setDescriptionR("A MAN Lan").setSubnetIPR("192.168.49.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
-        lans.add(new Lan().setNameR("MAN10").setDescriptionR("A MAN Lan").setSubnetIPR("192.168.50.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
+        subnets.add(new Subnet().setNameR("MAN01").setDescriptionR("A MAN Subnet").setSubnetIPR("192.168.41.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
+        subnets.add(new Subnet().setNameR("MAN02").setDescriptionR("A MAN Subnet").setSubnetIPR("192.168.42.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
+        subnets.add(new Subnet().setNameR("MAN03").setDescriptionR("A MAN Subnet").setSubnetIPR("192.168.43.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
+        subnets.add(new Subnet().setNameR("MAN04").setDescriptionR("A MAN Subnet").setSubnetIPR("192.168.44.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
+        subnets.add(new Subnet().setNameR("MAN05").setDescriptionR("A MAN Subnet").setSubnetIPR("192.168.45.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
+        subnets.add(new Subnet().setNameR("MAN06").setDescriptionR("A MAN Subnet").setSubnetIPR("192.168.46.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
+        subnets.add(new Subnet().setNameR("MAN07").setDescriptionR("A MAN Subnet").setSubnetIPR("192.168.47.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
+        subnets.add(new Subnet().setNameR("MAN08").setDescriptionR("A MAN Subnet").setSubnetIPR("192.168.48.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
+        subnets.add(new Subnet().setNameR("MAN09").setDescriptionR("A MAN Subnet").setSubnetIPR("192.168.49.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
+        subnets.add(new Subnet().setNameR("MAN10").setDescriptionR("A MAN Subnet").setSubnetIPR("192.168.50.0").setSubnetMaskR("255.255.255.0").setTypeR(manT));
 
-        lans.add(new Lan().setNameR("LAN01").setDescriptionR("A LAN Lan").setSubnetIPR("192.168.41.0").setSubnetMaskR("255.255.255.0").setTypeR(lanT).setMareaR(ma1));
-        lans.add(new Lan().setNameR("LAN02").setDescriptionR("A LAN Lan").setSubnetIPR("192.168.42.0").setSubnetMaskR("255.255.255.0").setTypeR(lanT).setMareaR(ma1));
-        lans.add(new Lan().setNameR("LAN03").setDescriptionR("A LAN Lan").setSubnetIPR("192.168.43.0").setSubnetMaskR("255.255.255.0").setTypeR(lanT).setMareaR(ma1));
-        lans.add(new Lan().setNameR("LAN04").setDescriptionR("A LAN Lan").setSubnetIPR("192.168.44.0").setSubnetMaskR("255.255.255.0").setTypeR(lanT).setMareaR(ma1));
-        lans.add(new Lan().setNameR("LAN05").setDescriptionR("A LAN Lan").setSubnetIPR("192.168.45.0").setSubnetMaskR("255.255.255.0").setTypeR(lanT).setMareaR(ma1));
-        lans.add(new Lan().setNameR("LAN06").setDescriptionR("A LAN Lan").setSubnetIPR("192.168.46.0").setSubnetMaskR("255.255.255.0").setTypeR(lanT).setMareaR(ma2));
-        lans.add(new Lan().setNameR("LAN07").setDescriptionR("A LAN Lan").setSubnetIPR("192.168.47.0").setSubnetMaskR("255.255.255.0").setTypeR(lanT).setMareaR(ma2));
-        lans.add(new Lan().setNameR("LAN08").setDescriptionR("A LAN Lan").setSubnetIPR("192.168.48.0").setSubnetMaskR("255.255.255.0").setTypeR(lanT).setMareaR(ma2));
-        lans.add(new Lan().setNameR("LAN09").setDescriptionR("A LAN Lan").setSubnetIPR("192.168.49.0").setSubnetMaskR("255.255.255.0").setTypeR(lanT).setMareaR(ma2));
-        lans.add(new Lan().setNameR("LAN10").setDescriptionR("A LAN Lan").setSubnetIPR("192.168.50.0").setSubnetMaskR("255.255.255.0").setTypeR(lanT).setMareaR(ma2));
+        subnets.add(new Subnet().setNameR("LAN01").setDescriptionR("A LAN Subnet").setSubnetIPR("192.168.41.0").setSubnetMaskR("255.255.255.0").setTypeR(subnetT).setMareaR(ma1));
+        subnets.add(new Subnet().setNameR("LAN02").setDescriptionR("A LAN Subnet").setSubnetIPR("192.168.42.0").setSubnetMaskR("255.255.255.0").setTypeR(subnetT).setMareaR(ma1));
+        subnets.add(new Subnet().setNameR("LAN03").setDescriptionR("A LAN Subnet").setSubnetIPR("192.168.43.0").setSubnetMaskR("255.255.255.0").setTypeR(subnetT).setMareaR(ma1));
+        subnets.add(new Subnet().setNameR("LAN04").setDescriptionR("A LAN Subnet").setSubnetIPR("192.168.44.0").setSubnetMaskR("255.255.255.0").setTypeR(subnetT).setMareaR(ma1));
+        subnets.add(new Subnet().setNameR("LAN05").setDescriptionR("A LAN Subnet").setSubnetIPR("192.168.45.0").setSubnetMaskR("255.255.255.0").setTypeR(subnetT).setMareaR(ma1));
+        subnets.add(new Subnet().setNameR("LAN06").setDescriptionR("A LAN Subnet").setSubnetIPR("192.168.46.0").setSubnetMaskR("255.255.255.0").setTypeR(subnetT).setMareaR(ma2));
+        subnets.add(new Subnet().setNameR("LAN07").setDescriptionR("A LAN Subnet").setSubnetIPR("192.168.47.0").setSubnetMaskR("255.255.255.0").setTypeR(subnetT).setMareaR(ma2));
+        subnets.add(new Subnet().setNameR("LAN08").setDescriptionR("A LAN Subnet").setSubnetIPR("192.168.48.0").setSubnetMaskR("255.255.255.0").setTypeR(subnetT).setMareaR(ma2));
+        subnets.add(new Subnet().setNameR("LAN09").setDescriptionR("A LAN Subnet").setSubnetIPR("192.168.49.0").setSubnetMaskR("255.255.255.0").setTypeR(subnetT).setMareaR(ma2));
+        subnets.add(new Subnet().setNameR("LAN10").setDescriptionR("A LAN Subnet").setSubnetIPR("192.168.50.0").setSubnetMaskR("255.255.255.0").setTypeR(subnetT).setMareaR(ma2));
 
         try {
             JPAProviderImpl.getSharedUX().begin();
             JPAProviderImpl.getSharedEM().joinTransaction();
-            for (LanType ltype : lanTypes)
+            for (SubnetType ltype : subnetTypes)
                 JPAProviderImpl.getSharedEM().persist(ltype);
             JPAProviderImpl.getSharedEM().flush();
             JPAProviderImpl.getSharedUX().commit();
 
             JPAProviderImpl.getSharedUX().begin();
             JPAProviderImpl.getSharedEM().joinTransaction();
-            for (Lan lan : lans) {
-                JPAProviderImpl.getSharedEM().persist(lan);
-                if (lan.getType()!=null) {
-                    lan.getType().getLans().add(lan);
-                    if (lan.getType().getId()==null)
-                        JPAProviderImpl.getSharedEM().persist(lan.getType());
+            for (Subnet subnet : subnets) {
+                JPAProviderImpl.getSharedEM().persist(subnet);
+                if (subnet.getType()!=null) {
+                    subnet.getType().getSubnets().add(subnet);
+                    if (subnet.getType().getId()==null)
+                        JPAProviderImpl.getSharedEM().persist(subnet.getType());
                     else
-                        JPAProviderImpl.getSharedEM().merge(lan.getType());
+                        JPAProviderImpl.getSharedEM().merge(subnet.getType());
                 }
-                if (lan.getMarea()!=null) {
-                    lan.getMarea().getLans().add(lan);
-                    if (lan.getType().getId()==null)
-                        JPAProviderImpl.getSharedEM().persist(lan.getMarea());
+                if (subnet.getMarea()!=null) {
+                    subnet.getMarea().getSubnets().add(subnet);
+                    if (subnet.getType().getId()==null)
+                        JPAProviderImpl.getSharedEM().persist(subnet.getMarea());
                     else
-                        JPAProviderImpl.getSharedEM().merge(lan.getMarea());
+                        JPAProviderImpl.getSharedEM().merge(subnet.getMarea());
                 }
             }
             JPAProviderImpl.getSharedEM().flush();
             JPAProviderImpl.getSharedUX().commit();
 
         } catch (Exception E) {
-            log.error("Fail to init lan test db!");
+            log.error("Fail to init subnet test db!");
         }
         */
-    }
 
-    @Override
-    public EntityManager getLockedEM() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void unlockEM(EntityManager em) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
 }
