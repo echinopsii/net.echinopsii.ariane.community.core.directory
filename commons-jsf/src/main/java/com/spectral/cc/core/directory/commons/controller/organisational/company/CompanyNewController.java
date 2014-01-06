@@ -24,8 +24,10 @@ import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 import javax.transaction.*;
 import java.io.Serializable;
 
@@ -33,8 +35,16 @@ public class CompanyNewController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(CompanyNewController.class);
 
+    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+
     private String name;
     private String description;
+
+    @PreDestroy
+    public void clean() {
+        log.debug("Close entity manager");
+        em.close();
+    }
 
     public String getName() {
         return name;
@@ -53,17 +63,16 @@ public class CompanyNewController implements Serializable {
     }
 
     public void save() throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
-        log.debug("Save new Company {} !", new Object[]{name});
         Company company = new Company();
         company.setName(name);
         company.setDescription(description);
+
         try {
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(company);
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+            em.getTransaction().begin();
+            em.persist(company);
+            em.flush();
+            em.getTransaction().commit();
+            log.debug("Save new Company {} !", new Object[]{name});
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Company created successfully !",
                                                        "Company name : " + company.getName());
@@ -75,41 +84,8 @@ public class CompanyNewController implements Serializable {
                                                        "Throwable raised while creating company " + company.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
-/*
-            FacesMessage msg2;
-            int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-            switch(txStatus) {
-                case Status.STATUS_NO_TRANSACTION:
-                    msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                   "Operation canceled !",
-                                                   "Operation : company " + company.getName() + " creation.");
-                    break;
-                case Status.STATUS_MARKED_ROLLBACK:
-                    try {
-                        log.debug("Rollback operation !");
-                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation rollbacked !",
-                                                       "Operation : company " + company.getName() + " creation.");
-                        FacesContext.getCurrentInstance().addMessage(null, msg2);
-                    } catch (SystemException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Error while rollbacking operation !",
-                                                       "Operation : company " + company.getName() + " creation.");
-                        FacesContext.getCurrentInstance().addMessage(null, msg2);
-                    }
-                    break;
-                default:
-                    msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                   "Operation canceled ! ("+txStatus+")",
-                                                   "Operation : company " + company.getName() + " creation.");
-                    break;
-            }
-            FacesContext.getCurrentInstance().addMessage(null, msg2);
-*/
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
         }
     }
 }

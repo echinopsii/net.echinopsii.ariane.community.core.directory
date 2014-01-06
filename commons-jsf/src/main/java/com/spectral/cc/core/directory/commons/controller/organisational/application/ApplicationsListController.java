@@ -27,13 +27,16 @@ import com.spectral.cc.core.directory.commons.model.organisational.Application;
 import com.spectral.cc.core.directory.commons.model.organisational.Company;
 import com.spectral.cc.core.directory.commons.model.organisational.Team;
 import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
+import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -47,9 +50,11 @@ public class ApplicationsListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(ApplicationsListController.class);
 
+    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+
     private HashMap<Long, Application> rollback = new HashMap<Long, Application>();
 
-    private LazyDataModel<Application> lazyModel ;
+    private LazyDataModel<Application> lazyModel = new ApplicationLazyModel().setEntityManager(em);
     private Application[]              selectedApplicationList ;
 
     private HashMap<Long, String> changedCompany       = new HashMap<Long, String>();
@@ -58,8 +63,14 @@ public class ApplicationsListController implements Serializable {
     private HashMap<Long,String>           addedOSInstance    = new HashMap<Long, String>();
     private HashMap<Long,List<OSInstance>> removedOSInstances = new HashMap<Long, List<OSInstance>>();
 
-    public ApplicationsListController() {
-        lazyModel = new ApplicationLazyModel().setEntityManager(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM());
+    @PreDestroy
+    public void clean() {
+        log.debug("Close entity manager");
+        em.close();
+    }
+
+    public EntityManager getEm() {
+        return em;
     }
 
     /*
@@ -97,7 +108,7 @@ public class ApplicationsListController implements Serializable {
     }
 
     public void syncCompany(Application application) throws NotSupportedException, SystemException {
-        for(Company company: CompanysListController.getAll()) {
+        for(Company company: CompanysListController.getAll(em)) {
             if (company.getName().equals(changedCompany.get(application.getId()))) {
                 application.setCompany(company);
                 break;
@@ -114,7 +125,7 @@ public class ApplicationsListController implements Serializable {
     }
 
     public void syncTeam(Application application) throws NotSupportedException, SystemException {
-        for(Team team: TeamsListController.getAll()) {
+        for(Team team: TeamsListController.getAll(em)) {
             if (team.getName().equals(changedTeam.get(application.getId()))) {
                 application.setTeam(team);
                 break;
@@ -131,7 +142,7 @@ public class ApplicationsListController implements Serializable {
     }
 
     public void syncAddedOSInstance(Application osType) throws NotSupportedException, SystemException {
-        for (OSInstance osInstance: OSInstancesListController.getAll()) {
+        for (OSInstance osInstance: OSInstancesListController.getAll(em)) {
             if (osInstance.getName().equals(this.addedOSInstance.get(osType.getId()))) {
                 osType.getOsInstances().add(osInstance);
             }
@@ -175,44 +186,43 @@ public class ApplicationsListController implements Serializable {
 
     public void update(Application application) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
         try {
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            em.getTransaction().begin();
             if (application.getCompany()!=rollback.get(application.getId()).getCompany()) {
                 if (rollback.get(application.getId()).getCompany()!=null) {
                     rollback.get(application.getId()).getCompany().getApplications().remove(application);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(rollback.get(application.getId()).getCompany());
+                    em.merge(rollback.get(application.getId()).getCompany());
                 }
                 if (application.getCompany()!=null) {
                     application.getCompany().getApplications().add(application);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application.getCompany());
+                    em.merge(application.getCompany());
                 }
             }
             if (application.getTeam()!=rollback.get(application.getId()).getTeam()) {
                 if (rollback.get(application.getId()).getTeam()!=null) {
                     rollback.get(application.getId()).getTeam().getApplications().remove(application);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(rollback.get(application.getId()).getTeam());
+                    em.merge(rollback.get(application.getId()).getTeam());
                 }
                 if (application.getTeam()!=null) {
                     application.getTeam().getApplications().add(application);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application.getTeam());
+                    em.merge(application.getTeam());
                 }
             }
             for (OSInstance osInstance : rollback.get(application.getId()).getOsInstances()) {
                 if (!application.getOsInstances().contains(osInstance)) {
                     osInstance.setOsType(null);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
+                    em.merge(osInstance);
                 }
             }
             for (OSInstance osInstance : application.getOsInstances()) {
                 if (!rollback.get(application.getId()).getOsInstances().contains(osInstance)){
                     osInstance.getApplications().add(application);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
+                    em.merge(osInstance);
                 }
             }
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application);
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+            em.merge(application);
+
+            em.flush();
+            em.getTransaction().commit();
             rollback.put(application.getId(), application);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Application updated successfully !",
@@ -225,40 +235,8 @@ public class ApplicationsListController implements Serializable {
                                                        "Throwable raised while updeting Application " + rollback.get(application.getId()).getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
-/*
-            FacesMessage msg2;
-            int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-            switch(txStatus) {
-                case Status.STATUS_NO_TRANSACTION:
-                    msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                   "Operation canceled !",
-                                                   "Operation : Application " + rollback.get(application.getId()).getName() + " update.");
-                    break;
-                case Status.STATUS_MARKED_ROLLBACK:
-                    try {
-                        log.debug("Rollback operation !");
-                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation rollbacked !",
-                                                       "Operation : Application " + rollback.get(application.getId()) + " update.");
-
-                    } catch (Throwable t2) {
-                        t2.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Error while rollbacking operation !",
-                                                       "Operation : Application " + rollback.get(application.getId()) + " update.");
-                    }
-                    break;
-                default:
-                    msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                   "Operation canceled ! ("+txStatus+")",
-                                                   "Operation : Application " + rollback.get(application.getId()) + " update.");
-                    break;
-            }
-            FacesContext.getCurrentInstance().addMessage(null, msg2);
-*/
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
         }
     }
 
@@ -269,20 +247,19 @@ public class ApplicationsListController implements Serializable {
         log.debug("Remove selected Application !");
         for (Application application: selectedApplicationList) {
             try {
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+                em.getTransaction().begin();
                 for (OSInstance osInstance : application.getOsInstances()) {
                     osInstance.getApplications().remove(application);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
+                    em.merge(osInstance);
                 }
                 if (application.getTeam()!=null) {
                     application.getTeam().getApplications().remove(application);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application.getTeam());
+                    em.merge(application.getTeam());
                 }
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().remove(application);
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+                em.remove(application);
+
+                em.flush();
+                em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "Application deleted successfully !",
                                                            "Application name : " + application.getName());
@@ -294,45 +271,8 @@ public class ApplicationsListController implements Serializable {
                                                            "Throwable raised while creating Application " + application.getName() + " !",
                                                            "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
-/*
-                try {
-                    FacesMessage msg2;
-                    int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-                    switch(txStatus) {
-                        case Status.STATUS_NO_TRANSACTION:
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation canceled !",
-                                                           "Operation : Application " + application.getName() + " deletion.");
-                            break;
-                        case Status.STATUS_MARKED_ROLLBACK:
-                            try {
-                                log.debug("Rollback operation !");
-                                JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                                msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                               "Operation rollbacked !",
-                                                               "Operation : Application " + application.getName() + " deletion.");
-                                FacesContext.getCurrentInstance().addMessage(null, msg2);
-                            } catch (SystemException e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                               "Error while rollbacking operation !",
-                                                               "Operation : Application " + application.getName() + " deletion.");
-                                FacesContext.getCurrentInstance().addMessage(null, msg2);
-                            }
-                            break;
-                        default:
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation canceled ! ("+txStatus+")",
-                                                           "Operation : Application " + application.getName() + " deletion.");
-                            break;
-                    }
-                    FacesContext.getCurrentInstance().addMessage(null, msg2);
-                } catch (SystemException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-*/
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
             }
         }
         selectedApplicationList=null;
@@ -341,21 +281,51 @@ public class ApplicationsListController implements Serializable {
     /*
      * Application join tool
      */
-    public static List<Application> getAll() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
+    public static List<Application> getAll(EntityManager em) throws SystemException, NotSupportedException {
+        log.debug("Get all applications from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                         new Object[]{
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                         });
+        CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Application> criteria = builder.createQuery(Application.class);
         Root<Application> root = criteria.from(Application.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
+
+        List<Application> ret = em.createQuery(criteria).getResultList();
+        // Refresh return list entities as operations can occurs on them from != em
+        for(Application application : ret) {
+            em.refresh(application);
+        }
+        return ret;
     }
 
-    public static List<Application> getAllForSelector() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
+    public static List<Application> getAllForSelector(EntityManager em) throws SystemException, NotSupportedException {
+        log.debug("Get all applications from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                         new Object[]{
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                         });
+        CriteriaBuilder builder  = em.getCriteriaBuilder();
         CriteriaQuery<Application> criteria = builder.createQuery(Application.class);
         Root<Application> root = criteria.from(Application.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        List<Application> list =  JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
+        List<Application> list =  em.createQuery(criteria).getResultList();
+        // Refresh return list entities as operations can occurs on them from != em
+        for(Application application : list) {
+            em.refresh(application);
+        }
         list.add(0, new Application().setNameR("Select Application"));
         return list;
     }

@@ -21,6 +21,7 @@ package com.spectral.cc.core.directory.commons.controller.organisational.environ
 
 import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.commons.controller.technical.system.OSInstance.OSInstancesListController;
+import com.spectral.cc.core.directory.commons.model.organisational.Company;
 import com.spectral.cc.core.directory.commons.model.organisational.Environment;
 import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
 import org.primefaces.event.ToggleEvent;
@@ -28,8 +29,10 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -43,16 +46,24 @@ public class EnvironmentsListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(EnvironmentsListController.class);
 
+    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+
     private HashMap<Long, Environment> rollback = new HashMap<Long, Environment>();
 
-    private LazyDataModel<Environment> lazyModel ;
+    private LazyDataModel<Environment> lazyModel = new EnvironmentLazyModel().setEntityManager(em);
     private Environment[]              selectedEnvironmentList ;
 
     private HashMap<Long,String>           addedOSInstance    = new HashMap<Long, String>();
     private HashMap<Long,List<OSInstance>> removedOSInstances = new HashMap<Long, List<OSInstance>>();
 
-    public EnvironmentsListController() {
-        lazyModel = new EnvironmentLazyModel().setEntityManager(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM());
+    @PreDestroy
+    public void clean() {
+        log.debug("Close entity manager");
+        em.close();
+    }
+
+    public EntityManager getEm() {
+        return em;
     }
 
     /*
@@ -90,7 +101,7 @@ public class EnvironmentsListController implements Serializable {
     }
 
     public void syncAddedOSInstance(Environment environment) throws NotSupportedException, SystemException {
-        for (OSInstance osInstance: OSInstancesListController.getAll()) {
+        for (OSInstance osInstance: OSInstancesListController.getAll(em)) {
             if (osInstance.getName().equals(this.addedOSInstance.get(environment.getId()))) {
                 environment.getOsInstances().add(osInstance);
             }
@@ -130,24 +141,23 @@ public class EnvironmentsListController implements Serializable {
 
     public void update(Environment environment) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
         try {
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(environment);
+            em.getTransaction().begin();
+            em.merge(environment);
             for (OSInstance osInstance : rollback.get(environment.getId()).getOsInstances()) {
                 if (!environment.getOsInstances().contains(osInstance)) {
                     osInstance.getEnvironments().remove(environment);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
+                    em.merge(osInstance);
                 }
             }
             for (OSInstance osInstance : environment.getOsInstances()) {
                 if (!rollback.get(environment.getId()).getOsInstances().contains(osInstance)){
                     osInstance.getEnvironments().add(environment);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
+                    em.merge(osInstance);
                 }
             }
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+
+            em.flush();
+            em.getTransaction().commit();
             rollback.put(environment.getId(), environment);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Environment updated successfully !",
@@ -160,40 +170,8 @@ public class EnvironmentsListController implements Serializable {
                                                        "Throwable raised while updating Environment " + rollback.get(environment.getId()).getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
-/*
-            FacesMessage msg2;
-            int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-            switch(txStatus) {
-                case Status.STATUS_NO_TRANSACTION:
-                    msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                   "Operation canceled !",
-                                                   "Operation : Environment " + rollback.get(environment.getId()).getName() + " update.");
-                    break;
-                case Status.STATUS_MARKED_ROLLBACK:
-                    try {
-                        log.debug("Rollback operation !");
-                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation rollbacked !",
-                                                       "Operation : Environment " + rollback.get(environment.getId()) + " update.");
-
-                    } catch (Throwable t2) {
-                        t2.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Error while rollbacking operation !",
-                                                       "Operation : Environment " + rollback.get(environment.getId()) + " update.");
-                    }
-                    break;
-                default:
-                    msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                   "Operation canceled ! ("+txStatus+")",
-                                                   "Operation : Environment " + rollback.get(environment.getId()) + " update.");
-                    break;
-            }
-            FacesContext.getCurrentInstance().addMessage(null, msg2);
-*/
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
         }
     }
 
@@ -204,12 +182,11 @@ public class EnvironmentsListController implements Serializable {
         log.debug("Remove selected Environment !");
         for (Environment environment: selectedEnvironmentList) {
             try {
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().remove(environment);
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+                em.getTransaction().begin();
+                em.remove(environment);
+
+                em.flush();
+                em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "Environment deleted successfully !",
                                                            "Environment name : " + environment.getName());
@@ -221,43 +198,8 @@ public class EnvironmentsListController implements Serializable {
                                                            "Throwable raised while creating Environment " + environment.getName() + " !",
                                                            "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-/*
-                try {
-                    FacesMessage msg2;
-                    int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-                    switch(txStatus) {
-                        case Status.STATUS_NO_TRANSACTION:
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation canceled !",
-                                                           "Operation : Environment " + environment.getName() + " deletion.");
-                            break;
-                        case Status.STATUS_MARKED_ROLLBACK:
-                            try {
-                                log.debug("Rollback operation !");
-                                JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                                msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                               "Operation rollbacked !",
-                                                               "Operation : Environment " + environment.getName() + " deletion.");
-                                FacesContext.getCurrentInstance().addMessage(null, msg2);
-                            } catch (SystemException e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                               "Error while rollbacking operation !",
-                                                               "Operation : Environment " + environment.getName() + " deletion.");
-                                FacesContext.getCurrentInstance().addMessage(null, msg2);
-                            }
-                            break;
-                        default:
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation canceled ! ("+txStatus+")",
-                                                           "Operation : Environment " + environment.getName() + " deletion.");
-                            break;
-                    }
-                    FacesContext.getCurrentInstance().addMessage(null, msg2);
-                } catch (SystemException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-*/
+                if(em.getTransaction().isActive())
+                    em.getTransaction().rollback();
             }
         }
         selectedEnvironmentList=null;
@@ -266,21 +208,51 @@ public class EnvironmentsListController implements Serializable {
     /*
      * Environment join tool
      */
-    public static List<Environment> getAll() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
+    public static List<Environment> getAll(EntityManager em) throws SystemException, NotSupportedException {
+        log.debug("Get all environments from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                         new Object[]{
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                         });
+        CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Environment> criteria = builder.createQuery(Environment.class);
         Root<Environment> root = criteria.from(Environment.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
+
+        List<Environment> ret = em.createQuery(criteria).getResultList();
+        // Refresh return list entities as operations can occurs on them from != em
+        for(Environment environment : ret) {
+            em.refresh(environment);
+        }
+        return ret;
     }
 
-    public static List<Environment> getAllForSelector() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
+    public static List<Environment> getAllForSelector(EntityManager em) throws SystemException, NotSupportedException {
+        log.debug("Get all environments from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                         new Object[]{
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                         });
+        CriteriaBuilder builder  = em.getCriteriaBuilder();
         CriteriaQuery<Environment> criteria = builder.createQuery(Environment.class);
         Root<Environment> root = criteria.from(Environment.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        List<Environment> list =  JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
+        List<Environment> list =  em.createQuery(criteria).getResultList();
+        // Refresh return list entities as operations can occurs on them from != em
+        for(Environment environment : list) {
+            em.refresh(environment);
+        }
         list.add(0, new Environment().setNameR("Select environment"));
         return list;
     }

@@ -27,6 +27,7 @@ import com.spectral.cc.core.directory.commons.controller.technical.system.OSType
 import com.spectral.cc.core.directory.commons.model.organisational.Application;
 import com.spectral.cc.core.directory.commons.model.organisational.Environment;
 import com.spectral.cc.core.directory.commons.model.organisational.Team;
+import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
 import com.spectral.cc.core.directory.commons.model.technical.network.Subnet;
 import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
 import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
@@ -35,8 +36,10 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -52,9 +55,11 @@ public class OSInstancesListController implements Serializable{
     private static final long   serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(OSInstancesListController.class);
 
+    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+
     private HashMap<Long, OSInstance> rollback = new HashMap<Long, OSInstance>();
 
-    private LazyDataModel<OSInstance> lazyModel ;
+    private LazyDataModel<OSInstance> lazyModel = new OSInstanceLazyModel().setEntityManager(em);
     private OSInstance[]              selectedOSInstanceList ;
 
     private HashMap<Long, String> changedOSType       = new HashMap<Long, String>();
@@ -75,8 +80,14 @@ public class OSInstancesListController implements Serializable{
     private HashMap<Long,String>     addedTeam   = new HashMap<Long,String>();
     private HashMap<Long,List<Team>> removedTeam = new HashMap<Long,List<Team>>();
 
-    public OSInstancesListController() {
-        lazyModel = new OSInstanceLazyModel().setEntityManager(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM());
+    @PreDestroy
+    public void clean() {
+        log.debug("Close entity manager");
+        em.close();
+    }
+
+    public EntityManager getEm() {
+        return em;
     }
 
     /*
@@ -114,7 +125,7 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncOSType(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for(OSType osType: OSTypesListController.getAll()) {
+        for(OSType osType: OSTypesListController.getAll(em)) {
             String longName = osType.getName() + " - " + osType.getArchitecture();
             if (longName.equals(changedOSType.get(osInstance.getId()))) {
                 osInstance.setOsType(osType);
@@ -132,7 +143,7 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncEmbeddingOSI(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for(OSInstance osInstance1: OSInstancesListController.getAll()) {
+        for(OSInstance osInstance1: OSInstancesListController.getAll(em)) {
             if (osInstance1.getName().equals(changedEmbeddingOSI.get(osInstance.getId())) && !osInstance1.getName().equals(osInstance.getName())) {
                 osInstance.setEmbeddingOSInstance(osInstance1);
                 break;
@@ -149,7 +160,7 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncAddedSubnet(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for (Subnet subnet : SubnetsListController.getAll())
+        for (Subnet subnet : SubnetsListController.getAll(em))
             if (subnet.getName().equals(this.addedSubnet.get(osInstance.getId())))
                 osInstance.getNetworkSubnets().add(subnet);
     }
@@ -177,7 +188,7 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncAddedEnv(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for (Environment environment: EnvironmentsListController.getAll())
+        for (Environment environment: EnvironmentsListController.getAll(em))
             if (environment.getName().equals(this.addedEnv.get(osInstance.getId())))
                 osInstance.getEnvironments().add(environment);
     }
@@ -205,7 +216,7 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncAddedEmbeddedOSI(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for (OSInstance osInstance1: OSInstancesListController.getAll())
+        for (OSInstance osInstance1: OSInstancesListController.getAll(em))
             if (osInstance1.getName().equals(this.addedEmbeddedOSI.get(osInstance.getId())))
                 osInstance.getEmbeddedOSInstances().add(osInstance1);
     }
@@ -233,7 +244,7 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncAddedApplication(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for (Application application: ApplicationsListController.getAll())
+        for (Application application: ApplicationsListController.getAll(em))
             if (application.getName().equals(this.addedApplication.get(osInstance.getId())))
                 osInstance.getApplications().add(application);
     }
@@ -261,7 +272,7 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncAddedTeam(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for (Team team: TeamsListController.getAll())
+        for (Team team: TeamsListController.getAll(em))
             if (team.getName().equals(this.addedTeam.get(osInstance.getId())))
                 osInstance.getTeams().add(team);
     }
@@ -318,94 +329,92 @@ public class OSInstancesListController implements Serializable{
 
     public void update(OSInstance osInstance) {
         try {
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            em.getTransaction().begin();
             if (osInstance.getOsType()!=rollback.get(osInstance.getId()).getOsType()) {
                 if (rollback.get(osInstance.getId()).getOsType()!=null) {
                     rollback.get(osInstance.getId()).getOsType().getOsInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(rollback.get(osInstance.getId()).getOsType());
+                    em.merge(rollback.get(osInstance.getId()).getOsType());
                 }
                 if (osInstance.getOsType()!=null) {
                     osInstance.getOsType().getOsInstances().add(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance.getOsType());
+                    em.merge(osInstance.getOsType());
                 }
             }
             if (osInstance.getEmbeddingOSInstance()!=rollback.get(osInstance.getId()).getEmbeddingOSInstance()) {
                 if (rollback.get(osInstance.getId()).getEmbeddingOSInstance()!=null) {
                     rollback.get(osInstance.getId()).getEmbeddingOSInstance().getEmbeddedOSInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(rollback.get(osInstance.getId()).getOsType());
+                    em.merge(rollback.get(osInstance.getId()).getOsType());
                 }
                 if (osInstance.getEmbeddingOSInstance()!=null) {
                     osInstance.getEmbeddingOSInstance().getEmbeddedOSInstances().add(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance.getEmbeddingOSInstance());
+                    em.merge(osInstance.getEmbeddingOSInstance());
                 }
             }
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
+            em.merge(osInstance);
             for (Environment environment: osInstance.getEnvironments()) {
                 if (!rollback.get(osInstance.getId()).getEnvironments().contains(environment)) {
                     environment.getOsInstances().add(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(environment);
+                    em.merge(environment);
                 }
             }
             for (Environment environment: rollback.get(osInstance.getId()).getEnvironments()) {
                 if (!osInstance.getEnvironments().contains(environment)) {
                     environment.getOsInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(environment);
+                    em.merge(environment);
                 }
             }
             for (Subnet subnet : osInstance.getNetworkSubnets()) {
                 if (!rollback.get(osInstance.getId()).getNetworkSubnets().contains(subnet)) {
                     subnet.getOsInstances().add(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(subnet);
+                    em.merge(subnet);
                 }
             }
             for (Subnet subnet : rollback.get(osInstance.getId()).getNetworkSubnets()) {
                 if (!osInstance.getNetworkSubnets().contains(subnet)) {
                     subnet.getOsInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(subnet);
+                    em.merge(subnet);
                 }
             }
             for (OSInstance osi : osInstance.getEmbeddedOSInstances()) {
                 if (!rollback.get(osInstance.getId()).getEmbeddedOSInstances().contains(osi)) {
                     osi.setEmbeddingOSInstance(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osi);
+                    em.merge(osi);
                 }
             }
             for(OSInstance osi : rollback.get(osInstance.getId()).getEmbeddedOSInstances()) {
                 if (!osInstance.getEmbeddedOSInstances().contains(osi)) {
                     osi.setEmbeddingOSInstance(null);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osi);
+                    em.merge(osi);
                 }
             }
             for (Application application : osInstance.getApplications()) {
                 if (!rollback.get(osInstance.getId()).getApplications().contains(application)) {
                     application.getOsInstances().add(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application);
+                    em.merge(application);
                 }
             }
             for(Application application : rollback.get(osInstance.getId()).getApplications()) {
                 if (!osInstance.getApplications().contains(application)) {
                     application.getOsInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application);
+                    em.merge(application);
                 }
             }
             for (Team team : osInstance.getTeams()) {
                 if (!rollback.get(osInstance.getId()).getTeams().contains(team)) {
                     team.getOsInstances().add(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(team);
+                    em.merge(team);
                 }
             }
             for(Team team : rollback.get(osInstance.getId()).getTeams()) {
                 if (!osInstance.getTeams().contains(team)) {
                     team.getOsInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(team);
+                    em.merge(team);
                 }
             }
 
 
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+            em.flush();
+            em.getTransaction().commit();
             rollback.put(osInstance.getId(), osInstance);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "OS Instance updated successfully !",
@@ -418,45 +427,8 @@ public class OSInstancesListController implements Serializable{
                                                        "Throwable raised while updating OS Instance " + rollback.get(osInstance.getId()).getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
-/*
-            try {
-                FacesMessage msg2;
-                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-                switch(txStatus) {
-                    case Status.STATUS_NO_TRANSACTION:
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation canceled !",
-                                                       "Operation : OS Instance " + rollback.get(osInstance.getId()).getName() + " update.");
-                        break;
-                    case Status.STATUS_MARKED_ROLLBACK:
-                        try {
-                            log.debug("Rollback operation !");
-                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation rollbacked !",
-                                                           "Operation : OS Instance " + rollback.get(osInstance.getId()).getName() + " update.");
-                            FacesContext.getCurrentInstance().addMessage(null, msg2);
-                        } catch (SystemException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                           "Error while rollbacking operation !",
-                                                           "Operation : OS Instance " + rollback.get(osInstance.getId()).getName() + " update.");
-                            FacesContext.getCurrentInstance().addMessage(null, msg2);
-                        }
-                        break;
-                    default:
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation canceled ! ("+txStatus+")",
-                                                       "Operation : OS Instance " + rollback.get(osInstance.getId()).getName() + " update.");
-                        break;
-                }
-                FacesContext.getCurrentInstance().addMessage(null, msg2);
-            } catch (SystemException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-*/
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
         }
     }
 
@@ -467,40 +439,39 @@ public class OSInstancesListController implements Serializable{
         log.debug("Remove selected Subnet !");
         for (OSInstance osInstance: selectedOSInstanceList) {
             try {
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+                em.getTransaction().begin();
                 if (osInstance.getOsType()!=null) {
                     osInstance.getOsType().getOsInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance.getOsType());
+                    em.merge(osInstance.getOsType());
                 }
                 for (Environment environment : osInstance.getEnvironments()) {
                     environment.getOsInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(environment);
+                    em.merge(environment);
                 }
                 for (Subnet subnet : osInstance.getNetworkSubnets()) {
                     subnet.getOsInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(subnet);
+                    em.merge(subnet);
                 }
                 if (osInstance.getEmbeddingOSInstance()!=null) {
                     osInstance.getEmbeddingOSInstance().getEmbeddedOSInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance.getEmbeddingOSInstance());
+                    em.merge(osInstance.getEmbeddingOSInstance());
                 }
                 for (OSInstance osi: osInstance.getEmbeddedOSInstances()) {
                     osi.setEmbeddingOSInstance(null);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osi);
+                    em.merge(osi);
                 }
                 for (Application application: osInstance.getApplications()) {
                     application.getOsInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application);
+                    em.merge(application);
                 }
                 for (Team team: osInstance.getTeams()) {
                     team.getOsInstances().remove(osInstance);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(team);
+                    em.merge(team);
                 }
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().remove(osInstance);
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+                em.remove(osInstance);
+
+                em.flush();
+                em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "OS Instance deleted successfully !",
                                                            "OS Instance name : " + osInstance.getName());
@@ -512,43 +483,8 @@ public class OSInstancesListController implements Serializable{
                                                            "Throwable raised while deleting OS Instance " + osInstance.getName() + " !",
                                                            "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-/*
-                try {
-                    FacesMessage msg2;
-                    int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-                    switch(txStatus) {
-                        case Status.STATUS_NO_TRANSACTION:
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation canceled !",
-                                                           "Operation : OS Instance " + osInstance.getName() + " deletion.");
-                            break;
-                        case Status.STATUS_MARKED_ROLLBACK:
-                            try {
-                                log.debug("Rollback operation !");
-                                JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                                msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                               "Operation rollbacked !",
-                                                               "Operation : OS Instance " + osInstance.getName() + " deletion.");
-                                FacesContext.getCurrentInstance().addMessage(null, msg2);
-                            } catch (SystemException e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                               "Error while rollbacking operation !",
-                                                               "Operation : OS Instance " + osInstance.getName() + " deletion.");
-                                FacesContext.getCurrentInstance().addMessage(null, msg2);
-                            }
-                            break;
-                        default:
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation canceled ! ("+txStatus+")",
-                                                           "Operation : OS Instance " + osInstance.getName() + " deletion.");
-                            break;
-                    }
-                    FacesContext.getCurrentInstance().addMessage(null, msg2);
-                } catch (SystemException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-*/
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
             }
         }
         selectedOSInstanceList=null;
@@ -558,21 +494,51 @@ public class OSInstancesListController implements Serializable{
     /*
      * OSInstance join tools
      */
-    public static List<OSInstance> getAll() {
-        CriteriaBuilder        builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
+    public static List<OSInstance> getAll(EntityManager em) {
+        log.debug("Get all OSInstances from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                         new Object[]{
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                         });
+        CriteriaBuilder        builder  = em.getCriteriaBuilder();
         CriteriaQuery<OSInstance> criteria = builder.createQuery(OSInstance.class);
         Root<OSInstance>       root     = criteria.from(OSInstance.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
+
+        List<OSInstance> ret = em.createQuery(criteria).getResultList();
+        // Refresh return list entities as operations can occurs on them from != em
+        for(OSInstance osi : ret) {
+            em.refresh(osi);
+        }
+        return ret;
     }
 
-    public static List<OSInstance> getAllForSelector() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
+    public static List<OSInstance> getAllForSelector(EntityManager em) throws SystemException, NotSupportedException {
+        log.debug("Get all OSInstances from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                         new Object[]{
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                         });
+        CriteriaBuilder builder  = em.getCriteriaBuilder();
         CriteriaQuery<OSInstance> criteria = builder.createQuery(OSInstance.class);
         Root<OSInstance> root = criteria.from(OSInstance.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        List<OSInstance> list =  JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
+        List<OSInstance> list =  em.createQuery(criteria).getResultList();
+        // Refresh return list entities as operations can occurs on them from != em
+        for(OSInstance osi : list) {
+            em.refresh(osi);
+        }
         list.add(0, new OSInstance().setNameR("None"));
         return list;
     }

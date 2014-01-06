@@ -23,6 +23,7 @@ import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
 import com.spectral.cc.core.directory.commons.controller.organisational.application.ApplicationsListController;
 import com.spectral.cc.core.directory.commons.controller.technical.system.OSInstance.OSInstancesListController;
 import com.spectral.cc.core.directory.commons.model.organisational.Application;
+import com.spectral.cc.core.directory.commons.model.organisational.Environment;
 import com.spectral.cc.core.directory.commons.model.organisational.Team;
 import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
 import org.primefaces.event.ToggleEvent;
@@ -30,8 +31,10 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -45,9 +48,11 @@ public class TeamsListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(TeamsListController.class);
 
+    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+
     private HashMap<Long, Team> rollback = new HashMap<Long, Team>();
 
-    private LazyDataModel<Team> lazyModel ;
+    private LazyDataModel<Team> lazyModel = new TeamLazyModel().setEntityManager(em) ;
     private Team[]              selectedTeamList ;
 
     private HashMap<Long,String>           addedOSInstance    = new HashMap<Long, String>();
@@ -56,8 +61,14 @@ public class TeamsListController implements Serializable {
     private HashMap<Long,String>            addedApplication    = new HashMap<Long, String>();
     private HashMap<Long,List<Application>> removedApplications = new HashMap<Long, List<Application>>();
 
-    public TeamsListController() {
-        lazyModel = new TeamLazyModel().setEntityManager(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM());
+    @PreDestroy
+    public void clean() {
+        log.debug("Close entity manager");
+        em.close();
+    }
+
+    public EntityManager getEm() {
+        return em;
     }
 
     /*
@@ -95,7 +106,7 @@ public class TeamsListController implements Serializable {
     }
 
     public void syncAddedOSInstance(Team team) throws NotSupportedException, SystemException {
-        for (OSInstance osInstance: OSInstancesListController.getAll()) {
+        for (OSInstance osInstance: OSInstancesListController.getAll(em)) {
             if (osInstance.getName().equals(this.addedOSInstance.get(team.getId()))) {
                 team.getOsInstances().add(osInstance);
             }
@@ -126,7 +137,7 @@ public class TeamsListController implements Serializable {
     }
 
     public void syncAddedApplication(Team team) throws NotSupportedException, SystemException {
-        for (Application application: ApplicationsListController.getAll()) {
+        for (Application application: ApplicationsListController.getAll(em)) {
             if (application.getName().equals(this.addedApplication.get(team.getId()))) {
                 team.getApplications().add(application);
             }
@@ -170,36 +181,35 @@ public class TeamsListController implements Serializable {
 
     public void update(Team team) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
         try {
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            em.getTransaction().begin();
             for (OSInstance osInstance : rollback.get(team.getId()).getOsInstances()) {
                 if (!team.getOsInstances().contains(osInstance)) {
                     osInstance.getTeams().remove(team);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
+                    em.merge(osInstance);
                 }
             }
             for (OSInstance osInstance : team.getOsInstances()) {
                 if (!rollback.get(team.getId()).getOsInstances().contains(osInstance)){
                     osInstance.getTeams().add(team);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
+                    em.merge(osInstance);
                 }
             }
             for (Application application : rollback.get(team.getId()).getApplications()) {
                 if (!team.getApplications().contains(application)) {
                     application.setTeam(null);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application);
+                    em.merge(application);
                 }
             }
             for (Application application : team.getApplications()) {
                 if (!rollback.get(team.getId()).getApplications().contains(application)){
                     application.setTeam(team);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application);
+                    em.merge(application);
                 }
             }
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(team);
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+            em.merge(team);
+
+            em.flush();
+            em.getTransaction().commit();
             rollback.put(team.getId(), team);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Team updated successfully !",
@@ -212,40 +222,8 @@ public class TeamsListController implements Serializable {
                                                        "Throwable raised while updating Team " + rollback.get(team.getId()).getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
-/*
-            FacesMessage msg2;
-            int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-            switch(txStatus) {
-                case Status.STATUS_NO_TRANSACTION:
-                    msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                   "Operation canceled !",
-                                                   "Operation : Team " + rollback.get(team.getId()).getName() + " update.");
-                    break;
-                case Status.STATUS_MARKED_ROLLBACK:
-                    try {
-                        log.debug("Rollback operation !");
-                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation rollbacked !",
-                                                       "Operation : Team " + rollback.get(team.getId()) + " update.");
-
-                    } catch (Throwable t2) {
-                        t2.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Error while rollbacking operation !",
-                                                       "Operation : Team " + rollback.get(team.getId()) + " update.");
-                    }
-                    break;
-                default:
-                    msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                   "Operation canceled ! ("+txStatus+")",
-                                                   "Operation : Team " + rollback.get(team.getId()) + " update.");
-                    break;
-            }
-            FacesContext.getCurrentInstance().addMessage(null, msg2);
-*/
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
         }
     }
 
@@ -256,12 +234,11 @@ public class TeamsListController implements Serializable {
         log.debug("Remove selected Team !");
         for (Team team: selectedTeamList) {
             try {
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().remove(team);
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+                em.getTransaction().begin();
+                em.remove(team);
+
+                em.flush();
+                em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "Team deleted successfully !",
                                                            "Team name : " + team.getName());
@@ -273,43 +250,8 @@ public class TeamsListController implements Serializable {
                                                            "Throwable raised while creating Team " + team.getName() + " !",
                                                            "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-/*
-                try {
-                    FacesMessage msg2;
-                    int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-                    switch(txStatus) {
-                        case Status.STATUS_NO_TRANSACTION:
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation canceled !",
-                                                           "Operation : Team " + team.getName() + " deletion.");
-                            break;
-                        case Status.STATUS_MARKED_ROLLBACK:
-                            try {
-                                log.debug("Rollback operation !");
-                                JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                                msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                               "Operation rollbacked !",
-                                                               "Operation : Team " + team.getName() + " deletion.");
-                                FacesContext.getCurrentInstance().addMessage(null, msg2);
-                            } catch (SystemException e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                               "Error while rollbacking operation !",
-                                                               "Operation : Team " + team.getName() + " deletion.");
-                                FacesContext.getCurrentInstance().addMessage(null, msg2);
-                            }
-                            break;
-                        default:
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation canceled ! ("+txStatus+")",
-                                                           "Operation : Team " + team.getName() + " deletion.");
-                            break;
-                    }
-                    FacesContext.getCurrentInstance().addMessage(null, msg2);
-                } catch (SystemException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-*/
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
             }
         }
         selectedTeamList=null;
@@ -318,21 +260,50 @@ public class TeamsListController implements Serializable {
     /*
      * Team join tool
      */
-    public static List<Team> getAll() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
+    public static List<Team> getAll(EntityManager em) throws SystemException, NotSupportedException {
+        log.debug("Get all teams from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                         new Object[]{
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                         });
+        CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Team> criteria = builder.createQuery(Team.class);
         Root<Team> root = criteria.from(Team.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
+        List<Team> ret = em.createQuery(criteria).getResultList();
+        // Refresh return list entities as operations can occurs on them from != em
+        for(Team team : ret) {
+            em.refresh(team);
+        }
+        return ret;
     }
 
-    public static List<Team> getAllForSelector() throws SystemException, NotSupportedException {
-        CriteriaBuilder builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
+    public static List<Team> getAllForSelector(EntityManager em) throws SystemException, NotSupportedException {
+        log.debug("Get all teams from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                         new Object[]{
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                         });
+        CriteriaBuilder builder  = em.getCriteriaBuilder();
         CriteriaQuery<Team> criteria = builder.createQuery(Team.class);
         Root<Team> root = criteria.from(Team.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        List<Team> list =  JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
+        List<Team> list =  em.createQuery(criteria).getResultList();
+        // Refresh return list entities as operations can occurs on them from != em
+        for(Team team : list) {
+            em.refresh(team);
+        }
         list.add(0, new Team().setNameR("Select team"));
         return list;
     }

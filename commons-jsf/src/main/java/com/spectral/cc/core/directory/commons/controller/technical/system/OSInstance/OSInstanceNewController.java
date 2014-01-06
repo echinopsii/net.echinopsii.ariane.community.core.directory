@@ -33,8 +33,10 @@ import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import java.io.Serializable;
@@ -46,6 +48,14 @@ import java.util.Set;
 public class OSInstanceNewController implements Serializable{
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(OSInstanceNewController.class);
+
+    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+
+    @PreDestroy
+    public void clean() {
+        log.debug("Close entity manager");
+        em.close();
+    }
 
     private String name;
     private String description;
@@ -68,6 +78,10 @@ public class OSInstanceNewController implements Serializable{
 
     private List<String>     appsToBind = new ArrayList<String>();
     private Set<Application> apps       = new HashSet<Application>();
+
+    public EntityManager getEm() {
+        return em;
+    }
 
     public String getName() {
         return name;
@@ -111,7 +125,7 @@ public class OSInstanceNewController implements Serializable{
 
     private void syncOSType() throws NotSupportedException, SystemException {
         OSType type = null;
-        for (OSType osType1: OSTypesListController.getAll()) {
+        for (OSType osType1: OSTypesListController.getAll(em)) {
             String fullName = osType1.getName() + " - " + osType1.getArchitecture();
             log.debug("fullName:{};osType:{}",fullName,osType);
             if (fullName.equals(this.osType)) {
@@ -143,7 +157,7 @@ public class OSInstanceNewController implements Serializable{
 
     private void syncEmbingOSI() throws NotSupportedException, SystemException {
         OSInstance osInstance = null;
-        for (OSInstance osInstance1: OSInstancesListController.getAll()) {
+        for (OSInstance osInstance1: OSInstancesListController.getAll(em)) {
             if (osInstance1.getName().equals(this.embeddingOSI)) {
                 osInstance = osInstance1;
                 break;
@@ -172,7 +186,7 @@ public class OSInstanceNewController implements Serializable{
     }
 
     private void bindSelectedSubnets() throws NotSupportedException, SystemException {
-        for (Subnet subnet : SubnetsListController.getAll()) {
+        for (Subnet subnet : SubnetsListController.getAll(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM())) {
             for (String subnetToBind : subnetsToBind)
                 if (subnet.getName().equals(subnetToBind)) {
                     this.subnets.add(subnet);
@@ -199,7 +213,7 @@ public class OSInstanceNewController implements Serializable{
     }
 
     private void bindSelectedEnvs() throws NotSupportedException, SystemException {
-        for (Environment environment: EnvironmentsListController.getAll()) {
+        for (Environment environment: EnvironmentsListController.getAll(em)) {
             for (String envToBind : envsToBind)
                 if (environment.getName().equals(envToBind)) {
                     this.envs.add(environment);
@@ -226,7 +240,7 @@ public class OSInstanceNewController implements Serializable{
     }
 
     private void bindSelectedTeams() throws NotSupportedException, SystemException {
-        for (Team team: TeamsListController.getAll()) {
+        for (Team team: TeamsListController.getAll(em)) {
             for (String teamToBind : teamsToBind)
                 if (team.getName().equals(teamToBind)) {
                     this.teams.add(team);
@@ -253,7 +267,7 @@ public class OSInstanceNewController implements Serializable{
     }
 
     private void bindSelectedApps() throws NotSupportedException, SystemException {
-        for (Application application: ApplicationsListController.getAll()) {
+        for (Application application: ApplicationsListController.getAll(em)) {
             for (String envToBind : appsToBind)
                 if (application.getName().equals(envToBind)) {
                     this.apps.add(application);
@@ -264,7 +278,6 @@ public class OSInstanceNewController implements Serializable{
     }
 
     public void save() {
-        log.debug("Save new OSInstance {} !", new Object[]{name});
         try {
             syncOSType();
             syncEmbingOSI();
@@ -280,6 +293,7 @@ public class OSInstanceNewController implements Serializable{
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
+
         OSInstance osInstance = new OSInstance();
         osInstance.setName(name);
         osInstance.setDescription(description);
@@ -290,31 +304,31 @@ public class OSInstanceNewController implements Serializable{
         osInstance.setEnvironments(envs);
         osInstance.setTeams(teams);
         osInstance.setApplications(apps);
+
         try {
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(osInstance);
-            if (type!=null)  {type.getOsInstances().add(osInstance);  JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(type);}
+            em.getTransaction().begin();
+            em.persist(osInstance);
+            if (type!=null)  {type.getOsInstances().add(osInstance);  em.merge(type);}
             for(Application application : this.apps) {
                 application.getOsInstances().add(osInstance);
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(application);
+                em.merge(application);
             }
             for(Team team : this.teams) {
                 team.getOsInstances().add(osInstance);
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(team);
+                em.merge(team);
             }
             for(Environment env : this.envs) {
                 env.getOsInstances().add(osInstance);
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(env);
+                em.merge(env);
             }
             for (Subnet subnet : this.subnets) {
                 subnet.getOsInstances().add(osInstance);
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(subnet);
+                em.merge(subnet);
             }
-            if (embingOSI!=null) {embingOSI.getEmbeddedOSInstances().add(osInstance); JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(embingOSI);}
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+            if (embingOSI!=null) {embingOSI.getEmbeddedOSInstances().add(osInstance); em.merge(embingOSI);}
+            em.flush();
+            em.getTransaction().commit();
+            log.debug("Save new OSInstance {} !", new Object[]{name});
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "OSInstance created successfully !",
                                                        "OSInstance name : " + osInstance.getName());
@@ -326,45 +340,8 @@ public class OSInstanceNewController implements Serializable{
                                                        "Throwable raised while creating OS Instance " + osInstance.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
-/*
-            try {
-                FacesMessage msg2;
-                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-                switch(txStatus) {
-                    case Status.STATUS_NO_TRANSACTION:
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation canceled !",
-                                                       "Operation : OS Instance " + osInstance.getName() + " creation.");
-                        break;
-                    case Status.STATUS_MARKED_ROLLBACK:
-                        try {
-                            log.debug("Rollback operation !");
-                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation rollbacked !",
-                                                           "Operation : OS Instance " + osInstance.getName() + " creation.");
-                            FacesContext.getCurrentInstance().addMessage(null, msg2);
-                        } catch (SystemException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                           "Error while rollbacking operation !",
-                                                           "Operation : OS Instance " + osInstance.getName() + " creation.");
-                            FacesContext.getCurrentInstance().addMessage(null, msg2);
-                        }
-                        break;
-                    default:
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation canceled ! ("+txStatus+")",
-                                                       "Operation : OS Instance " + osInstance.getName() + " creation.");
-                        break;
-                }
-                FacesContext.getCurrentInstance().addMessage(null, msg2);
-            } catch (SystemException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-*/
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
         }
     }
 }

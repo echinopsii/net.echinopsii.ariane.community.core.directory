@@ -85,7 +85,7 @@
                             <h:outputText value="none - " rendered="#{app.company==null or app.company.name==null or app.company.name==''}"/>
                             <p:inplace label="Change application supporting company" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{applicationsListController.changedCompany[app.id]}">
-                                    <f:selectItems value="#{companysListController.getAllForSelector()}" var="cmp_"
+                                    <f:selectItems value="#{companysListController.getAllForSelector(applicationsListController.getEm())}" var="cmp_"
                                                    itemLabel="#{cmp_.name}" itemValue="#{cmp_.name}"/>
                                 </h:selectOneMenu>
                                 <p:ajax event="save" listener="#{applicationsListController.syncCompany(app)}" update="@form"/>
@@ -100,7 +100,7 @@
                             <h:outputText value="none - " rendered="#{app.team==null or app.team.name==null or app.team.name==''}"/>
                             <p:inplace label="Change application supporting team" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{applicationsListController.changedTeam[app.id]}">
-                                    <f:selectItems value="#{teamsListController.getAllForSelector()}" var="team_"
+                                    <f:selectItems value="#{teamsListController.getAllForSelector(applicationsListController.getEm())}" var="team_"
                                                    itemLabel="#{team_.name}" itemValue="#{team_.name}"/>
                                 </h:selectOneMenu>
                                 <p:ajax event="save" listener="#{applicationsListController.syncTeam(app)}" update="@form"/>
@@ -120,7 +120,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{applicationsListController.addedOSInstance[app.id]}">
-                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
+                                            <f:selectItems value="#{OSInstancesListController.getAll(applicationsListController.getEm())}" var="osi_"
                                                            itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{applicationsListController.syncAddedOSInstance(app)}"

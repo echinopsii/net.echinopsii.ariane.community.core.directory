@@ -26,8 +26,10 @@ import com.spectral.cc.core.directory.commons.model.technical.network.MulticastA
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 import javax.transaction.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,11 +42,23 @@ public class MulticastAreaNewController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(MulticastAreaNewController.class);
 
+    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+
+    @PreDestroy
+    public void clean() {
+        log.debug("Close entity manager");
+        em.close();
+    }
+
     private String name;
     private String description;
 
     private List<String> datacentersToBind = new ArrayList<String>();
     private Set<Datacenter> datacenters       = new HashSet<Datacenter>();
+
+    public EntityManager getEm() {
+        return em;
+    }
 
     public String getName() {
         return name;
@@ -79,7 +93,7 @@ public class MulticastAreaNewController implements Serializable {
     }
 
     private void bindSelectedDatacenters() throws NotSupportedException, SystemException {
-        for (Datacenter dc: DatacentersListController.getAll()) {
+        for (Datacenter dc: DatacentersListController.getAll(em)) {
             for (String dcToBind : datacentersToBind)
                 if (dc.getName().equals(dcToBind)) {
                     this.datacenters.add(dc);
@@ -90,7 +104,6 @@ public class MulticastAreaNewController implements Serializable {
     }
 
     public void save() throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
-        log.debug("Save new MulticastArea {} !", new Object[]{name});
         try {
             bindSelectedDatacenters();
         } catch (Exception e) {
@@ -105,16 +118,16 @@ public class MulticastAreaNewController implements Serializable {
         multicastArea.setName(name);
         multicastArea.setDescription(description);
         multicastArea.setDatacenters(datacenters);
+
         try {
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(multicastArea);
+            em.getTransaction().begin();
+            em.persist(multicastArea);
             for (Datacenter dc : multicastArea.getDatacenters()) {
-                dc.getMulticastAreas().add(multicastArea); JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
+                dc.getMulticastAreas().add(multicastArea); em.merge(dc);
             }
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+            em.flush();
+            em.getTransaction().commit();
+            log.debug("Save new MulticastArea {} !", new Object[]{name});
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Multicast area created successfully !",
                                                        "Multicast area name : " + multicastArea.getName());
@@ -126,40 +139,8 @@ public class MulticastAreaNewController implements Serializable {
                                                        "Throwable raised while creating multicast area " + multicastArea.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-
-            /*
-            FacesMessage msg2;
-            int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-            switch(txStatus) {
-                case Status.STATUS_NO_TRANSACTION:
-                    msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                   "Operation canceled !",
-                                                   "Operation : multicast area " + multicastArea.getName() + " creation.");
-                    break;
-                case Status.STATUS_MARKED_ROLLBACK:
-                    try {
-                        log.debug("Rollback operation !");
-                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                                    "Operation rollbacked !",
-                                                                    "Operation : multicast area " + multicastArea.getName() + " creation.");
-                        FacesContext.getCurrentInstance().addMessage(null, msg2);
-                    } catch (SystemException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                                    "Error while rollbacking operation !",
-                                                                    "Operation : multicast area " + multicastArea.getName() + " creation.");
-                        FacesContext.getCurrentInstance().addMessage(null, msg2);
-                    }
-                    break;
-                default:
-                    msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                   "Operation canceled ! ("+txStatus+")",
-                                                   "Operation : multicast area " + multicastArea.getName() + " creation.");
-                    break;
-            }
-            FacesContext.getCurrentInstance().addMessage(null, msg2);
-            */
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
         }
     }
 }

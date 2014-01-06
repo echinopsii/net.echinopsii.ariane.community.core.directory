@@ -66,7 +66,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select DC to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{multicastAreasListController.addedDC[marea.id]}">
-                                            <f:selectItems value="#{datacentersListController.getAll()}" var="dc_"
+                                            <f:selectItems value="#{datacentersListController.getAll(multicastAreasListController.getEm())}" var="dc_"
                                                            itemLabel="#{dc_.name}" itemValue="#{dc_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{multicastAreasListController.syncAddedDC(marea)}"
@@ -98,7 +98,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{multicastAreasListController.addedSubnet[marea.id]}">
-                                            <f:selectItems value="#{subnetsListController.getAll()}" var="subnet_"
+                                            <f:selectItems value="#{subnetsListController.getAll(multicastAreasListController.getEm())}" var="subnet_"
                                                            itemLabel="#{subnet_.name}" itemValue="#{subnet_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{multicastAreasListController.syncAddedSubnet(marea)}"

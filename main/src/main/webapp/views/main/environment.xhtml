@@ -62,7 +62,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{environmentsListController.addedOSInstance[env.id]}">
-                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
+                                            <f:selectItems value="#{OSInstancesListController.getAll(environmentsListController.getEm())}" var="osi_"
                                                            itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{environmentsListController.syncAddedOSInstance(env)}"

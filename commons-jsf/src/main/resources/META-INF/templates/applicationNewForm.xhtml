@@ -4,7 +4,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
-    <h:panelGrid id="applicationNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
+    <h:panelGrid id="applicationNewGrid" columns="2" columnClasses="colStyle30,colStyle70" cellpadding="5" styleClass="ui-widget-content grid">
 
         <h:outputText value="Name : " styleClass="inputTitle"/>
         <p:inputText id="name" label="Name" required="true" value="#{applicationNewController.name}"/>
@@ -21,7 +21,7 @@
                 <h:outputText value=" create new company"/>
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the company" value="#{applicationNewController.appCompany}">
-                <f:selectItems value="#{companysListController.getAllForSelector()}"  var="cmp"
+                <f:selectItems value="#{companysListController.getAllForSelector(applicationNewController.getEm())}"  var="cmp"
                                itemLabel="#{cmp.name}" itemValue="#{cmp.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>
@@ -32,7 +32,7 @@
                 <h:outputText value=" create new team"/>
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the team" value="#{applicationNewController.appTeam}">
-                <f:selectItems value="#{teamsListController.getAllForSelector()}"  var="team"
+                <f:selectItems value="#{teamsListController.getAllForSelector(applicationNewController.getEm())}"  var="team"
                                itemLabel="#{team.name}" itemValue="#{team.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>

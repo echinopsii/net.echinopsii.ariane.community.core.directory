@@ -20,6 +20,7 @@
 package com.spectral.cc.core.directory.commons.controller.technical.network.datacenter;
 
 import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
+import com.spectral.cc.core.directory.commons.model.technical.network.MulticastArea;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -75,6 +76,11 @@ public class DatacenterLazyModel extends LazyDataModel<Datacenter> {
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
+
+        // Refresh page items as operations can occurs on them from != em
+        for(Datacenter dc : this.pageItems) {
+            this.entityManager.refresh(dc);
+        }
     }
 
     @Override

@@ -19,6 +19,7 @@
 
 package com.spectral.cc.core.directory.commons.controller.technical.system.OSType;
 
+import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
 import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
@@ -78,6 +79,11 @@ public class OSTypeLazyModel extends LazyDataModel<OSType> {
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
+
+        // Refresh page items as operations can occurs on them from != em
+        for(OSType ost : this.pageItems) {
+            this.entityManager.refresh(ost);
+        }
     }
 
     @Override

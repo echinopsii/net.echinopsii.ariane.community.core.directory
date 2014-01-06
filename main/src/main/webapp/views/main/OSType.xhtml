@@ -61,7 +61,7 @@
                             <h:outputText value="none - " rendered="#{ost.company==null or ost.company.name==null or ost.company.name==''}"/>
                             <p:inplace label="Change supporting company" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{OSTypesListController.changedCompany[ost.id]}">
-                                    <f:selectItems value="#{companysListController.getAllForSelector()}" var="cmp_"
+                                    <f:selectItems value="#{companysListController.getAllForSelector(OSTypesListController.getEm())}" var="cmp_"
                                                    itemLabel="#{cmp_.name}" itemValue="#{cmp_.name}"/>
                                 </h:selectOneMenu>
                                 <p:ajax event="save" listener="#{OSTypesListController.syncCompany(ost)}" update="@form"/>
@@ -81,7 +81,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select OS instance to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSTypesListController.addedOSInstance[ost.id]}">
-                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
+                                            <f:selectItems value="#{OSInstancesListController.getAll(OSTypesListController.getEm())}" var="osi_"
                                                            itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSTypesListController.syncAddedOSInstance(ost)}"

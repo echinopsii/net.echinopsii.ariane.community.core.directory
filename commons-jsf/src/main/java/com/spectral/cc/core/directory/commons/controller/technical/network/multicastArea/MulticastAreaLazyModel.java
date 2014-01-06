@@ -78,6 +78,11 @@ public class MulticastAreaLazyModel extends LazyDataModel<MulticastArea> {
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
+
+        // Refresh page items as operations can occurs on them from != em
+        for(MulticastArea marea : this.pageItems) {
+            this.entityManager.refresh(marea);
+        }
     }
 
     @Override

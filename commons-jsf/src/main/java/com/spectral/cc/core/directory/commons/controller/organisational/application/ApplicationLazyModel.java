@@ -20,6 +20,7 @@
 package com.spectral.cc.core.directory.commons.controller.organisational.application;
 
 import com.spectral.cc.core.directory.commons.model.organisational.Application;
+import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -77,6 +78,11 @@ public class ApplicationLazyModel extends LazyDataModel<Application> {
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
+
+        // Refresh page items as operations can occurs on them from != em
+        for(Application application : this.pageItems) {
+            this.entityManager.refresh(application);
+        }
     }
 
     @Override

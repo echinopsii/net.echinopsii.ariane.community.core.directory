@@ -64,7 +64,7 @@
                         <h:form>
                             <p:inplace label="#{osi.osType.name} - #{osi.osType.architecture}" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{OSInstancesListController.changedOSType[osi.id]}">
-                                    <f:selectItems value="#{OSTypesListController.getAll()}" var="ost_"
+                                    <f:selectItems value="#{OSTypesListController.getAll(OSInstancesListController.getEm())}" var="ost_"
                                                    itemLabel="#{ost_.name} - #{ost_.architecture}" itemValue="#{ost_.name} - #{ost_.architecture}"/>
                                 </h:selectOneMenu>
                                 <p:ajax event="save" listener="#{OSInstancesListController.syncOSType(osi)}" />
@@ -84,7 +84,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select environment to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedEnv[osi.id]}">
-                                            <f:selectItems value="#{environmentsListController.getAll()}" var="env_"
+                                            <f:selectItems value="#{environmentsListController.getAll(OSInstancesListController.getEm())}" var="env_"
                                                            itemLabel="#{env_.name}" itemValue="#{env_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSInstancesListController.syncAddedEnv(osi)}"
@@ -110,7 +110,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select application to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedApplication[osi.id]}">
-                                            <f:selectItems value="#{applicationsListController.getAll()}" var="app_"
+                                            <f:selectItems value="#{applicationsListController.getAll(OSInstancesListController.getEm())}" var="app_"
                                                            itemLabel="#{app_.name}" itemValue="#{app_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSInstancesListController.syncAddedApplication(osi)}"
@@ -136,7 +136,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select team to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedTeam[osi.id]}">
-                                            <f:selectItems value="#{teamsListController.getAll()}" var="team_"
+                                            <f:selectItems value="#{teamsListController.getAll(OSInstancesListController.getEm())}" var="team_"
                                                            itemLabel="#{team_.name}" itemValue="#{team_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSInstancesListController.syncAddedTeam(osi)}"
@@ -162,7 +162,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedSubnet[osi.id]}">
-                                            <f:selectItems value="#{subnetsListController.getAll()}" var="ntw_"
+                                            <f:selectItems value="#{subnetsListController.getAll(OSInstancesListController.getEm())}" var="ntw_"
                                                            itemLabel="#{ntw_.name}" itemValue="#{ntw_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSInstancesListController.syncAddedSubnet(osi)}"
@@ -184,7 +184,7 @@
                             <h:outputText value="none - " rendered="#{osi.embeddingOSInstance==null or osi.embeddingOSInstance.name==null or osi.embeddingOSInstance.name==''}"/>
                             <p:inplace label="Change embedding OS Instance" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{OSInstancesListController.changedEmbeddingOSI[osi.id]}">
-                                    <f:selectItems value="#{OSInstancesListController.getAllForSelector()}" var="osi_"
+                                    <f:selectItems value="#{OSInstancesListController.getAllForSelector(OSInstancesListController.getEm())}" var="osi_"
                                                    itemLabel="#{osi_.embeddingOSInstance.name}" itemValue="#{osi_.embeddingOSInstance.name}"/>
                                 </h:selectOneMenu>
                                 <p:ajax event="save" listener="#{OSInstancesListController.syncEmbeddingOSI(osi)}" />
@@ -204,7 +204,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select embedded OS instance to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedEmbeddedOSI[osi.id]}">
-                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
+                                            <f:selectItems value="#{OSInstancesListController.getAll(OSInstancesListController.getEm())}" var="osi_"
                                                            itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSInstancesListController.syncAddedEmbeddedOSI(osi)}"

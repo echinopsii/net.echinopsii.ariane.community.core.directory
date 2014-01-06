@@ -77,6 +77,11 @@ public class OSInstanceLazyModel extends LazyDataModel<OSInstance> {
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
+
+        // Refresh page items as operations can occurs on them from != em
+        for(OSInstance osi : this.pageItems) {
+            this.entityManager.refresh(osi);
+        }
     }
 
     @Override

@@ -14,7 +14,7 @@
                 <h:outputText value=" create new company"/>
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the company" value="#{OSTypeNewController.osiCompany}">
-                <f:selectItems value="#{companysListController.getAllForSelector()}"  var="cmp"
+                <f:selectItems value="#{companysListController.getAllForSelector(OSTypeNewController.getEm())}"  var="cmp"
                                itemLabel="#{cmp.name}" itemValue="#{cmp.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>

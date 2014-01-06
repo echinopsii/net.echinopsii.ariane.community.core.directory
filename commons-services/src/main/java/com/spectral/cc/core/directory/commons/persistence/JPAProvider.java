@@ -23,9 +23,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 public interface JPAProvider {
-    public EntityManagerFactory getSharedEMF();
+    public EntityManager createEM();
     public EntityManager getSharedEM();
-
-    public EntityManager getLockedEM();
-    public void unlockEM(EntityManager em);
 }

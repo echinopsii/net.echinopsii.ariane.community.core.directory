@@ -62,7 +62,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{teamsListController.addedOSInstance[team.id]}">
-                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
+                                            <f:selectItems value="#{OSInstancesListController.getAll(teamsListController.getEm())}" var="osi_"
                                                            itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{teamsListController.syncAddedOSInstance(team)}"
@@ -88,7 +88,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select application to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{teamsListController.addedApplication[team.id]}">
-                                            <f:selectItems value="#{applicationsListController.getAll()}" var="app_"
+                                            <f:selectItems value="#{applicationsListController.getAll(teamsListController.getEm())}" var="app_"
                                                            itemLabel="#{app_.name}" itemValue="#{app_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{teamsListController.syncAddedApplication(team)}"

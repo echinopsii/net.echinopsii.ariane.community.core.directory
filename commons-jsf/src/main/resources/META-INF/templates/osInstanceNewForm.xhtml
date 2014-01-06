@@ -18,14 +18,14 @@
                 <h:outputText value=" create new OS Type"/>
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the OS instance type" value="#{OSInstanceNewController.osType}">
-                <f:selectItems value="#{OSTypesListController.getAllForSelector()}"  var="osT"
+                <f:selectItems value="#{OSTypesListController.getAllForSelector(OSInstanceNewController.getEm())}"  var="osT"
                                itemLabel="#{osT.name} - #{osT.architecture}" itemValue="#{osT.name} - #{osT.architecture}"/>
             </h:selectOneMenu>
         </h:panelGroup>
 
         <h:outputText value="Embedding OS Instance : " styleClass="inputTitle"/>
         <h:selectOneMenu label="Select the OS instance" value="#{OSInstanceNewController.embeddingOSI}">
-            <f:selectItems value="#{OSInstancesListController.getAllForSelector()}"  var="osI"
+            <f:selectItems value="#{OSInstancesListController.getAllForSelector(OSInstanceNewController.getEm())}"  var="osI"
                            itemLabel="#{osI.name}" itemValue="#{osI.name}"/>
         </h:selectOneMenu>
 
@@ -35,7 +35,7 @@
                 <h:outputText value=" create new team"/>
             </p:commandLink><br/>
             <p:selectManyMenu id="team" value="#{OSInstanceNewController.teamsToBind}" style="width:150px;height:100px">
-                <f:selectItems value="#{teamsListController.getAll()}"  var="team"
+                <f:selectItems value="#{teamsListController.getAll(OSInstanceNewController.getEm())}"  var="team"
                                itemLabel="#{team.name}" itemValue="#{team.name}"/>
             </p:selectManyMenu>
         </h:panelGroup>
@@ -46,7 +46,7 @@
                 <h:outputText value=" create new environment"/>
             </p:commandLink><br/>
             <p:selectManyMenu id="envs" value="#{OSInstanceNewController.envsToBind}" style="width:150px;height:100px">
-                <f:selectItems value="#{environmentsListController.getAll()}"  var="env"
+                <f:selectItems value="#{environmentsListController.getAll(OSInstanceNewController.getEm())}"  var="env"
                                itemLabel="#{env.name}" itemValue="#{env.name}"/>
             </p:selectManyMenu>
         </h:panelGroup>
@@ -57,7 +57,7 @@
                 <h:outputText value=" create new application"/>
             </p:commandLink><br/>
             <p:selectManyMenu id="app" value="#{OSInstanceNewController.appsToBind}" style="width:150px;height:100px">
-                <f:selectItems value="#{applicationsListController.getAll()}"  var="app"
+                <f:selectItems value="#{applicationsListController.getAll(OSInstanceNewController.getEm())}"  var="app"
                                itemLabel="#{app.name}" itemValue="#{app.name}"/>
             </p:selectManyMenu>
         </h:panelGroup>
@@ -68,7 +68,7 @@
                 <h:outputText value=" create new subnet"/>
             </p:commandLink><br/>
             <p:selectManyMenu id="subnets" value="#{OSInstanceNewController.subnetsToBind}" style="width:150px;height:100px">
-                <f:selectItems value="#{subnetsListController.getAll()}"  var="subnet"
+                <f:selectItems value="#{subnetsListController.getAll(OSInstanceNewController.getEm())}"  var="subnet"
                                itemLabel="#{subnet.name}" itemValue="#{subnet.name}"/>
             </p:selectManyMenu>
         </h:panelGroup>

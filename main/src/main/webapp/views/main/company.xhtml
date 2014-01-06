@@ -62,7 +62,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select OS types to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{companysListController.addedOSType[cmp.id]}">
-                                            <f:selectItems value="#{OSTypesListController.getAll()}" var="ost_"
+                                            <f:selectItems value="#{OSTypesListController.getAll(companysListController.getEm())}" var="ost_"
                                                            itemLabel="#{ost_.name}" itemValue="#{ost_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{companysListController.syncAddedOSType(cmp)}"
@@ -88,7 +88,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select application to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{companysListController.addedApplication[cmp.id]}">
-                                            <f:selectItems value="#{applicationsListController.getAll()}" var="app_"
+                                            <f:selectItems value="#{applicationsListController.getAll(companysListController.getEm())}" var="app_"
                                                            itemLabel="#{app_.name}" itemValue="#{app_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{companysListController.syncAddedApplication(cmp)}"

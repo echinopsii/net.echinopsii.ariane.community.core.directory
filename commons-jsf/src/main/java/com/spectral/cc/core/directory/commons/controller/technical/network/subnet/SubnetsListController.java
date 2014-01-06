@@ -32,8 +32,10 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -48,9 +50,11 @@ public class SubnetsListController implements Serializable {
     private static final long   serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(SubnetsListController.class);
 
+    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+
     private HashMap<Long, Subnet> rollback = new HashMap<Long, Subnet>();
 
-    private LazyDataModel<Subnet> lazyModel ;
+    private LazyDataModel<Subnet> lazyModel = new SubnetLazyModel().setEntityManager(em);
     private Subnet[] selectedSubnetList;
 
     private HashMap<Long, String> changedSubnetType = new HashMap<Long, String>();
@@ -62,8 +66,14 @@ public class SubnetsListController implements Serializable {
     private HashMap<Long,String>           addedOSI    = new HashMap<Long, String>();
     private HashMap<Long,List<OSInstance>> removedOSIs = new HashMap<Long, List<OSInstance>>();
 
-    public SubnetsListController() {
-        lazyModel = new SubnetLazyModel().setEntityManager(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM());
+    @PreDestroy
+    public void clean() {
+        log.debug("Close entity manager");
+        em.close();
+    }
+
+    public EntityManager getEm() {
+        return em;
     }
 
     /*
@@ -94,7 +104,7 @@ public class SubnetsListController implements Serializable {
 
     public void syncSubnetType(Subnet subnet) throws NotSupportedException, SystemException {
         SubnetType type = null;
-        for(SubnetType ltype: getAllSubnetTypes()) {
+        for(SubnetType ltype: getAllSubnetTypes(em)) {
             if (ltype.getName().equals(changedSubnetType.get(subnet.getId()))) {
                 type = ltype;
                 break;
@@ -115,7 +125,7 @@ public class SubnetsListController implements Serializable {
 
     public void syncMarea(Subnet subnet) throws NotSupportedException, SystemException {
         MulticastArea mArea = null;
-        for (MulticastArea marea : MulticastAreasListController.getAll()) {
+        for (MulticastArea marea : MulticastAreasListController.getAll(em)) {
             if (marea.getName().equals(changedMarea.get(subnet.getId()))) {
                 mArea = marea;
                 break;
@@ -133,7 +143,7 @@ public class SubnetsListController implements Serializable {
     }
 
     public void syncAddedDC(Subnet subnet) throws NotSupportedException, SystemException {
-        for (Datacenter dc: DatacentersListController.getAll()) {
+        for (Datacenter dc: DatacentersListController.getAll(em)) {
             if (dc.getName().equals(this.addedDC.get(subnet.getId()))) {
                 subnet.getDatacenters().add(dc);
             }
@@ -165,7 +175,7 @@ public class SubnetsListController implements Serializable {
     }
 
     public void syncAddedOSI(Subnet subnet) throws NotSupportedException, SystemException {
-        for (OSInstance osInstance: OSInstancesListController.getAll()) {
+        for (OSInstance osInstance: OSInstancesListController.getAll(em)) {
             if (osInstance.getName().equals(this.addedOSI.get(subnet.getId()))) {
                 subnet.getOsInstances().add(osInstance);
             }
@@ -213,17 +223,15 @@ public class SubnetsListController implements Serializable {
 
     public void update(Subnet subnet) {
         try {
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            em.getTransaction().begin();
             if (subnet.getType()!=rollback.get(subnet.getId()).getType()) {
                 if (rollback.get(subnet.getId()).getType()!=null) {
                     rollback.get(subnet.getId()).getType().getSubnets().remove(subnet);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(rollback.get(subnet.getId()).getType());
+                    em.merge(rollback.get(subnet.getId()).getType());
                 }
                 if (subnet.getType()!=null) {
                     subnet.getType().getSubnets().add(subnet);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(subnet.getType());
+                    em.merge(subnet.getType());
                 }
             }
             if (subnet.getMarea()!=rollback.get(subnet.getId()).getMarea()) {
@@ -231,37 +239,38 @@ public class SubnetsListController implements Serializable {
                     rollback.get(subnet.getId()).getMarea().getSubnets().remove(subnet);
                 if (subnet.getMarea()!=null) {
                     subnet.getMarea().getSubnets().add(subnet);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(subnet.getMarea());
+                    em.merge(subnet.getMarea());
 
                 }
             }
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(subnet);
+            em.merge(subnet);
             for (Datacenter dc: subnet.getDatacenters()) {
                 if (!rollback.get(subnet.getId()).getDatacenters().contains(dc)) {
                     dc.getSubnets().add(subnet);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
+                    em.merge(dc);
                 }
             }
             for (Datacenter dc: rollback.get(subnet.getId()).getDatacenters()) {
                 if (!subnet.getDatacenters().contains(dc)) {
                     dc.getSubnets().remove(subnet);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
+                    em.merge(dc);
                 }
             }
             for (OSInstance osInstance: subnet.getOsInstances()) {
                 if (!rollback.get(subnet.getId()).getOsInstances().contains(osInstance)) {
                     osInstance.getNetworkSubnets().add(subnet);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
+                    em.merge(osInstance);
                 }
             }
             for (OSInstance osInstance: rollback.get(subnet.getId()).getOsInstances()) {
                 if (!subnet.getOsInstances().contains(osInstance)) {
                     osInstance.getNetworkSubnets().remove(subnet);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(osInstance);
+                    em.merge(osInstance);
                 }
             }
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+
+            em.flush();
+            em.getTransaction().commit();
             rollback.put(subnet.getId(), subnet);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Subnet updated successfully !",
@@ -274,46 +283,8 @@ public class SubnetsListController implements Serializable {
                                                        "Throwable raised while updating subnet " + rollback.get(subnet.getId()).getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
-
-/*
-            try {
-                FacesMessage msg2;
-                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-                switch(txStatus) {
-                    case Status.STATUS_NO_TRANSACTION:
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation canceled !",
-                                                       "Operation : subnet " + rollback.get(subnet.getId()).getName() + " update.");
-                        break;
-                    case Status.STATUS_MARKED_ROLLBACK:
-                        try {
-                            log.debug("Rollback operation !");
-                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                                        "Operation rollbacked !",
-                                                                        "Operation : subnet " + rollback.get(subnet.getId()).getName() + " update.");
-                            FacesContext.getCurrentInstance().addMessage(null, msg2);
-                        } catch (SystemException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                                        "Error while rollbacking operation !",
-                                                                        "Operation : subnet " + rollback.get(subnet.getId()).getName() + " update.");
-                            FacesContext.getCurrentInstance().addMessage(null, msg2);
-                        }
-                        break;
-                    default:
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation canceled ! ("+txStatus+")",
-                                                       "Operation : subnet " + rollback.get(subnet.getId()).getName() + " update.");
-                        break;
-                }
-                FacesContext.getCurrentInstance().addMessage(null, msg2);
-            } catch (SystemException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-*/
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
         }
     }
 
@@ -324,26 +295,25 @@ public class SubnetsListController implements Serializable {
         log.debug("Remove selected Subnet !");
         for (Subnet subnet2BeRemoved : selectedSubnetList) {
             try {
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+                em.getTransaction().begin();
                 if (subnet2BeRemoved.getType()!=null) {
                     subnet2BeRemoved.getType().getSubnets().remove(subnet2BeRemoved);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(subnet2BeRemoved.getType());
+                    em.merge(subnet2BeRemoved.getType());
                 }
                 if (subnet2BeRemoved.getMarea()!=null) {
                     subnet2BeRemoved.getMarea().getSubnets().remove(subnet2BeRemoved);
-                    JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(subnet2BeRemoved.getMarea());
+                    em.merge(subnet2BeRemoved.getMarea());
                 }
                 if (subnet2BeRemoved.getDatacenters().size()!=0) {
                     for (Datacenter dc : subnet2BeRemoved.getDatacenters()) {
                         dc.getSubnets().remove(subnet2BeRemoved);
-                        JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().merge(dc);
+                        em.merge(dc);
                     }
                 }
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().remove(subnet2BeRemoved);
-                //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+                em.remove(subnet2BeRemoved);
+
+                em.flush();
+                em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "Subnet deleted successfully !",
                                                            "Subnet name : " + subnet2BeRemoved.getName());
@@ -355,43 +325,6 @@ public class SubnetsListController implements Serializable {
                                                            "Throwable raised while deleting subnet " + subnet2BeRemoved.getName() + " !",
                                                            "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-/*
-                try {
-                    FacesMessage msg2;
-                    int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-                    switch(txStatus) {
-                        case Status.STATUS_NO_TRANSACTION:
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation canceled !",
-                                                           "Operation : subnet " + subnet2BeRemoved.getName() + " deletion.");
-                            break;
-                        case Status.STATUS_MARKED_ROLLBACK:
-                            try {
-                                log.debug("Rollback operation !");
-                                JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                                msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                                            "Operation rollbacked !",
-                                                                            "Operation : subnet " + subnet2BeRemoved.getName() + " deletion.");
-                                FacesContext.getCurrentInstance().addMessage(null, msg2);
-                            } catch (SystemException e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                                            "Error while rollbacking operation !",
-                                                                            "Operation : subnet " + subnet2BeRemoved.getName() + " deletion.");
-                                FacesContext.getCurrentInstance().addMessage(null, msg2);
-                            }
-                            break;
-                        default:
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation canceled ! ("+txStatus+")",
-                                                           "Operation : subnet " + subnet2BeRemoved.getName() + " deletion.");
-                            break;
-                    }
-                    FacesContext.getCurrentInstance().addMessage(null, msg2);
-                } catch (SystemException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-*/
             }
         }
         selectedSubnetList =null;
@@ -400,29 +333,71 @@ public class SubnetsListController implements Serializable {
     /*
      * Subnet join tools
      */
-    public static List<SubnetType> getAllSubnetTypes() throws SystemException, NotSupportedException {
-        CriteriaBuilder        builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
+    public static List<SubnetType> getAllSubnetTypes(EntityManager em) throws SystemException, NotSupportedException {
+        log.debug("Get all subnets from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                         new Object[]{
+                                             Thread.currentThread().getStackTrace()[1].getClassName(),
+                                             Thread.currentThread().getStackTrace()[2].getClassName(),
+                                             Thread.currentThread().getStackTrace()[3].getClassName(),
+                                             Thread.currentThread().getStackTrace()[4].getClassName(),
+                                             Thread.currentThread().getStackTrace()[5].getClassName()
+                         });
+        CriteriaBuilder        builder  = em.getCriteriaBuilder();
         CriteriaQuery<SubnetType> criteria = builder.createQuery(SubnetType.class);
         Root<SubnetType>       root     = criteria.from(SubnetType.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
+
+        List<SubnetType> ret = em.createQuery(criteria).getResultList();
+        for (SubnetType stype : ret) {
+            em.refresh(stype);
+        }
+        return ret;
     }
 
-    public static List<SubnetType> getAllSubnetTypesForSelector() throws SystemException, NotSupportedException {
-        CriteriaBuilder        builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
+    public static List<SubnetType> getAllSubnetTypesForSelector(EntityManager em) throws SystemException, NotSupportedException {
+        log.debug("Get all subnets from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                         new Object[]{
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                         });
+        CriteriaBuilder        builder  = em.getCriteriaBuilder();
         CriteriaQuery<SubnetType> criteria = builder.createQuery(SubnetType.class);
         Root<SubnetType>       root     = criteria.from(SubnetType.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        List<SubnetType> list = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
-        list.add(0,new SubnetType().setNameR("Select the subnet type"));
+
+        List<SubnetType> list = em.createQuery(criteria).getResultList();
+        for (SubnetType stype : list) {
+            em.refresh(stype);
+        }
+        list.add(0, new SubnetType().setNameR("Select the subnet type"));
         return list;
     }
 
-    public static List<Subnet> getAll() {
-        CriteriaBuilder        builder  = JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getCriteriaBuilder();
+    public static List<Subnet> getAll(EntityManager em) {
+        log.debug("Get all subnets from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                         new Object[]{
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                         });
+        CriteriaBuilder        builder  = em.getCriteriaBuilder();
         CriteriaQuery<Subnet> criteria = builder.createQuery(Subnet.class);
         Root<Subnet>       root     = criteria.from(Subnet.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-        return JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().createQuery(criteria).getResultList();
+
+        List<Subnet> ret = em.createQuery(criteria).getResultList();
+        for (Subnet sub : ret) {
+            em.refresh(sub);
+        }
+        return ret;
     }
 }

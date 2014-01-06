@@ -26,8 +26,10 @@ import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import java.io.Serializable;
@@ -37,11 +39,23 @@ public class OSTypeNewController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(OSTypeNewController.class);
 
+    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+
+    @PreDestroy
+    public void clean() {
+        log.debug("Close entity manager");
+        em.close();
+    }
+
     private String  name;
     private String  architecture;
 
     private String  osiCompany;
     private Company company;
+
+    public EntityManager getEm() {
+        return em;
+    }
 
     public String getName() {
         return name;
@@ -76,7 +90,7 @@ public class OSTypeNewController implements Serializable {
     }
 
     private void syncCompany() throws NotSupportedException, SystemException {
-        for (Company company2: CompanysListController.getAll()) {
+        for (Company company2: CompanysListController.getAll(em)) {
             if (company2.getName().equals(this.osiCompany)) {
                 this.company = company2;
                 log.debug("Synced embedding os instance : {} {}", new Object[]{this.company.getId(), this.company.getName()});
@@ -86,7 +100,6 @@ public class OSTypeNewController implements Serializable {
     }
 
     public void save() {
-        log.debug("Save new OSType {} !", new Object[]{name});
         try {
             syncCompany();
         } catch (Exception e) {
@@ -98,14 +111,14 @@ public class OSTypeNewController implements Serializable {
             return;
         }
         OSType osType = new OSType().setNameR(name).setArchitectureR(architecture).setCompanyR(company);
+
         try {
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
+            em.getTransaction().begin();
             if (this.company!=null) {this.company.getOsTypes().add(osType);}
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(osType);
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+            em.persist(osType);
+            em.flush();
+            em.getTransaction().commit();
+            log.debug("Save new OSType {} !", new Object[]{name});
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "OS type created successfully !",
                                                        "OS type name : " + osType.getName());
@@ -117,45 +130,8 @@ public class OSTypeNewController implements Serializable {
                                                        "Throwable raised while creating OS type " + osType.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
-/*
-            try {
-                FacesMessage msg2;
-                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-                switch(txStatus) {
-                    case Status.STATUS_NO_TRANSACTION:
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation canceled !",
-                                                       "Operation : OS type " + osType.getName() + " creation.");
-                        break;
-                    case Status.STATUS_MARKED_ROLLBACK:
-                        try {
-                            log.debug("Rollback operation !");
-                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                           "Operation rollbacked !",
-                                                           "Operation : OS type " + osType.getName() + " creation.");
-                            FacesContext.getCurrentInstance().addMessage(null, msg2);
-                        } catch (SystemException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                           "Error while rollbacking operation !",
-                                                           "Operation : OS type " + osType.getName() + " creation.");
-                            FacesContext.getCurrentInstance().addMessage(null, msg2);
-                        }
-                        break;
-                    default:
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation canceled ! ("+txStatus+")",
-                                                       "Operation : OS type " + osType.getName() + " creation.");
-                        break;
-                }
-                FacesContext.getCurrentInstance().addMessage(null, msg2);
-            } catch (SystemException e) {
-                e.printStackTrace();
-            }
-*/
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
         }
     }
 }

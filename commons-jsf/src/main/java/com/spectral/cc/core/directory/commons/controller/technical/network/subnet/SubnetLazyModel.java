@@ -19,6 +19,7 @@
 
 package com.spectral.cc.core.directory.commons.controller.technical.network.subnet;
 
+import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
 import com.spectral.cc.core.directory.commons.model.technical.network.Subnet;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
@@ -78,6 +79,11 @@ public class SubnetLazyModel extends LazyDataModel<Subnet> {
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
+
+        // Refresh page items as operations can occurs on them from != em
+        for(Subnet sub : this.pageItems) {
+            this.entityManager.refresh(sub);
+        }
     }
 
     @Override

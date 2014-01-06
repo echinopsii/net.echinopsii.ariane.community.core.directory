@@ -24,16 +24,26 @@ import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 import java.io.Serializable;
 
 public class DatacenterNewController implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(DatacentersListController.class);
+
+    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+
+    @PreDestroy
+    public void clean() {
+        log.debug("Close entity manager");
+        em.close();
+    }
 
     private String name;
     private String description;
@@ -109,7 +119,6 @@ public class DatacenterNewController implements Serializable {
     }
 
     public void save() {
-        log.debug("Save new datacenter {} !", new Object[]{name});
         Datacenter newDatacenter = new Datacenter();
         newDatacenter.setName(name);
         newDatacenter.setDescription(description);
@@ -119,13 +128,13 @@ public class DatacenterNewController implements Serializable {
         newDatacenter.setCountry(country);
         newDatacenter.setGpsLatitudeR(gpsLatitude);
         newDatacenter.setGpsLongitude(gpsLongitude);
+
         try {
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().begin();
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().joinTransaction();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().begin();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().persist(newDatacenter);
-            //JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().commit();
-            JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().commit();
+            em.getTransaction().begin();
+            em.persist(newDatacenter);
+            em.flush();
+            em.getTransaction().commit();
+            log.debug("Save new datacenter {} !", new Object[]{name});
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Datacenter created successfully !",
                                                        "Datacenter name : " + newDatacenter.getName());
@@ -137,45 +146,8 @@ public class DatacenterNewController implements Serializable {
                                                        "Throwable raised while creating datacenter " + newDatacenter.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
-/*
-            try {
-                FacesMessage msg2;
-                int txStatus = JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().getStatus();
-                switch(txStatus) {
-                    case Status.STATUS_NO_TRANSACTION:
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation canceled !",
-                                                       "Operation : datacenter " + newDatacenter.getName() + " creation.");
-                        break;
-                    case Status.STATUS_MARKED_ROLLBACK:
-                        try {
-                            log.debug("Rollback operation !");
-                            JPAProviderConsumer.getInstance().getJpaProvider().getSharedUX().rollback();
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                                        "Operation rollbacked !",
-                                                                        "Operation : datacenter " + newDatacenter.getName() + " creation.");
-                            FacesContext.getCurrentInstance().addMessage(null, msg2);
-                        } catch (SystemException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                            msg2 = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                                        "Error while rollbacking operation !",
-                                                                        "Operation : datacenter " + newDatacenter.getName() + " creation.");
-                            FacesContext.getCurrentInstance().addMessage(null, msg2);
-                        }
-                        break;
-                    default:
-                        msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                                       "Operation canceled ! ("+txStatus+")",
-                                                       "Operation : datacenter " + newDatacenter.getName() + " creation.");
-                        break;
-                }
-                FacesContext.getCurrentInstance().addMessage(null, msg2);
-            } catch (SystemException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-*/
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
         }
     }
 }

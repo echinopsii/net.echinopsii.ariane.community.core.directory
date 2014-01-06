@@ -91,6 +91,7 @@
                             com.spectral.cc.core.directory.commons.model.technical.system;version=${project.version},
                             com.spectral.cc.core.directory.commons.registry;version=${project.version},
                             com.spectral.cc.core.directory.commons.persistence;version=${project.version},
+                            javax.annotation;version="${version.javax.annotations.jsr250-api}",
                             javax.el;version="${version.javax.el}",
                             javax.servlet;version="${version.javax.servlet.servlet-api}",
                             javax.faces;version="${version.javax.faces.api}",
