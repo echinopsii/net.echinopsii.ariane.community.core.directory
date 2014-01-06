@@ -51,9 +51,10 @@
                             javassist.util.proxy,
                             javax.persistence;version="[${version.osgimin.javax.persistence},${version.osgimax.javax.persistence})",
                             javax.persistence.criteria;version="[${version.osgimin.javax.persistence},${version.osgimax.javax.persistence})",
+                            javax.persistence.spi;version="[${version.osgimin.javax.persistence},${version.osgimax.javax.persistence})",
                             javax.transaction;version="${version.javax.transaction.jta}",
                             org.h2,
-                            org.hibernate.proxy,
+                            org.hibernate.proxy;version="[${version.osgimin.hibernate},${version.osgimax.hibernate})",
                             *
                         </Import-Package>
                         <Export-Package>

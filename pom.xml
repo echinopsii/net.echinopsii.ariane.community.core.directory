@@ -76,8 +76,8 @@
         <version.javax.transaction.jta>1.1</version.javax.transaction.jta>
         <version.javax.validation.validation-api>1.0.0.GA</version.javax.validation.validation-api>
         <version.com.h2db>1.3.170</version.com.h2db>
-        <version.org.hibernate.hibernate-entitymanager>4.2.8.Final</version.org.hibernate.hibernate-entitymanager>
-        <version.org.hibernate.javax.persistence.hibernate-jpa-2.0-api>1.0.1.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.0-api>
+        <version.org.hibernate>4.3.0.Final</version.org.hibernate>
+        <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
 
         <!-- Technical stuff -->
         <version.org.apache.ipojo>1.10.1</version.org.apache.ipojo>
@@ -98,6 +98,9 @@
 
         <version.osgimin.javax.persistence>2.0.0</version.osgimin.javax.persistence>
         <version.osgimax.javax.persistence>3.0.0</version.osgimax.javax.persistence>
+
+        <version.osgimin.hibernate>4.2.8</version.osgimin.hibernate>
+        <version.osgimax.hibernate>5.0.0</version.osgimax.hibernate>
     </properties>
 
     <build>
@@ -364,19 +367,19 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-osgi</artifactId>
-            <version>4.2.8.Final</version>
+            <version>${version.org.hibernate}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>${version.org.hibernate.hibernate-entitymanager}</version>
+            <version>${version.org.hibernate}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
-            <version>${version.org.hibernate.javax.persistence.hibernate-jpa-2.0-api}</version>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <version>${version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

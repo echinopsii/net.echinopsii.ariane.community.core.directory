@@ -19,7 +19,8 @@
  */
 package com.spectral.cc.core.directory.commons.tools;
 
-import com.spectral.cc.core.directory.commons.consumer.PortalFaceletsResourceResolverServiceConsumer;
+import com.spectral.cc.core.directory.commons.consumer.FaceletsResourceResolverServicesConsumer;
+import com.spectral.cc.core.portal.commons.fresolver.FaceletsResourceResolverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +48,14 @@ public class FaceletsResourceResolver extends ResourceResolver {
             url = FaceletsResourceResolver.class.getResource(basePath + path);
         }
 
-        if (url == null)
-            url = PortalFaceletsResourceResolverServiceConsumer.getInstance().getPortalFaceletsResourceResolverService().resolveURL(path);
+        if (url == null) {
+            for (FaceletsResourceResolverService fResolver : FaceletsResourceResolverServicesConsumer.getInstance().getFaceletsResourceResolverServices()) {
+                log.debug("Resolve {} from face resolver from package {}...", new Object[]{path, fResolver.getClass().getPackage()});
+                url = fResolver.resolveURL(path);
+                if (url!=null)
+                    break;
+            }
+        }
 
         return url;
     }

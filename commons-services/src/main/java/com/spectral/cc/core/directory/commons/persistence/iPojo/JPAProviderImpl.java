@@ -92,7 +92,7 @@ public class JPAProviderImpl implements JPAProvider {
                 hibernateConf.put(key, value);
             }
         }
-
+        log.debug("Create shared entity manager factory...");
         sharedEMF = persistenceProvider.createEntityManagerFactory("cc-directory",hibernateConf);
         sharedEM  = sharedEMF.createEntityManager();
 
