@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.commons.controller.organisational.application;
 
-import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.commons.controller.organisational.company.CompanysListController;
 import com.spectral.cc.core.directory.commons.controller.organisational.team.TeamsListController;
 import com.spectral.cc.core.directory.commons.model.organisational.Application;
@@ -44,7 +44,7 @@ public class ApplicationNewController implements Serializable{
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(ApplicationNewController.class);
 
-    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
     private String  name;
     private String  shortName;
@@ -142,7 +142,7 @@ public class ApplicationNewController implements Serializable{
     }
 
     private void syncTeam()  throws NotSupportedException, SystemException {
-        for (Team team: TeamsListController.getAll(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM())) {
+        for (Team team: TeamsListController.getAll(em)) {
             if (team.getName().equals(this.appTeam)) {
                 this.team = team;
                 break;

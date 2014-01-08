@@ -251,7 +251,7 @@
             <version>${version.com.lowagie.itext}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.faces</groupId>
+            <groupId>com.spectral.com.sun.faces</groupId>
             <artifactId>jsf-api</artifactId>
             <exclusions>
                 <exclusion>
@@ -365,14 +365,20 @@
             <version>${version.org.jboss.resteasy}</version>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>com.spectral.org.hibernate</groupId>
             <artifactId>hibernate-osgi</artifactId>
             <version>${version.org.hibernate}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>com.spectral.org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
+            <version>${version.org.hibernate}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.spectral.org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
             <version>${version.org.hibernate}</version>
             <scope>provided</scope>
         </dependency>

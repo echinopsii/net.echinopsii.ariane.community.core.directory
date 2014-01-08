@@ -55,6 +55,10 @@
                             javax.transaction;version="${version.javax.transaction.jta}",
                             org.h2,
                             org.hibernate.proxy;version="[${version.osgimin.hibernate},${version.osgimax.hibernate})",
+                            org.hibernate.jpa;version="[${version.osgimin.hibernate},${version.osgimax.hibernate})",
+                            org.hibernate.jpa.boot.internal;version="[${version.osgimin.hibernate},${version.osgimax.hibernate})",
+                            org.hibernate.jpa.boot.spi;version="[${version.osgimin.hibernate},${version.osgimax.hibernate})",
+                            org.osgi.framework;version="[${version.osgimin.org.osgi.framework},${version.osgimax.org.osgi.framework})",
                             *
                         </Import-Package>
                         <Export-Package>

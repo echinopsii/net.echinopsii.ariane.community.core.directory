@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.commons.controller.technical.network.subnet;
 
-import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.commons.controller.technical.network.datacenter.DatacentersListController;
 import com.spectral.cc.core.directory.commons.controller.technical.network.multicastArea.MulticastAreasListController;
 import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
@@ -45,7 +45,7 @@ public class SubnetNewController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(SubnetNewController.class);
 
-    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
     @PreDestroy
     public void clean() {
@@ -121,7 +121,7 @@ public class SubnetNewController implements Serializable {
 
     private void syncSubnetType() throws NotSupportedException, SystemException {
         SubnetType type = null;
-        for (SubnetType ltype: SubnetsListController.getAllSubnetTypes(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM())) {
+        for (SubnetType ltype: SubnetsListController.getAllSubnetTypes(em)) {
             if (ltype.getName().equals(this.subnetType)) {
                 type = ltype;
                 break;
@@ -151,7 +151,7 @@ public class SubnetNewController implements Serializable {
 
     private void syncMulticastArea() throws NotSupportedException, SystemException {
         MulticastArea marea = null;
-        for (MulticastArea area: MulticastAreasListController.getAll(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM())) {
+        for (MulticastArea area: MulticastAreasListController.getAll(em)) {
             if (area.getName().equals(this.mArea)) {
                 marea = area;
                 break;
@@ -181,7 +181,7 @@ public class SubnetNewController implements Serializable {
     }
 
     private void bindSelectedDatacenters() throws NotSupportedException, SystemException {
-        for (Datacenter dc: DatacentersListController.getAll(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM())) {
+        for (Datacenter dc: DatacentersListController.getAll(em)) {
             for (String dcToBind : datacentersToBind)
                 if (dc.getName().equals(dcToBind)) {
                     this.datacenters.add(dc);
@@ -243,8 +243,8 @@ public class SubnetNewController implements Serializable {
                                                        "Throwable raised while creating subnet " + newSubnet.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().isActive())
-                JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM().getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
         }
     }
 }

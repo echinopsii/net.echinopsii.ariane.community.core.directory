@@ -18,7 +18,7 @@
  */
 package com.spectral.cc.core.directory.commons.controller.technical.system.OSInstance;
 
-import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.commons.controller.organisational.application.ApplicationsListController;
 import com.spectral.cc.core.directory.commons.controller.organisational.environment.EnvironmentsListController;
 import com.spectral.cc.core.directory.commons.controller.organisational.team.TeamsListController;
@@ -27,7 +27,6 @@ import com.spectral.cc.core.directory.commons.controller.technical.system.OSType
 import com.spectral.cc.core.directory.commons.model.organisational.Application;
 import com.spectral.cc.core.directory.commons.model.organisational.Environment;
 import com.spectral.cc.core.directory.commons.model.organisational.Team;
-import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
 import com.spectral.cc.core.directory.commons.model.technical.network.Subnet;
 import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
 import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
@@ -55,7 +54,7 @@ public class OSInstancesListController implements Serializable{
     private static final long   serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(OSInstancesListController.class);
 
-    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
     private HashMap<Long, OSInstance> rollback = new HashMap<Long, OSInstance>();
 

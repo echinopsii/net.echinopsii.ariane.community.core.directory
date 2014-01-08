@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.commons.controller.organisational.application;
 
-import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.commons.controller.organisational.company.CompanysListController;
 import com.spectral.cc.core.directory.commons.controller.organisational.team.TeamsListController;
 import com.spectral.cc.core.directory.commons.controller.technical.system.OSInstance.OSInstancesListController;
@@ -27,7 +27,6 @@ import com.spectral.cc.core.directory.commons.model.organisational.Application;
 import com.spectral.cc.core.directory.commons.model.organisational.Company;
 import com.spectral.cc.core.directory.commons.model.organisational.Team;
 import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
-import com.spectral.cc.core.directory.commons.model.technical.system.OSType;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
@@ -50,7 +49,7 @@ public class ApplicationsListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(ApplicationsListController.class);
 
-    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
     private HashMap<Long, Application> rollback = new HashMap<Long, Application>();
 

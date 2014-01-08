@@ -40,15 +40,17 @@ public class FaceletsResourceResolver extends ResourceResolver {
 
     @Override
     public URL resolveUrl(String path) {
-        log.debug("Resolve {} from current war...", new Object[]{path});
+        log.debug("Resolve {} from directory main...", new Object[]{path});
         URL url = parent.resolveUrl(path);
 
         if (url == null) {
-            log.debug("Resolve {} from directory commons-jsf jar...", new Object[]{path});
+            log.debug("Resolve {} from directory commons-jsf...", new Object[]{path});
             url = FaceletsResourceResolver.class.getResource(basePath + path);
         }
 
-        if (url == null) {
+        if (url == null &&
+            FaceletsResourceResolverServicesConsumer.getInstance()!=null &&
+            FaceletsResourceResolverServicesConsumer.getInstance().getFaceletsResourceResolverServices()!=null) {
             for (FaceletsResourceResolverService fResolver : FaceletsResourceResolverServicesConsumer.getInstance().getFaceletsResourceResolverServices()) {
                 log.debug("Resolve {} from face resolver from package {}...", new Object[]{path, fResolver.getClass().getPackage()});
                 url = fResolver.resolveURL(path);

@@ -19,39 +19,39 @@
 
 package com.spectral.cc.core.directory.commons.consumer;
 
+import com.spectral.cc.core.directory.commons.persistence.DirectoryJPAProvider;
 import org.apache.felix.ipojo.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.spectral.cc.core.directory.commons.persistence.JPAProvider;
 
 @Component(publicFactory = false, factoryMethod = "getInstance")
 @Instantiate
-public class JPAProviderConsumer {
-    private static final Logger log = LoggerFactory.getLogger(JPAProviderConsumer.class);
-    private static JPAProviderConsumer INSTANCE;
+public class DirectoryJPAProviderConsumer {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryJPAProviderConsumer.class);
+    private static DirectoryJPAProviderConsumer INSTANCE;
 
     @Requires
-    private JPAProvider jpaProvider = null;
+    private DirectoryJPAProvider directoryJpaProvider = null;
 
     @Bind
-    public void bindJPAProvider(JPAProvider r) {
+    public void bindJPAProvider(DirectoryJPAProvider r) {
         log.debug("Consumer bound to directory JPA provider...");
-        jpaProvider = r;
+        directoryJpaProvider = r;
     }
 
     @Unbind
     public void unbindJPAProvider() {
         log.debug("Consumer unbound from directory JPA provider...");
-        jpaProvider = null;
+        directoryJpaProvider = null;
     }
 
-    public JPAProvider getJpaProvider() {
-        return jpaProvider;
+    public DirectoryJPAProvider getDirectoryJpaProvider() {
+        return directoryJpaProvider;
     }
 
-    public static JPAProviderConsumer getInstance() {
+    public static DirectoryJPAProviderConsumer getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new JPAProviderConsumer();
+            INSTANCE = new DirectoryJPAProviderConsumer();
         }
         return INSTANCE;
     }

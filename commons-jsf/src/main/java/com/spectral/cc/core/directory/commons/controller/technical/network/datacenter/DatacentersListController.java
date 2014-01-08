@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.commons.controller.technical.network.datacenter;
 
-import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.commons.controller.technical.network.subnet.SubnetsListController;
 import com.spectral.cc.core.directory.commons.controller.technical.network.multicastArea.MulticastAreasListController;
 import com.spectral.cc.core.directory.commons.model.technical.network.Datacenter;
@@ -48,7 +48,7 @@ public class DatacentersListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(DatacentersListController.class);
 
-    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
     private HashMap<Long, Datacenter> rollback = new HashMap<Long, Datacenter>();
 

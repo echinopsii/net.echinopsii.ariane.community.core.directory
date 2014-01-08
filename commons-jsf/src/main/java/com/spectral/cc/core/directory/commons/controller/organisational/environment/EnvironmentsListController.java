@@ -19,9 +19,8 @@
 
 package com.spectral.cc.core.directory.commons.controller.organisational.environment;
 
-import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.commons.controller.technical.system.OSInstance.OSInstancesListController;
-import com.spectral.cc.core.directory.commons.model.organisational.Company;
 import com.spectral.cc.core.directory.commons.model.organisational.Environment;
 import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
 import org.primefaces.event.ToggleEvent;
@@ -46,7 +45,7 @@ public class EnvironmentsListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(EnvironmentsListController.class);
 
-    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
     private HashMap<Long, Environment> rollback = new HashMap<Long, Environment>();
 

@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.commons.controller.organisational.company;
 
-import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.commons.controller.organisational.application.ApplicationsListController;
 import com.spectral.cc.core.directory.commons.controller.technical.system.OSType.OSTypesListController;
 import com.spectral.cc.core.directory.commons.model.organisational.Application;
@@ -47,7 +47,7 @@ public class CompanysListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(CompanysListController.class);
 
-    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
     private HashMap<Long, Company> rollback = new HashMap<Long, Company>();
 

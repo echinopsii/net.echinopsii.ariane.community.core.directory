@@ -18,7 +18,7 @@
  */
 package com.spectral.cc.core.directory.commons.controller.technical.system.OSInstance;
 
-import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.commons.controller.organisational.application.ApplicationsListController;
 import com.spectral.cc.core.directory.commons.controller.organisational.environment.EnvironmentsListController;
 import com.spectral.cc.core.directory.commons.controller.organisational.team.TeamsListController;
@@ -49,7 +49,7 @@ public class OSInstanceNewController implements Serializable{
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(OSInstanceNewController.class);
 
-    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
     @PreDestroy
     public void clean() {
@@ -186,7 +186,7 @@ public class OSInstanceNewController implements Serializable{
     }
 
     private void bindSelectedSubnets() throws NotSupportedException, SystemException {
-        for (Subnet subnet : SubnetsListController.getAll(JPAProviderConsumer.getInstance().getJpaProvider().getSharedEM())) {
+        for (Subnet subnet : SubnetsListController.getAll(em)) {
             for (String subnetToBind : subnetsToBind)
                 if (subnet.getName().equals(subnetToBind)) {
                     this.subnets.add(subnet);

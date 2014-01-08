@@ -19,10 +19,15 @@
 
 package com.spectral.cc.core.directory.commons.persistence;
 
+import org.osgi.framework.Bundle;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceProvider;
+import java.util.List;
+import java.util.Map;
 
-public interface JPAProvider {
+public interface DirectoryJPAProvider {
     public EntityManager createEM();
-    public EntityManager getSharedEM();
+    public void addSubPersistenceBundle(Bundle persistenceBundle);
 }

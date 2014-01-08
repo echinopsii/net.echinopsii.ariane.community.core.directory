@@ -32,21 +32,11 @@ public class FaceletsResourceResolverServicesConsumer {
     private static final Logger log = LoggerFactory.getLogger(FaceletsResourceResolverServicesConsumer.class);
     private static FaceletsResourceResolverServicesConsumer INSTANCE;
 
-    private ArrayList<FaceletsResourceResolverService> faceletsResolverList = new ArrayList<FaceletsResourceResolverService>();
+    @Requires
+    private FaceletsResourceResolverService[] faceletsResolverList;
 
-    @Bind
-    public void bindFaceletsResourceResolverService(FaceletsResourceResolverService r) {
-        log.debug("Consumer bound to facelets resource resolver service from package {}...", new Object[]{r.getClass().getPackage()});
-        faceletsResolverList.add(r);
-    }
-
-    @Unbind
-    public void unbindFaceletsResourceResolverService(FaceletsResourceResolverService r) {
-        log.debug("Consumer unbound from facelets resource resolver service from package {}...", new Object[]{r.getClass().getPackage()});
-        faceletsResolverList.remove(r);
-    }
-
-    public ArrayList<FaceletsResourceResolverService> getFaceletsResourceResolverServices() {
+    public FaceletsResourceResolverService[] getFaceletsResourceResolverServices() {
+        log.debug("{} FaceletsResourceResolverService are bound to this consumer...", (faceletsResolverList!=null) ? faceletsResolverList.length : "0");
         return faceletsResolverList;
     }
 

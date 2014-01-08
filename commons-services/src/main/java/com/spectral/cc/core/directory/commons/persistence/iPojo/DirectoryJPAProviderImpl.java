@@ -20,8 +20,16 @@
 package com.spectral.cc.core.directory.commons.persistence.iPojo;
 
 import com.spectral.cc.core.directory.commons.model.technical.network.SubnetType;
-import com.spectral.cc.core.directory.commons.persistence.JPAProvider;
+import com.spectral.cc.core.directory.commons.persistence.DirectoryJPAProvider;
 import org.apache.felix.ipojo.annotations.*;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
+import org.hibernate.osgi.HibernateOSGiService;
+import org.hibernate.osgi.OsgiClassLoader;
+import org.hibernate.osgi.OsgiPersistenceProvider;
+import org.hibernate.osgi.OsgiScanner;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,35 +38,43 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 import java.util.*;
 
-@Component(managedservice="com.spectral.cc.core.directory.commons.JPAProvider")
+@Component(managedservice="com.spectral.cc.core.directory.commons.DirectoryJPAProvider")
 @Provides
 @Instantiate
-public class JPAProviderImpl implements JPAProvider {
+public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
 
     private static final String DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME = "Directory TX Persistence Consumer";
-    private static final Logger log = LoggerFactory.getLogger(JPAProviderImpl.class);
+    private static final String DIRECTORY_TXPERSISTENCE_PERSISTENCE_UNIT_NAME = "cc-directory";
+    private static final Logger log = LoggerFactory.getLogger(DirectoryJPAProviderImpl.class);
 
-    private static EntityManagerFactory            sharedEMF  = null;
-    private static EntityManager                   sharedEM   = null;
+    private EntityManagerFactory   sharedEMF        = null;
+    private HashMap<String,Object> hibernateConf    = null;
+    private OsgiScanner            hibernateScanner = new OsgiScanner(FrameworkUtil.getBundle(DirectoryJPAProviderImpl.class));
+
     @Requires
     private PersistenceProvider persistenceProvider = null;
+    @Requires
+    private HibernateOSGiService hibernateOSGiService = null;
 
     private void close() {
-        if (sharedEM != null) sharedEM.close();
         if (sharedEMF != null) sharedEMF.close();
     }
 
     private void initSubnetType() {
         List<SubnetType> subnetTypes = new ArrayList<SubnetType>();
-        SubnetType wanT = new SubnetType().setNameR("WAN").setDescriptionR("WAN type Subnet"); subnetTypes.add(wanT);
-        SubnetType manT = new SubnetType().setNameR("MAN").setDescriptionR("MAN type Subnet"); subnetTypes.add(manT);
+        SubnetType wanT    = new SubnetType().setNameR("WAN").setDescriptionR("WAN type Subnet"); subnetTypes.add(wanT);
+        SubnetType manT    = new SubnetType().setNameR("MAN").setDescriptionR("MAN type Subnet"); subnetTypes.add(manT);
         SubnetType subnetT = new SubnetType().setNameR("LAN").setDescriptionR("LAN type Subnet"); subnetTypes.add(subnetT);
 
         try {
-            this.getSharedEM().getTransaction().begin();
+            EntityManager em = this.createEM();
+            em.getTransaction().begin();
             for (SubnetType ltype : subnetTypes)
-                this.getSharedEM().persist(ltype);
-            this.getSharedEM().getTransaction().commit();
+                em.persist(ltype);
+            em.flush();
+            em.getTransaction().commit();
+            log.debug("Close entity manager ...");
+            em.close();
         } catch (Exception E) {
             log.error("Fail to init subnettype db ! " + E.getMessage());
         }
@@ -76,27 +92,35 @@ public class JPAProviderImpl implements JPAProvider {
         persistenceProvider = null;
     }
 
+    @Bind
+    public void bindHibernateOSGiService(HibernateOSGiService hosgi) {
+        log.debug("Bound to hibernate osgi service...");
+        this.hibernateOSGiService = hosgi;
+    }
+
+    @Unbind
+    public void unbindHibernateOSGiService() {
+        log.debug("Unbound from hibernate osgi service...");
+        this.hibernateOSGiService = null;
+    }
+
     @Updated
     public synchronized void updated(final Dictionary properties) {
-        this.close();
-
-        HashMap<String,String> hibernateConf = null;
+        if (hibernateConf != null) hibernateConf.clear();
         Enumeration<String> dicEnum = properties.keys();
         while (dicEnum.hasMoreElements()) {
             if (hibernateConf==null)
-                hibernateConf = new HashMap<String,String>();
+                hibernateConf = new HashMap<String,Object>();
             String key = (String) dicEnum.nextElement();
-            if (key.contains("hibernate")) {
-                String value = (String) properties.get(key);
-                log.debug("Hibernate conf to update : ({},{})", new Object[]{key,(key.equals("hibernate.connection.password") ? "*****" : value)});
-                hibernateConf.put(key, value);
-            }
+            String value = (String) properties.get(key);
+            log.debug("Hibernate conf to update : ({},{})", new Object[]{key,(key.equals("hibernate.connection.password") ? "*****" : value)});
+            hibernateConf.put(key, value);
         }
-        log.debug("Create shared entity manager factory...");
-        sharedEMF = persistenceProvider.createEntityManagerFactory("cc-directory",hibernateConf);
-        sharedEM  = sharedEMF.createEntityManager();
-
-        this.initSubnetType();
+        hibernateConf.put(org.hibernate.jpa.AvailableSettings.SCANNER, hibernateScanner);
+        close();
+        log.debug("Create shared entity manager factory from persistence provider {}...", persistenceProvider.toString());
+        sharedEMF = persistenceProvider.createEntityManagerFactory(DIRECTORY_TXPERSISTENCE_PERSISTENCE_UNIT_NAME, hibernateConf);
+        initSubnetType();
     }
 
     @Invalidate
@@ -126,8 +150,9 @@ public class JPAProviderImpl implements JPAProvider {
         return sharedEMF.createEntityManager();
     }
 
-    @Override
-    public EntityManager getSharedEM() {
-        return sharedEM;
+    public void addSubPersistenceBundle(Bundle persistenceBundle) {
+        hibernateScanner.addPersistenceBundle(persistenceBundle);
+        hibernateOSGiService.addPersistenceBundle(persistenceBundle);
+        persistenceProvider.generateSchema(DIRECTORY_TXPERSISTENCE_PERSISTENCE_UNIT_NAME, hibernateConf);
     }
 }

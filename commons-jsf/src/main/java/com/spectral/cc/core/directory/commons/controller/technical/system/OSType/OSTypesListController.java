@@ -18,7 +18,7 @@
  */
 package com.spectral.cc.core.directory.commons.controller.technical.system.OSType;
 
-import com.spectral.cc.core.directory.commons.consumer.JPAProviderConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.commons.controller.organisational.company.CompanysListController;
 import com.spectral.cc.core.directory.commons.controller.technical.system.OSInstance.OSInstancesListController;
 import com.spectral.cc.core.directory.commons.model.organisational.Company;
@@ -46,7 +46,7 @@ public class OSTypesListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(OSTypesListController.class);
 
-    private EntityManager em = JPAProviderConsumer.getInstance().getJpaProvider().createEM();
+    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
     private HashMap<Long, OSType> rollback = new HashMap<Long, OSType>();
 
