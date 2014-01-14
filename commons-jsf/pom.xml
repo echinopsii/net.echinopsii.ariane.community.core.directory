@@ -84,7 +84,8 @@
                         </Export-Package>
                         <Import-Package>
                             com.spectral.cc.core.portal.commons.model;version=${version.com.spectral.cc.core.portal},
-                            com.spectral.cc.core.portal.commons.fresolver;version=${version.com.spectral.cc.core.portal},
+                            com.spectral.cc.core.portal.commons.facesplugin;version=${version.com.spectral.cc.core.portal},
+                            com.spectral.cc.core.portal.commons.registry;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.directory.commons.model;version=${project.version},
                             com.spectral.cc.core.directory.commons.model.organisational;version=${project.version},
                             com.spectral.cc.core.directory.commons.model.technical.network;version=${project.version},
@@ -93,7 +94,7 @@
                             com.spectral.cc.core.directory.commons.persistence;version=${project.version},
                             javax.annotation;version="${version.javax.annotations.jsr250-api}",
                             javax.el;version="${version.javax.el}",
-                            javax.servlet;version="${version.javax.servlet.servlet-api}",
+                            javax.servlet;version="[${version.osgimin.javax.servlet-api},${version.osgimax.javax.servlet-api})",
                             javax.faces;version="${version.javax.faces.api}",
                             javax.faces.application;version="${version.javax.faces.api}",
                             javax.faces.bean;version="${version.javax.faces.api}",

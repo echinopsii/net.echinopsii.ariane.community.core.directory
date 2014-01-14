@@ -19,11 +19,14 @@
 package com.spectral.cc.core.directory.commons.model.technical.network;
 
 import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +35,7 @@ import java.util.Set;
 @Table(name="subnet", uniqueConstraints = @UniqueConstraint(columnNames = {"subnetName"}))
 public class Subnet implements Serializable
 {
+    private static final Logger log = LoggerFactory.getLogger(Subnet.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -240,5 +244,22 @@ public class Subnet implements Serializable
     public Subnet clone() {
         return new Subnet().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setSubnetIPR(this.subnetIP).
                        setSubnetMaskR(this.subnetMask).setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setMareaR(this.marea).setOsInstancesR(new HashSet<OSInstance>(this.osInstances)).setTypeR(this.type);
+    }
+
+    public final static String SUBNET_MAPPING_PROPERTIES = "Network";
+    private final static String SUBNET_TYPE_MAPPING_FIELD = "type";
+    private final static String SUBNET_MARE_MAPPING_FIELD = "marea";
+    private final static String SUBNET_NAME_MAPPING_FIELD = "lan";
+    private final static String SUBNET_IPAD_MAPPING_FIELD = "subnetip";
+    private final static String SUBNET_MASK_MAPPING_FIELD = "subnetmask";
+
+    public HashMap<String,Object> toMappingProperties() {
+        HashMap<String,Object> ret = new HashMap<String,Object>();
+        ret.put(SUBNET_TYPE_MAPPING_FIELD,type.getName());
+        if (marea!=null) ret.put(SUBNET_MARE_MAPPING_FIELD, marea.getName());
+        ret.put(SUBNET_NAME_MAPPING_FIELD,name);
+        ret.put(SUBNET_IPAD_MAPPING_FIELD,subnetIP);
+        ret.put(SUBNET_MASK_MAPPING_FIELD,subnetMask);
+        return ret;
     }
 }

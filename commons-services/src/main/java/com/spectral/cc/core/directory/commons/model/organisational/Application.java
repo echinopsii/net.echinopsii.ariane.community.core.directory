@@ -6,12 +6,13 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @XmlRootElement
-@Table(name="application",uniqueConstraints = @UniqueConstraint(columnNames = {"applicationName"}))
+@Table(name="application",uniqueConstraints = @UniqueConstraint(columnNames = {"applicationName","applicationCC"}))
 public class Application implements Serializable {
 
     @Id
@@ -30,7 +31,7 @@ public class Application implements Serializable {
     @NotNull
     private String shortName;
 
-    @Column
+    @Column(name="applicationCC",unique=true)
     @NotNull
     private String colorCode;
 
@@ -205,5 +206,17 @@ public class Application implements Serializable {
     public Application clone() {
         return new Application().setIdR(id).setVersionR(version).setNameR(name).setDescriptionR(description).setCompanyR(company).
                                  setTeamR(team).setColorCodeR(colorCode).setOsInstancesR(new HashSet<OSInstance>(osInstances)).setShortNameR(shortName);
+    }
+
+    public final static String APP_PRIMARY_MAPPING_PROPERTIES   = "primaryApplication";
+    public final static String APP_SECONDARY_MAPPING_PROPERTIES = "secondaryApplication";
+    private final static String APP_NAME_MAPPING_FIELD = "name";
+    private final static String APP_COLR_MAPPING_FIELD = "color";
+
+    public HashMap<String,Object> toMappingProperties() {
+        HashMap<String,Object> ret = new HashMap<String,Object>();
+        ret.put(APP_NAME_MAPPING_FIELD,name);
+        ret.put(APP_COLR_MAPPING_FIELD,colorCode);
+        return ret;
     }
 }

@@ -27,6 +27,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -271,5 +272,16 @@ public class OSInstance implements Serializable {
         return new OSInstance().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setAdminGateURIR(this.adminGateURI).setOsTypeR(this.osType).
                    setApplicationsR(new HashSet<Application>(this.applications)).setEmbeddedOSInstancesR(new HashSet<OSInstance>(this.embeddedOSInstances)).setEmbeddingOSInstanceR(this.embeddingOSInstance).
                    setEnvironementsR(new HashSet<Environment>(this.environments)).setNetworkSubnetsR(new HashSet<Subnet>(networkSubnets)).setTeamsR(new HashSet<Team>(this.teams));
+    }
+
+    public final static String OSI_MAPPING_PROPERTIES = "Server";
+    private final static String OSI_NAME_MAPPING_FIELD = "hostname";
+    private final static String OSI_TYPE_MAPPING_FIELD = "os";
+
+    public HashMap<String,Object> toMappingProperties() {
+        HashMap<String,Object> ret = new HashMap<String,Object>();
+        ret.put(OSI_NAME_MAPPING_FIELD,name);
+        ret.put(OSI_TYPE_MAPPING_FIELD,osType.getName()+" - "+osType.getArchitecture());
+        return ret;
     }
 }

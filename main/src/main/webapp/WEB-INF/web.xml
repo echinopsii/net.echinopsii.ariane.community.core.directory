@@ -110,6 +110,16 @@
         <url-pattern>*.jsf</url-pattern>
     </filter-mapping>
 
+    <!-- Directory Plugin Faces Managed Bean Registry Filter -->
+    <filter>
+        <filter-name>DirectoryPluginFacesMBeanRegistryFilter</filter-name>
+        <filter-class>com.spectral.cc.core.directory.commons.tools.DirectoryPluginFacesMBeanFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>DirectoryPluginFacesMBeanRegistryFilter</filter-name>
+        <url-pattern>*.jsf</url-pattern>
+    </filter-mapping>
+
     <!-- PrimeFaces FileUpload Filter -->
     <filter>
         <filter-name>PrimeFaces FileUpload Filter</filter-name>

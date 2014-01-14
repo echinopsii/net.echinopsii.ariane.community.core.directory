@@ -20,7 +20,7 @@
 
 package com.spectral.cc.core.directory.main.runtime;
 
-import com.spectral.cc.core.directory.commons.consumer.RootDirectoryRegistryServiceConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryRootsTreeRegistryServiceConsumer;
 import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
 import com.spectral.cc.core.portal.commons.consumer.MainMenuRegistryConsumer;
 import com.spectral.cc.core.portal.commons.model.MainMenuEntity;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 public class Registrator implements Runnable {
 
-    private static final String DIRECTORY_REGISTRATOR_SERVICE_NAME  = "Directory Registrator Service";
+    private static final String DIRECTORY_REGISTRATOR_TASK_NAME = "Directory Registrator Task";
     private static final Logger log = LoggerFactory.getLogger(Registrator.class);
 
     private static String MAIN_MENU_DIRECTORY_CONTEXT = "/CCdirectory/";
@@ -41,7 +41,8 @@ public class Registrator implements Runnable {
         //TODO : check a better way to start war after OSGI layer
         while(MainMenuRegistryConsumer.getInstance().getMainMenuEntityRegistry()==null)
             try {
-                Thread.sleep(10);
+                log.warn("Portal main menu registry is missing to load {}. Sleep some times...", DIRECTORY_REGISTRATOR_TASK_NAME);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
@@ -49,22 +50,23 @@ public class Registrator implements Runnable {
             MainMenuEntity mainMenuEntity = new MainMenuEntity("directoriesMItem", "Directories", MAIN_MENU_DIRECTORY_CONTEXT + "views/main.jsf", MenuEntityType.TYPE_MENU_ITEM, MAIN_MENU_DIR_RANK, "icon-book icon-large");
             OsgiActivator.directoryMainMenuEntityList.add(mainMenuEntity);
             MainMenuRegistryConsumer.getInstance().getMainMenuEntityRegistry().registerMainMenuEntity(mainMenuEntity);
-            log.debug("{} has registered its main menu items", new Object[]{DIRECTORY_REGISTRATOR_SERVICE_NAME});
+            log.debug("{} has registered its main menu items", new Object[]{DIRECTORY_REGISTRATOR_TASK_NAME});
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
         //TODO : check a better way to start war after OSGI layer
-        while(RootDirectoryRegistryServiceConsumer.getInstance().getRootDirectoryRegistry()==null)
+        while(DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry()==null)
             try {
-                Thread.sleep(10);
+                log.warn("Directory roots tree registry is missing to load {}. Sleep some times...", DIRECTORY_REGISTRATOR_TASK_NAME);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         try {
-            DirectoryEntity commonRootDirectoryEntity = new DirectoryEntity().setId("commonsDir").setValue("Common referential").setType(MenuEntityType.TYPE_MENU_SUBMENU);
+            DirectoryEntity commonRootDirectoryEntity = new DirectoryEntity().setId("commonsDir").setValue("Common").setType(MenuEntityType.TYPE_MENU_SUBMENU);
             OsgiActivator.directoryTreeEntityList.add(commonRootDirectoryEntity);
-            RootDirectoryRegistryServiceConsumer.getInstance().getRootDirectoryRegistry().registerRootDirectoryEntity(commonRootDirectoryEntity);
+            DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry().registerRootDirectoryEntity(commonRootDirectoryEntity);
 
 
             DirectoryEntity organisationalDirectoryEntity = new DirectoryEntity().setId("commonsOrgDir").setValue("Organisation").
@@ -122,7 +124,7 @@ public class Registrator implements Runnable {
                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/OSType.jsf").
                                                              setDescription("Your OS types definitions"));
 
-            log.debug("{} has registered its commons directory items", new Object[]{DIRECTORY_REGISTRATOR_SERVICE_NAME});
+            log.debug("{} has registered its commons directory items", new Object[]{DIRECTORY_REGISTRATOR_TASK_NAME});
 
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

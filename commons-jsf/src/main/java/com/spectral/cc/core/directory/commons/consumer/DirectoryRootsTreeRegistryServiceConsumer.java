@@ -19,39 +19,39 @@
 
 package com.spectral.cc.core.directory.commons.consumer;
 
-import com.spectral.cc.core.directory.commons.registry.RootDirectoryRegistry;
+import com.spectral.cc.core.directory.commons.registry.DirectoryRootsTreeRegistry;
 import org.apache.felix.ipojo.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(publicFactory = false, factoryMethod = "getInstance")
 @Instantiate
-public class RootDirectoryRegistryServiceConsumer {
-    private static final Logger log = LoggerFactory.getLogger(RootDirectoryRegistryServiceConsumer.class);
-    private static RootDirectoryRegistryServiceConsumer INSTANCE;
+public class DirectoryRootsTreeRegistryServiceConsumer {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryRootsTreeRegistryServiceConsumer.class);
+    private static DirectoryRootsTreeRegistryServiceConsumer INSTANCE;
 
     @Requires
-    private RootDirectoryRegistry rootDirectoryRegistry = null;
+    private DirectoryRootsTreeRegistry directoryRootsTreeRegistry = null;
 
     @Bind
-    public void bindRootDirectoryRegistry(RootDirectoryRegistry r) {
-        log.debug("Consumer bound to root directory registry...");
-        rootDirectoryRegistry = r;
+    public void bindDirectoryRootsTreeRegistry(DirectoryRootsTreeRegistry r) {
+        log.info("Consumer bound to directory roots tree registry...");
+        directoryRootsTreeRegistry = r;
     }
 
     @Unbind
-    public void unbindRootDirectoryRegistry() {
-        log.debug("Consumer unbound from root directory registry...");
-        rootDirectoryRegistry = null;
+    public void unbindDirectoryRootsTreeRegistry() {
+        log.info("Consumer unbound from directory roots tree registry...");
+        directoryRootsTreeRegistry = null;
     }
 
-    public RootDirectoryRegistry getRootDirectoryRegistry() {
-        return rootDirectoryRegistry;
+    public DirectoryRootsTreeRegistry getDirectoryRootsTreeRegistry() {
+        return directoryRootsTreeRegistry;
     }
 
-    public static RootDirectoryRegistryServiceConsumer getInstance() {
+    public static DirectoryRootsTreeRegistryServiceConsumer getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new RootDirectoryRegistryServiceConsumer();
+            INSTANCE = new DirectoryRootsTreeRegistryServiceConsumer();
         }
         return INSTANCE;
     }

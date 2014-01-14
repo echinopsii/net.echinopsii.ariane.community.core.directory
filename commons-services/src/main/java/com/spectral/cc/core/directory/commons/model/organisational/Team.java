@@ -1,18 +1,23 @@
 package com.spectral.cc.core.directory.commons.model.organisational;
 
 import com.spectral.cc.core.directory.commons.model.technical.system.OSInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @XmlRootElement
-@Table(name="team",uniqueConstraints = @UniqueConstraint(columnNames = {"teamName"}))
+@Table(name="team",uniqueConstraints = @UniqueConstraint(columnNames = {"teamName","teamCC"}))
 public class Team implements Serializable {
+
+    private static final Logger log = LoggerFactory.getLogger(Team.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,6 +33,10 @@ public class Team implements Serializable {
 
     @Column
     private String description;
+
+    @Column(name="teamCC",unique=true)
+    @NotNull
+    private String colorCode;
 
     @ManyToMany
     private Set<OSInstance> osInstances = new HashSet<OSInstance>();
@@ -112,6 +121,19 @@ public class Team implements Serializable {
         return this;
     }
 
+    public String getColorCode() {
+        return colorCode;
+    }
+
+    public void setColorCode(String colorCode) {
+        this.colorCode = colorCode;
+    }
+
+    public Team setColorCodeR(String colorCode) {
+        this.colorCode = colorCode;
+        return this;
+    }
+
     @Override
     public String toString() {
         String result = getClass().getSimpleName() + " ";
@@ -150,6 +172,17 @@ public class Team implements Serializable {
 
     public Team clone() {
         return new Team().setIdR(id).setVersionR(version).setNameR(name).setDescriptionR(description).setOsInstancesR(new HashSet<>(osInstances)).
-                          setApplicationsR(new HashSet<Application>(applications));
+                          setApplicationsR(new HashSet<Application>(applications)).setColorCodeR(colorCode);
+    }
+
+    public final static String TEAM_SUPPORT_MAPPING_PROPERTIES = "supportTeam";
+    private final static String TEAM_NAME_MAPPING_FIELD = "name";
+    private final static String TEAM_COLR_MAPPING_FIELD = "color";
+
+    public HashMap<String,Object> toMappingProperties() {
+        HashMap<String,Object> ret = new HashMap<String,Object>();
+        ret.put(TEAM_NAME_MAPPING_FIELD,name);
+        ret.put(TEAM_COLR_MAPPING_FIELD,colorCode);
+        return ret;
     }
 }

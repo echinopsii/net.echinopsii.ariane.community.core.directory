@@ -58,13 +58,14 @@
         <version.javax.el>2.2</version.javax.el>
         <version.javax.annotations.jsr250-api>1.0</version.javax.annotations.jsr250-api>
         <version.javax.faces.api>2.1</version.javax.faces.api>
-        <version.javax.servlet.jsp.jsp-api>2.1</version.javax.servlet.jsp.jsp-api>
+        <version.javax.servlet.jsp.jsp-api>2.2</version.javax.servlet.jsp.jsp-api>
         <version.javax.servlet.jstl>1.2</version.javax.servlet.jstl>
-        <version.javax.servlet.servlet-api>2.5</version.javax.servlet.servlet-api>
+        <version.javax.servlet.servlet-api>3.0.1</version.javax.servlet.servlet-api>
         <version.org.apache.poi>3.9</version.org.apache.poi>
         <version.org.apache.shiro>1.2.2</version.org.apache.shiro>
         <version.org.atmosphere>2.0.0</version.org.atmosphere>
         <version.org.glassfish.web.el-impl>2.2.1-b05</version.org.glassfish.web.el-impl>
+        <version.org.jaxen>1.1</version.org.jaxen>
         <version.org.jboss.resteasy>2.3.6.Final</version.org.jboss.resteasy>
         <version.org.primefaces.primefaces>3.5</version.org.primefaces.primefaces>
         <version.org.primefaces.extensions.primefaces-extension>0.7.1</version.org.primefaces.extensions.primefaces-extension>
@@ -101,6 +102,9 @@
 
         <version.osgimin.hibernate>4.2.8</version.osgimin.hibernate>
         <version.osgimax.hibernate>5.0.0</version.osgimax.hibernate>
+
+        <version.osgimin.javax.servlet-api>3.0.0</version.osgimin.javax.servlet-api>
+        <version.osgimax.javax.servlet-api>3.1.0</version.osgimax.javax.servlet-api>
     </properties>
 
     <build>
@@ -300,7 +304,7 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
             <version>${version.javax.servlet.servlet-api}</version>
         </dependency>

@@ -7,6 +7,9 @@
         <h:outputText value="Name : " styleClass="inputTitle"/>
         <p:inputText id="name" label="Name" required="true" value="#{teamNewController.name}"/>
 
+        <h:outputText value="Color code : " styleClass="inputTitle" />
+        <p:colorPicker id="popupCP" value="#{teamNewController.colorCode}"/>
+
         <h:outputText value="Description : " styleClass="inputTitle"/>
         <p:inputText id="description" label="Description" required="true" value="#{teamNewController.description}"/>
     </h:panelGrid>

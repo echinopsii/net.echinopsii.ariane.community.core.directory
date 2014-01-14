@@ -1,6 +1,6 @@
 /**
  * Directory Commons Services bundle
- * Directory Registry Interface
+ * Root Directory Registry Interface
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
 
 import java.util.TreeSet;
 
-public interface RootDirectoryRegistry {
+public interface DirectoryRootsTreeRegistry {
     public DirectoryEntity registerRootDirectoryEntity   (DirectoryEntity directoryEntity) throws Exception;
     public DirectoryEntity unregisterRootDirectoryEntity (DirectoryEntity directoryEntity) throws Exception;
 

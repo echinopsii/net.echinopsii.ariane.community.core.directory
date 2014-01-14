@@ -45,6 +45,7 @@ public class TeamNewController implements Serializable {
 
     private String name;
     private String description;
+    private String colorCode;
 
     public String getName() {
         return name;
@@ -62,9 +63,18 @@ public class TeamNewController implements Serializable {
         this.description = description;
     }
 
+    public String getColorCode() {
+        return colorCode;
+    }
+
+    public void setColorCode(String colorCode) {
+        this.colorCode = colorCode;
+    }
+
     public void save() throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
         Team team = new Team();
         team.setName(name);
+        team.setColorCodeR(colorCode);
         team.setDescription(description);
 
         try {

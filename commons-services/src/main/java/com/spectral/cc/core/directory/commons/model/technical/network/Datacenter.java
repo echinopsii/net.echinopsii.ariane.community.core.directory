@@ -25,6 +25,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,10 +62,10 @@ public class Datacenter implements Serializable
     private String country;
 
     @Column
-    private long gpsLatitude;
+    private double gpsLatitude;
 
     @Column
-    private long gpsLongitude;
+    private double gpsLongitude;
 
     @Column
     private String description;
@@ -192,28 +193,28 @@ public class Datacenter implements Serializable
         return this;
     }
 
-    public long getGpsLatitude() {
+    public double getGpsLatitude() {
         return this.gpsLatitude;
     }
 
-    public void setGpsLatitude(final long gpsLatitude) {
+    public void setGpsLatitude(final double gpsLatitude) {
         this.gpsLatitude = gpsLatitude;
     }
 
-    public Datacenter setGpsLatitudeR(final long gpsLatitude) {
+    public Datacenter setGpsLatitudeR(final double gpsLatitude) {
         this.gpsLatitude = gpsLatitude;
         return this;
     }
 
-    public long getGpsLongitude() {
+    public double getGpsLongitude() {
         return this.gpsLongitude;
     }
 
-    public void setGpsLongitude(final long gpsLongitude) {
+    public void setGpsLongitude(final double gpsLongitude) {
         this.gpsLongitude = gpsLongitude;
     }
 
-    public Datacenter setGpsLongitudeR(final long gpsLongitude) {
+    public Datacenter setGpsLongitudeR(final double gpsLongitude) {
         this.gpsLongitude = gpsLongitude;
         return this;
     }
@@ -279,6 +280,25 @@ public class Datacenter implements Serializable
     public Datacenter clone() throws CloneNotSupportedException {
         return new Datacenter().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setAddressR(this.address).setZipCodeR(this.zipCode).setTownR(this.town).
                                 setCountryR(this.country).setDescriptionR(this.description).setGpsLatitudeR(this.gpsLatitude).setGpsLongitudeR(this.gpsLongitude).
-                                                                                                                                                                                                                                                                                                                                              setSubnetsR(new HashSet<Subnet>(this.subnets)).setMulticastAreasR(new HashSet<MulticastArea>(this.multicastAreas));
+                                setSubnetsR(new HashSet<Subnet>(this.subnets)).setMulticastAreasR(new HashSet<MulticastArea>(this.multicastAreas));
+    }
+
+    public  final static String DC_MAPPING_PROPERTIES = "Datacenter";
+    private final static String DC_NAME_MAPPING_FIELD = "dc";
+    private final static String DC_ADDR_MAPPING_FIELD = "address";
+    private final static String DC_TOWN_MAPPING_FIELD = "town";
+    private final static String DC_CNTY_MAPPING_FIELD = "country";
+    private final static String DC_GPSA_MAPPING_FIELD = "gpsLat";
+    private final static String DC_GPSN_MAPPING_FIELD = "gpsLng";
+
+    public HashMap<String,Object> toMappingProperties() {
+        HashMap<String,Object> ret = new HashMap<String,Object>();
+        ret.put(DC_NAME_MAPPING_FIELD,name);
+        ret.put(DC_ADDR_MAPPING_FIELD,address);
+        ret.put(DC_TOWN_MAPPING_FIELD,town);
+        ret.put(DC_CNTY_MAPPING_FIELD,country);
+        ret.put(DC_GPSA_MAPPING_FIELD,gpsLatitude);
+        ret.put(DC_GPSN_MAPPING_FIELD,gpsLongitude);
+        return ret;
     }
 }

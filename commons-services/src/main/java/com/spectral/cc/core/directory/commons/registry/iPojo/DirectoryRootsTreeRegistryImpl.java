@@ -19,7 +19,7 @@
 package com.spectral.cc.core.directory.commons.registry.iPojo;
 
 import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
-import com.spectral.cc.core.directory.commons.registry.RootDirectoryRegistry;
+import com.spectral.cc.core.directory.commons.registry.DirectoryRootsTreeRegistry;
 import org.apache.felix.ipojo.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,23 +29,23 @@ import java.util.TreeSet;
 @Component
 @Provides
 @Instantiate
-public class RootDirectoryRegistryImpl implements RootDirectoryRegistry {
+public class DirectoryRootsTreeRegistryImpl implements DirectoryRootsTreeRegistry {
 
-    private static final String ROOT_DIRECTORY_REGISTRY_SERVICE_NAME = "Root Directory Registry Service";
-    private static final Logger log = LoggerFactory.getLogger(RootDirectoryRegistryImpl.class);
+    private static final String ROOT_DIRECTORY_REGISTRY_SERVICE_NAME = " Directory Roots Tree Registry Service";
+    private static final Logger log = LoggerFactory.getLogger(DirectoryRootsTreeRegistryImpl.class);
 
     private TreeSet<DirectoryEntity> registry = new TreeSet<DirectoryEntity>();
 
     @Validate
     public void validate() throws Exception {
-        log.debug("{} is started.", new Object[]{ROOT_DIRECTORY_REGISTRY_SERVICE_NAME});
+        log.info("{} is started.", new Object[]{ROOT_DIRECTORY_REGISTRY_SERVICE_NAME});
     }
 
     @Invalidate
     public void invalidate(){
-        log.debug("Stopping {}...", new Object[]{ROOT_DIRECTORY_REGISTRY_SERVICE_NAME});
+        log.info("Stopping {}...", new Object[]{ROOT_DIRECTORY_REGISTRY_SERVICE_NAME});
         registry.clear();
-        log.debug("{} is stopped.", new Object[]{ROOT_DIRECTORY_REGISTRY_SERVICE_NAME});
+        log.info("{} is stopped.", new Object[]{ROOT_DIRECTORY_REGISTRY_SERVICE_NAME});
     }
 
     @Override

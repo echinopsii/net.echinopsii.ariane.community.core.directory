@@ -20,7 +20,7 @@
 package com.spectral.cc.core.directory.commons.tools;
 
 import com.spectral.cc.core.directory.commons.consumer.FaceletsResourceResolverServicesConsumer;
-import com.spectral.cc.core.portal.commons.fresolver.FaceletsResourceResolverService;
+import com.spectral.cc.core.portal.commons.facesplugin.FaceletsResourceResolverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

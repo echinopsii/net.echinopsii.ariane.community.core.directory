@@ -20,7 +20,7 @@
 
 package com.spectral.cc.core.directory.main.runtime;
 
-import com.spectral.cc.core.directory.commons.consumer.RootDirectoryRegistryServiceConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryRootsTreeRegistryServiceConsumer;
 import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
 import com.spectral.cc.core.portal.commons.consumer.MainMenuRegistryConsumer;
 import com.spectral.cc.core.portal.commons.model.MainMenuEntity;
@@ -36,30 +36,33 @@ public class OsgiActivator implements BundleActivator {
     private static final String DIRECTORY_SERVICE_NAME                     = "Directory Main Service";
     private static final Logger log = LoggerFactory.getLogger(OsgiActivator.class);
 
-    protected static ArrayList<MainMenuEntity> directoryMainMenuEntityList = new ArrayList<MainMenuEntity>() ;
-    protected static ArrayList<DirectoryEntity> directoryTreeEntityList    = new ArrayList<DirectoryEntity>();
+    protected static ArrayList<MainMenuEntity>  directoryMainMenuEntityList = new ArrayList<MainMenuEntity>() ;
+    protected static ArrayList<DirectoryEntity> directoryTreeEntityList     = new ArrayList<DirectoryEntity>();
 
     @Override
     public void start(BundleContext context) {
-       new Thread(new Registrator()).start();
-       log.debug("{} is started.", new Object[]{DIRECTORY_SERVICE_NAME});
+        log.info("{} is starting...", new Object[]{DIRECTORY_SERVICE_NAME});
+        new Thread(new Registrator()).start();
+        log.info("{} is started...", new Object[]{DIRECTORY_SERVICE_NAME});
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        log.info("{} is stopping...", new Object[]{DIRECTORY_SERVICE_NAME});
         if (MainMenuRegistryConsumer.getInstance().getMainMenuEntityRegistry()!=null) {
             for(MainMenuEntity entity : directoryMainMenuEntityList) {
                 MainMenuRegistryConsumer.getInstance().getMainMenuEntityRegistry().unregisterMainMenuEntity(entity);
             }
         }
         directoryMainMenuEntityList.clear();
-        if (RootDirectoryRegistryServiceConsumer.getInstance().getRootDirectoryRegistry()!=null) {
+
+        if (DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry()!=null) {
             for(DirectoryEntity entity : directoryTreeEntityList) {
-                RootDirectoryRegistryServiceConsumer.getInstance().getRootDirectoryRegistry().unregisterRootDirectoryEntity(entity);
+                DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry().unregisterRootDirectoryEntity(entity);
             }
         }
         directoryTreeEntityList.clear();
 
-        log.debug("{} is stopped.", new Object[]{DIRECTORY_SERVICE_NAME});
+        log.info("{} is stopped...", new Object[]{DIRECTORY_SERVICE_NAME});
     }
 }
