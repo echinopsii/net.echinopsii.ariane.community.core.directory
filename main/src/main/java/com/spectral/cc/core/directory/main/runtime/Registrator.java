@@ -20,6 +20,7 @@
 
 package com.spectral.cc.core.directory.main.runtime;
 
+import com.spectral.cc.core.directory.commons.consumer.DirectoryPluginFacesMBeanRegistryConsumer;
 import com.spectral.cc.core.directory.commons.consumer.DirectoryRootsTreeRegistryServiceConsumer;
 import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
 import com.spectral.cc.core.portal.commons.consumer.MainMenuRegistryConsumer;
@@ -33,16 +34,27 @@ public class Registrator implements Runnable {
     private static final String DIRECTORY_REGISTRATOR_TASK_NAME = "Directory Registrator Task";
     private static final Logger log = LoggerFactory.getLogger(Registrator.class);
 
-    private static String MAIN_MENU_DIRECTORY_CONTEXT = "/CCdirectory/";
+    private static String MAIN_MENU_DIRECTORY_CONTEXT;
     private static int MAIN_MENU_DIR_RANK = 2;
 
     @Override
     public void run() {
         //TODO : check a better way to start war after OSGI layer
+        while((DirectoryPluginFacesMBeanRegistryConsumer.getInstance().getDirectoryPluginFacesMBeanRegistry()==null) ||
+                      (DirectoryPluginFacesMBeanRegistryConsumer.getInstance().getDirectoryPluginFacesMBeanRegistry().getRegisteredServletContext()==null))
+            try {
+                log.info("Directory plugin faces managed bean registry is missing or is still not initialized to load {}. Sleep some times...", DIRECTORY_REGISTRATOR_TASK_NAME);
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        MAIN_MENU_DIRECTORY_CONTEXT = DirectoryPluginFacesMBeanRegistryConsumer.getInstance().getDirectoryPluginFacesMBeanRegistry().getRegisteredServletContext().getContextPath()+"/";
+
+        //TODO : check a better way to start war after OSGI layer
         while(MainMenuRegistryConsumer.getInstance().getMainMenuEntityRegistry()==null)
             try {
-                log.warn("Portal main menu registry is missing to load {}. Sleep some times...", DIRECTORY_REGISTRATOR_TASK_NAME);
-                Thread.sleep(10000);
+                log.info("Portal main menu registry is missing to load {}. Sleep some times...", DIRECTORY_REGISTRATOR_TASK_NAME);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
@@ -58,8 +70,8 @@ public class Registrator implements Runnable {
         //TODO : check a better way to start war after OSGI layer
         while(DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry()==null)
             try {
-                log.warn("Directory roots tree registry is missing to load {}. Sleep some times...", DIRECTORY_REGISTRATOR_TASK_NAME);
-                Thread.sleep(10000);
+                log.info("Directory roots tree registry is missing to load {}. Sleep some times...", DIRECTORY_REGISTRATOR_TASK_NAME);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
@@ -86,11 +98,6 @@ public class Registrator implements Runnable {
                     addChildDirectory(new DirectoryEntity().setId("environmentDirID").setValue("Environment").setParentDirectory(organisationalDirectoryEntity).setIcon("icon-tag").
                                                             setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/environment.jsf").
                                                             setDescription("Your IT environment (development, homologation, QA, production ...)"));//.
-            /*
-            addChildDirectory(new DirectoryEntity().setId("organisationUnitDirID").setValue("Organisation unit").setParentDirectory(organisationalDirectoryEntity).setIcon("icon-flag").
-                                                            setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main.jsf").
-                                                            setDescription("Your organisation units definitions"));
-            */
 
             DirectoryEntity technicalDirectoryEntity = new DirectoryEntity().setId("commonsTechDir").setValue("IT infrastructure").
                                                                              setType(MenuEntityType.TYPE_MENU_SUBMENU).

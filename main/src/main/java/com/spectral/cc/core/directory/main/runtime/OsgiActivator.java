@@ -41,7 +41,6 @@ public class OsgiActivator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) {
-        log.info("{} is starting...", new Object[]{DIRECTORY_SERVICE_NAME});
         new Thread(new Registrator()).start();
         log.info("{} is started...", new Object[]{DIRECTORY_SERVICE_NAME});
     }

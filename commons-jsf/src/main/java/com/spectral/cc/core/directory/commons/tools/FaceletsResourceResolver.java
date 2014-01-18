@@ -1,5 +1,5 @@
 /**
- * Portal Commons JSF bundle
+ * Injector Commons JSF bundle
  * Facelets Resource Resolver
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
  */
 package com.spectral.cc.core.directory.commons.tools;
 
-import com.spectral.cc.core.directory.commons.consumer.FaceletsResourceResolverServicesConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryFaceletsResourceResolverServicesConsumer;
 import com.spectral.cc.core.portal.commons.facesplugin.FaceletsResourceResolverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +49,9 @@ public class FaceletsResourceResolver extends ResourceResolver {
         }
 
         if (url == null &&
-            FaceletsResourceResolverServicesConsumer.getInstance()!=null &&
-            FaceletsResourceResolverServicesConsumer.getInstance().getFaceletsResourceResolverServices()!=null) {
-            for (FaceletsResourceResolverService fResolver : FaceletsResourceResolverServicesConsumer.getInstance().getFaceletsResourceResolverServices()) {
+            DirectoryFaceletsResourceResolverServicesConsumer.getInstance()!=null &&
+            DirectoryFaceletsResourceResolverServicesConsumer.getInstance().getFaceletsResourceResolverServices()!=null) {
+            for (FaceletsResourceResolverService fResolver : DirectoryFaceletsResourceResolverServicesConsumer.getInstance().getFaceletsResourceResolverServices()) {
                 log.debug("Resolve {} from face resolver from package {}...", new Object[]{path, fResolver.getClass().getPackage()});
                 url = fResolver.resolveURL(path);
                 if (url!=null)

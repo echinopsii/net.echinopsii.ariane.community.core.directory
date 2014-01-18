@@ -111,16 +111,9 @@ public class DirectoryEntity implements Comparable<DirectoryEntity> {
             ret = this;
         } else {
             for (DirectoryEntity entity : childs) {
-                /*
-                if (entity.getValue().equals(value_)) {
-                    ret = entity;
+                ret = entity.findDirectoryEntityFromValue(value_);
+                if (ret!=null)
                     break;
-                } else {
-                */
-                    ret = entity.findDirectoryEntityFromValue(value_);
-                    if (ret!=null)
-                        break;
-                //}
             }
         }
         return ret;
@@ -132,17 +125,9 @@ public class DirectoryEntity implements Comparable<DirectoryEntity> {
             ret = this;
         } else {
             for (DirectoryEntity entity : childs) {
-                /*
-                if (entity.getId().equals(id_)) {
-                    ret = entity;
+                ret = entity.findDirectoryEntityFromID(id_);
+                if (ret!=null)
                     break;
-                }
-                else {
-                */
-                    ret = entity.findDirectoryEntityFromID(id_);
-                    if (ret!=null)
-                        break;
-                //}
             }
         }
         return ret;

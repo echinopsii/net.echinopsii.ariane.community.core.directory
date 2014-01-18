@@ -26,11 +26,11 @@ import org.slf4j.LoggerFactory;
 
 @Component(publicFactory = false, factoryMethod = "getInstance")
 @Instantiate
-public class FaceletsResourceResolverServicesConsumer {
-    private static final Logger log = LoggerFactory.getLogger(FaceletsResourceResolverServicesConsumer.class);
-    private static FaceletsResourceResolverServicesConsumer INSTANCE;
+public class DirectoryFaceletsResourceResolverServicesConsumer {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryFaceletsResourceResolverServicesConsumer.class);
+    private static DirectoryFaceletsResourceResolverServicesConsumer INSTANCE;
 
-    @Requires
+    @Requires(filter="(targetCCcomponent=Directory)")
     private FaceletsResourceResolverService[] faceletsResolverList;
 
     public FaceletsResourceResolverService[] getFaceletsResourceResolverServices() {
@@ -38,9 +38,9 @@ public class FaceletsResourceResolverServicesConsumer {
         return faceletsResolverList;
     }
 
-    public static FaceletsResourceResolverServicesConsumer getInstance() {
+    public static DirectoryFaceletsResourceResolverServicesConsumer getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new FaceletsResourceResolverServicesConsumer();
+            INSTANCE = new DirectoryFaceletsResourceResolverServicesConsumer();
         }
         return INSTANCE;
     }

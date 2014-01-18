@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.commons.consumer;
 
-import com.spectral.cc.core.portal.commons.facesplugin.DirectoryPluginFacesMBeanRegistry;
+import com.spectral.cc.core.portal.commons.facesplugin.PluginFacesMBeanRegistry;
 import org.apache.felix.ipojo.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,23 +30,23 @@ public class DirectoryPluginFacesMBeanRegistryConsumer {
     private static final Logger log = LoggerFactory.getLogger(DirectoryPluginFacesMBeanRegistryConsumer.class);
     private static DirectoryPluginFacesMBeanRegistryConsumer INSTANCE;
 
-    @Requires
-    private DirectoryPluginFacesMBeanRegistry pluginFacesMBeanDirectoryRegistry = null;
+    @Requires(from="DirectoryPluginFacesMBeanRegistryImpl")
+    private PluginFacesMBeanRegistry directoryPluginFacesMBeanDirectoryRegistry = null;
 
     @Bind
-    public void bindPluginFacesMBeanDirectoryRegistry(DirectoryPluginFacesMBeanRegistry r) {
+    public void bindPluginFacesMBeanDirectoryRegistry(PluginFacesMBeanRegistry r) {
         log.info("Consumer bound to directory plugin faces managed bean registry...");
-        pluginFacesMBeanDirectoryRegistry = r;
+        directoryPluginFacesMBeanDirectoryRegistry = r;
     }
 
     @Unbind
     public void unbindPluginFacesMBeanDirectoryRegistry() {
         log.info("Consumer unbound from directory plugin faces managed bean registry...");
-        pluginFacesMBeanDirectoryRegistry = null;
+        directoryPluginFacesMBeanDirectoryRegistry = null;
     }
 
-    public DirectoryPluginFacesMBeanRegistry getDirectoryPluginFacesMBeanRegistry() {
-        return pluginFacesMBeanDirectoryRegistry;
+    public PluginFacesMBeanRegistry getDirectoryPluginFacesMBeanRegistry() {
+        return directoryPluginFacesMBeanDirectoryRegistry;
     }
 
     public static DirectoryPluginFacesMBeanRegistryConsumer getInstance() {

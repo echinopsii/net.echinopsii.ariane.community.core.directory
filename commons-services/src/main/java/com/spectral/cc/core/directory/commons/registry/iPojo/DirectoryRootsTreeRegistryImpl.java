@@ -31,7 +31,7 @@ import java.util.TreeSet;
 @Instantiate
 public class DirectoryRootsTreeRegistryImpl implements DirectoryRootsTreeRegistry {
 
-    private static final String ROOT_DIRECTORY_REGISTRY_SERVICE_NAME = " Directory Roots Tree Registry Service";
+    private static final String ROOT_DIRECTORY_REGISTRY_SERVICE_NAME = "Directory Roots Tree Registry Service";
     private static final Logger log = LoggerFactory.getLogger(DirectoryRootsTreeRegistryImpl.class);
 
     private TreeSet<DirectoryEntity> registry = new TreeSet<DirectoryEntity>();
