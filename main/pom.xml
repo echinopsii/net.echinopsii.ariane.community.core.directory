@@ -111,7 +111,7 @@
                         <Embed-Directory>WEB-INF/lib</Embed-Directory>
                         <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
-                        <DynamicImport-Package>*;resolution:=optional</DynamicImport-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
                         <Import-Package>
                             com.spectral.cc.core.directory.commons.consumer;version=${project.version},
                             com.spectral.cc.core.directory.commons.controller;version=${project.version},
