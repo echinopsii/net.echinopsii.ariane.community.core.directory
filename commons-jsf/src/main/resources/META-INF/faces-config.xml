@@ -5,18 +5,18 @@
               version="2.0">
 
     <managed-bean>
-        <managed-bean-name>directoriesLayoutController</managed-bean-name>
-        <managed-bean-class>com.spectral.cc.core.directory.commons.controller.DirectoriesLayoutController</managed-bean-class>
+        <managed-bean-name>directoryLayoutController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.commons.controller.DirectoryLayoutController</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     <managed-bean>
-        <managed-bean-name>directoriesMenuController</managed-bean-name>
-        <managed-bean-class>com.spectral.cc.core.directory.commons.controller.DirectoriesMenuController</managed-bean-class>
+        <managed-bean-name>directoryMenuController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.commons.controller.DirectoryMenuController</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
     <managed-bean>
-        <managed-bean-name>directoriesBreadCrumController</managed-bean-name>
-        <managed-bean-class>com.spectral.cc.core.directory.commons.controller.DirectoriesBreadCrumController</managed-bean-class>
+        <managed-bean-name>directoryBreadCrumController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.commons.controller.DirectoryBreadCrumController</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
 

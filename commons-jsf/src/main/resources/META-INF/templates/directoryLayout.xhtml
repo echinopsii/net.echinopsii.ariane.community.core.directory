@@ -5,15 +5,15 @@
 <ui:composition template="/templates/mainLayout.xhtml">
     <ui:define name="moduleContent">
         <p:layout id="directoriesLayout" widgetVar="directoriesLW">
-            <p:ajax event="toggle" listener="#{directoriesLayoutController.onToggle}" />
+            <p:ajax event="toggle" listener="#{directoryLayoutController.onToggle}" />
             <p:layoutUnit id="directoriesMenu" position="west" size="320" header="Directories menu" resizable="true"
                           collapsible="true" effect="fade" collapsed="#{directoriesLayoutController.collapsed}">
                 <h:form id="dirMenuForm">
-                    <p:panelMenu model="#{directoriesMenuController.model}" style="border:0;margin:0;padding:0"/>
+                    <p:panelMenu model="#{directoryMenuController.model}" style="border:0;margin:0;padding:0"/>
                 </h:form>
             </p:layoutUnit>
             <p:layoutUnit position="center" resizable="false">
-                <p:breadCrumb model="#{directoriesBreadCrumController.model}" style="border:0;margin:0;padding:0"/>
+                <p:breadCrumb model="#{directoryBreadCrumController.model}" style="border:0;margin:0;padding:0"/>
                 <br/><br/>
                 <ui:insert name="directoryContent"></ui:insert>
             </p:layoutUnit>

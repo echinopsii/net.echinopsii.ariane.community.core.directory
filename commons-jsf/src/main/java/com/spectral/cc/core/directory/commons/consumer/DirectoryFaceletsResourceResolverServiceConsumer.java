@@ -24,23 +24,37 @@ import org.apache.felix.ipojo.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * iPojo singleton which consume the facelets resource resolver service with filter targetCCcomponent=Directory.
+ * Instantiated during directory commons-jsf bundle startup. FactoryMethod : getInstance
+ */
 @Component(publicFactory = false, factoryMethod = "getInstance")
 @Instantiate
-public class DirectoryFaceletsResourceResolverServicesConsumer {
-    private static final Logger log = LoggerFactory.getLogger(DirectoryFaceletsResourceResolverServicesConsumer.class);
-    private static DirectoryFaceletsResourceResolverServicesConsumer INSTANCE;
+public class DirectoryFaceletsResourceResolverServiceConsumer {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryFaceletsResourceResolverServiceConsumer.class);
+    private static DirectoryFaceletsResourceResolverServiceConsumer INSTANCE;
 
     @Requires(filter="(targetCCcomponent=Directory)")
     private FaceletsResourceResolverService[] faceletsResolverList;
 
+    /**
+     * Get all facelets resource resolver service binded to this consumer...
+     *
+     * @return all facelets resource resolver service binded on this consumer. If null no registry has been binded ...
+     */
     public FaceletsResourceResolverService[] getFaceletsResourceResolverServices() {
         log.debug("{} FaceletsResourceResolverService are bound to this consumer...", (faceletsResolverList!=null) ? faceletsResolverList.length : "0");
         return faceletsResolverList;
     }
 
-    public static DirectoryFaceletsResourceResolverServicesConsumer getInstance() {
+    /**
+     * Factory method for this singleton.
+     *
+     * @return instantiated directory facelets resource resolver consumer
+     */
+    public static DirectoryFaceletsResourceResolverServiceConsumer getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new DirectoryFaceletsResourceResolverServicesConsumer();
+            INSTANCE = new DirectoryFaceletsResourceResolverServiceConsumer();
         }
         return INSTANCE;
     }

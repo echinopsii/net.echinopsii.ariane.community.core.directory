@@ -27,7 +27,25 @@ import javax.persistence.spi.PersistenceProvider;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The directory JPA provider provide tools to create EntityManager for the cc-directory persistence unit. It also add a feature to extend the cc-directory persistance unit through CC plugins. <br/><br/>
+ * To make work this feature you must have the spectral hibernate distribution which enables this feature.<br/>
+ *
+ * @see <a href="https://github.com/mffrench/hibernate-orm/tree/4.3.0.Final.spectral">spectral hibernate distribution</a>
+ *
+ */
 public interface DirectoryJPAProvider {
+    /**
+     * Create entity manager for cc-directory pu
+     *
+     * @return entity manager for cc-directory pu
+     */
     public EntityManager createEM();
+
+    /**
+     * Add a persistence bundle to cc-directory pu
+     *
+     * @param persistenceBundle
+     */
     public void addSubPersistenceBundle(Bundle persistenceBundle);
 }

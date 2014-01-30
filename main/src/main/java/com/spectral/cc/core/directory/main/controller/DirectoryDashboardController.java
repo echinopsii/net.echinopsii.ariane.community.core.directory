@@ -20,7 +20,7 @@
 package com.spectral.cc.core.directory.main.controller;
 
 import com.spectral.cc.core.directory.commons.consumer.DirectoryRootsTreeRegistryServiceConsumer;
-import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
+import com.spectral.cc.core.directory.commons.model.DirectoryMenuEntity;
 import com.spectral.cc.core.portal.commons.model.MenuEntityType;
 import org.primefaces.component.dashboard.Dashboard;
 import org.primefaces.model.DashboardColumn;
@@ -37,22 +37,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-//import org.primefaces.component.panel.Panel;
-//import javax.faces.application.Application;
-//import javax.faces.component.html.HtmlOutputText;
-
+/**
+ * Directory dashboard controller transform directory roots registry into primefaces DashboardModel to populate the directory main view
+ */
 @ManagedBean
 @RequestScoped
-public class DirectoriesDashboardController {
-    private static final Logger log = LoggerFactory.getLogger(DirectoriesDashboardController.class);
+public class DirectoryDashboardController {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryDashboardController.class);
 
     private HashMap<String, DashboardColumn> columnHashMap = new HashMap<String, DashboardColumn>();
     private DashboardModel                   model         = new DefaultDashboardModel();
     private Dashboard                        dashboard;
 
-    private void rootCreateRootSubmenuWidget(DirectoryEntity curEntity, String curTitle, DefaultDashboardColumn lastColumn) {
+    private void rootCreateRootSubmenuWidget(DirectoryMenuEntity curEntity, String curTitle, DefaultDashboardColumn lastColumn) {
         DefaultDashboardColumn curColumn = lastColumn;
-        for (DirectoryEntity child : curEntity.getChildsDirectory()) {
+        for (DirectoryMenuEntity child : curEntity.getChildsDirectory()) {
             String nextTitle = curTitle+" / "+child.getValue();
             switch (child.getType()) {
                 case MenuEntityType.TYPE_MENU_ITEM:
@@ -101,12 +100,12 @@ public class DirectoriesDashboardController {
     }
 */
 
-    public DirectoriesDashboardController() {
+    public DirectoryDashboardController() {
         log.debug("Init Dashboard Model...");
         if (DirectoryRootsTreeRegistryServiceConsumer.getInstance()!=null) {
             DefaultDashboardColumn lonlyItemColumn = new DefaultDashboardColumn();
             model.addColumn(lonlyItemColumn);
-            for (DirectoryEntity entity : DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry().getRootDirectoryEntities()) {
+            for (DirectoryMenuEntity entity : DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry().getRootDirectoryMenuEntities()) {
                 switch (entity.getType()) {
                     case MenuEntityType.TYPE_MENU_ITEM:
                         lonlyItemColumn.addWidget(entity.getValue());
@@ -159,7 +158,7 @@ public class DirectoriesDashboardController {
 
     public String getWidgetValue(String widgetName) {
         String ret = "";
-        DirectoryEntity entity = DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry().getDirectoryEntityFromValue(getDirectoryValueFromWidgetName(widgetName));
+        DirectoryMenuEntity entity = DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry().getDirectoryMenuEntityFromValue(getDirectoryValueFromWidgetName(widgetName));
         if (entity!=null)
             ret = entity.getValue();
         log.debug("Get Value from widget {} : {}...", new Object[]{widgetName,ret});
@@ -168,7 +167,7 @@ public class DirectoriesDashboardController {
 
     public String getWidgetDescription(String widgetName) {
         String ret = "";
-        DirectoryEntity entity = DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry().getDirectoryEntityFromValue(getDirectoryValueFromWidgetName(widgetName));
+        DirectoryMenuEntity entity = DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry().getDirectoryMenuEntityFromValue(getDirectoryValueFromWidgetName(widgetName));
         if (entity!=null)
             ret = entity.getDescription();
         log.debug("Get description from widget {} : {}...", new Object[]{widgetName,ret});
@@ -177,7 +176,7 @@ public class DirectoriesDashboardController {
 
     public String getWidgetIcon(String widgetName) {
         String ret = "";
-        DirectoryEntity entity = DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry().getDirectoryEntityFromValue(getDirectoryValueFromWidgetName(widgetName));
+        DirectoryMenuEntity entity = DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry().getDirectoryMenuEntityFromValue(getDirectoryValueFromWidgetName(widgetName));
         if (entity!=null)
             ret = entity.getIcon() + " icon-4x";
         log.debug("Get icon from widget {} : {}...", new Object[]{widgetName, ret});
@@ -187,7 +186,7 @@ public class DirectoriesDashboardController {
     public String getWidgetAddress(String widgetName) {
         String ret = "";
         FacesContext context = FacesContext.getCurrentInstance();
-        DirectoryEntity entity = DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry().getDirectoryEntityFromValue(getDirectoryValueFromWidgetName(widgetName));
+        DirectoryMenuEntity entity = DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry().getDirectoryMenuEntityFromValue(getDirectoryValueFromWidgetName(widgetName));
         if (entity!=null)
             ret = context.getExternalContext().getRequestScheme() + "://" +
                           context.getExternalContext().getRequestServerName() + ":" +

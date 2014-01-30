@@ -20,7 +20,7 @@
 package com.spectral.cc.core.directory.commons.controller;
 
 import com.spectral.cc.core.directory.commons.consumer.DirectoryRootsTreeRegistryServiceConsumer;
-import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
+import com.spectral.cc.core.directory.commons.model.DirectoryMenuEntity;
 import com.spectral.cc.core.portal.commons.model.MenuEntityType;
 import org.primefaces.component.menuitem.MenuItem;
 import org.primefaces.component.separator.Separator;
@@ -32,12 +32,16 @@ import org.slf4j.LoggerFactory;
 
 import javax.faces.context.FacesContext;
 
-public class DirectoriesMenuController {
-    private static final Logger log = LoggerFactory.getLogger(DirectoriesMenuController.class);
+/**
+ * Directory menu controller transform directory roots registry into primefaces menu model to be used in directory layout panel menu component
+ * This is a request managed bean
+ */
+public class DirectoryMenuController {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryMenuController.class);
 
     private MenuModel model     = new DefaultMenuModel();
 
-    private MenuItem createMenuItemFromEntity(DirectoryEntity entity) {
+    private MenuItem createMenuItemFromEntity(DirectoryMenuEntity entity) {
         FacesContext context = FacesContext.getCurrentInstance();
         MenuItem item = new MenuItem();
         item.setId(entity.getId());
@@ -52,13 +56,13 @@ public class DirectoriesMenuController {
         return item;
     }
 
-    private Submenu createSubMenuFromEntity(DirectoryEntity entity) {
+    private Submenu createSubMenuFromEntity(DirectoryMenuEntity entity) {
         Submenu submenu = new Submenu();
         submenu.setId(entity.getId());
         submenu.setStyleClass("menuItem");
         submenu.setLabel(entity.getValue());
         submenu.setIcon(entity.getIcon() + " icon-large");
-        for (DirectoryEntity subEntity : entity.getChildsDirectory()) {
+        for (DirectoryMenuEntity subEntity : entity.getChildsDirectory()) {
             switch(subEntity.getType()) {
                 case MenuEntityType.TYPE_MENU_SUBMENU:
                     Submenu subSubMenu = createSubMenuFromEntity(subEntity);
@@ -83,7 +87,7 @@ public class DirectoriesMenuController {
     public MenuModel getModel() {
         log.debug("Get Menu Model...");
         if (DirectoryRootsTreeRegistryServiceConsumer.getInstance()!=null) {
-            for (DirectoryEntity entity : DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry().getRootDirectoryEntities()) {
+            for (DirectoryMenuEntity entity : DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry().getRootDirectoryMenuEntities()) {
                 switch (entity.getType()) {
                     case MenuEntityType.TYPE_MENU_ITEM:
                         MenuItem item = createMenuItemFromEntity(entity);

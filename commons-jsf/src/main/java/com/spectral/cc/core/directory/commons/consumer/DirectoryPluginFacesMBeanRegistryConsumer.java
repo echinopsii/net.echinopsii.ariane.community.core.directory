@@ -24,6 +24,11 @@ import org.apache.felix.ipojo.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/**
+ * iPojo singleton which consume the plugin faces mbean registry implemented by DirectoryPluginFacesMBearRegistryImpl
+ * Instantiated during directory commons-jsf bundle startup. FactoryMethod : getInstance
+ */
 @Component(publicFactory = false, factoryMethod = "getInstance")
 @Instantiate
 public class DirectoryPluginFacesMBeanRegistryConsumer {
@@ -45,14 +50,23 @@ public class DirectoryPluginFacesMBeanRegistryConsumer {
         directoryPluginFacesMBeanDirectoryRegistry = null;
     }
 
+    /**
+     * Get directory plugin faces managed bean registry
+     *
+     * @return the binded directory plugin faces managed bean registry. null if unbinded.
+     */
     public PluginFacesMBeanRegistry getDirectoryPluginFacesMBeanRegistry() {
         return directoryPluginFacesMBeanDirectoryRegistry;
     }
 
+    /**
+     * Factory method for this singleton...
+     *
+     * @return instantiated directory plugin faces mbean registry consumer
+     */
     public static DirectoryPluginFacesMBeanRegistryConsumer getInstance() {
-        if (INSTANCE == null) {
+        if (INSTANCE == null)
             INSTANCE = new DirectoryPluginFacesMBeanRegistryConsumer();
-        }
         return INSTANCE;
     }
 }

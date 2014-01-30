@@ -39,6 +39,15 @@ import javax.persistence.criteria.Root;
 import javax.persistence.spi.PersistenceProvider;
 import java.util.*;
 
+/**
+ * The directory JPA provider provide tools to create EntityManager for the cc-directory persistence unit. It also add a feature to extend the cc-directory persistance unit through CC plugins. <br/><br/>
+ * To make work this feature you must have the spectral hibernate distribution which enables this feature.<br/>
+ *
+ * @see <a href="https://github.com/mffrench/hibernate-orm/tree/4.3.0.Final.spectral">spectral hibernate distribution</a>
+ *
+ * This is the iPojo implementation of {@link DirectoryJPAProvider}. The component is instantiated at commons-services bundle startup.
+ * It provides the {@link DirectoryJPAProvider} service.
+ */
 @Component(managedservice="com.spectral.cc.core.directory.commons.DirectoryJPAProvider")
 @Provides
 @Instantiate

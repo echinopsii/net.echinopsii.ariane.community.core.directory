@@ -21,7 +21,7 @@
 package com.spectral.cc.core.directory.main.runtime;
 
 import com.spectral.cc.core.directory.commons.consumer.DirectoryRootsTreeRegistryServiceConsumer;
-import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
+import com.spectral.cc.core.directory.commons.model.DirectoryMenuEntity;
 import com.spectral.cc.core.portal.commons.consumer.MainMenuRegistryConsumer;
 import com.spectral.cc.core.portal.commons.model.MainMenuEntity;
 import org.osgi.framework.BundleActivator;
@@ -37,7 +37,7 @@ public class OsgiActivator implements BundleActivator {
     private static final Logger log = LoggerFactory.getLogger(OsgiActivator.class);
 
     protected static ArrayList<MainMenuEntity>  directoryMainMenuEntityList = new ArrayList<MainMenuEntity>() ;
-    protected static ArrayList<DirectoryEntity> directoryTreeEntityList     = new ArrayList<DirectoryEntity>();
+    protected static ArrayList<DirectoryMenuEntity> directoryTreeEntityList     = new ArrayList<DirectoryMenuEntity>();
 
     @Override
     public void start(BundleContext context) {
@@ -55,9 +55,9 @@ public class OsgiActivator implements BundleActivator {
         }
         directoryMainMenuEntityList.clear();
 
-        if (DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry()!=null) {
-            for(DirectoryEntity entity : directoryTreeEntityList) {
-                DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryRootsTreeRegistry().unregisterRootDirectoryEntity(entity);
+        if (DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry()!=null) {
+            for(DirectoryMenuEntity entity : directoryTreeEntityList) {
+                DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry().unregisterRootDirectoryMenuEntity(entity);
             }
         }
         directoryTreeEntityList.clear();

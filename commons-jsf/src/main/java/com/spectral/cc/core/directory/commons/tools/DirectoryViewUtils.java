@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.spectral.cc.core.directory.commons.controller;
+package com.spectral.cc.core.directory.commons.tools;
 
 import javax.persistence.Id;
 import java.beans.PropertyDescriptor;
@@ -30,15 +30,12 @@ import java.util.List;
 /**
  * Utilities for working with Java Server Faces views.
  */
-
 public final class DirectoryViewUtils {
 
     public static <T> List<T> asList(Collection<T> collection){
-
         if (collection == null) {
             return null;
         }
-
         return new ArrayList<T>(collection);
     }
 
@@ -52,8 +49,7 @@ public final class DirectoryViewUtils {
             // Invoke toString if declared in the class. If not found, the NoSuchMethodException is caught and handled
             object.getClass().getDeclaredMethod("toString");
             return object.toString();
-        }
-        catch (NoSuchMethodException noMethodEx) {
+        } catch (NoSuchMethodException noMethodEx) {
             try {
                 for (Field field : object.getClass().getDeclaredFields()) {
                     // Find the primary key field and display it

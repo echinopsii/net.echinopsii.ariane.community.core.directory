@@ -19,7 +19,7 @@
  */
 package com.spectral.cc.core.directory.commons.tools;
 
-import com.spectral.cc.core.directory.commons.consumer.DirectoryFaceletsResourceResolverServicesConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryFaceletsResourceResolverServiceConsumer;
 import com.spectral.cc.core.portal.commons.facesplugin.FaceletsResourceResolverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +27,18 @@ import org.slf4j.LoggerFactory;
 import javax.faces.view.facelets.ResourceResolver;
 import java.net.URL;
 
+/**
+ * Helper to find facelets resource. First it check on the direcoty main, then on the directory commons-jsf bundle and finally ask any
+ * Facelets Resource Resolver Service existing in the container... <br/><br/>
+ *
+ * To use this resolver you must have following web.xml configuration :
+ * <pre>
+ *          <context-param>
+ *              <param-name>javax.faces.FACELETS_RESOURCE_RESOLVER</param-name>
+ *              <param-value>com.spectral.cc.core.directory.commons.tools.FaceletsResourceResolver</param-value>
+ *          </context-param>
+ * </pre>
+ */
 public class FaceletsResourceResolver extends ResourceResolver {
 
     private static final Logger log = LoggerFactory.getLogger(FaceletsResourceResolver.class);
@@ -38,6 +50,12 @@ public class FaceletsResourceResolver extends ResourceResolver {
         this.basePath = "/META-INF"; // TODO: Make configureable?
     }
 
+    /**
+     * Resource resolver implementation.
+     * First it check on the direcoty main, then on the directory commons-jsf bundle and finally ask any Facelets Resource Resolver Service existing in the container...
+     * @param path
+     * @return
+     */
     @Override
     public URL resolveUrl(String path) {
         log.debug("Resolve {} from directory main...", new Object[]{path});
@@ -49,9 +67,9 @@ public class FaceletsResourceResolver extends ResourceResolver {
         }
 
         if (url == null &&
-            DirectoryFaceletsResourceResolverServicesConsumer.getInstance()!=null &&
-            DirectoryFaceletsResourceResolverServicesConsumer.getInstance().getFaceletsResourceResolverServices()!=null) {
-            for (FaceletsResourceResolverService fResolver : DirectoryFaceletsResourceResolverServicesConsumer.getInstance().getFaceletsResourceResolverServices()) {
+            DirectoryFaceletsResourceResolverServiceConsumer.getInstance()!=null &&
+            DirectoryFaceletsResourceResolverServiceConsumer.getInstance().getFaceletsResourceResolverServices()!=null) {
+            for (FaceletsResourceResolverService fResolver : DirectoryFaceletsResourceResolverServiceConsumer.getInstance().getFaceletsResourceResolverServices()) {
                 log.debug("Resolve {} from face resolver from package {}...", new Object[]{path, fResolver.getClass().getPackage()});
                 url = fResolver.resolveURL(path);
                 if (url!=null)

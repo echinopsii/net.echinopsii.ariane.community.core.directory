@@ -18,23 +18,29 @@
  */
 package com.spectral.cc.core.directory.commons.registry.iPojo;
 
-import com.spectral.cc.core.directory.commons.model.DirectoryEntity;
-import com.spectral.cc.core.directory.commons.registry.DirectoryRootsTreeRegistry;
+import com.spectral.cc.core.directory.commons.model.DirectoryMenuEntity;
+import com.spectral.cc.core.directory.commons.registry.DirectoryMenuRootsTreeRegistry;
 import org.apache.felix.ipojo.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.TreeSet;
 
+/**
+ * The directory menu roots tree registry store the root directory menu entity.
+ *
+ * This is the iPojo implementation of {@link DirectoryMenuRootsTreeRegistry}. The component is instantiated at commons-services bundle startup.
+ * It provides the {@link DirectoryMenuRootsTreeRegistry} service.
+ */
 @Component
 @Provides
 @Instantiate
-public class DirectoryRootsTreeRegistryImpl implements DirectoryRootsTreeRegistry {
+public class DirectoryMenuRootsTreeRegistryImpl implements DirectoryMenuRootsTreeRegistry {
 
     private static final String ROOT_DIRECTORY_REGISTRY_SERVICE_NAME = "Directory Roots Tree Registry Service";
-    private static final Logger log = LoggerFactory.getLogger(DirectoryRootsTreeRegistryImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DirectoryMenuRootsTreeRegistryImpl.class);
 
-    private TreeSet<DirectoryEntity> registry = new TreeSet<DirectoryEntity>();
+    private TreeSet<DirectoryMenuEntity> registry = new TreeSet<DirectoryMenuEntity>();
 
     @Validate
     public void validate() throws Exception {
@@ -43,33 +49,32 @@ public class DirectoryRootsTreeRegistryImpl implements DirectoryRootsTreeRegistr
 
     @Invalidate
     public void invalidate(){
-        log.info("Stopping {}...", new Object[]{ROOT_DIRECTORY_REGISTRY_SERVICE_NAME});
         registry.clear();
         log.info("{} is stopped.", new Object[]{ROOT_DIRECTORY_REGISTRY_SERVICE_NAME});
     }
 
     @Override
-    public DirectoryEntity registerRootDirectoryEntity(DirectoryEntity directoryEntity) throws Exception {
-        this.registry.add(directoryEntity);
-        return directoryEntity;
+    public DirectoryMenuEntity registerRootDirectoryMenuEntity(DirectoryMenuEntity directoryMenuEntity) {
+        this.registry.add(directoryMenuEntity);
+        return directoryMenuEntity;
     }
 
     @Override
-    public DirectoryEntity unregisterRootDirectoryEntity(DirectoryEntity directoryEntity) throws Exception {
-        this.registry.remove(directoryEntity);
-        return directoryEntity;
+    public DirectoryMenuEntity unregisterRootDirectoryMenuEntity(DirectoryMenuEntity directoryMenuEntity) {
+        this.registry.remove(directoryMenuEntity);
+        return directoryMenuEntity;
     }
 
     @Override
-    public TreeSet<DirectoryEntity> getRootDirectoryEntities() {
+    public TreeSet<DirectoryMenuEntity> getRootDirectoryMenuEntities() {
         return registry;
     }
 
     @Override
-    public DirectoryEntity getDirectoryEntityFromValue(String value) {
-        DirectoryEntity ret = null;
-        for (DirectoryEntity entity : registry) {
-            ret = entity.findDirectoryEntityFromValue(value);
+    public DirectoryMenuEntity getDirectoryMenuEntityFromValue(String value) {
+        DirectoryMenuEntity ret = null;
+        for (DirectoryMenuEntity entity : registry) {
+            ret = entity.findDirectoryMenuEntityFromValue(value);
             if (ret!=null)
                 break;
         }
@@ -77,10 +82,10 @@ public class DirectoryRootsTreeRegistryImpl implements DirectoryRootsTreeRegistr
     }
 
     @Override
-    public DirectoryEntity getDirectoryEntityFromID(String id) {
-        DirectoryEntity ret = null;
-        for (DirectoryEntity entity : registry) {
-            ret = entity.findDirectoryEntityFromID(id);
+    public DirectoryMenuEntity getDirectoryMenuEntityFromID(String id) {
+        DirectoryMenuEntity ret = null;
+        for (DirectoryMenuEntity entity : registry) {
+            ret = entity.findDirectoryMenuEntityFromID(id);
             if (ret!=null)
                 break;
         }

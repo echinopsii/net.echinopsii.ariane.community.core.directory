@@ -14,6 +14,15 @@
     <name>Control and Conquer Core Directory Commons Services</name>
     <packaging>bundle</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.spectral.cc.core.portal</groupId>
+            <artifactId>com.spectral.cc.core.portal.commons-services</artifactId>
+            <version>${version.com.spectral.cc.core.portal}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

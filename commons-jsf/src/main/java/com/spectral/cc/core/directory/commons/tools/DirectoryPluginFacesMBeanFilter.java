@@ -23,6 +23,21 @@ import com.spectral.cc.core.directory.commons.consumer.DirectoryPluginFacesMBean
 import javax.servlet.*;
 import java.io.IOException;
 
+/**
+ * This servlet filter is an helper to add new Managed Bean coming from CC plugin to the directory servlet context thanks the directory plugin faces mbean registry consumer.<br/>
+ * It must be configured properly in the web.xml file :<br/><br/>
+ * <pre>
+ *         <!-- Directory Plugin Faces Managed Bean Registry Filter -->
+ *         <filter>
+ *              <filter-name>DirectoryPluginFacesMBeanRegistryFilter</filter-name>
+ *              <filter-class>com.spectral.cc.core.directory.commons.tools.DirectoryPluginFacesMBeanFilter</filter-class>
+ *         </filter>
+ *         <filter-mapping>
+ *              <filter-name>DirectoryPluginFacesMBeanRegistryFilter</filter-name>
+ *              <url-pattern>*.jsf</url-pattern>
+ *         </filter-mapping>
+ * </pre>
+ */
 public class DirectoryPluginFacesMBeanFilter implements Filter {
 
     /**
@@ -35,14 +50,31 @@ public class DirectoryPluginFacesMBeanFilter implements Filter {
         this.filterConfig = null;
     }
 
+    /**
+     * Ask the directory plugin faces managed bean registry to add registers faces managed bean to the directory servlet context,
+     * and then pass control to the next filter
+     *
+     * @param request
+     * @param response
+     * @param chain
+     *
+     * @throws IOException
+     * @throws ServletException
+     */
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
     throws IOException, ServletException {
         DirectoryPluginFacesMBeanRegistryConsumer.getInstance().getDirectoryPluginFacesMBeanRegistry().addPluginFacesMBeanConfigsToServletContext();
-
-        // Pass control on to the next filter
+        // pass control on to the next filter
         chain.doFilter(request, response);
     }
 
+    /**
+     * Register the directory servlet context into the directory plugin faces managed bean registry
+     *
+     * @param filterConfig
+     *
+     * @throws ServletException
+     */
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
         while(DirectoryPluginFacesMBeanRegistryConsumer.getInstance().getDirectoryPluginFacesMBeanRegistry()==null)

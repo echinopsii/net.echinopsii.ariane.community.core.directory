@@ -24,10 +24,15 @@ import org.primefaces.event.ToggleEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DirectoriesLayoutController {
-    private static final Logger log = LoggerFactory.getLogger(DirectoriesLayoutController.class);
+/**
+ * controller for menu layout toogling
+ * this is a session managed bean
+ */
+public class DirectoryLayoutController {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryLayoutController.class);
 
     private boolean   collapsed = false;
+
     public boolean isCollapsed() {
         return collapsed;
     }
@@ -36,6 +41,11 @@ public class DirectoriesLayoutController {
         this.collapsed = collapsed;
     }
 
+    /**
+     * listener onToogle
+     *
+     * @param event
+     */
     public void onToggle(ToggleEvent event) {
         log.debug("ToogleEvent : {} {}", new Object[]{((LayoutUnit)event.getComponent()).getPosition() + " toggled", "Status:" + event.getVisibility().name()});
         if (this.collapsed)

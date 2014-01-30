@@ -19,11 +19,15 @@
 
 package com.spectral.cc.core.directory.commons.consumer;
 
-import com.spectral.cc.core.directory.commons.registry.DirectoryRootsTreeRegistry;
+import com.spectral.cc.core.directory.commons.registry.DirectoryMenuRootsTreeRegistry;
 import org.apache.felix.ipojo.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * iPojo singleton which consume the directory roots tree registry service
+ * Instantiated during directory commons-jsf bundle startup. FactoryMethod : getInstance
+ */
 @Component(publicFactory = false, factoryMethod = "getInstance")
 @Instantiate
 public class DirectoryRootsTreeRegistryServiceConsumer {
@@ -31,28 +35,37 @@ public class DirectoryRootsTreeRegistryServiceConsumer {
     private static DirectoryRootsTreeRegistryServiceConsumer INSTANCE;
 
     @Requires
-    private DirectoryRootsTreeRegistry directoryRootsTreeRegistry = null;
+    private DirectoryMenuRootsTreeRegistry directoryMenuRootsTreeRegistry = null;
 
     @Bind
-    public void bindDirectoryRootsTreeRegistry(DirectoryRootsTreeRegistry r) {
+    public void bindDirectoryRootsTreeRegistry(DirectoryMenuRootsTreeRegistry r) {
         log.info("Consumer bound to directory roots tree registry...");
-        directoryRootsTreeRegistry = r;
+        directoryMenuRootsTreeRegistry = r;
     }
 
     @Unbind
     public void unbindDirectoryRootsTreeRegistry() {
         log.info("Consumer unbound from directory roots tree registry...");
-        directoryRootsTreeRegistry = null;
+        directoryMenuRootsTreeRegistry = null;
     }
 
-    public DirectoryRootsTreeRegistry getDirectoryRootsTreeRegistry() {
-        return directoryRootsTreeRegistry;
+    /**
+     * Get binded directory roots tree registry service consumer
+     *
+     * @return directory roots tree registry service consumer binded on this consumer. If null no registry has been binded ...
+     */
+    public DirectoryMenuRootsTreeRegistry getDirectoryMenuRootsTreeRegistry() {
+        return directoryMenuRootsTreeRegistry;
     }
 
+    /**
+     * Factory method for this singleton
+     *
+     * @return instantiated directory roots tree registry service consumer
+     */
     public static DirectoryRootsTreeRegistryServiceConsumer getInstance() {
-        if (INSTANCE == null) {
+        if (INSTANCE == null)
             INSTANCE = new DirectoryRootsTreeRegistryServiceConsumer();
-        }
         return INSTANCE;
     }
 }

@@ -24,6 +24,10 @@ import org.apache.felix.ipojo.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * iPojo singleton which consume the directory JPA provider.
+ * Instantiated during directory commons-jsf bundle startup. FactoryMethod : getInstance
+ */
 @Component(publicFactory = false, factoryMethod = "getInstance")
 @Instantiate
 public class DirectoryJPAProviderConsumer {
@@ -45,10 +49,20 @@ public class DirectoryJPAProviderConsumer {
         directoryJpaProvider = null;
     }
 
+    /**
+     * Get directory JPA provider binded to this consumer...
+     *
+     * @return the binded directory JPA provider. null if unbinded.
+     */
     public DirectoryJPAProvider getDirectoryJpaProvider() {
         return directoryJpaProvider;
     }
 
+    /**
+     * Factory method for this singleton...
+     *
+     * @return instantiated directory JPA provider consumer
+     */
     public static DirectoryJPAProviderConsumer getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new DirectoryJPAProviderConsumer();

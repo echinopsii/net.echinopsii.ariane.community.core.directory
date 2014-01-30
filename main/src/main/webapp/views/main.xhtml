@@ -5,20 +5,20 @@
       xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/templates/mainLayout.xhtml">
     <ui:define name="moduleContent">
-        <!--TODO : parameters columns on user preference -->
+        <!--TODO : parameters columns on userProfile preference -->
         <div align="center" style="vertical-align: middle">
-            <ui:repeat value="#{directoriesDashboardController.dashboardColumn}" var="column">
+            <ui:repeat value="#{directoryDashboardController.dashboardColumn}" var="column">
                 <br/><br/><br/>
-                <p:carousel id="basicCarousel" value="#{directoriesDashboardController.getColumnWidgets(column)}" var="widget" itemStyle="width:350px" numVisible="4">
+                <p:carousel id="basicCarousel" value="#{directoryDashboardController.getColumnWidgets(column)}" var="widget" itemStyle="width:350px" numVisible="4">
                     <f:facet name="header">
-                        <h:outputText value="#{directoriesDashboardController.getColumnName(column)}" />
+                        <h:outputText value="#{directoryDashboardController.getColumnName(column)}" />
                     </f:facet>
-                    <h:outputLink value="#{directoriesDashboardController.getWidgetAddress(widget)}">
+                    <h:outputLink value="#{directoryDashboardController.getWidgetAddress(widget)}">
                         <h:panelGrid columns="2" cellpadding="1" style="width:80%; vertical-align: middle; text-align: center;">
-                            <i class="#{directoriesDashboardController.getWidgetIcon(widget)}"/>
+                            <i class="#{directoryDashboardController.getWidgetIcon(widget)}"/>
                             <h:panelGroup>
-                                <h:outputText value="#{directoriesDashboardController.getWidgetValue(widget)}" style="vertical-align: middle; font-weight: bold"/><br/>
-                                <h:outputText value="#{directoriesDashboardController.getWidgetDescription(widget)}" style="vertical-align: middle"/>
+                                <h:outputText value="#{directoryDashboardController.getWidgetValue(widget)}" style="vertical-align: middle; font-weight: bold"/><br/>
+                                <h:outputText value="#{directoryDashboardController.getWidgetDescription(widget)}" style="vertical-align: middle"/>
                             </h:panelGroup>
                         </h:panelGrid>
                     </h:outputLink>
