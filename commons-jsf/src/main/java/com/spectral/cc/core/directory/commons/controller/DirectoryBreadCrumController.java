@@ -18,8 +18,9 @@
  */
 package com.spectral.cc.core.directory.commons.controller;
 
-import com.spectral.cc.core.directory.commons.consumer.DirectoryRootsTreeRegistryServiceConsumer;
-import com.spectral.cc.core.directory.commons.model.DirectoryMenuEntity;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryPluginFacesMBeanRegistryConsumer;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryTreeMenuRootsRegistryServiceConsumer;
+import com.spectral.cc.core.portal.commons.model.TreeMenuEntity;
 import org.primefaces.component.menuitem.MenuItem;
 import org.primefaces.model.DefaultMenuModel;
 import org.primefaces.model.MenuModel;
@@ -30,16 +31,16 @@ import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 
 /**
- * Directory bread crum controller transform directory roots registry into primefaces menu model to be used in directory layout bread crum component
+ * Directory bread crum controller transform directory tree menu roots registry entities into primefaces menu model to be used in directory layout bread crum component
  * This is a request managed bean
  */
 public class DirectoryBreadCrumController {
     private static final Logger log = LoggerFactory.getLogger(DirectoryBreadCrumController.class);
-    private static String MAIN_MENU_DIRECTORY_CONTEXT = "/CCdirectory/";
+    private static String MAIN_MENU_DIRECTORY_CONTEXT = DirectoryPluginFacesMBeanRegistryConsumer.getInstance().getDirectoryPluginFacesMBeanRegistry().getRegisteredServletContext().getContextPath();
 
     private MenuModel model     = new DefaultMenuModel();
 
-    private MenuItem createMenuItemFromEntity(DirectoryMenuEntity entity) {
+    private MenuItem createMenuItemFromEntity(TreeMenuEntity entity) {
         FacesContext context = FacesContext.getCurrentInstance();
         MenuItem item = new MenuItem();
         item.setId(entity.getId());
@@ -52,7 +53,7 @@ public class DirectoryBreadCrumController {
             item.setUrl(context.getExternalContext().getRequestScheme() + "://" +
                                 context.getExternalContext().getRequestServerName() + ":" +
                                 context.getExternalContext().getRequestServerPort() +
-                                MAIN_MENU_DIRECTORY_CONTEXT + "views/main.jsf");
+                                MAIN_MENU_DIRECTORY_CONTEXT + "/views/main.jsf");
         item.setValue(entity.getValue());
         item.setStyleClass("menuItem");
 
@@ -66,7 +67,7 @@ public class DirectoryBreadCrumController {
         item.setUrl(context.getExternalContext().getRequestScheme() + "://" +
                             context.getExternalContext().getRequestServerName() + ":" +
                             context.getExternalContext().getRequestServerPort() +
-                            MAIN_MENU_DIRECTORY_CONTEXT + "views/main.jsf");
+                            MAIN_MENU_DIRECTORY_CONTEXT + "/views/main.jsf");
         item.setValue("Directory");
         item.setStyleClass("menuItem");
         return item;
@@ -74,24 +75,20 @@ public class DirectoryBreadCrumController {
 
     public MenuModel getModel() {
         FacesContext context = FacesContext.getCurrentInstance();
-        String requestServletPath = context.getExternalContext().getRequestServletPath();
-        String values[] = requestServletPath.split("/");
-        String id = values[values.length-1].split("\\.")[0]+"DirID" ;
-        log.debug("requestServletPath : {} ; value : {}", new Object[]{requestServletPath,id});
-        log.debug("Get Menu Model...");
-        ArrayList<DirectoryMenuEntity> orderedBreadScrumMenuFromRootToLeaf = new ArrayList<DirectoryMenuEntity>();
-        if (DirectoryRootsTreeRegistryServiceConsumer.getInstance()!=null) {
-            DirectoryMenuEntity leaf   = DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry().getDirectoryMenuEntityFromID(id);
+        String contextAddress = MAIN_MENU_DIRECTORY_CONTEXT+ context.getExternalContext().getRequestServletPath();
+        ArrayList<TreeMenuEntity> orderedBreadScrumMenuFromRootToLeaf = new ArrayList<TreeMenuEntity>();
+        if (DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance()!=null) {
+            TreeMenuEntity leaf   = DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance().getTreeMenuRootsRegistry().getTreeMenuEntityFromContextAddress(contextAddress);
             if (leaf!=null) {
                 orderedBreadScrumMenuFromRootToLeaf.add(0,leaf);
-                DirectoryMenuEntity parent = leaf.getParentDirectory();
+                TreeMenuEntity parent = leaf.getParentTreeMenuEntity();
                 while (parent!=null) {
                     orderedBreadScrumMenuFromRootToLeaf.add(0,parent);
-                    parent = parent.getParentDirectory();
+                    parent = parent.getParentTreeMenuEntity();
                 }
 
                 model.addMenuItem(createRootMenuItem());
-                for (DirectoryMenuEntity dir: orderedBreadScrumMenuFromRootToLeaf)
+                for (TreeMenuEntity dir: orderedBreadScrumMenuFromRootToLeaf)
                     model.addMenuItem(createMenuItemFromEntity(dir));
             }
         }

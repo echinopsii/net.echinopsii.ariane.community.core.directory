@@ -75,8 +75,7 @@
                             com.spectral.cc.core.directory.commons.model.organisational;version=${project.version},
                             com.spectral.cc.core.directory.commons.model.technical.network;version=${project.version},
                             com.spectral.cc.core.directory.commons.model.technical.system;version=${project.version},
-                            com.spectral.cc.core.directory.commons.persistence;version=${project.version},
-                            com.spectral.cc.core.directory.commons.registry;version=${project.version}
+                            com.spectral.cc.core.directory.commons.persistence;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

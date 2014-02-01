@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.commons.consumer;
 
-import com.spectral.cc.core.directory.commons.registry.DirectoryMenuRootsTreeRegistry;
+import com.spectral.cc.core.portal.commons.registry.TreeMenuRootsRegistry;
 import org.apache.felix.ipojo.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,23 +30,23 @@ import org.slf4j.LoggerFactory;
  */
 @Component(publicFactory = false, factoryMethod = "getInstance")
 @Instantiate
-public class DirectoryRootsTreeRegistryServiceConsumer {
-    private static final Logger log = LoggerFactory.getLogger(DirectoryRootsTreeRegistryServiceConsumer.class);
-    private static DirectoryRootsTreeRegistryServiceConsumer INSTANCE;
+public class DirectoryTreeMenuRootsRegistryServiceConsumer {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryTreeMenuRootsRegistryServiceConsumer.class);
+    private static DirectoryTreeMenuRootsRegistryServiceConsumer INSTANCE;
 
-    @Requires
-    private DirectoryMenuRootsTreeRegistry directoryMenuRootsTreeRegistry = null;
+    @Requires(from="DirectoryMenuRootsTreeRegistryImpl")
+    private TreeMenuRootsRegistry treeMenuRootsRegistry = null;
 
     @Bind
-    public void bindDirectoryRootsTreeRegistry(DirectoryMenuRootsTreeRegistry r) {
-        log.info("Consumer bound to directory roots tree registry...");
-        directoryMenuRootsTreeRegistry = r;
+    public void bindTreeMenuRootsRegistry(TreeMenuRootsRegistry r) {
+        log.info("Consumer bound to directory tree menu roots registry...");
+        treeMenuRootsRegistry = r;
     }
 
     @Unbind
-    public void unbindDirectoryRootsTreeRegistry() {
-        log.info("Consumer unbound from directory roots tree registry...");
-        directoryMenuRootsTreeRegistry = null;
+    public void unbindTreeMenuRootsRegistry() {
+        log.info("Consumer unbound from directory tree menu roots registry...");
+        treeMenuRootsRegistry = null;
     }
 
     /**
@@ -54,8 +54,8 @@ public class DirectoryRootsTreeRegistryServiceConsumer {
      *
      * @return directory roots tree registry service consumer binded on this consumer. If null no registry has been binded ...
      */
-    public DirectoryMenuRootsTreeRegistry getDirectoryMenuRootsTreeRegistry() {
-        return directoryMenuRootsTreeRegistry;
+    public TreeMenuRootsRegistry getTreeMenuRootsRegistry() {
+        return treeMenuRootsRegistry;
     }
 
     /**
@@ -63,9 +63,9 @@ public class DirectoryRootsTreeRegistryServiceConsumer {
      *
      * @return instantiated directory roots tree registry service consumer
      */
-    public static DirectoryRootsTreeRegistryServiceConsumer getInstance() {
+    public static DirectoryTreeMenuRootsRegistryServiceConsumer getInstance() {
         if (INSTANCE == null)
-            INSTANCE = new DirectoryRootsTreeRegistryServiceConsumer();
+            INSTANCE = new DirectoryTreeMenuRootsRegistryServiceConsumer();
         return INSTANCE;
     }
 }

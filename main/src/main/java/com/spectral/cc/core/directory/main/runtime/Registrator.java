@@ -21,8 +21,8 @@
 package com.spectral.cc.core.directory.main.runtime;
 
 import com.spectral.cc.core.directory.commons.consumer.DirectoryPluginFacesMBeanRegistryConsumer;
-import com.spectral.cc.core.directory.commons.consumer.DirectoryRootsTreeRegistryServiceConsumer;
-import com.spectral.cc.core.directory.commons.model.DirectoryMenuEntity;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryTreeMenuRootsRegistryServiceConsumer;
+import com.spectral.cc.core.portal.commons.model.TreeMenuEntity;
 import com.spectral.cc.core.portal.commons.consumer.MainMenuRegistryConsumer;
 import com.spectral.cc.core.portal.commons.model.MainMenuEntity;
 import com.spectral.cc.core.portal.commons.model.MenuEntityType;
@@ -68,68 +68,65 @@ public class Registrator implements Runnable {
         }
 
         //TODO : check a better way to start war after OSGI layer
-        while(DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry()==null)
+        while(DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance().getTreeMenuRootsRegistry()==null)
             try {
-                log.info("Directory roots tree registry is missing to load {}. Sleep some times...", DIRECTORY_REGISTRATOR_TASK_NAME);
+                log.info("Directory tree menu roots registry is missing to load {}. Sleep some times...", DIRECTORY_REGISTRATOR_TASK_NAME);
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         try {
-            DirectoryMenuEntity commonRootDirectoryMenuEntity = new DirectoryMenuEntity().setId("commonsDir").setValue("Common").setType(MenuEntityType.TYPE_MENU_SUBMENU);
-            OsgiActivator.directoryTreeEntityList.add(commonRootDirectoryMenuEntity);
-            DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry().registerRootDirectoryMenuEntity(commonRootDirectoryMenuEntity);
+            TreeMenuEntity commonRootTreeMenuEntity = new TreeMenuEntity().setId("commonsDir").setValue("Common").setType(MenuEntityType.TYPE_MENU_SUBMENU);
+            OsgiActivator.directoryTreeEntityList.add(commonRootTreeMenuEntity);
+            DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance().getTreeMenuRootsRegistry().registerTreeMenuRootEntity(commonRootTreeMenuEntity);
 
 
-            DirectoryMenuEntity organisationalDirectoryMenuEntity = new DirectoryMenuEntity().setId("commonsOrgDir").setValue("Organisation").
+            TreeMenuEntity organisationalTreeMenuEntity = new TreeMenuEntity().setId("commonsOrgDir").setValue("Organisation").
                                                                                   setType(MenuEntityType.TYPE_MENU_SUBMENU).
-                                                                                  setParentDirectory(commonRootDirectoryMenuEntity);
-            commonRootDirectoryMenuEntity.addChildDirectory(organisationalDirectoryMenuEntity);
-            organisationalDirectoryMenuEntity.
-                    addChildDirectory(new DirectoryMenuEntity().setId("applicationDirID").setValue("Application").setParentDirectory(organisationalDirectoryMenuEntity).setIcon("icon-cogs").
-                                                                setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/application.jsf").
-                                                                setDescription("Your IT applications definitions")).
-                    addChildDirectory(new DirectoryMenuEntity().setId("teamDirID").setValue("Team").setParentDirectory(organisationalDirectoryMenuEntity).setIcon("icon-group").
-                                                                setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/team.jsf").
-                                                                setDescription("Your teams (ops, devs, ...) definitions")).
-                    addChildDirectory(new DirectoryMenuEntity().setId("companyDirID").setValue("Company").setParentDirectory(organisationalDirectoryMenuEntity).setIcon("icon-building").
-                                                                setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/company.jsf").
-                                                                setDescription("Definition of companies involved in your IT system (yours included)")).
-                    addChildDirectory(new DirectoryMenuEntity().setId("environmentDirID").setValue("Environment").setParentDirectory(organisationalDirectoryMenuEntity).setIcon("icon-tag").
-                                                                setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/environment.jsf").
-                                                                setDescription("Your IT environment (development, homologation, QA, production ...)"));//.
+                                                                                  setParentTreeMenuEntity(commonRootTreeMenuEntity);
+            commonRootTreeMenuEntity.addChildTreeMenuEntity(organisationalTreeMenuEntity);
+            organisationalTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("applicationTreeID").setValue("Application").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("icon-cogs").
+                                                                                     setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/application.jsf").
+                                                                                     setDescription("Your IT applications definitions")).
+                                         addChildTreeMenuEntity(new TreeMenuEntity().setId("teamTreeID").setValue("Team").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("icon-group").
+                                                                                     setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/team.jsf").
+                                                                                     setDescription("Your teams (ops, devs, ...) definitions")).
+                                         addChildTreeMenuEntity(new TreeMenuEntity().setId("companyTreeID").setValue("Company").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("icon-building").
+                                                                                     setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/company.jsf").
+                                                                                     setDescription("Definition of companies involved in your IT system (yours included)")).
+                                         addChildTreeMenuEntity(new TreeMenuEntity().setId("environmentTreeID").setValue("Environment").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("icon-tag").
+                                                                                     setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/environment.jsf").
+                                                                                     setDescription("Your IT environment (development, homologation, QA, production ...)"));
 
-            DirectoryMenuEntity technicalDirectoryMenuEntity = new DirectoryMenuEntity().setId("commonsTechDir").setValue("IT infrastructure").
-                                                                             setType(MenuEntityType.TYPE_MENU_SUBMENU).
-                                                                             setParentDirectory(commonRootDirectoryMenuEntity);
-            commonRootDirectoryMenuEntity.addChildDirectory(technicalDirectoryMenuEntity);
+            TreeMenuEntity technicalTreeMenuEntity = new TreeMenuEntity().setId("commonsTechDir").setValue("IT infrastructure").
+                                                                          setType(MenuEntityType.TYPE_MENU_SUBMENU).
+                                                                          setParentTreeMenuEntity(commonRootTreeMenuEntity);
+            commonRootTreeMenuEntity.addChildTreeMenuEntity(technicalTreeMenuEntity);
 
-            DirectoryMenuEntity networkDirectoryMenuEntity = new DirectoryMenuEntity().setId("commontNtwDir").setValue("Network").
-                                                                           setType(MenuEntityType.TYPE_MENU_SUBMENU).
-                                                                           setParentDirectory(technicalDirectoryMenuEntity);
-            technicalDirectoryMenuEntity.addChildDirectory(networkDirectoryMenuEntity);
-            networkDirectoryMenuEntity.
-                     addChildDirectory(new DirectoryMenuEntity().setId("datacenterDirID").setValue("Datacenter").setParentDirectory(networkDirectoryMenuEntity).setIcon("icon-building").
-                                                                 setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/datacenter.jsf").
-                                                                 setDescription("Your datacenters definitions")).
-                     addChildDirectory(new DirectoryMenuEntity().setId("subnetDirID").setValue("Subnet").setParentDirectory(networkDirectoryMenuEntity).setIcon("icon-road").
-                                                                 setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/subnet.jsf").
-                                                                 setDescription("Your subnets definitions")).
-                     addChildDirectory(new DirectoryMenuEntity().setId("multicastAreaDirID").setValue("Multicast area").setParentDirectory(networkDirectoryMenuEntity).setIcon("icon-asterisk").
-                                                                 setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/multicastArea.jsf").
-                                                                 setDescription("Your multicast areas definitions"));
+            TreeMenuEntity networkTreeMenuEntity = new TreeMenuEntity().setId("commontNtwDir").setValue("Network").
+                                                                        setType(MenuEntityType.TYPE_MENU_SUBMENU).
+                                                                        setParentTreeMenuEntity(technicalTreeMenuEntity);
+            technicalTreeMenuEntity.addChildTreeMenuEntity(networkTreeMenuEntity);
+            networkTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("datacenterTreeID").setValue("Datacenter").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-building").
+                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/datacenter.jsf").
+                                                                              setDescription("Your datacenters definitions")).
+                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("subnetTreeID").setValue("Subnet").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-road").
+                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/subnet.jsf").
+                                                                              setDescription("Your subnets definitions")).
+                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("multicastAreaTreeID").setValue("Multicast area").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-asterisk").
+                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/multicastArea.jsf").
+                                                                              setDescription("Your multicast areas definitions"));
 
-            DirectoryMenuEntity systemDirectoryMenuEntity = new DirectoryMenuEntity().setId("commonSysDir").setValue("System").
-                                                                         setType(MenuEntityType.TYPE_MENU_SUBMENU).
-                                                                         setParentDirectory(technicalDirectoryMenuEntity);
-            technicalDirectoryMenuEntity.addChildDirectory(systemDirectoryMenuEntity);
-            systemDirectoryMenuEntity.
-                     addChildDirectory(new DirectoryMenuEntity().setId("OSInstanceDirID").setValue("OS Instance").setParentDirectory(systemDirectoryMenuEntity).setIcon("icon-cogs").
-                                                                 setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/OSInstance.jsf").
-                                                                 setDescription("Your OS instances definitions")).
-                     addChildDirectory(new DirectoryMenuEntity().setId("OSTypeDirID").setValue("OS Type").setParentDirectory(systemDirectoryMenuEntity).setIcon("icon-tag").
-                                                                 setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/OSType.jsf").
-                                                                 setDescription("Your OS types definitions"));
+            TreeMenuEntity systemTreeMenuEntity = new TreeMenuEntity().setId("commonSysDir").setValue("System").
+                                                                       setType(MenuEntityType.TYPE_MENU_SUBMENU).
+                                                                       setParentTreeMenuEntity(technicalTreeMenuEntity);
+            technicalTreeMenuEntity.addChildTreeMenuEntity(systemTreeMenuEntity);
+            systemTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("OSInstanceTreeID").setValue("OS Instance").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-cogs").
+                                                                             setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/OSInstance.jsf").
+                                                                             setDescription("Your OS instances definitions")).
+                                 addChildTreeMenuEntity(new TreeMenuEntity().setId("OSTypeTreeID").setValue("OS Type").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-tag").
+                                                                             setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/main/OSType.jsf").
+                                                                             setDescription("Your OS types definitions"));
 
             log.debug("{} has registered its commons directory items", new Object[]{DIRECTORY_REGISTRATOR_TASK_NAME});
 

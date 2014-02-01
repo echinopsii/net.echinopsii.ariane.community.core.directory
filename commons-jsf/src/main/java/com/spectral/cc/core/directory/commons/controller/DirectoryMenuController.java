@@ -19,8 +19,8 @@
 
 package com.spectral.cc.core.directory.commons.controller;
 
-import com.spectral.cc.core.directory.commons.consumer.DirectoryRootsTreeRegistryServiceConsumer;
-import com.spectral.cc.core.directory.commons.model.DirectoryMenuEntity;
+import com.spectral.cc.core.directory.commons.consumer.DirectoryTreeMenuRootsRegistryServiceConsumer;
+import com.spectral.cc.core.portal.commons.model.TreeMenuEntity;
 import com.spectral.cc.core.portal.commons.model.MenuEntityType;
 import org.primefaces.component.menuitem.MenuItem;
 import org.primefaces.component.separator.Separator;
@@ -41,7 +41,7 @@ public class DirectoryMenuController {
 
     private MenuModel model     = new DefaultMenuModel();
 
-    private MenuItem createMenuItemFromEntity(DirectoryMenuEntity entity) {
+    private MenuItem createMenuItemFromEntity(TreeMenuEntity entity) {
         FacesContext context = FacesContext.getCurrentInstance();
         MenuItem item = new MenuItem();
         item.setId(entity.getId());
@@ -56,13 +56,13 @@ public class DirectoryMenuController {
         return item;
     }
 
-    private Submenu createSubMenuFromEntity(DirectoryMenuEntity entity) {
+    private Submenu createSubMenuFromEntity(TreeMenuEntity entity) {
         Submenu submenu = new Submenu();
         submenu.setId(entity.getId());
         submenu.setStyleClass("menuItem");
         submenu.setLabel(entity.getValue());
         submenu.setIcon(entity.getIcon() + " icon-large");
-        for (DirectoryMenuEntity subEntity : entity.getChildsDirectory()) {
+        for (TreeMenuEntity subEntity : entity.getChildTreeMenuEntities()) {
             switch(subEntity.getType()) {
                 case MenuEntityType.TYPE_MENU_SUBMENU:
                     Submenu subSubMenu = createSubMenuFromEntity(subEntity);
@@ -86,8 +86,8 @@ public class DirectoryMenuController {
 
     public MenuModel getModel() {
         log.debug("Get Menu Model...");
-        if (DirectoryRootsTreeRegistryServiceConsumer.getInstance()!=null) {
-            for (DirectoryMenuEntity entity : DirectoryRootsTreeRegistryServiceConsumer.getInstance().getDirectoryMenuRootsTreeRegistry().getRootDirectoryMenuEntities()) {
+        if (DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance()!=null) {
+            for (TreeMenuEntity entity : DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance().getTreeMenuRootsRegistry().getTreeMenuRootsEntities()) {
                 switch (entity.getType()) {
                     case MenuEntityType.TYPE_MENU_ITEM:
                         MenuItem item = createMenuItemFromEntity(entity);

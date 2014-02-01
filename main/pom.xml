@@ -128,7 +128,6 @@
                             com.spectral.cc.core.directory.commons.model.organisational;version=${project.version},
                             com.spectral.cc.core.directory.commons.model.technical.network;version=${project.version},
                             com.spectral.cc.core.directory.commons.model.technical.system;version=${project.version},
-                            com.spectral.cc.core.directory.commons.registry;version=${project.version},
                             com.spectral.cc.core.directory.commons.persistence;version=${project.version},
                             com.spectral.cc.core.directory.commons.tools;version=${project.version},
                             com.spectral.cc.core.portal.commons.consumer;version=${version.com.spectral.cc.core.portal},
