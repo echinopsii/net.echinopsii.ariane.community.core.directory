@@ -27,10 +27,11 @@ import org.slf4j.LoggerFactory;
 import java.util.TreeSet;
 
 /**
- * The directory tree menu roots registry store the directory tree menu root entities.
+ * The directory tree menu roots registry store the directory tree menu root entities. <br/>
+ * Used by directory dashboard controller, directory menu controller, directory bread crum controller and any CC plugin which needs to add other entry to the tree menu.
  *
  * This is the iPojo implementation of {@link TreeMenuRootsRegistry}. The component is instantiated at commons-services bundle startup.
- * It provides the {@link TreeMenuRootsRegistry} service.
+ * It provides the {@link TreeMenuRootsRegistry} service with instance.name=DirectoryMenuRootsTreeRegistryImpl.
  */
 @Component
 @Provides
