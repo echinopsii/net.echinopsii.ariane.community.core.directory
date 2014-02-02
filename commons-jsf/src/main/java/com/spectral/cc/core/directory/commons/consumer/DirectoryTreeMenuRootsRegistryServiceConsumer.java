@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * iPojo singleton which consume the directory roots tree registry service
+ * iPojo singleton which consume the directory roots tree registry service<br/>
  * Instantiated during directory commons-jsf bundle startup. FactoryMethod : getInstance
  */
 @Component(publicFactory = false, factoryMethod = "getInstance")

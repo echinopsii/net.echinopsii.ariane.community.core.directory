@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import javax.faces.context.FacesContext;
 
 /**
- * Directory menu controller transform directory roots registry into primefaces menu model to be used in directory layout panel menu component
+ * Directory menu controller transform directory roots registry into primefaces menu model to be used in directory layout panel menu component <br/>
  * This is a request managed bean
  */
 public class DirectoryMenuController {

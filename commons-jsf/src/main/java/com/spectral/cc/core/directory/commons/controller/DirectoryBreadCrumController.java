@@ -31,7 +31,7 @@ import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 
 /**
- * Directory bread crum controller transform directory tree menu roots registry entities into primefaces menu model to be used in directory layout bread crum component
+ * Directory bread crum controller transform directory tree menu roots registry entities into primefaces menu model to be used in directory layout bread crum component <br/>
  * This is a request managed bean
  */
 public class DirectoryBreadCrumController {

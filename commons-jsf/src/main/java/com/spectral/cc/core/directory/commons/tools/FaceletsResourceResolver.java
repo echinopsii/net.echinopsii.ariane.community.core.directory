@@ -28,7 +28,7 @@ import javax.faces.view.facelets.ResourceResolver;
 import java.net.URL;
 
 /**
- * Helper to find facelets resource. First it check on the direcoty main, then on the directory commons-jsf bundle and finally ask any
+ * Helper to find facelets resource. First it check on the directory main, then on the directory commons-jsf bundle and finally ask any
  * Facelets Resource Resolver Service existing in the container... <br/><br/>
  *
  * To use this resolver you must have following web.xml configuration :
