@@ -48,12 +48,12 @@ import java.util.*;
  * This is the iPojo implementation of {@link DirectoryJPAProvider}. The component is instantiated at commons-services bundle startup.
  * It provides the {@link DirectoryJPAProvider} service.
  */
-@Component(managedservice="com.spectral.cc.core.directory.commons.DirectoryJPAProvider")
+@Component(managedservice="com.spectral.cc.core.directory.commons.DirectoryJPAProviderManagedService")
 @Provides
 @Instantiate
 public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
 
-    private static final String DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME = "Directory TX Persistence Consumer";
+    private static final String DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME = "Directory JPA Persistence Provider";
     private static final String DIRECTORY_TXPERSISTENCE_PERSISTENCE_UNIT_NAME = "cc-directory";
     private static final Logger log = LoggerFactory.getLogger(DirectoryJPAProviderImpl.class);
 
