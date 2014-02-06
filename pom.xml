@@ -5,7 +5,7 @@
     <!-- General information -->
     <groupId>com.spectral.cc.core</groupId>
     <artifactId>com.spectral.cc.core.directory</artifactId>
-    <version>0.1</version>
+    <version>0.1.0.RELEASE</version>
     <name>Control and Conquer Directory Parent</name>
     <packaging>pom</packaging>
 
@@ -46,7 +46,7 @@
         <version.ipojo.plugin>1.10.0</version.ipojo.plugin>
 
         <!-- CC module dependencies -->
-        <version.com.spectral.cc.core.portal>0.1</version.com.spectral.cc.core.portal>
+        <version.com.spectral.cc.core.portal>0.1.0.RELEASE</version.com.spectral.cc.core.portal>
 
         <!-- Dependencies versions-->
         <version.com.fasterxml.jackson>2.1.2</version.com.fasterxml.jackson>
