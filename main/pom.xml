@@ -130,6 +130,8 @@
                             com.spectral.cc.core.directory.commons.model.technical.system;version=${project.version},
                             com.spectral.cc.core.directory.commons.persistence;version=${project.version},
                             com.spectral.cc.core.directory.commons.tools;version=${project.version},
+                            com.spectral.cc.core.portal.idm.controller;version="${version.com.spectral.cc.core.portal}",
+                            com.spectral.cc.core.portal.idm.tools;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.portal.commons.consumer;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.portal.commons.controller;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.portal.commons.model;version=${version.com.spectral.cc.core.portal},

@@ -38,8 +38,6 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import java.io.Serializable;
 
-@ManagedBean
-@RequestScoped
 public class ApplicationNewController implements Serializable{
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(ApplicationNewController.class);

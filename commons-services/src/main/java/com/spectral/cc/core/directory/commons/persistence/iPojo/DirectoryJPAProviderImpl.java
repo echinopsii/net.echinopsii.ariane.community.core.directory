@@ -1,6 +1,6 @@
 /**
- * Directory Main
- * PersistenceConsumer
+ * Directory commons services
+ * JPA provider impl
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
@@ -57,12 +57,11 @@ public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
     private static final String DIRECTORY_TXPERSISTENCE_PERSISTENCE_UNIT_NAME = "cc-directory";
     private static final Logger log = LoggerFactory.getLogger(DirectoryJPAProviderImpl.class);
 
-    private EntityManagerFactory   sharedEMF        = null;
-    private HashMap<String,Object> hibernateConf    = null;
-    private OsgiScanner            hibernateScanner = new OsgiScanner(FrameworkUtil.getBundle(DirectoryJPAProviderImpl.class));
+    private volatile static HashMap<String,Object> hibernateConf    = null;
+    private volatile static boolean isStarted = false;
 
-    private boolean isConfigurationValid = false;
-    private boolean isStarted = false;
+    private volatile static EntityManagerFactory   sharedEMF        = null;
+    private volatile static OsgiScanner            hibernateScanner = new OsgiScanner(FrameworkUtil.getBundle(DirectoryJPAProviderImpl.class));
 
     @Requires
     private PersistenceProvider persistenceProvider = null;
@@ -136,6 +135,13 @@ public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
         em.close();
     }
 
+    private static boolean isConfigurationValid() {
+        if (hibernateConf.containsKey("hibernate.connection.password"))
+            return true;
+        else
+            return false;
+    }
+
     @Bind
     public void bindPersistenceProvider(PersistenceProvider pprovider) {
         log.info("Bound to persistence provider...");
@@ -161,16 +167,15 @@ public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
     }
 
     private void start() {
-        log.info("Create shared entity manager factory from persistence provider {}...", persistenceProvider.toString());
+        log.info("Create shared entity manager factory from persistence provider {} with conf {}...", persistenceProvider.toString(), hibernateConf);
         sharedEMF = persistenceProvider.createEntityManagerFactory(DIRECTORY_TXPERSISTENCE_PERSISTENCE_UNIT_NAME, hibernateConf);
         initSubnetType();
     }
 
     @Validate
     public void validate() throws InterruptedException {
-        log.info("{} is starting !", new Object[]{DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
-        while (persistenceProvider==null && !isConfigurationValid) {
-            log.warn("Persistence provide or valid config is missing for {}. Sleep some times...", DIRECTORY_TXPERSISTENCE_PERSISTENCE_UNIT_NAME);
+        while (persistenceProvider==null && isConfigurationValid()) {
+            log.warn("Persistence provider or valid config is missing for {}. Sleep some times...", DIRECTORY_TXPERSISTENCE_PERSISTENCE_UNIT_NAME);
             Thread.sleep(10);
         }
         this.start();
@@ -187,7 +192,6 @@ public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
         log.info("{} is stopping !", new Object[]{DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
         this.stop();
         isStarted = false;
-        isConfigurationValid = false;
         log.info("{} is stopped !", new Object[]{DIRECTORY_TXPERSISTENCE_CONSUMER_SERVICE_NAME});
     }
 
@@ -201,13 +205,12 @@ public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
                 hibernateConf = new HashMap<String,Object>();
             String key = (String) dicEnum.nextElement();
             String value = (String) properties.get(key);
-            log.debug("Hibernate conf to update : ({},{})", new Object[]{key,(key.equals("hibernate.connection.password") ? "*****" : value)});
+            log.info("Hibernate conf to update : ({},{})", new Object[]{key,(key.equals("hibernate.connection.password") ? "*****" : value)});
             hibernateConf.put(key, value);
         }
         hibernateConf.put(org.hibernate.jpa.AvailableSettings.SCANNER, hibernateScanner);
-        isConfigurationValid = true;
 
-        if (isStarted) {
+        if (isStarted && isConfigurationValid()) {
             final Runnable applyConfigUpdate = new Runnable() {
                 @Override
                 public void run() {

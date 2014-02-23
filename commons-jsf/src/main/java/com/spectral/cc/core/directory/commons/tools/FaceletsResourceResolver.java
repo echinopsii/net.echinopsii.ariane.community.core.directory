@@ -47,7 +47,7 @@ public class FaceletsResourceResolver extends ResourceResolver {
 
     public FaceletsResourceResolver(ResourceResolver parent) {
         this.parent = parent;
-        this.basePath = "/META-INF"; // TODO: Make configureable?
+        this.basePath = "/META-INF";
     }
 
     /**
