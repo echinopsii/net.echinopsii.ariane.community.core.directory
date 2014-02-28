@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:spectralview="http://spectral.com/spectral/view">
+<ui:composition template="/templates/directoryLayout.xhtml">
+    <ui:define name="directoryContent">
+
+        <h:form id="teamTableForm">
+            <p:growl id="teamTableMessages" showDetail="true" />
+            <p:dataTable id="teamTable" var="team" value="#{teamsListController.lazyModel}"
+                         selectionMode="multiple" selection="#{teamsListController.selectedTeamList}" rowKey="#{team.id}"
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
+                <f:facet name="header">
+                    Teams
+                </f:facet>
+
+                <p:ajax event="rowToggle" listener="#{teamsListController.onRowToggle}" />
+
+                <p:column style="width:2%">
+                    <p:rowToggler/>
+                </p:column>
+
+                <p:column headerText="Name" sortBy="#{team.name}" filterBy="#{team.name}">
+                    <h:outputText value="#{team.name}" />
+                </p:column>
+
+                <p:column headerText="Color code" sortBy="#{team.colorCode}" filterBy="#{team.colorCode}">
+                    <h:outputText value="#{team.colorCode}" style="background-color:\##{team.colorCode};font-weight:bold" />
+                </p:column>
+
+                <p:column headerText="Description" sortBy="#{team.description}" filterBy="#{team.description}">
+                    <h:outputText value="#{team.description}" />
+                </p:column>
+
+                <p:rowExpansion>
+                    <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                        <h:outputText value="Name : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="text" value="#{team.name}"/>
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Color code : " styleClass="inputTitle"/>
+                        <p:colorPicker id="popupCP" value="#{team.colorCode}"/>
+
+                        <h:outputText value="Description : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="text" value="#{team.description}"/>
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="OS instances : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:dataTable value="#{spectralview:asList2(team.osInstances)}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
+                                         rows="5" paginator="true" selection="#{teamsListController.removedOSInstances[team.id]}" selectionMode="multiple">
+                                <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
+                                    <h:outputText id="osiName" value="#{osi.name}"/>
+                                </p:column>
+                                <p:column headerText="Description" sortBy="#{osi.description}" filterBy="#{osi.description}">
+                                    <h:outputText id="osiDescription" value="#{osi.description}"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{teamsListController.addedOSInstance[team.id]}">
+                                            <f:selectItems value="#{OSInstancesListController.getAll(teamsListController.getEm())}" var="osi_"
+                                                           itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
+                                        </h:selectOneMenu>
+                                        <p:ajax event="save" listener="#{teamsListController.syncAddedOSInstance(team)}"
+                                                update="@form"/>
+                                    </p:inplace>
+                                    <p:commandButton value="Unbind selected OS Instance" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{teamsListController.syncRemovedOSInstances(team)}"
+                                                     update="@form"/>
+                                </f:facet>
+                            </p:dataTable>
+                        </h:form>
+
+                        <h:outputText value="Applications : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:dataTable value="#{spectralview:asList2(team.applications)}" var="app" styleClass="ui-widget-content grid" rowKey="#{app.id}"
+                                         rows="5" paginator="true" selection="#{teamsListController.removedApplications[team.id]}" selectionMode="multiple">
+                                <p:column headerText="Name" sortBy="#{app.name}" filterBy="#{osi.name}">
+                                    <h:outputText id="appName" value="#{app.name}"/>
+                                </p:column>
+                                <p:column headerText="Description" sortBy="#{app.description}" filterBy="#{app.description}">
+                                    <h:outputText id="appDescription" value="#{app.description}"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:inplace label="Select application to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{teamsListController.addedApplication[team.id]}">
+                                            <f:selectItems value="#{applicationsListController.getAll(teamsListController.getEm())}" var="app_"
+                                                           itemLabel="#{app_.name}" itemValue="#{app_.name}"/>
+                                        </h:selectOneMenu>
+                                        <p:ajax event="save" listener="#{teamsListController.syncAddedApplication(team)}"
+                                                update="@form"/>
+                                    </p:inplace>
+                                    <p:commandButton value="Unbind selected application" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{teamsListController.syncRemovedApplications(team)}"
+                                                     update="@form"/>
+                                </f:facet>
+                            </p:dataTable>
+                        </h:form>
+
+                    </h:panelGrid>
+
+                    <p:commandButton value="Save changes" update=":teamTableForm:teamTable,:teamTableForm:teamTableMessages" id="teamUpdate" icon="ui-icon-disk"
+                                     actionListener="#{teamsListController.update(team)}" styleClass="ui-priority-primary icon-large"/>
+                </p:rowExpansion>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Create team" icon="ui-icon-disk" onclick="teamCreateDialog.show()"/>
+                    <p:commandButton value="Remove selected team" icon="ui-icon-closethick" onclick="teamRemoveDialog.show()"
+                                     update=":removeTeamDialogForm:display"/>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+
+
+
+        <p:dialog header="Confirm your remove order !" widgetVar="teamRemoveDialog"
+                  width="500" showEffect="fade" hideEffect="explode">
+            <h:form id="removeTeamDialogForm">
+                <h:outputText value="Are you sure you want delete following team ?" styleClass="inputTitle"/><br/>
+                <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{teamsListController.delete}" oncomplete="teamRemoveDialog.hide();"
+                                 update=":teamTableForm:teamTable,:teamTableForm:teamTableMessages"/>
+                <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="teamRemoveDialog.hide();"/>
+                <p:separator/>
+                <p:dataList id="display"
+                            value="#{teamsListController.selectedTeamList}"
+                            var="selectedTeam" type="definition">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputText value="Name : " styleClass="inputTitle"/>
+                        <h:outputText value="#{selectedTeam.name}"/>
+
+                        <h:outputText value="OS Instances : " styleClass="inputTitle"/>
+                        <p:dataTable  value="#{spectralview:asList2(selectedTeam.osInstances)}" var="_item"
+                                      rows="5" paginator="true">
+                            <p:column headerText="Name">
+                                <h:outputText id="itemName" value="#{_item.name}"/>
+                            </p:column>
+                            <p:column headerText="Description">
+                                <h:outputText id="itemDescription" value="#{_item.description}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                    <p:separator/>
+                </p:dataList>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new team" widgetVar="teamCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="createTeamDialogForm">
+                <ui:insert name="createTeam" >
+                    <ui:include src="/templates/teamNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this team" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{teamNewController.save}" oncomplete="teamCreateDialog.hide();"
+                                 update=":teamTableForm:teamTable,:teamTableForm:teamTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,347 @@
+/**
+ * Directory JSF Commons
+ * Directories OSInstance Create Controller
+ * Copyright (C) 2013 Mathilde Ffrench
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.spectral.cc.core.directory.wat.controller.technical.system.OSInstance;
+
+import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.controller.organisational.application.ApplicationsListController;
+import com.spectral.cc.core.directory.wat.controller.organisational.environment.EnvironmentsListController;
+import com.spectral.cc.core.directory.wat.controller.organisational.team.TeamsListController;
+import com.spectral.cc.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
+import com.spectral.cc.core.directory.wat.controller.technical.system.OSType.OSTypesListController;
+import com.spectral.cc.core.directory.base.model.organisational.Application;
+import com.spectral.cc.core.directory.base.model.organisational.Environment;
+import com.spectral.cc.core.directory.base.model.organisational.Team;
+import com.spectral.cc.core.directory.base.model.technical.network.Subnet;
+import com.spectral.cc.core.directory.base.model.technical.system.OSInstance;
+import com.spectral.cc.core.directory.base.model.technical.system.OSType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PreDestroy;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class OSInstanceNewController implements Serializable{
+    private static final long serialVersionUID = 1L;
+    private static final Logger log = LoggerFactory.getLogger(OSInstanceNewController.class);
+
+    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+
+    @PreDestroy
+    public void clean() {
+        log.debug("Close entity manager");
+        em.close();
+    }
+
+    private String name;
+    private String description;
+    private String adminGateURI;
+
+    private String osType;
+    private OSType type;
+
+    private String     embeddingOSI;
+    private OSInstance embingOSI;
+
+    private List<String> subnetsToBind = new ArrayList<String>();
+    private Set<Subnet>  subnets       = new HashSet<Subnet>();
+
+    private List<String>     envsToBind = new ArrayList<String>();
+    private Set<Environment> envs       = new HashSet<Environment>();
+
+    private List<String> teamsToBind = new ArrayList<String>();
+    private Set<Team>    teams       = new HashSet<Team>();
+
+    private List<String>     appsToBind = new ArrayList<String>();
+    private Set<Application> apps       = new HashSet<Application>();
+
+    public EntityManager getEm() {
+        return em;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getAdminGateURI() {
+        return adminGateURI;
+    }
+
+    public void setAdminGateURI(String adminGateURI) {
+        this.adminGateURI = adminGateURI;
+    }
+
+    public String getOsType() {
+        return osType;
+    }
+
+    public void setOsType(String osType) {
+        this.osType = osType;
+    }
+
+    public OSType getType() {
+        return type;
+    }
+
+    public void setType(OSType type) {
+        this.type = type;
+    }
+
+    private void syncOSType() throws NotSupportedException, SystemException {
+        OSType type = null;
+        for (OSType osType1: OSTypesListController.getAll(em)) {
+            String fullName = osType1.getName() + " - " + osType1.getArchitecture();
+            log.debug("fullName:{};osType:{}",fullName,osType);
+            if (fullName.equals(this.osType)) {
+                type = osType1;
+                break;
+            }
+        }
+        if (type != null) {
+            this.type  = type;
+            log.debug("Synced OSType : {} {}", new Object[]{this.type.getId(), this.type.getName()});
+        }
+    }
+
+    public String getEmbeddingOSI() {
+        return embeddingOSI;
+    }
+
+    public void setEmbeddingOSI(String embeddingOSI) {
+        this.embeddingOSI = embeddingOSI;
+    }
+
+    public OSInstance getEmbingOSI() {
+        return embingOSI;
+    }
+
+    public void setEmbingOSI(OSInstance embingOSI) {
+        this.embingOSI = embingOSI;
+    }
+
+    private void syncEmbingOSI() throws NotSupportedException, SystemException {
+        OSInstance osInstance = null;
+        for (OSInstance osInstance1: OSInstancesListController.getAll(em)) {
+            if (osInstance1.getName().equals(this.embeddingOSI)) {
+                osInstance = osInstance1;
+                break;
+            }
+        }
+        if (osInstance != null) {
+            this.embingOSI  = osInstance;
+            log.debug("Synced embedding os instance : {} {}", new Object[]{this.embingOSI.getId(), this.embingOSI.getName()});
+        }
+    }
+
+    public List<String> getSubnetsToBind() {
+        return subnetsToBind;
+    }
+
+    public void setSubnetsToBind(List<String> subnetsToBind) {
+        this.subnetsToBind = subnetsToBind;
+    }
+
+    public Set<Subnet> getSubnets() {
+        return subnets;
+    }
+
+    public void setSubnets(Set<Subnet> subnets) {
+        this.subnets = subnets;
+    }
+
+    private void bindSelectedSubnets() throws NotSupportedException, SystemException {
+        for (Subnet subnet : SubnetsListController.getAll(em)) {
+            for (String subnetToBind : subnetsToBind)
+                if (subnet.getName().equals(subnetToBind)) {
+                    this.subnets.add(subnet);
+                    log.debug("Synced subnet : {} {}", new Object[]{subnet.getId(), subnet.getName()});
+                    break;
+                }
+        }
+    }
+
+    public List<String> getEnvsToBind() {
+        return envsToBind;
+    }
+
+    public void setEnvsToBind(List<String> envsToBind) {
+        this.envsToBind = envsToBind;
+    }
+
+    public Set<Environment> getEnvs() {
+        return envs;
+    }
+
+    public void setEnvs(Set<Environment> envs) {
+        this.envs = envs;
+    }
+
+    private void bindSelectedEnvs() throws NotSupportedException, SystemException {
+        for (Environment environment: EnvironmentsListController.getAll(em)) {
+            for (String envToBind : envsToBind)
+                if (environment.getName().equals(envToBind)) {
+                    this.envs.add(environment);
+                    log.debug("Synced environment : {} {}", new Object[]{environment.getId(), environment.getName()});
+                    break;
+                }
+        }
+    }
+
+    public List<String> getTeamsToBind() {
+        return teamsToBind;
+    }
+
+    public void setTeamsToBind(List<String> teamsToBind) {
+        this.teamsToBind = teamsToBind;
+    }
+
+    public Set<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(Set<Team> teams) {
+        this.teams = teams;
+    }
+
+    private void bindSelectedTeams() throws NotSupportedException, SystemException {
+        for (Team team: TeamsListController.getAll(em)) {
+            for (String teamToBind : teamsToBind)
+                if (team.getName().equals(teamToBind)) {
+                    this.teams.add(team);
+                    log.debug("Synced team : {} {}", new Object[]{team.getId(), team.getName()});
+                    break;
+                }
+        }
+    }
+
+    public List<String> getAppsToBind() {
+        return appsToBind;
+    }
+
+    public void setAppsToBind(List<String> appsToBind) {
+        this.appsToBind = appsToBind;
+    }
+
+    public Set<Application> getApps() {
+        return apps;
+    }
+
+    public void setApps(Set<Application> apps) {
+        this.apps = apps;
+    }
+
+    private void bindSelectedApps() throws NotSupportedException, SystemException {
+        for (Application application: ApplicationsListController.getAll(em)) {
+            for (String envToBind : appsToBind)
+                if (application.getName().equals(envToBind)) {
+                    this.apps.add(application);
+                    log.debug("Synced app : {} {}", new Object[]{application.getId(), application.getName()});
+                    break;
+                }
+        }
+    }
+
+    public void save() {
+        try {
+            syncOSType();
+            syncEmbingOSI();
+            bindSelectedSubnets();
+            bindSelectedEnvs();
+            bindSelectedTeams();
+            bindSelectedApps();
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Exception raise while creating OS Instance " + name + " !",
+                                                       "Exception message : " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+
+        OSInstance osInstance = new OSInstance();
+        osInstance.setName(name);
+        osInstance.setDescription(description);
+        osInstance.setOsType(type);
+        osInstance.setAdminGateURIR(adminGateURI);
+        osInstance.setEmbeddingOSInstance(embingOSI);
+        osInstance.setNetworkSubnets(subnets);
+        osInstance.setEnvironments(envs);
+        osInstance.setTeams(teams);
+        osInstance.setApplications(apps);
+
+        try {
+            em.getTransaction().begin();
+            em.persist(osInstance);
+            if (type!=null)  {type.getOsInstances().add(osInstance);  em.merge(type);}
+            for(Application application : this.apps) {
+                application.getOsInstances().add(osInstance);
+                em.merge(application);
+            }
+            for(Team team : this.teams) {
+                team.getOsInstances().add(osInstance);
+                em.merge(team);
+            }
+            for(Environment env : this.envs) {
+                env.getOsInstances().add(osInstance);
+                em.merge(env);
+            }
+            for (Subnet subnet : this.subnets) {
+                subnet.getOsInstances().add(osInstance);
+                em.merge(subnet);
+            }
+            if (embingOSI!=null) {embingOSI.getEmbeddedOSInstances().add(osInstance); em.merge(embingOSI);}
+            em.flush();
+            em.getTransaction().commit();
+            log.debug("Save new OSInstance {} !", new Object[]{name});
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                       "OSInstance created successfully !",
+                                                       "OSInstance name : " + osInstance.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while creating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        }
+    }
+}

@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<faces-config xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd"
+              version="2.0">
+
+    <managed-bean>
+        <managed-bean-name>directoryLayoutController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.DirectoryLayoutController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>directoryMenuController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.DirectoryMenuController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>directoryBreadCrumController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.DirectoryBreadCrumController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>directoryDashboardController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.DirectoryDashboardController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>applicationNewController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.organisational.application.ApplicationNewController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>applicationsListController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.organisational.application.ApplicationsListController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>companyNewController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.organisational.company.CompanyNewController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>companysListController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.organisational.company.CompanysListController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>environmentNewController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.organisational.environment.EnvironmentNewController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>environmentsListController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.organisational.environment.EnvironmentsListController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>teamNewController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.organisational.team.TeamNewController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>teamsListController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.organisational.team.TeamsListController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>datacenterNewController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.technical.network.datacenter.DatacenterNewController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>datacentersListController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.technical.network.datacenter.DatacentersListController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>subnetNewController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.technical.network.subnet.SubnetNewController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>subnetsListController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.technical.network.subnet.SubnetsListController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>multicastAreaNewController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.technical.network.multicastArea.MulticastAreaNewController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>multicastAreasListController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.technical.network.multicastArea.MulticastAreasListController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>OSInstanceNewController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.technical.system.OSInstance.OSInstanceNewController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>OSInstancesListController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>OSTypeNewController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.technical.system.OSType.OSTypeNewController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>OSTypesListController</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.technical.system.OSType.OSTypesListController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+</faces-config>

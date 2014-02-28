@@ -1,0 +1,10 @@
+com.spectral.cc.core.directory.wat.rest.ApplicationEndpoint
+com.spectral.cc.core.directory.wat.rest.CompanyEndpoint
+com.spectral.cc.core.directory.wat.rest.DatacenterEndpoint
+com.spectral.cc.core.directory.wat.rest.EnvironmentEndpoint
+com.spectral.cc.core.directory.wat.rest.MulticastAreaEndpoint
+com.spectral.cc.core.directory.wat.rest.OSInstanceEndpoint
+com.spectral.cc.core.directory.wat.rest.OSTypeEndpoint
+com.spectral.cc.core.directory.wat.rest.SubnetEndpoint
+com.spectral.cc.core.directory.wat.rest.SubnetTypeEndpoint
+com.spectral.cc.core.directory.wat.rest.TeamEndpoint

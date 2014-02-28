@@ -1,0 +1,375 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:spectralview="http://spectral.com/spectral/view">
+<ui:composition template="/templates/directoryLayout.xhtml">
+    <ui:define name="directoryContent">
+
+        <h:form id="osInstanceTableForm">
+            <p:growl id="osInstanceTableMessages" showDetail="true" />
+            <p:dataTable id="osInstanceTable" var="osi" value="#{OSInstancesListController.lazyModel}"
+                         selectionMode="multiple" selection="#{OSInstancesListController.selectedOSInstanceList}" rowKey="#{osi.id}"
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
+                <f:facet name="header">
+                    OS Instances
+                </f:facet>
+
+                <p:ajax event="rowToggle" listener="#{OSInstancesListController.onRowToggle}" />
+
+                <p:column style="width:2%">
+                    <p:rowToggler/>
+                </p:column>
+
+                <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
+                    <h:outputText value="#{osi.name}" />
+                </p:column>
+
+                <p:column headerText="Description" sortBy="#{osi.description}" filterBy="#{osi.description}">
+                    <h:outputText value="#{osi.description}" />
+                </p:column>
+
+                <p:column headerText="Type">
+                    <h:outputText value="#{osi.osType.name} - #{osi.osType.architecture}" />
+                </p:column>
+
+                <p:rowExpansion>
+                    <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                        <h:outputText value="Name : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="text" value="#{osi.name}"/>
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Description : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="text" value="#{osi.description}"/>
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Admin gate URI : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="text" value="#{osi.adminGateURI}"/>
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Type : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:inplace label="#{osi.osType.name} - #{osi.osType.architecture}" effectSpeed="fast" editor="true">
+                                <h:selectOneMenu value="#{OSInstancesListController.changedOSType[osi.id]}">
+                                    <f:selectItems value="#{OSTypesListController.getAll(OSInstancesListController.getEm())}" var="ost_"
+                                                   itemLabel="#{ost_.name} - #{ost_.architecture}" itemValue="#{ost_.name} - #{ost_.architecture}"/>
+                                </h:selectOneMenu>
+                                <p:ajax event="save" listener="#{OSInstancesListController.syncOSType(osi)}" />
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Environments : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:dataTable value="#{spectralview:asList2(osi.environments)}" var="env" styleClass="ui-widget-content grid" rowKey="#{env.id}"
+                                         rows="5" paginator="true" selection="#{OSInstancesListController.removedEnvs[osi.id]}" selectionMode="multiple">
+                                <p:column headerText="Name" sortBy="#{env.name}" filterBy="#{env.name}">
+                                    <h:outputText id="networkName" value="#{env.name}"/>
+                                </p:column>
+                                <p:column headerText="Description" sortBy="#{env.description}" filterBy="#{env.description}">
+                                    <h:outputText id="networkDescription" value="#{env.description}"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:inplace label="Select environment to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{OSInstancesListController.addedEnv[osi.id]}">
+                                            <f:selectItems value="#{environmentsListController.getAll(OSInstancesListController.getEm())}" var="env_"
+                                                           itemLabel="#{env_.name}" itemValue="#{env_.name}"/>
+                                        </h:selectOneMenu>
+                                        <p:ajax event="save" listener="#{OSInstancesListController.syncAddedEnv(osi)}"
+                                                update="@form"/>
+                                    </p:inplace>
+                                    <p:commandButton value="Unbind selected environment" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{OSInstancesListController.syncRemovedEnvs(osi)}"
+                                                     update="@form"/>
+                                </f:facet>
+                            </p:dataTable>
+                        </h:form>
+
+                        <h:outputText value="Applications : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:dataTable value="#{spectralview:asList2(osi.applications)}" var="_app" styleClass="ui-widget-content grid" rowKey="#{_app.id}"
+                                         rows="5" paginator="true" selection="#{OSInstancesListController.removedEmbeddedOSI[osi.id]}" selectionMode="multiple">
+                                <p:column headerText="Name" sortBy="#{_app.name}" filterBy="#{_app.name}">
+                                    <h:outputText id="appName" value="#{_app.name}"/>
+                                </p:column>
+                                <p:column headerText="Description" sortBy="#{_app.description}" filterBy="#{_app.description}">
+                                    <h:outputText id="appDescription" value="#{_app.description}"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:inplace label="Select application to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{OSInstancesListController.addedApplication[osi.id]}">
+                                            <f:selectItems value="#{applicationsListController.getAll(OSInstancesListController.getEm())}" var="app_"
+                                                           itemLabel="#{app_.name}" itemValue="#{app_.name}"/>
+                                        </h:selectOneMenu>
+                                        <p:ajax event="save" listener="#{OSInstancesListController.syncAddedApplication(osi)}"
+                                                update="@form"/>
+                                    </p:inplace>
+                                    <p:commandButton value="Unbind selected application" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{OSInstancesListController.syncRemovedApplication(osi)}"
+                                                     update="@form"/>
+                                </f:facet>
+                            </p:dataTable>
+                        </h:form>
+
+                        <h:outputText value="Teams : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:dataTable value="#{spectralview:asList2(osi.teams)}" var="team" styleClass="ui-widget-content grid" rowKey="#{team.id}"
+                                         rows="5" paginator="true" selection="#{OSInstancesListController.removedTeam[osi.id]}" selectionMode="multiple">
+                                <p:column headerText="Name" sortBy="#{team.name}" filterBy="#{team.name}">
+                                    <h:outputText id="teamName" value="#{team.name}"/>
+                                </p:column>
+                                <p:column headerText="Description" sortBy="#{team.description}" filterBy="#{team.description}">
+                                    <h:outputText id="teamDescription" value="#{team.description}"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:inplace label="Select team to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{OSInstancesListController.addedTeam[osi.id]}">
+                                            <f:selectItems value="#{teamsListController.getAll(OSInstancesListController.getEm())}" var="team_"
+                                                           itemLabel="#{team_.name}" itemValue="#{team_.name}"/>
+                                        </h:selectOneMenu>
+                                        <p:ajax event="save" listener="#{OSInstancesListController.syncAddedTeam(osi)}"
+                                                update="@form"/>
+                                    </p:inplace>
+                                    <p:commandButton value="Unbind selected team" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{OSInstancesListController.syncRemovedTeam(osi)}"
+                                                     update="@form"/>
+                                </f:facet>
+                            </p:dataTable>
+                        </h:form>
+
+                        <h:outputText value="Subnets : "  styleClass="inputTitle"/>
+                        <h:form>
+                            <p:dataTable value="#{spectralview:asList2(osi.networkSubnets)}" var="ntw" styleClass="ui-widget-content grid" rowKey="#{ntw.id}"
+                                         rows="5" paginator="true" selection="#{OSInstancesListController.removedSubnets[osi.id]}" selectionMode="multiple">
+                                <p:column headerText="Name" sortBy="#{ntw.name}" filterBy="#{ntw.name}">
+                                    <h:outputText id="networkName" value="#{ntw.name}"/>
+                                </p:column>
+                                <p:column headerText="Description" sortBy="#{ntw.description}" filterBy="#{ntw.description}">
+                                    <h:outputText id="networkDescription" value="#{ntw.description}"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{OSInstancesListController.addedSubnet[osi.id]}">
+                                            <f:selectItems value="#{subnetsListController.getAll(OSInstancesListController.getEm())}" var="ntw_"
+                                                           itemLabel="#{ntw_.name}" itemValue="#{ntw_.name}"/>
+                                        </h:selectOneMenu>
+                                        <p:ajax event="save" listener="#{OSInstancesListController.syncAddedSubnet(osi)}"
+                                                update="@form"/>
+                                    </p:inplace>
+                                    <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{OSInstancesListController.syncRemovedSubnets(osi)}"
+                                                     update="@form"/>
+                                </f:facet>
+                            </p:dataTable>
+                        </h:form>
+
+
+                        <h:outputText value="Embedding OS Instance : " styleClass="inputTitle"/>
+                        <h:form>
+                            <h:outputText value="#{osi.embeddingOSInstance.name} - " rendered="#{osi.embeddingOSInstance!=null and
+                                                                                                           osi.embeddingOSInstance.name!=null and
+                                                                                                           osi.embeddingOSInstance.name!=''}"/>
+                            <h:outputText value="none - " rendered="#{osi.embeddingOSInstance==null or osi.embeddingOSInstance.name==null or osi.embeddingOSInstance.name==''}"/>
+                            <p:inplace label="Change embedding OS Instance" effectSpeed="fast" editor="true">
+                                <h:selectOneMenu value="#{OSInstancesListController.changedEmbeddingOSI[osi.id]}">
+                                    <f:selectItems value="#{OSInstancesListController.getAllForSelector(OSInstancesListController.getEm())}" var="osi_"
+                                                   itemLabel="#{osi_.embeddingOSInstance.name}" itemValue="#{osi_.embeddingOSInstance.name}"/>
+                                </h:selectOneMenu>
+                                <p:ajax event="save" listener="#{OSInstancesListController.syncEmbeddingOSI(osi)}" />
+                            </p:inplace>
+                        </h:form>
+
+                        <h:outputText value="Embedded OS Instances : " styleClass="inputTitle"/>
+                        <h:form>
+                            <p:dataTable value="#{spectralview:asList2(osi.embeddedOSInstances)}" var="_osi" styleClass="ui-widget-content grid" rowKey="#{_osi.id}"
+                                         rows="5" paginator="true" selection="#{OSInstancesListController.removedEmbeddedOSI[osi.id]}" selectionMode="multiple">
+                                <p:column headerText="Name" sortBy="#{_osi.name}" filterBy="#{_osi.name}">
+                                    <h:outputText id="embedosName" value="#{_osi.name}"/>
+                                </p:column>
+                                <p:column headerText="Description" sortBy="#{_osi.description}" filterBy="#{_osi.description}">
+                                    <h:outputText id="embedosDescription" value="#{_osi.description}"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:inplace label="Select embedded OS instance to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{OSInstancesListController.addedEmbeddedOSI[osi.id]}">
+                                            <f:selectItems value="#{OSInstancesListController.getAll(OSInstancesListController.getEm())}" var="osi_"
+                                                           itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
+                                        </h:selectOneMenu>
+                                        <p:ajax event="save" listener="#{OSInstancesListController.syncAddedEmbeddedOSI(osi)}"
+                                                update="@form"/>
+                                    </p:inplace>
+                                    <p:commandButton value="Unbind selected embedded OS Instance" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{OSInstancesListController.syncRemovedEmbeddedOSI(osi)}"
+                                                     update="@form"/>
+                                </f:facet>
+                            </p:dataTable>
+                        </h:form>
+
+                    </h:panelGrid>
+                    <p:commandButton value="Save changes" update=":osInstanceTableForm:osInstanceTable,:osInstanceTableForm:osInstanceTableMessages" id="ostUpdate" icon="ui-icon-disk"
+                                     actionListener="#{OSInstancesListController.update(osi)}" styleClass="ui-priority-primary icon-large"/>
+                </p:rowExpansion>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Create OS instance" icon="ui-icon-disk" onclick="osInstanceCreateDialog.show()"/>
+                    <p:commandButton value="Remove selected OS instance" icon="ui-icon-closethick" onclick="osInstanceRemoveDialog.show()"
+                                     update=":removeOSInstanceDialogForm:display"/>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog header="Confirm your remove order !" widgetVar="osInstanceRemoveDialog"
+                  width="500" showEffect="fade" hideEffect="explode">
+            <h:form id="removeOSInstanceDialogForm">
+                <h:outputText value="Are you sure you want delete following OS instance ?" styleClass="inputTitle"/><br/>
+                <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{OSInstancesListController.delete}" oncomplete="osInstanceRemoveDialog.hide();"
+                                 update=":osInstanceTableForm:osInstanceTable,:osInstanceTableForm:osInstanceTableMessages"/>
+                <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="osInstanceRemoveDialog.hide();"/>
+                <p:separator/>
+                <p:dataList id="display"
+                            value="#{OSInstancesListController.selectedOSInstanceList}"
+                            var="selectedOSInstance" type="definition">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputText value="Name : " styleClass="inputTitle"/>
+                        <h:outputText value="#{selectedOSInstance.name}"/>
+
+                        <h:outputText value="Subnets : " styleClass="inputTitle"/>
+                        <p:dataTable  value="#{spectralview:asList2(selectedOSInstance.networkSubnets)}" var="_item"
+                                      rows="5" paginator="true">
+                            <p:column headerText="Name">
+                                <h:outputText id="itemName" value="#{_item.name}"/>
+                            </p:column>
+                            <p:column headerText="Description">
+                                <h:outputText id="itemDescription" value="#{_item.description}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                    <p:separator/>
+                </p:dataList>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new OS instance" widgetVar="osInstanceCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="createOSInstanceDialogForm">
+                <ui:insert name="createOSInstance" >
+                    <ui:include src="/templates/osInstanceNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this OS instance" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{OSInstanceNewController.save}" oncomplete="osInstanceCreateDialog.hide();"
+                                 update=":osInstanceTableForm:osInstanceTable,:osInstanceTableForm:osInstanceTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new OS Type" widgetVar="osTypeCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="createOSTypeDialogForm">
+                <ui:insert name="createOSType" >
+                    <ui:include src="/templates/osTypeNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this OS Type" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{OSTypeNewController.save}" oncomplete="osTypeCreateDialog.hide();"
+                                 update=":createOSInstanceDialogForm:osInstanceNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new environment" widgetVar="environmentCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="createEnvironmentDialogForm">
+                <ui:insert name="createEnvironment" >
+                    <ui:include src="/templates/environmentNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this environment" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{environmentNewController.save}" oncomplete="environmentCreateDialog.hide();"
+                                 update=":createOSInstanceDialogForm:osInstanceNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new application" widgetVar="appCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="createApplicationDialogForm">
+                <ui:insert name="createApplication" >
+                    <ui:include src="/templates/applicationNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this application" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{applicationNewController.save}" oncomplete="appCreateDialog.hide();"
+                                 update=":createOSInstanceDialogForm:osInstanceNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new team" widgetVar="teamCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="createTeamDialogForm">
+                <ui:insert name="createTeam" >
+                    <ui:include src="/templates/teamNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this team" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{teamNewController.save}" oncomplete="teamCreateDialog.hide();"
+                                 update=":createOSInstanceDialogForm:osInstanceNewGrid,:createApplicationDialogForm:applicationNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new company" widgetVar="companyCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="createCompanyDialogForm">
+                <ui:insert name="createCompany" >
+                    <ui:include src="/templates/companyNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this company" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{companyNewController.save}" oncomplete="companyCreateDialog.hide();"
+                                 update=":createOSTypeDialogForm:osTypeNewGrid,:createApplicationDialogForm:applicationNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new subnet" widgetVar="subnetCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="createSubnetDialogForm">
+                <ui:insert name="createSubnet" >
+                    <ui:include src="/templates/subnetNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this subnet" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{subnetNewController.save}" oncomplete="subnetCreateDialog.hide();"
+                                 update=":createOSInstanceDialogForm:osInstanceNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new multicast area" widgetVar="mareaCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="createMareaDialogForm">
+                <ui:insert name="createMulticastArea" >
+                    <ui:include src="/templates/multicastAreaNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this multicast area" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{multicastAreaNewController.save}" oncomplete="mareaCreateDialog.hide();"
+                                 update=":createSubnetDialogForm:subnetNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Create a new datacenter" widgetVar="dcCreateDialog"
+                  width="450" showEffect="fade" hideEffect="explode">
+            <h:form id="creatDCDialogForm">
+                <ui:insert name="createMulticastArea" >
+                    <ui:include src="/templates/dcNewForm.xhtml" />
+                </ui:insert>
+                <p:commandButton value="Save this datacenter" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                 actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
+                                 update=":createSubnetDialogForm:subnetNewGrid,:createMareaDialogForm:mareaNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+</html>

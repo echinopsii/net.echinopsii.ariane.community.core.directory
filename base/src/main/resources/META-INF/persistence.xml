@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             version="1.0">
+    <persistence-unit name="cc-directory">
+        <class>com.spectral.cc.core.directory.base.model.technical.network.Datacenter</class>
+        <class>com.spectral.cc.core.directory.base.model.technical.network.Subnet</class>
+        <class>com.spectral.cc.core.directory.base.model.technical.network.SubnetType</class>
+        <class>com.spectral.cc.core.directory.base.model.technical.network.MulticastArea</class>
+        <class>com.spectral.cc.core.directory.base.model.technical.system.OSInstance</class>
+        <class>com.spectral.cc.core.directory.base.model.technical.system.OSType</class>
+
+        <class>com.spectral.cc.core.directory.base.model.organisational.Application</class>
+        <class>com.spectral.cc.core.directory.base.model.organisational.Company</class>
+        <class>com.spectral.cc.core.directory.base.model.organisational.Environment</class>
+        <class>com.spectral.cc.core.directory.base.model.organisational.Team</class>
+
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+</persistence>
