@@ -20,6 +20,7 @@
 package com.spectral.cc.core.directory.wat.controller.organisational.team;
 
 import com.spectral.cc.core.directory.base.model.organisational.Team;
+import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -39,12 +40,11 @@ import java.util.Map;
 public class TeamLazyModel extends LazyDataModel<Team> {
     private static final Logger log = LoggerFactory.getLogger(TeamLazyModel.class);
 
-    private int              rowCount      ;
-    private EntityManager entityManager ;
+    private int        rowCount ;
     private List<Team> pageItems ;
 
-    private Predicate[] getSearchPredicates(Root<Team> root, Map<String,String> filters) {
-        CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+    private Predicate[] getSearchPredicates(EntityManager entityManager, Root<Team> root, Map<String,String> filters) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         List<Predicate> predicatesList = new ArrayList<Predicate>();
 
         for(Iterator<String> it = filters.keySet().iterator(); it.hasNext();) {
@@ -59,29 +59,26 @@ public class TeamLazyModel extends LazyDataModel<Team> {
     }
 
     private void paginate(int first, String sortField, SortOrder sortOrder, Map<String,String> filters) {
-        CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+        EntityManager entityManager = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 
         // Populate this.count
         CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
         Root<Team> root = countCriteria.from(Team.class);
-        countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(root,filters));
-        this.rowCount = (int) (long) this.entityManager.createQuery(countCriteria).getSingleResult();
+        countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(entityManager,root,filters));
+        this.rowCount = (int) (long) entityManager.createQuery(countCriteria).getSingleResult();
 
         // Populate this.pageItems
         CriteriaQuery<Team> criteria = builder.createQuery(Team.class);
         root = criteria.from(Team.class);
-        criteria.select(root).where(getSearchPredicates(root,filters));
+        criteria.select(root).where(getSearchPredicates(entityManager,root,filters));
         if (sortOrder!=null && sortField!=null)
             criteria.orderBy(sortOrder.toString().equals("DESCENDING") ? builder.desc(root.get(sortField)) : builder.asc(root.get(sortField)));
-        TypedQuery<Team> query = this.entityManager.createQuery(criteria);
+        TypedQuery<Team> query = entityManager.createQuery(criteria);
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
-
-        // Refresh page items as operations can occurs on them from != em
-        for(Team team : this.pageItems) {
-            this.entityManager.refresh(team);
-        }
+        entityManager.close();
     }
 
     @Override
@@ -96,11 +93,6 @@ public class TeamLazyModel extends LazyDataModel<Team> {
     @Override
     public Object getRowKey(Team team) {
         return team.getId();
-    }
-
-    public TeamLazyModel setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-        return this;
     }
 
     @Override

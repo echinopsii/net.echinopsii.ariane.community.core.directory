@@ -21,7 +21,7 @@
                 <h:outputText value=" create new company"/>
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the company" value="#{applicationNewController.appCompany}">
-                <f:selectItems value="#{companysListController.getAllForSelector(applicationNewController.getEm())}"  var="cmp"
+                <f:selectItems value="#{companysListController.getAllForSelector()}"  var="cmp"
                                itemLabel="#{cmp.name}" itemValue="#{cmp.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>
@@ -32,7 +32,7 @@
                 <h:outputText value=" create new team"/>
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the team" value="#{applicationNewController.appTeam}">
-                <f:selectItems value="#{teamsListController.getAllForSelector(applicationNewController.getEm())}"  var="team"
+                <f:selectItems value="#{teamsListController.getAllForSelector()}"  var="team"
                                itemLabel="#{team.name}" itemValue="#{team.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>

@@ -30,7 +30,6 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
@@ -47,11 +46,7 @@ public class CompanysListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(CompanysListController.class);
 
-    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-
-    private HashMap<Long, Company> rollback = new HashMap<Long, Company>();
-
-    private LazyDataModel<Company> lazyModel = new CompanyLazyModel().setEntityManager(em);
+    private LazyDataModel<Company> lazyModel = new CompanyLazyModel();
     private Company[]              selectedCompanyList ;
 
     private HashMap<Long,String>       addedOSType    = new HashMap<Long, String>();
@@ -60,27 +55,9 @@ public class CompanysListController implements Serializable {
     private HashMap<Long,String>            addedApplication    = new HashMap<Long, String>();
     private HashMap<Long,List<Application>> removedApplications = new HashMap<Long, List<Application>>();
 
-    @PreDestroy
-    public void clean() {
-        log.debug("Close entity manager");
-        em.close();
-    }
-
-    public EntityManager getEm() {
-        return em;
-    }
-
     /*
      * PrimeFaces table tools
      */
-    public HashMap<Long, Company> getRollback() {
-        return rollback;
-    }
-
-    public void setRollback(HashMap<Long, Company> rollback) {
-        this.rollback = rollback;
-    }
-
     public LazyDataModel<Company> getLazyModel() {
         return lazyModel;
     }
@@ -105,11 +82,39 @@ public class CompanysListController implements Serializable {
     }
 
     public void syncAddedOSType(Company company) throws NotSupportedException, SystemException {
-        for (OSType osType: OSTypesListController.getAll(em)) {
-            log.debug("syncAddedOSType: {}{}", new Object[]{osType.getName(),this.addedOSType});
-            if (osType.getName().equals(this.addedOSType.get(company.getId()))) {
-                company.getOsTypes().add(osType);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (OSType osType: OSTypesListController.getAll()) {
+                log.debug("syncAddedOSType: {}{}", new Object[]{osType.getName(),this.addedOSType});
+                if (osType.getName().equals(this.addedOSType.get(company.getId()))) {
+                    em.getTransaction().begin();
+                    company = em.find(company.getClass(), company.getId());
+                    osType = em.find(osType.getClass(), osType.getId());
+                    if (osType.getCompany() !=null) {
+                        osType.getCompany().getOsTypes().remove(osType);
+                        osType.setCompany(company);
+                    }
+                    company.getOsTypes().add(osType);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "Company updated successfully !",
+                                                               "Company name : " + company.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
             }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating Company " + company.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -122,10 +127,34 @@ public class CompanysListController implements Serializable {
     }
 
     public void syncRemovedOSTypes(Company company) throws NotSupportedException, SystemException {
-        List<OSType> osTypes = this.removedOSTypes.get(company.getId());
-        for (OSType osType : osTypes) {
-            log.debug("syncRemovedOSType: {}", new Object[]{osType.getName()});
-            company.getOsTypes().remove(osType);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            company = em.find(company.getClass(), company.getId());
+            List<OSType> osTypes = this.removedOSTypes.get(company.getId());
+            for (OSType osType : osTypes) {
+                osType = em.find(osType.getClass(), osType.getId());
+                log.debug("syncRemovedOSType: {}", new Object[]{osType.getName()});
+                company.getOsTypes().remove(osType);
+                osType.setCompany(null);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                       "Company updated successfully !",
+                                                       "Company name : " + company.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating Company " + company.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -138,11 +167,39 @@ public class CompanysListController implements Serializable {
     }
 
     public void syncAddedApplication(Company company) throws NotSupportedException, SystemException {
-        for (Application application: ApplicationsListController.getAll(em)) {
-            log.debug("syncAddedApplication: {} {}", new Object[]{application.getName(),this.addedApplication});
-            if (application.getName().equals(this.addedApplication.get(company.getId()))) {
-                company.getApplications().add(application);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (Application application: ApplicationsListController.getAll()) {
+                log.debug("syncAddedApplication: {} {}", new Object[]{application.getName(),this.addedApplication});
+                if (application.getName().equals(this.addedApplication.get(company.getId()))) {
+                    em.getTransaction().begin();
+                    company     = em.find(company.getClass(), company.getId());
+                    application = em.find(application.getClass(), application.getId());
+                    if (application.getCompany() != null) {
+                        application.getCompany().getApplications().remove(application);
+                        application.setCompany(company);
+                    }
+                    company.getApplications().add(application);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "Company updated successfully !",
+                                                               "Company name : " + company.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
             }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating Company " + company.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -155,65 +212,20 @@ public class CompanysListController implements Serializable {
     }
 
     public void syncRemovedApplications(Company company) throws NotSupportedException, SystemException {
-        List<Application> applications = this.removedApplications.get(company.getId());
-        for (Application application : applications) {
-            log.debug("syncRemovedApplication: {}", new Object[]{application.getName()});
-            company.getApplications().remove(application);
-        }
-    }
-
-    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
-        log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
-        Company eventCompany = ((Company) event.getData());
-        if (event.getVisibility().toString().equals("HIDDEN")) {
-            log.debug("EDITION MODE CLOSED: remove eventCompany {} clone from rollback map...", eventCompany.getId());
-            rollback.remove(eventCompany.getId());
-            addedOSType.remove(eventCompany.getId());
-            removedOSTypes.remove(eventCompany.getId());
-            addedApplication.remove(eventCompany.getId());
-            removedApplications.remove(eventCompany.getId());
-        } else {
-            log.debug("EDITION MODE OPEN: store current eventCompany {} clone into rollback map...", eventCompany.getId());
-            rollback.put(eventCompany.getId(), eventCompany.clone());
-            addedOSType.put(eventCompany.getId(),"");
-            removedOSTypes.put(eventCompany.getId(),new ArrayList<OSType>());
-            addedApplication.put(eventCompany.getId(), "");
-            removedApplications.put(eventCompany.getId(),new ArrayList<Application>());
-        }
-    }
-
-    public void update(Company company) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            for (OSType osType : rollback.get(company.getId()).getOsTypes()) {
-                if (!company.getOsTypes().contains(osType)) {
-                    osType.setCompany(null);
-                    em.merge(osType);
-                }
-            }
-            for (OSType osType : company.getOsTypes()) {
-                if (!rollback.get(company.getId()).getOsTypes().contains(osType)){
-                    osType.setCompany(company);
-                    em.merge(osType);
-                }
-            }
-            for (Application application : rollback.get(company.getId()).getApplications()) {
-                if (!company.getApplications().contains(application)) {
-                    application.setCompany(null);
-                    em.merge(application);
-                }
-            }
-            for (Application osType : company.getApplications()) {
-                if (!rollback.get(company.getId()).getApplications().contains(osType)){
-                    osType.setCompany(company);
-                    em.merge(osType);
-                }
-            }
-            em.merge(company);
+            company = em.find(company.getClass(), company.getId());
+            List<Application> applications = this.removedApplications.get(company.getId());
+            for (Application application : applications) {
+                log.debug("syncRemovedApplication: {}", new Object[]{application.getName()});
 
+                application = em.find(application.getClass(), application.getId());
+                company.getApplications().remove(application);
+                application.setCompany(null);
+            }
             em.flush();
             em.getTransaction().commit();
-            rollback.put(company.getId(), company);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Company updated successfully !",
                                                        "Company name : " + company.getName());
@@ -222,7 +234,48 @@ public class CompanysListController implements Serializable {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updating Company " + rollback.get(company.getId()).getName() + " !",
+                                                       "Throwable raised while updating Company " + company.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
+        log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
+        Company eventCompany = ((Company) event.getData());
+        if (event.getVisibility().toString().equals("HIDDEN")) {
+            addedOSType.remove(eventCompany.getId());
+            removedOSTypes.remove(eventCompany.getId());
+            addedApplication.remove(eventCompany.getId());
+            removedApplications.remove(eventCompany.getId());
+        } else {
+            addedOSType.put(eventCompany.getId(),"");
+            removedOSTypes.put(eventCompany.getId(),new ArrayList<OSType>());
+            addedApplication.put(eventCompany.getId(), "");
+            removedApplications.put(eventCompany.getId(),new ArrayList<Application>());
+        }
+    }
+
+    public void update(Company company) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            company = em.find(company.getClass(), company.getId()).setDescriptionR(company.getDescription()).setNameR(company.getName());
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                       "Company updated successfully !",
+                                                       "Company name : " + company.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating Company " + company.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
@@ -235,26 +288,33 @@ public class CompanysListController implements Serializable {
      */
     public void delete() {
         log.debug("Remove selected Company !");
-        for (Company environment: selectedCompanyList) {
+        for (Company company: selectedCompanyList) {
+            EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             try {
                 em.getTransaction().begin();
-                em.remove(environment);
-
+                company = em.find(company.getClass(), company.getId());
+                for (OSType osType : company.getOsTypes())
+                    osType.setCompany(null);
+                for (Application application : company.getApplications())
+                    application.setCompany(null);
+                em.remove(company);
                 em.flush();
                 em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "Company deleted successfully !",
-                                                           "Company name : " + environment.getName());
+                                                           "Company name : " + company.getName());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
             } catch (Throwable t) {
                 log.debug("Throwable catched !");
                 t.printStackTrace();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                           "Throwable raised while creating Company " + environment.getName() + " !",
+                                                           "Throwable raised while creating Company " + company.getName() + " !",
                                                            "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (em.getTransaction().isActive())
                     em.getTransaction().rollback();
+            } finally {
+                em.close();
             }
         }
         selectedCompanyList=null;
@@ -263,7 +323,8 @@ public class CompanysListController implements Serializable {
     /*
      * Company join tool
      */
-    public static List<Company> getAll(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<Company> getAll() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all companies from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -279,14 +340,12 @@ public class CompanysListController implements Serializable {
         Root<Company> root = criteria.from(Company.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
         List<Company> ret = em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(Company company : ret) {
-            em.refresh(company);
-        }
+        em.close();
         return ret;
     }
 
-    public static List<Company> getAllForSelector(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<Company> getAllForSelector() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all companies from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -301,13 +360,9 @@ public class CompanysListController implements Serializable {
         CriteriaQuery<Company> criteria = builder.createQuery(Company.class);
         Root<Company> root = criteria.from(Company.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-
         List<Company> list =  em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(Company company : list) {
-            em.refresh(company);
-        }
         list.add(0, new Company().setNameR("Select company"));
+        em.close();
         return list;
     }
 }

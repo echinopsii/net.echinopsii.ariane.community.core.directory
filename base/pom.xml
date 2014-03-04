@@ -64,6 +64,7 @@
                             javax.transaction;version="${version.javax.transaction.jta}",
                             org.h2;resolution:=optional,
                             org.mariadb.jdbc;resolution:=optional,
+                            com.mysql.jdbc;resolution:=optional,
                             org.hibernate.proxy;version="[${version.osgimin.hibernate},${version.osgimax.hibernate})",
                             org.hibernate.jpa;version="[${version.osgimin.hibernate},${version.osgimax.hibernate})",
                             org.hibernate.jpa.boot.internal;version="[${version.osgimin.hibernate},${version.osgimax.hibernate})",

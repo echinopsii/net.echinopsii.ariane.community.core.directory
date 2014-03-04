@@ -20,6 +20,7 @@
 package com.spectral.cc.core.directory.wat.controller.organisational.company;
 
 import com.spectral.cc.core.directory.base.model.organisational.Company;
+import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -39,12 +40,11 @@ import java.util.Map;
 public class CompanyLazyModel extends LazyDataModel<Company> {
     private static final Logger log = LoggerFactory.getLogger(CompanyLazyModel.class);
 
-    private int              rowCount      ;
-    private EntityManager entityManager ;
+    private int           rowCount ;
     private List<Company> pageItems ;
 
-    private Predicate[] getSearchPredicates(Root<Company> root, Map<String,String> filters) {
-        CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+    private Predicate[] getSearchPredicates(EntityManager entityManager, Root<Company> root, Map<String,String> filters) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         List<Predicate> predicatesList = new ArrayList<Predicate>();
 
         for(Iterator<String> it = filters.keySet().iterator(); it.hasNext();) {
@@ -59,29 +59,28 @@ public class CompanyLazyModel extends LazyDataModel<Company> {
     }
 
     private void paginate(int first, String sortField, SortOrder sortOrder, Map<String,String> filters) {
-        CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+        EntityManager entityManager = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 
         // Populate this.count
         CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
         Root<Company> root = countCriteria.from(Company.class);
-        countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(root,filters));
-        this.rowCount = (int) (long) this.entityManager.createQuery(countCriteria).getSingleResult();
+        countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(entityManager, root, filters));
+        this.rowCount = (int) (long) entityManager.createQuery(countCriteria).getSingleResult();
+        log.debug("Returned rowCount : {}", this.rowCount);
 
         // Populate this.pageItems
         CriteriaQuery<Company> criteria = builder.createQuery(Company.class);
         root = criteria.from(Company.class);
-        criteria.select(root).where(getSearchPredicates(root,filters));
+        criteria.select(root).where(getSearchPredicates(entityManager, root, filters));
         if (sortOrder!=null && sortField!=null)
             criteria.orderBy(sortOrder.toString().equals("DESCENDING") ? builder.desc(root.get(sortField)) : builder.asc(root.get(sortField)));
-        TypedQuery<Company> query = this.entityManager.createQuery(criteria);
+        TypedQuery<Company> query = entityManager.createQuery(criteria);
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
-
-        // Refresh page items as operations can occurs on them from != em
-        for(Company company : this.pageItems) {
-            this.entityManager.refresh(company);
-        }
+        log.debug("Returned pageItems : {}", this.pageItems);
+        entityManager.close();
     }
 
     @Override
@@ -96,11 +95,6 @@ public class CompanyLazyModel extends LazyDataModel<Company> {
     @Override
     public Object getRowKey(Company company) {
         return company.getId();
-    }
-
-    public CompanyLazyModel setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-        return this;
     }
 
     @Override

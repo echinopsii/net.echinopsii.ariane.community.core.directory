@@ -30,7 +30,6 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
@@ -48,11 +47,7 @@ public class MulticastAreasListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(MulticastAreasListController.class);
 
-    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-
-    private HashMap<Long, MulticastArea> rollback = new HashMap<Long, MulticastArea>();
-
-    private LazyDataModel<MulticastArea> lazyModel = new MulticastAreaLazyModel().setEntityManager(em);
+    private LazyDataModel<MulticastArea> lazyModel = new MulticastAreaLazyModel();
     private MulticastArea[]              selectedMareaList ;
 
     private HashMap<Long,String>           addedDC    = new HashMap<Long, String>();
@@ -61,19 +56,9 @@ public class MulticastAreasListController implements Serializable {
     private HashMap<Long,String>       addedSubnet    = new HashMap<Long, String>();
     private HashMap<Long,List<Subnet>> removedSubnets = new HashMap<Long, List<Subnet>>();
 
-    @PreDestroy
-    public void clean() {
-        log.debug("Close entity manager");
-        em.close();
-    }
-
-    public EntityManager getEm() {
-        return em;
-    }
-
     /*
-         * PrimeFaces table tools
-         */
+     * PrimeFaces table tools
+     */
     public LazyDataModel<MulticastArea> getLazyModel() {
         return lazyModel;
     }
@@ -89,14 +74,6 @@ public class MulticastAreasListController implements Serializable {
     /*
      * Multicast Area update tools
      */
-    public HashMap<Long, MulticastArea> getRollback() {
-        return rollback;
-    }
-
-    public void setRollback(HashMap<Long, MulticastArea> rollback) {
-        this.rollback = rollback;
-    }
-
     public HashMap<Long, String> getAddedSubnet() {
         return addedSubnet;
     }
@@ -106,10 +83,37 @@ public class MulticastAreasListController implements Serializable {
     }
 
     public void syncAddedSubnet(MulticastArea marea) throws NotSupportedException, SystemException {
-        for (Subnet subnet : SubnetsListController.getAll(em)) {
-            if (subnet.getName().equals(this.addedSubnet.get(marea.getId()))) {
-                marea.getSubnets().add(subnet);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (Subnet subnet : SubnetsListController.getAll()) {
+                if (subnet.getName().equals(this.addedSubnet.get(marea.getId()))) {
+                    em.getTransaction().begin();
+                    marea = em.find(marea.getClass(), marea.getId());
+                    subnet = em.find(subnet.getClass(), subnet.getId());
+                    marea.getSubnets().add(subnet);
+                    if (subnet.getMarea()!=null)
+                        subnet.getMarea().getSubnets().remove(subnet);
+                    subnet.setMarea(marea);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "Multicast area updated successfully !",
+                                                               "Multicast area name : " + marea.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
             }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating multicast area " + marea.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if(em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -122,9 +126,33 @@ public class MulticastAreasListController implements Serializable {
     }
 
     public void syncRemovedSubnets(MulticastArea marea) throws NotSupportedException, SystemException {
-        List<Subnet> subnets2beRM = this.removedSubnets.get(marea.getId());
-        for (Subnet subnet2beRM : subnets2beRM) {
-            marea.getSubnets().remove(subnet2beRM);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            marea = em.find(marea.getClass(), marea.getId());
+            List<Subnet> subnets2beRM = this.removedSubnets.get(marea.getId());
+            for (Subnet subnet2beRM : subnets2beRM) {
+                subnet2beRM = em.find(subnet2beRM.getClass(), subnet2beRM.getId());
+                marea.getSubnets().remove(subnet2beRM);
+                subnet2beRM.setMarea(null);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                       "Multicast area updated successfully !",
+                                                       "Multicast area name : " + marea.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating multicast area " + marea.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if(em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -137,10 +165,35 @@ public class MulticastAreasListController implements Serializable {
     }
 
     public void syncAddedDC(MulticastArea marea) throws NotSupportedException, SystemException {
-        for (Datacenter dc: DatacentersListController.getAll(em)) {
-            if (dc.getName().equals(this.addedDC.get(marea.getId()))) {
-                marea.getDatacenters().add(dc);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (Datacenter dc: DatacentersListController.getAll()) {
+                if (dc.getName().equals(this.addedDC.get(marea.getId()))) {
+                    em.getTransaction().begin();
+                    marea = em.find(marea.getClass(), marea.getId());
+                    dc = em.find(dc.getClass(), dc.getId());
+                    marea.getDatacenters().add(dc);
+                    dc.getMulticastAreas().add(marea);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "Multicast area updated successfully !",
+                                                               "Multicast area name : " + marea.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
             }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating multicast area " + marea.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if(em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -153,9 +206,33 @@ public class MulticastAreasListController implements Serializable {
     }
 
     public void syncRemovedDCs(MulticastArea marea) throws NotSupportedException, SystemException {
-        List<Datacenter> dcs2beRM = this.removedDCs.get(marea.getId());
-        for (Datacenter dc2beRM : dcs2beRM) {
-            marea.getDatacenters().remove(dc2beRM);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            marea = em.find(marea.getClass(), marea.getId());
+            List<Datacenter> dcs2beRM = this.removedDCs.get(marea.getId());
+            for (Datacenter dc2beRM : dcs2beRM) {
+                dc2beRM = em.find(dc2beRM.getClass(), dc2beRM.getId());
+                marea.getDatacenters().remove(dc2beRM);
+                dc2beRM.getMulticastAreas().remove(marea);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                       "Multicast area updated successfully !",
+                                                       "Multicast area name : " + marea.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating multicast area " + marea.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if(em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -163,15 +240,11 @@ public class MulticastAreasListController implements Serializable {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         MulticastArea eventMarea = ((MulticastArea) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
-            log.debug("EDITION MODE CLOSED: remove eventMarea {} clone from rollback map...", eventMarea.getId());
-            rollback.remove(eventMarea.getId());
             addedDC.remove(eventMarea.getId());
             removedDCs.remove(eventMarea.getId());
             addedSubnet.remove(eventMarea.getId());
             removedSubnets.remove(eventMarea.getId());
         } else {
-            log.debug("EDITION MODE OPEN: store current eventMarea {} clone into rollback map...", eventMarea.getId());
-            rollback.put(eventMarea.getId(), eventMarea.clone());
             addedDC.put(eventMarea.getId(), "");
             removedDCs.put(eventMarea.getId(), new ArrayList<Datacenter>());
             addedSubnet.put(eventMarea.getId(), "");
@@ -180,41 +253,12 @@ public class MulticastAreasListController implements Serializable {
     }
 
     public void update(MulticastArea multicastArea) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            em.merge(multicastArea);
-            for (Datacenter dc : multicastArea.getDatacenters()){
-                if (!rollback.get(multicastArea.getId()).getDatacenters().contains(dc)) {
-                    dc.getMulticastAreas().add(multicastArea);
-                    em.merge(dc);
-                }
-            }
-            for (Datacenter dc : rollback.get(multicastArea.getId()).getDatacenters()) {
-                if (!multicastArea.getDatacenters().contains(dc)) {
-                    dc.getMulticastAreas().remove(multicastArea);
-                    em.merge(dc);
-                }
-            }
-            for (Subnet subnet : multicastArea.getSubnets()) {
-                if (!rollback.get(multicastArea.getId()).getSubnets().contains(subnet)){
-                    MulticastArea previousSubnetMarea = subnet.getMarea();
-                    if (previousSubnetMarea!=null && previousSubnetMarea.getName()!=multicastArea.getName()) {
-                        previousSubnetMarea.getSubnets().remove(subnet);
-                        em.merge(previousSubnetMarea);
-                    }
-                    subnet.setMarea(multicastArea);
-                    em.merge(subnet);
-                }
-            }
-            for (Subnet subnet : rollback.get(multicastArea.getId()).getSubnets()) {
-                if (!multicastArea.getSubnets().contains(subnet)) {
-                    subnet.setMarea(null);
-                    em.merge(subnet);
-                }
-            }
+            multicastArea = em.find(multicastArea.getClass(), multicastArea.getId()).setNameR(multicastArea.getName()).setDescriptionR(multicastArea.getDescription());
             em.flush();
             em.getTransaction().commit();
-            rollback.put(multicastArea.getId(), multicastArea);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Multicast area updated successfully !",
                                                        "Multicast area name : " + multicastArea.getName());
@@ -223,11 +267,13 @@ public class MulticastAreasListController implements Serializable {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updating multicast area " + rollback.get(multicastArea.getId()).getName() + " !",
+                                                       "Throwable raised while updating multicast area " + multicastArea.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if(em.getTransaction().isActive())
                 em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -237,16 +283,14 @@ public class MulticastAreasListController implements Serializable {
     public void delete() {
         log.debug("Remove selected Multicast Area !");
         for (MulticastArea marea2BeRemoved: selectedMareaList) {
+            EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            marea2BeRemoved = em.find(marea2BeRemoved.getClass(), marea2BeRemoved.getId());
             try {
                 em.getTransaction().begin();
-                for (Subnet subnet : marea2BeRemoved.getSubnets()) {
+                for (Subnet subnet : marea2BeRemoved.getSubnets())
                     subnet.setMarea(null);
-                    em.merge(subnet);
-                }
-                for (Datacenter dc : marea2BeRemoved.getDatacenters()) {
+                for (Datacenter dc : marea2BeRemoved.getDatacenters())
                     dc.getMulticastAreas().remove(marea2BeRemoved);
-                    em.merge(dc);
-                }
                 em.remove(marea2BeRemoved);
                 em.flush();
                 em.getTransaction().commit();
@@ -263,6 +307,8 @@ public class MulticastAreasListController implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (em.getTransaction().isActive())
                     em.getTransaction().rollback();
+            } finally {
+                em.close();
             }
         }
         selectedMareaList=null;
@@ -271,7 +317,8 @@ public class MulticastAreasListController implements Serializable {
     /*
      * Multicast Area join tool
      */
-    public static List<MulticastArea> getAll(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<MulticastArea> getAll() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all multicast areas from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -288,14 +335,12 @@ public class MulticastAreasListController implements Serializable {
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<MulticastArea> ret = em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(MulticastArea marea : ret) {
-            em.refresh(marea);
-        }
+        em.close();
         return ret ;
     }
 
-    public static List<MulticastArea> getAllForSelector(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<MulticastArea> getAllForSelector() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all multicast areas from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -312,16 +357,14 @@ public class MulticastAreasListController implements Serializable {
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<MulticastArea> ret =  em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(MulticastArea marea : ret) {
-            em.refresh(marea);
-        }
         ret.add(0, new MulticastArea().setNameR("No multicast area"));
         ret.add(0, new MulticastArea().setNameR("Select multicast area for this subnet"));
+        em.close();
         return ret;
     }
 
-    public static List<MulticastArea> getAllForInplace(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<MulticastArea> getAllForInplace() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all multicast areas from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -338,11 +381,8 @@ public class MulticastAreasListController implements Serializable {
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<MulticastArea> ret =  em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(MulticastArea marea : ret) {
-            em.refresh(marea);
-        }
         ret.add(0, new MulticastArea().setNameR("No multicast area"));
+        em.close();
         return ret;
     }
 }

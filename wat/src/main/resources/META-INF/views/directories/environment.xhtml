@@ -4,8 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:spectralview="http://spectral.com/spectral/view">
+      xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
 
@@ -39,6 +38,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{env.name}"/>
+                                <p:ajax event="save" listener="#{environmentsListController.update(env)}" update="@form,:environmentTableForm:environmentTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -46,12 +46,13 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{env.description}"/>
+                                <p:ajax event="save" listener="#{environmentsListController.update(env)}" update="@form,:environmentTableForm:environmentTableMessages" />
                             </p:inplace>
                         </h:form>
 
                         <h:outputText value="OS Instances : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(env.osInstances)}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(env,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
                                          rows="5" paginator="true" selection="#{environmentsListController.removedOSInstances[env.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
                                     <h:outputText id="osiName" value="#{osi.name}"/>
@@ -62,29 +63,28 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{environmentsListController.addedOSInstance[env.id]}">
-                                            <f:selectItems value="#{OSInstancesListController.getAll(environmentsListController.getEm())}" var="osi_"
+                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
                                                            itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{environmentsListController.syncAddedOSInstance(env)}"
-                                                update="@form"/>
+                                                update="@form,:environmentTableForm:environmentTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected OS Instance" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{environmentsListController.syncRemovedOSInstances(env)}"
-                                                     update="@form"/>
+                                                     update="@form,:environmentTableForm:environmentTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
 
                     </h:panelGrid>
-
-                    <p:commandButton value="Save changes" update=":environmentTableForm:environmentTable,:environmentTableForm:environmentTableMessages" id="envUpdate" icon="ui-icon-disk"
-                                     actionListener="#{environmentsListController.update(env)}" styleClass="ui-priority-primary icon-large"/>
                 </p:rowExpansion>
 
                 <f:facet name="footer">
                     <p:commandButton value="Create environment" icon="ui-icon-disk" onclick="environmentCreateDialog.show()"/>
                     <p:commandButton value="Remove selected environment" icon="ui-icon-closethick" onclick="environmentRemoveDialog.show()"
                                      update=":removeEnvironmentDialogForm:display"/>
+                    <p:commandButton value="Refresh table" id="environmentUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                     update=":environmentTableForm:environmentTable"/>
                 </f:facet>
             </p:dataTable>
         </h:form>
@@ -108,7 +108,7 @@
                         <h:outputText value="#{selectedEnvironment.name}"/>
 
                         <h:outputText value="OS Instances : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{spectralview:asList2(selectedEnvironment.osInstances)}" var="_item"
+                        <p:dataTable  value="#{directoryViewUtils.asList(selectedEnvironment,'osInstances')}" var="_item"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{_item.name}"/>

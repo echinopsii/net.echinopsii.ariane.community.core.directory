@@ -20,6 +20,7 @@
 package com.spectral.cc.core.directory.wat.controller.technical.network.subnet;
 
 import com.spectral.cc.core.directory.base.model.technical.network.Subnet;
+import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -40,12 +41,11 @@ public class SubnetLazyModel extends LazyDataModel<Subnet> {
 
     private static final Logger log = LoggerFactory.getLogger(SubnetLazyModel.class);
 
-    private int              rowCount      ;
-    private EntityManager    entityManager ;
-    private List<Subnet>        pageItems ;
+    private int          rowCount ;
+    private List<Subnet> pageItems ;
 
-    private Predicate[] getSearchPredicates(Root<Subnet> root, Map<String,String> filters) {
-        CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+    private Predicate[] getSearchPredicates(EntityManager entityManager, Root<Subnet> root, Map<String,String> filters) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         List<Predicate> predicatesList = new ArrayList<Predicate>();
 
         for(Iterator<String> it = filters.keySet().iterator(); it.hasNext();) {
@@ -60,29 +60,27 @@ public class SubnetLazyModel extends LazyDataModel<Subnet> {
     }
 
     private void paginate(int first, String sortField, SortOrder sortOrder, Map<String,String> filters) {
-        CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+        EntityManager entityManager = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 
         // Populate this.count
         CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
         Root<Subnet> root = countCriteria.from(Subnet.class);
-        countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(root,filters));
-        this.rowCount = (int) (long) this.entityManager.createQuery(countCriteria).getSingleResult();
+        countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(entityManager, root,filters));
+        this.rowCount = (int) (long) entityManager.createQuery(countCriteria).getSingleResult();
 
         // Populate this.pageItems
         CriteriaQuery<Subnet> criteria = builder.createQuery(Subnet.class);
         root = criteria.from(Subnet.class);
-        criteria.select(root).where(getSearchPredicates(root,filters));
+        criteria.select(root).where(getSearchPredicates(entityManager, root,filters));
         if (sortOrder!=null && sortField!=null)
             criteria.orderBy(sortOrder.toString().equals("DESCENDING") ? builder.desc(root.get(sortField)) : builder.asc(root.get(sortField)));
-        TypedQuery<Subnet> query = this.entityManager.createQuery(criteria);
+        TypedQuery<Subnet> query = entityManager.createQuery(criteria);
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
 
-        // Refresh page items as operations can occurs on them from != em
-        for(Subnet sub : this.pageItems) {
-            this.entityManager.refresh(sub);
-        }
+        entityManager.close();
     }
 
     @Override
@@ -97,11 +95,6 @@ public class SubnetLazyModel extends LazyDataModel<Subnet> {
     @Override
     public Object getRowKey(Subnet subnet) {
         return subnet.getId();
-    }
-
-    public SubnetLazyModel setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-        return this;
     }
 
     @Override

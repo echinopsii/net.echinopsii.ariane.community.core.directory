@@ -93,9 +93,10 @@ public class MulticastAreaNewController implements Serializable {
     }
 
     private void bindSelectedDatacenters() throws NotSupportedException, SystemException {
-        for (Datacenter dc: DatacentersListController.getAll(em)) {
+        for (Datacenter dc: DatacentersListController.getAll()) {
             for (String dcToBind : datacentersToBind)
                 if (dc.getName().equals(dcToBind)) {
+                    dc = em.find(dc.getClass(), dc.getId());
                     this.datacenters.add(dc);
                     log.debug("Synced datacenter : {} {}", new Object[]{dc.getId(), dc.getName()});
                     break;

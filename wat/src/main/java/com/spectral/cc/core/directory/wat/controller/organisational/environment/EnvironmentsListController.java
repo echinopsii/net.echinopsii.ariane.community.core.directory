@@ -28,7 +28,6 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
@@ -45,36 +44,11 @@ public class EnvironmentsListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(EnvironmentsListController.class);
 
-    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-
-    private HashMap<Long, Environment> rollback = new HashMap<Long, Environment>();
-
-    private LazyDataModel<Environment> lazyModel = new EnvironmentLazyModel().setEntityManager(em);
+    private LazyDataModel<Environment> lazyModel = new EnvironmentLazyModel();
     private Environment[]              selectedEnvironmentList ;
 
     private HashMap<Long,String>           addedOSInstance    = new HashMap<Long, String>();
     private HashMap<Long,List<OSInstance>> removedOSInstances = new HashMap<Long, List<OSInstance>>();
-
-    @PreDestroy
-    public void clean() {
-        log.debug("Close entity manager");
-        em.close();
-    }
-
-    public EntityManager getEm() {
-        return em;
-    }
-
-    /*
-     * PrimeFaces table tools
-     */
-    public HashMap<Long, Environment> getRollback() {
-        return rollback;
-    }
-
-    public void setRollback(HashMap<Long, Environment> rollback) {
-        this.rollback = rollback;
-    }
 
     public LazyDataModel<Environment> getLazyModel() {
         return lazyModel;
@@ -100,10 +74,35 @@ public class EnvironmentsListController implements Serializable {
     }
 
     public void syncAddedOSInstance(Environment environment) throws NotSupportedException, SystemException {
-        for (OSInstance osInstance: OSInstancesListController.getAll(em)) {
-            if (osInstance.getName().equals(this.addedOSInstance.get(environment.getId()))) {
-                environment.getOsInstances().add(osInstance);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (OSInstance osInstance: OSInstancesListController.getAll()) {
+                if (osInstance.getName().equals(this.addedOSInstance.get(environment.getId()))) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    environment = em.find(environment.getClass(), environment.getId());
+                    environment.getOsInstances().add(osInstance);
+                    osInstance.getEnvironments().add(environment);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "Environment updated successfully !",
+                                                               "Environment name : " + environment.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
             }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating Environment " + environment.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -116,48 +115,18 @@ public class EnvironmentsListController implements Serializable {
     }
 
     public void syncRemovedOSInstances(Environment environment) throws NotSupportedException, SystemException {
-        List<OSInstance> osInstances = this.removedOSInstances.get(environment.getId());
-        for (OSInstance osInstance : osInstances) {
-            environment.getOsInstances().remove(osInstance);
-        }
-    }
-
-    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
-        log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
-        Environment eventEnvironment = ((Environment) event.getData());
-        if (event.getVisibility().toString().equals("HIDDEN")) {
-            log.debug("EDITION MODE CLOSED: remove eventEnvironment {} clone from rollback map...", eventEnvironment.getId());
-            rollback.remove(eventEnvironment.getId());
-            addedOSInstance.remove(eventEnvironment.getId());
-            removedOSInstances.remove(eventEnvironment.getId());
-        } else {
-            log.debug("EDITION MODE OPEN: store current eventEnvironment {} clone into rollback map...", eventEnvironment.getId());
-            rollback.put(eventEnvironment.getId(), eventEnvironment.clone());
-            addedOSInstance.put(eventEnvironment.getId(),"");
-            removedOSInstances.put(eventEnvironment.getId(),new ArrayList<OSInstance>());
-        }
-    }
-
-    public void update(Environment environment) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            em.merge(environment);
-            for (OSInstance osInstance : rollback.get(environment.getId()).getOsInstances()) {
-                if (!environment.getOsInstances().contains(osInstance)) {
-                    osInstance.getEnvironments().remove(environment);
-                    em.merge(osInstance);
-                }
+            environment = em.find(environment.getClass(), environment.getId());
+            List<OSInstance> osInstances = this.removedOSInstances.get(environment.getId());
+            for (OSInstance osInstance : osInstances) {
+                osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                environment.getOsInstances().remove(osInstance);
+                osInstance.getEnvironments().remove(environment);
             }
-            for (OSInstance osInstance : environment.getOsInstances()) {
-                if (!rollback.get(environment.getId()).getOsInstances().contains(osInstance)){
-                    osInstance.getEnvironments().add(environment);
-                    em.merge(osInstance);
-                }
-            }
-
             em.flush();
             em.getTransaction().commit();
-            rollback.put(environment.getId(), environment);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Environment updated successfully !",
                                                        "Environment name : " + environment.getName());
@@ -166,11 +135,50 @@ public class EnvironmentsListController implements Serializable {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updating Environment " + rollback.get(environment.getId()).getName() + " !",
+                                                       "Throwable raised while updating Environment " + environment.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
+        log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
+        Environment eventEnvironment = ((Environment) event.getData());
+        if (event.getVisibility().toString().equals("HIDDEN")) {
+            addedOSInstance.remove(eventEnvironment.getId());
+            removedOSInstances.remove(eventEnvironment.getId());
+        } else {
+            addedOSInstance.put(eventEnvironment.getId(),"");
+            removedOSInstances.put(eventEnvironment.getId(),new ArrayList<OSInstance>());
+        }
+    }
+
+    public void update(Environment environment) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            environment = em.find(environment.getClass(), environment.getId()).setNameR(environment.getName()).setDescriptionR(environment.getDescription());
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                       "Environment updated successfully !",
+                                                       "Environment name : " + environment.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating Environment " + environment.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -180,10 +188,13 @@ public class EnvironmentsListController implements Serializable {
     public void delete() {
         log.debug("Remove selected Environment !");
         for (Environment environment: selectedEnvironmentList) {
+            EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             try {
                 em.getTransaction().begin();
+                environment = em.find(environment.getClass(), environment.getId());
+                for (OSInstance osInstance : environment.getOsInstances())
+                    osInstance.getEnvironments().remove(environment);
                 em.remove(environment);
-
                 em.flush();
                 em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -199,6 +210,8 @@ public class EnvironmentsListController implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if(em.getTransaction().isActive())
                     em.getTransaction().rollback();
+            } finally {
+                em.close();
             }
         }
         selectedEnvironmentList=null;
@@ -207,7 +220,8 @@ public class EnvironmentsListController implements Serializable {
     /*
      * Environment join tool
      */
-    public static List<Environment> getAll(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<Environment> getAll() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all environments from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -224,14 +238,12 @@ public class EnvironmentsListController implements Serializable {
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<Environment> ret = em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(Environment environment : ret) {
-            em.refresh(environment);
-        }
+        em.close();
         return ret;
     }
 
-    public static List<Environment> getAllForSelector(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<Environment> getAllForSelector() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all environments from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -248,10 +260,7 @@ public class EnvironmentsListController implements Serializable {
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<Environment> list =  em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(Environment environment : list) {
-            em.refresh(environment);
-        }
+        em.close();
         list.add(0, new Environment().setNameR("Select environment"));
         return list;
     }

@@ -125,11 +125,12 @@ public class OSInstanceNewController implements Serializable{
 
     private void syncOSType() throws NotSupportedException, SystemException {
         OSType type = null;
-        for (OSType osType1: OSTypesListController.getAll(em)) {
-            String fullName = osType1.getName() + " - " + osType1.getArchitecture();
-            log.debug("fullName:{};osType:{}",fullName,osType);
+        for (OSType osType: OSTypesListController.getAll()) {
+            osType = em.find(osType.getClass(), osType.getId());
+            String fullName = osType.getName() + " - " + osType.getArchitecture();
+            log.debug("fullName:{};osType:{}",fullName, this.osType);
             if (fullName.equals(this.osType)) {
-                type = osType1;
+                type = osType;
                 break;
             }
         }
@@ -157,8 +158,9 @@ public class OSInstanceNewController implements Serializable{
 
     private void syncEmbingOSI() throws NotSupportedException, SystemException {
         OSInstance osInstance = null;
-        for (OSInstance osInstance1: OSInstancesListController.getAll(em)) {
+        for (OSInstance osInstance1: OSInstancesListController.getAll()) {
             if (osInstance1.getName().equals(this.embeddingOSI)) {
+                osInstance1 = em.find(osInstance1.getClass(), osInstance1.getId());
                 osInstance = osInstance1;
                 break;
             }
@@ -186,9 +188,10 @@ public class OSInstanceNewController implements Serializable{
     }
 
     private void bindSelectedSubnets() throws NotSupportedException, SystemException {
-        for (Subnet subnet : SubnetsListController.getAll(em)) {
+        for (Subnet subnet : SubnetsListController.getAll()) {
             for (String subnetToBind : subnetsToBind)
                 if (subnet.getName().equals(subnetToBind)) {
+                    subnet = em.find(subnet.getClass(), subnet.getId());
                     this.subnets.add(subnet);
                     log.debug("Synced subnet : {} {}", new Object[]{subnet.getId(), subnet.getName()});
                     break;
@@ -213,12 +216,12 @@ public class OSInstanceNewController implements Serializable{
     }
 
     private void bindSelectedEnvs() throws NotSupportedException, SystemException {
-        for (Environment environment: EnvironmentsListController.getAll(em)) {
+        for (Environment environment: EnvironmentsListController.getAll()) {
             for (String envToBind : envsToBind)
                 if (environment.getName().equals(envToBind)) {
+                    environment = em.find(environment.getClass(), environment.getId());
                     this.envs.add(environment);
                     log.debug("Synced environment : {} {}", new Object[]{environment.getId(), environment.getName()});
-                    break;
                 }
         }
     }
@@ -240,12 +243,12 @@ public class OSInstanceNewController implements Serializable{
     }
 
     private void bindSelectedTeams() throws NotSupportedException, SystemException {
-        for (Team team: TeamsListController.getAll(em)) {
+        for (Team team: TeamsListController.getAll()) {
             for (String teamToBind : teamsToBind)
                 if (team.getName().equals(teamToBind)) {
+                    team = em.find(team.getClass(), team.getId());
                     this.teams.add(team);
                     log.debug("Synced team : {} {}", new Object[]{team.getId(), team.getName()});
-                    break;
                 }
         }
     }
@@ -267,12 +270,12 @@ public class OSInstanceNewController implements Serializable{
     }
 
     private void bindSelectedApps() throws NotSupportedException, SystemException {
-        for (Application application: ApplicationsListController.getAll(em)) {
-            for (String envToBind : appsToBind)
-                if (application.getName().equals(envToBind)) {
+        for (Application application: ApplicationsListController.getAll()) {
+            for (String appToBind : appsToBind)
+                if (application.getName().equals(appToBind)) {
+                    application = em.find(application.getClass(), application.getId());
                     this.apps.add(application);
                     log.debug("Synced app : {} {}", new Object[]{application.getId(), application.getName()});
-                    break;
                 }
         }
     }

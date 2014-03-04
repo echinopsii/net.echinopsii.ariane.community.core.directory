@@ -20,6 +20,7 @@
 package com.spectral.cc.core.directory.wat.controller.technical.network.multicastArea;
 
 import com.spectral.cc.core.directory.base.model.technical.network.MulticastArea;
+import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -40,12 +41,11 @@ public class MulticastAreaLazyModel extends LazyDataModel<MulticastArea> {
 
     private static final Logger log = LoggerFactory.getLogger(MulticastAreaLazyModel.class);
 
-    private int                 rowCount      ;
-    private EntityManager       entityManager ;
+    private int                 rowCount ;
     private List<MulticastArea> pageItems ;
 
-    private Predicate[] getSearchPredicates(Root<MulticastArea> root, Map<String,String> filters) {
-        CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+    private Predicate[] getSearchPredicates(EntityManager entityManager, Root<MulticastArea> root, Map<String,String> filters) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         List<Predicate> predicatesList = new ArrayList<Predicate>();
 
         for(Iterator<String> it = filters.keySet().iterator(); it.hasNext();) {
@@ -60,29 +60,26 @@ public class MulticastAreaLazyModel extends LazyDataModel<MulticastArea> {
     }
 
     private void paginate(int first, String sortField, SortOrder sortOrder, Map<String,String> filters) {
-        CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+        EntityManager entityManager = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 
         // Populate this.count
         CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
         Root<MulticastArea> root = countCriteria.from(MulticastArea.class);
-        countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(root,filters));
-        this.rowCount = (int) (long) this.entityManager.createQuery(countCriteria).getSingleResult();
+        countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(entityManager, root,filters));
+        this.rowCount = (int) (long) entityManager.createQuery(countCriteria).getSingleResult();
 
         // Populate this.pageItems
         CriteriaQuery<MulticastArea> criteria = builder.createQuery(MulticastArea.class);
         root = criteria.from(MulticastArea.class);
-        criteria.select(root).where(getSearchPredicates(root,filters));
+        criteria.select(root).where(getSearchPredicates(entityManager, root,filters));
         if (sortOrder!=null && sortField!=null)
             criteria.orderBy(sortOrder.toString().equals("DESCENDING") ? builder.desc(root.get(sortField)) : builder.asc(root.get(sortField)));
-        TypedQuery<MulticastArea> query = this.entityManager.createQuery(criteria);
+        TypedQuery<MulticastArea> query = entityManager.createQuery(criteria);
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
-
-        // Refresh page items as operations can occurs on them from != em
-        for(MulticastArea marea : this.pageItems) {
-            this.entityManager.refresh(marea);
-        }
+        entityManager.close();
     }
 
     @Override
@@ -97,11 +94,6 @@ public class MulticastAreaLazyModel extends LazyDataModel<MulticastArea> {
     @Override
     public Object getRowKey(MulticastArea multicastArea) {
         return multicastArea.getId();
-    }
-
-    public MulticastAreaLazyModel setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-        return this;
     }
 
     @Override

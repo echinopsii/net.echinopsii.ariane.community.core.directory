@@ -112,9 +112,10 @@ public class ApplicationNewController implements Serializable{
     }
 
     private void syncCompany() throws NotSupportedException, SystemException {
-        for (Company company2: CompanysListController.getAll(em)) {
-            if (company2.getName().equals(this.appCompany)) {
-                this.company = company2;
+        for (Company company: CompanysListController.getAll()) {
+            if (company.getName().equals(this.appCompany)) {
+                company = em.find(company.getClass(), company.getId());
+                this.company = company;
                 log.debug("Synced embedding os instance : {} {}", new Object[]{this.company.getId(), this.company.getName()});
                 break;
             }
@@ -138,8 +139,9 @@ public class ApplicationNewController implements Serializable{
     }
 
     private void syncTeam()  throws NotSupportedException, SystemException {
-        for (Team team: TeamsListController.getAll(em)) {
+        for (Team team: TeamsListController.getAll()) {
             if (team.getName().equals(this.appTeam)) {
+                team = em.find(team.getClass(), team.getId());
                 this.team = team;
                 break;
             }

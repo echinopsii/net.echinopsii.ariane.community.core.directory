@@ -4,8 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:spectralview="http://spectral.com/spectral/view">
+      xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
         <h:form id="subnetTableForm">
@@ -54,6 +53,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="name" value="#{subnet.name}"/>
+                                <p:ajax event="save" listener="#{subnetsListController.update(subnet)}" update="@form,:subnetTableForm:subnetTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -61,6 +61,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="description" value="#{subnet.description}"/>
+                                <p:ajax event="save" listener="#{subnetsListController.update(subnet)}" update="@form,:subnetTableForm:subnetTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -68,23 +69,21 @@
                         <h:form>
                             <p:inplace label="#{subnet.type.name}" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{subnetsListController.changedSubnetType[subnet.id]}">
-                                    <f:selectItems value="#{subnetsListController.getAllSubnetTypes(subnetsListController.getEm())}"  var="subnetT"
+                                    <f:selectItems value="#{subnetsListController.getAllSubnetTypes()}"  var="subnetT"
                                                    itemLabel="#{subnetT.name}" itemValue="#{subnetT.name}"/>
                                 </h:selectOneMenu>
-                                <p:ajax event="save" listener="#{subnetsListController.syncSubnetType(subnet)}" />
+                                <p:ajax event="save" listener="#{subnetsListController.syncSubnetType(subnet)}" update="@form,:subnetTableForm:subnetTableMessages"/>
                             </p:inplace>
                         </h:form>
 
                         <h:outputText value="Multicast area : " styleClass="inputTitle"/>
                         <h:form>
-                            <h:outputText value="#{subnet.marea.name} - " rendered="#{subnet.marea!=null and subnet.marea.name!=null and subnet.marea.name!=''}"/>
-                            <h:outputText value="none - " rendered="#{subnet.marea==null or subnet.marea.name==null or subnet.marea.name==''}"/>
-                            <p:inplace label="Change multicast area" effectSpeed="fast" editor="true">
+                            <p:inplace label="#{subnetsListController.getSubnetMareaName(subnet)}" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{subnetsListController.changedMarea[subnet.id]}">
-                                    <f:selectItems value="#{multicastAreasListController.getAllForInplace(subnetsListController.getEm())}"  var="marea"
+                                    <f:selectItems value="#{multicastAreasListController.getAllForInplace()}"  var="marea"
                                                    itemLabel="#{marea.name}" itemValue="#{marea.name}"/>
                                 </h:selectOneMenu>
-                                <p:ajax event="save" listener="#{subnetsListController.syncMarea(subnet)}" update="@form"/>
+                                <p:ajax event="save" listener="#{subnetsListController.syncMarea(subnet)}" update="@form,:subnetTableForm:subnetTableMessages"/>
                             </p:inplace>
                         </h:form>
 
@@ -92,6 +91,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="subnetIP" value="#{subnet.subnetIP}"/>
+                                <p:ajax event="save" listener="#{subnetsListController.update(subnet)}" update="@form,:subnetTableForm:subnetTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -99,12 +99,13 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="subnetMask" value="#{subnet.subnetMask}"/>
+                                <p:ajax event="save" listener="#{subnetsListController.update(subnet)}" update="@form,:subnetTableForm:subnetTableMessages" />
                             </p:inplace>
                         </h:form>
 
                         <h:outputText value="Datacenters : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(subnet.datacenters)}" var="dc" styleClass="ui-widget-content grid" rowKey="#{dc.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(subnet,'datacenters')}" var="dc" styleClass="ui-widget-content grid" rowKey="#{dc.id}"
                                          rows="5" paginator="true" selection="#{subnetsListController.removedDCs[subnet.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{dc.name}" filterBy="#{dc.name}">
                                     <h:outputText id="itemName" value="#{dc.name}"/>
@@ -121,15 +122,15 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select datacenter to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{subnetsListController.addedDC[subnet.id]}">
-                                            <f:selectItems value="#{datacentersListController.getAll(subnetsListController.getEm())}" var="dc_"
+                                            <f:selectItems value="#{datacentersListController.getAll()}" var="dc_"
                                                            itemLabel="#{dc_.name}" itemValue="#{dc_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{subnetsListController.syncAddedDC(subnet)}"
-                                                update="@form"/>
+                                                update="@form,:subnetTableForm:subnetTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected datacenter" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{subnetsListController.syncRemovedDCs(subnet)}"
-                                                     update="@form"/>
+                                                     update="@form,:subnetTableForm:subnetTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
@@ -137,7 +138,7 @@
 
                         <h:outputText value="OS Instances : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(subnet.osInstances)}" var="os" styleClass="ui-widget-content grid" rowKey="#{os.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(subnet,'osInstances')}" var="os" styleClass="ui-widget-content grid" rowKey="#{os.id}"
                                          rows="5" paginator="true" selection="#{subnetsListController.removedOSIs[subnet.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{os.name}" filterBy="#{os.name}">
                                     <h:outputText id="itemName" value="#{os.name}"/>
@@ -148,27 +149,27 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{subnetsListController.addedOSI[subnet.id]}">
-                                            <f:selectItems value="#{OSInstancesListController.getAll(subnetsListController.getEm())}" var="os_"
+                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="os_"
                                                            itemLabel="#{os_.name}" itemValue="#{os_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{subnetsListController.syncAddedOSI(subnet)}"
-                                                update="@form"/>
+                                                update="@form,:subnetTableForm:subnetTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected OS Instance" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{subnetsListController.syncRemovedOSIs(subnet)}"
-                                                     update="@form"/>
+                                                     update="@form,:subnetTableForm:subnetTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
 
                     </h:panelGrid>
-                    <p:commandButton value="Save changes" update=":subnetTableForm:subnetTable,:subnetTableForm:subnetTableMessages" id="subnetUpdate" icon="ui-icon-disk"
-                                     actionListener="#{subnetsListController.update(subnet)}" styleClass="ui-priority-primary icon-large"/>
                 </p:rowExpansion>
                 <f:facet name="footer">
                     <p:commandButton value="Create subnet" icon="ui-icon-disk" onclick="subnetCreateDialog.show()"/>
                     <p:commandButton value="Remove selected subnet" icon="ui-icon-closethick" onclick="subnetRemoveDialog.show()"
                                      update=":removeSubnetDialogForm:display"/>
+                    <p:commandButton value="Refresh table" id="subnetUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                     update=":subnetTableForm:subnetTable"/>
                 </f:facet>
             </p:dataTable>
         </h:form>
@@ -190,7 +191,7 @@
                         <h:outputText value="#{selectedSubnet.name}"/>
 
                         <h:outputText value="Datacenters : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{spectralview:asList2(selectedSubnet.datacenters)}" var="dcR"
+                        <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'datacenters')}" var="dcR"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{dcR.name}"/>
@@ -207,7 +208,7 @@
                         </p:dataTable>
 
                         <h:outputText value="Multicast areas : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{spectralview:asList2(selectedSubnet.multicastAreas)}" var="_item"
+                        <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'multicastAreas')}" var="_item"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{_item.name}"/>
@@ -218,7 +219,7 @@
                         </p:dataTable>
 
                         <h:outputText value="OS Instances : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{spectralview:asList2(selectedSubnet.osInstances)}" var="osR"
+                        <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'osInstances')}" var="osR"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{osR.name}"/>

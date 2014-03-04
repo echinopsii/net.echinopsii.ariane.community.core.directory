@@ -4,8 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:spectralview="http://spectral.com/spectral/view">
+      xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
 
@@ -43,6 +42,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{ost.name}"/>
+                                <p:ajax event="save" listener="#{OSTypesListController.update(ost)}" update="@form,:osTypeTableForm:osTypeTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -50,27 +50,24 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{ost.architecture}"/>
+                                <p:ajax event="save" listener="#{OSTypesListController.update(ost)}" update="@form,:osTypeTableForm:osTypeTableMessages" />
                             </p:inplace>
                         </h:form>
 
                         <h:outputText value="Supporting company : " styleClass="inputTitle"/>
                         <h:form>
-                            <h:outputText value="#{ost.company.name} - " rendered="#{ost.company!=null and
-                                                                                               ost.company.name!=null and
-                                                                                               ost.company.name!=''}"/>
-                            <h:outputText value="none - " rendered="#{ost.company==null or ost.company.name==null or ost.company.name==''}"/>
-                            <p:inplace label="Change supporting company" effectSpeed="fast" editor="true">
+                            <p:inplace label="#{OSTypesListController.getOSTypeCompanyName(ost)}" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{OSTypesListController.changedCompany[ost.id]}">
-                                    <f:selectItems value="#{companysListController.getAllForSelector(OSTypesListController.getEm())}" var="cmp_"
+                                    <f:selectItems value="#{companysListController.getAllForSelector()}" var="cmp_"
                                                    itemLabel="#{cmp_.name}" itemValue="#{cmp_.name}"/>
                                 </h:selectOneMenu>
-                                <p:ajax event="save" listener="#{OSTypesListController.syncCompany(ost)}" update="@form"/>
+                                <p:ajax event="save" listener="#{OSTypesListController.syncCompany(ost)}" update="@form,:osTypeTableForm:osTypeTableMessages"/>
                             </p:inplace>
                         </h:form>
 
                         <h:outputText value="OS instances : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(ost.osInstances)}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(ost,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
                                          rows="5" paginator="true" selection="#{OSTypesListController.removedOSInstances[ost.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
                                     <h:outputText id="osiName" value="#{osi.name}"/>
@@ -81,29 +78,28 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select OS instance to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSTypesListController.addedOSInstance[ost.id]}">
-                                            <f:selectItems value="#{OSInstancesListController.getAll(OSTypesListController.getEm())}" var="osi_"
+                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
                                                            itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSTypesListController.syncAddedOSInstance(ost)}"
-                                                update="@form"/>
+                                                update="@form,:osTypeTableForm:osTypeTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected OS instance" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{OSTypesListController.syncRemovedOSInstances(ost)}"
-                                                     update="@form"/>
+                                                     update="@form,:osTypeTableForm:osTypeTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
 
                     </h:panelGrid>
-
-                    <p:commandButton value="Save changes" update=":osTypeTableForm:osTypeTable,:osTypeTableForm:osTypeTableMessages" id="ostUpdate" icon="ui-icon-disk"
-                                     actionListener="#{OSTypesListController.update(ost)}" styleClass="ui-priority-primary icon-large"/>
                 </p:rowExpansion>
 
                 <f:facet name="footer">
                     <p:commandButton value="Create OS type" icon="ui-icon-disk" onclick="osTypeCreateDialog.show()"/>
                     <p:commandButton value="Remove selected OS type" icon="ui-icon-closethick" onclick="osTypeRemoveDialog.show()"
                                      update=":removeOSTypeDialogForm:display"/>
+                    <p:commandButton value="Refresh table" id="applicationUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                     update=":osTypeTableForm:osTypeTable"/>
                 </f:facet>
             </p:dataTable>
         </h:form>
@@ -127,7 +123,7 @@
                         <h:outputText value="#{selectedOSType.name}"/>
 
                         <h:outputText value="OS Instances : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{spectralview:asList2(selectedOSType.osInstances)}" var="_item"
+                        <p:dataTable  value="#{directoryViewUtils.asList(selectedOSType,'osInstances')}" var="_item"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{_item.name}"/>

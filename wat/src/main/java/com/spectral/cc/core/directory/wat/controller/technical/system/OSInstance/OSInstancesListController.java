@@ -35,7 +35,6 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
@@ -54,11 +53,7 @@ public class OSInstancesListController implements Serializable{
     private static final long   serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(OSInstancesListController.class);
 
-    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-
-    private HashMap<Long, OSInstance> rollback = new HashMap<Long, OSInstance>();
-
-    private LazyDataModel<OSInstance> lazyModel = new OSInstanceLazyModel().setEntityManager(em);
+    private LazyDataModel<OSInstance> lazyModel = new OSInstanceLazyModel();
     private OSInstance[]              selectedOSInstanceList ;
 
     private HashMap<Long, String> changedOSType       = new HashMap<Long, String>();
@@ -78,27 +73,6 @@ public class OSInstancesListController implements Serializable{
 
     private HashMap<Long,String>     addedTeam   = new HashMap<Long,String>();
     private HashMap<Long,List<Team>> removedTeam = new HashMap<Long,List<Team>>();
-
-    @PreDestroy
-    public void clean() {
-        log.debug("Close entity manager");
-        em.close();
-    }
-
-    public EntityManager getEm() {
-        return em;
-    }
-
-    /*
-     * PrimeFaces table tools
-     */
-    public HashMap<Long, OSInstance> getRollback() {
-        return rollback;
-    }
-
-    public void setRollback(HashMap<Long, OSInstance> rollback) {
-        this.rollback = rollback;
-    }
 
     public LazyDataModel<OSInstance> getLazyModel() {
         return lazyModel;
@@ -124,12 +98,36 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncOSType(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for(OSType osType: OSTypesListController.getAll(em)) {
-            String longName = osType.getName() + " - " + osType.getArchitecture();
-            if (longName.equals(changedOSType.get(osInstance.getId()))) {
-                osInstance.setOsType(osType);
-                break;
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for(OSType osType: OSTypesListController.getAll()) {
+                osType = em.find(osType.getClass(), osType.getId());
+                String longName = osType.getName() + " - " + osType.getArchitecture();
+                if (longName.equals(changedOSType.get(osInstance.getId()))) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    osInstance.setOsType(osType);
+                    osType.getOsInstances().add(osInstance);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "OS Instance updated successfully !",
+                                                               "OS Instanc name : " + osInstance.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
             }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -142,12 +140,44 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncEmbeddingOSI(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for(OSInstance osInstance1: OSInstancesListController.getAll(em)) {
-            if (osInstance1.getName().equals(changedEmbeddingOSI.get(osInstance.getId())) && !osInstance1.getName().equals(osInstance.getName())) {
-                osInstance.setEmbeddingOSInstance(osInstance1);
-                break;
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for(OSInstance osInstance1: OSInstancesListController.getAll()) {
+                if (osInstance1.getName().equals(changedEmbeddingOSI.get(osInstance.getId())) && !osInstance1.getName().equals(osInstance.getName())) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    osInstance1 = em.find(osInstance1.getClass(), osInstance1.getId());
+                    osInstance.setEmbeddingOSInstance(osInstance1);
+                    osInstance1.getEmbeddedOSInstances().add(osInstance);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "OS Instance updated successfully !",
+                                                               "OS Instance name : " + osInstance.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
             }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
+    }
+
+    public String getOSInstanceEmbeddingOSI(OSInstance osInstance) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        osInstance = em.find(osInstance.getClass(), osInstance.getId());
+        String name = (osInstance.getEmbeddingOSInstance()!=null) ? osInstance.getEmbeddingOSInstance().getName() : "None";
+        em.close();
+        return name;
     }
 
     public HashMap<Long, String> getAddedSubnet() {
@@ -159,9 +189,35 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncAddedSubnet(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for (Subnet subnet : SubnetsListController.getAll(em))
-            if (subnet.getName().equals(this.addedSubnet.get(osInstance.getId())))
-                osInstance.getNetworkSubnets().add(subnet);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (Subnet subnet : SubnetsListController.getAll())
+                if (subnet.getName().equals(this.addedSubnet.get(osInstance.getId()))) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    subnet = em.find(subnet.getClass(), subnet.getId());
+                    osInstance.getNetworkSubnets().add(subnet);
+                    subnet.getOsInstances().add(osInstance);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "OS Instance updated successfully !",
+                                                               "OS Instance name : " + osInstance.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
     }
 
     public HashMap<Long, List<Subnet>> getRemovedSubnets() {
@@ -173,9 +229,34 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncRemovedSubnets(OSInstance osInstance) throws NotSupportedException, SystemException {
-        List<Subnet> subnets = this.removedSubnets.get(osInstance.getId());
-        for (Subnet subnet : subnets)
-            osInstance.getNetworkSubnets().remove(subnet);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            osInstance = em.find(osInstance.getClass(), osInstance.getId());
+            List<Subnet> subnets = this.removedSubnets.get(osInstance.getId());
+            for (Subnet subnet : subnets) {
+                subnet = em.find(subnet.getClass(), subnet.getId());
+                osInstance.getNetworkSubnets().remove(subnet);
+                subnet.getOsInstances().remove(osInstance);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                       "OS Instance updated successfully !",
+                                                       "OS Instance name : " + osInstance.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
     }
 
     public HashMap<Long, String> getAddedEnv() {
@@ -187,9 +268,35 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncAddedEnv(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for (Environment environment: EnvironmentsListController.getAll(em))
-            if (environment.getName().equals(this.addedEnv.get(osInstance.getId())))
-                osInstance.getEnvironments().add(environment);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (Environment environment: EnvironmentsListController.getAll())
+                if (environment.getName().equals(this.addedEnv.get(osInstance.getId()))) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    environment = em.find(environment.getClass(), environment.getId());
+                    osInstance.getEnvironments().add(environment);
+                    environment.getOsInstances().add(osInstance);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "OS Instance updated successfully !",
+                                                               "OS Instance name : " + osInstance.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
     }
 
     public HashMap<Long, List<Environment>> getRemovedEnvs() {
@@ -201,9 +308,34 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncRemovedEnvs(OSInstance osInstance) throws NotSupportedException, SystemException {
-        List<Environment> environments = this.removedEnvs.get(osInstance.getId());
-        for (Environment environment : environments)
-            osInstance.getEnvironments().remove(environment);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            osInstance = em.find(osInstance.getClass(), osInstance.getId());
+            List<Environment> environments = this.removedEnvs.get(osInstance.getId());
+            for (Environment environment : environments) {
+                environment = em.find(environment.getClass(), environment.getId());
+                osInstance.getEnvironments().remove(environment);
+                environment.getOsInstances().remove(osInstance);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                       "OS Instance updated successfully !",
+                                                       "OS Instance name : " + osInstance.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
     }
 
     public HashMap<Long, String> getAddedEmbeddedOSI() {
@@ -215,9 +347,38 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncAddedEmbeddedOSI(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for (OSInstance osInstance1: OSInstancesListController.getAll(em))
-            if (osInstance1.getName().equals(this.addedEmbeddedOSI.get(osInstance.getId())))
-                osInstance.getEmbeddedOSInstances().add(osInstance1);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (OSInstance osInstance1: OSInstancesListController.getAll()) {
+                if (osInstance1.getName().equals(this.addedEmbeddedOSI.get(osInstance.getId()))) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    osInstance1 = em.find(osInstance1.getClass(), osInstance1.getId());
+                    osInstance.getEmbeddedOSInstances().add(osInstance1);
+                    if (osInstance1.getEmbeddingOSInstance()!=null)
+                        osInstance1.getEmbeddingOSInstance().getEmbeddedOSInstances().remove(osInstance1);
+                    osInstance1.setEmbeddingOSInstance(osInstance);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "OS Instance updated successfully !",
+                                                               "OS Instance name : " + osInstance.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
+            }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
     }
 
     public HashMap<Long, List<OSInstance>> getRemovedEmbeddedOSI() {
@@ -229,9 +390,34 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncRemovedEmbeddedOSI(OSInstance osInstance) throws NotSupportedException, SystemException {
-        List<OSInstance> osInstances = this.removedEmbeddedOSI.get(osInstance.getId());
-        for (OSInstance osInstance1 : osInstances)
-            osInstance.getEmbeddedOSInstances().remove(osInstance1);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            osInstance = em.find(osInstance.getClass(), osInstance.getId());
+            List<OSInstance> osInstances = this.removedEmbeddedOSI.get(osInstance.getId());
+            for (OSInstance osInstance1 : osInstances) {
+                osInstance1 = em.find(osInstance1.getClass(), osInstance1.getId());
+                osInstance.getEmbeddedOSInstances().remove(osInstance1);
+                osInstance1.setEmbeddingOSInstance(null);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                       "OS Instance updated successfully !",
+                                                       "OS Instance name : " + osInstance.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
     }
 
     public HashMap<Long, String> getAddedApplication() {
@@ -243,9 +429,35 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncAddedApplication(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for (Application application: ApplicationsListController.getAll(em))
-            if (application.getName().equals(this.addedApplication.get(osInstance.getId())))
-                osInstance.getApplications().add(application);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (Application application: ApplicationsListController.getAll())
+                if (application.getName().equals(this.addedApplication.get(osInstance.getId()))) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    application = em.find(application.getClass(), application.getId());
+                    osInstance.getApplications().add(application);
+                    application.getOsInstances().add(osInstance);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "OS Instance updated successfully !",
+                                                               "OS Instance name : " + osInstance.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
     }
 
     public HashMap<Long, List<Application>> getRemovedApplication() {
@@ -257,9 +469,34 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncRemovedApplication(OSInstance osInstance) throws NotSupportedException, SystemException {
-        List<Application> applications = this.removedApplication.get(osInstance.getId());
-        for (Application application : applications)
-            osInstance.getApplications().remove(application);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            osInstance = em.find(osInstance.getClass(), osInstance.getId());
+            List<Application> applications = this.removedApplication.get(osInstance.getId());
+            for (Application application : applications) {
+                application = em.find(application.getClass(), application.getId());
+                osInstance.getApplications().remove(application);
+                application.getOsInstances().remove(osInstance);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                "OS Instance updated successfully !",
+                                                "OS Instance name : " + osInstance.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
     }
 
     public HashMap<Long, String> getAddedTeam() {
@@ -271,9 +508,35 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncAddedTeam(OSInstance osInstance) throws NotSupportedException, SystemException {
-        for (Team team: TeamsListController.getAll(em))
-            if (team.getName().equals(this.addedTeam.get(osInstance.getId())))
-                osInstance.getTeams().add(team);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (Team team: TeamsListController.getAll())
+                if (team.getName().equals(this.addedTeam.get(osInstance.getId()))) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    team = em.find(team.getClass(), team.getId());
+                    osInstance.getTeams().add(team);
+                    team.getOsInstances().add(osInstance);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "OS Instance updated successfully !",
+                                                               "OS Instance name : " + osInstance.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
     }
 
     public HashMap<Long, List<Team>> getRemovedTeam() {
@@ -285,17 +548,40 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void syncRemovedTeam(OSInstance osInstance) throws NotSupportedException, SystemException {
-        List<Team> teams = this.removedTeam.get(osInstance.getId());
-        for (Team team : teams)
-            osInstance.getTeams().remove(team);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            osInstance = em.find(osInstance.getClass(), osInstance.getId());
+            List<Team> teams = this.removedTeam.get(osInstance.getId());
+            for (Team team : teams) {
+                team = em.find(team.getClass(), team.getId());
+                osInstance.getTeams().remove(team);
+                team.getOsInstances().remove(osInstance);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                       "OS Instance updated successfully !",
+                                                       "OS Instance name : " + osInstance.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
     }
 
     public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         OSInstance osInstance = ((OSInstance) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
-            log.debug("EDITION MODE CLOSED: remove osInstance {} clone from rollback map...", osInstance.getId());
-            rollback.remove(osInstance.getId());
             changedOSType.remove(osInstance.getId());
             changedEmbeddingOSI.remove(osInstance.getId());
             addedSubnet.remove(osInstance.getId());
@@ -309,8 +595,6 @@ public class OSInstancesListController implements Serializable{
             addedTeam.remove(osInstance.getId());
             removedTeam.remove(osInstance.getId());
         } else {
-            log.debug("EDITION MODE OPEN: store current osInstance {} clone into rollback map...", osInstance.getId());
-            rollback.put(osInstance.getId(), osInstance.clone());
             changedOSType.put(osInstance.getId(), "");
             changedEmbeddingOSI.put(osInstance.getId(),"");
             addedSubnet.put(osInstance.getId(), "");
@@ -327,94 +611,13 @@ public class OSInstancesListController implements Serializable{
     }
 
     public void update(OSInstance osInstance) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            if (osInstance.getOsType()!=rollback.get(osInstance.getId()).getOsType()) {
-                if (rollback.get(osInstance.getId()).getOsType()!=null) {
-                    rollback.get(osInstance.getId()).getOsType().getOsInstances().remove(osInstance);
-                    em.merge(rollback.get(osInstance.getId()).getOsType());
-                }
-                if (osInstance.getOsType()!=null) {
-                    osInstance.getOsType().getOsInstances().add(osInstance);
-                    em.merge(osInstance.getOsType());
-                }
-            }
-            if (osInstance.getEmbeddingOSInstance()!=rollback.get(osInstance.getId()).getEmbeddingOSInstance()) {
-                if (rollback.get(osInstance.getId()).getEmbeddingOSInstance()!=null) {
-                    rollback.get(osInstance.getId()).getEmbeddingOSInstance().getEmbeddedOSInstances().remove(osInstance);
-                    em.merge(rollback.get(osInstance.getId()).getOsType());
-                }
-                if (osInstance.getEmbeddingOSInstance()!=null) {
-                    osInstance.getEmbeddingOSInstance().getEmbeddedOSInstances().add(osInstance);
-                    em.merge(osInstance.getEmbeddingOSInstance());
-                }
-            }
-            em.merge(osInstance);
-            for (Environment environment: osInstance.getEnvironments()) {
-                if (!rollback.get(osInstance.getId()).getEnvironments().contains(environment)) {
-                    environment.getOsInstances().add(osInstance);
-                    em.merge(environment);
-                }
-            }
-            for (Environment environment: rollback.get(osInstance.getId()).getEnvironments()) {
-                if (!osInstance.getEnvironments().contains(environment)) {
-                    environment.getOsInstances().remove(osInstance);
-                    em.merge(environment);
-                }
-            }
-            for (Subnet subnet : osInstance.getNetworkSubnets()) {
-                if (!rollback.get(osInstance.getId()).getNetworkSubnets().contains(subnet)) {
-                    subnet.getOsInstances().add(osInstance);
-                    em.merge(subnet);
-                }
-            }
-            for (Subnet subnet : rollback.get(osInstance.getId()).getNetworkSubnets()) {
-                if (!osInstance.getNetworkSubnets().contains(subnet)) {
-                    subnet.getOsInstances().remove(osInstance);
-                    em.merge(subnet);
-                }
-            }
-            for (OSInstance osi : osInstance.getEmbeddedOSInstances()) {
-                if (!rollback.get(osInstance.getId()).getEmbeddedOSInstances().contains(osi)) {
-                    osi.setEmbeddingOSInstance(osInstance);
-                    em.merge(osi);
-                }
-            }
-            for(OSInstance osi : rollback.get(osInstance.getId()).getEmbeddedOSInstances()) {
-                if (!osInstance.getEmbeddedOSInstances().contains(osi)) {
-                    osi.setEmbeddingOSInstance(null);
-                    em.merge(osi);
-                }
-            }
-            for (Application application : osInstance.getApplications()) {
-                if (!rollback.get(osInstance.getId()).getApplications().contains(application)) {
-                    application.getOsInstances().add(osInstance);
-                    em.merge(application);
-                }
-            }
-            for(Application application : rollback.get(osInstance.getId()).getApplications()) {
-                if (!osInstance.getApplications().contains(application)) {
-                    application.getOsInstances().remove(osInstance);
-                    em.merge(application);
-                }
-            }
-            for (Team team : osInstance.getTeams()) {
-                if (!rollback.get(osInstance.getId()).getTeams().contains(team)) {
-                    team.getOsInstances().add(osInstance);
-                    em.merge(team);
-                }
-            }
-            for(Team team : rollback.get(osInstance.getId()).getTeams()) {
-                if (!osInstance.getTeams().contains(team)) {
-                    team.getOsInstances().remove(osInstance);
-                    em.merge(team);
-                }
-            }
-
-
+            osInstance = em.find(osInstance.getClass(), osInstance.getId()).setNameR(osInstance.getName()).setAdminGateURIR(osInstance.getAdminGateURI()).
+                                                                            setDescriptionR(osInstance.getDescription());
             em.flush();
             em.getTransaction().commit();
-            rollback.put(osInstance.getId(), osInstance);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "OS Instance updated successfully !",
                                                        "OS Instanc name : " + osInstance.getName());
@@ -423,11 +626,13 @@ public class OSInstancesListController implements Serializable{
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updating OS Instance " + rollback.get(osInstance.getId()).getName() + " !",
+                                                       "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -437,38 +642,25 @@ public class OSInstancesListController implements Serializable{
     public void delete() {
         log.debug("Remove selected Subnet !");
         for (OSInstance osInstance: selectedOSInstanceList) {
+            EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             try {
                 em.getTransaction().begin();
-                if (osInstance.getOsType()!=null) {
+                osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                if (osInstance.getOsType()!=null)
                     osInstance.getOsType().getOsInstances().remove(osInstance);
-                    em.merge(osInstance.getOsType());
-                }
-                for (Environment environment : osInstance.getEnvironments()) {
+                for (Environment environment : osInstance.getEnvironments())
                     environment.getOsInstances().remove(osInstance);
-                    em.merge(environment);
-                }
-                for (Subnet subnet : osInstance.getNetworkSubnets()) {
+                for (Subnet subnet : osInstance.getNetworkSubnets())
                     subnet.getOsInstances().remove(osInstance);
-                    em.merge(subnet);
-                }
-                if (osInstance.getEmbeddingOSInstance()!=null) {
+                if (osInstance.getEmbeddingOSInstance()!=null)
                     osInstance.getEmbeddingOSInstance().getEmbeddedOSInstances().remove(osInstance);
-                    em.merge(osInstance.getEmbeddingOSInstance());
-                }
-                for (OSInstance osi: osInstance.getEmbeddedOSInstances()) {
+                for (OSInstance osi: osInstance.getEmbeddedOSInstances())
                     osi.setEmbeddingOSInstance(null);
-                    em.merge(osi);
-                }
-                for (Application application: osInstance.getApplications()) {
+                for (Application application: osInstance.getApplications())
                     application.getOsInstances().remove(osInstance);
-                    em.merge(application);
-                }
-                for (Team team: osInstance.getTeams()) {
+                for (Team team: osInstance.getTeams())
                     team.getOsInstances().remove(osInstance);
-                    em.merge(team);
-                }
                 em.remove(osInstance);
-
                 em.flush();
                 em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -484,6 +676,8 @@ public class OSInstancesListController implements Serializable{
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (em.getTransaction().isActive())
                     em.getTransaction().rollback();
+            } finally {
+                em.close();
             }
         }
         selectedOSInstanceList=null;
@@ -493,7 +687,8 @@ public class OSInstancesListController implements Serializable{
     /*
      * OSInstance join tools
      */
-    public static List<OSInstance> getAll(EntityManager em) {
+    public static List<OSInstance> getAll() {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all OSInstances from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -510,14 +705,12 @@ public class OSInstancesListController implements Serializable{
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<OSInstance> ret = em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(OSInstance osi : ret) {
-            em.refresh(osi);
-        }
+        em.close();
         return ret;
     }
 
-    public static List<OSInstance> getAllForSelector(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<OSInstance> getAllForSelector() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all OSInstances from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -534,11 +727,8 @@ public class OSInstancesListController implements Serializable{
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<OSInstance> list =  em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(OSInstance osi : list) {
-            em.refresh(osi);
-        }
         list.add(0, new OSInstance().setNameR("None"));
+        em.close();
         return list;
     }
 }

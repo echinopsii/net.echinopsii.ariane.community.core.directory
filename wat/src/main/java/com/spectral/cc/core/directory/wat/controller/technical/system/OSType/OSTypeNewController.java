@@ -90,9 +90,10 @@ public class OSTypeNewController implements Serializable {
     }
 
     private void syncCompany() throws NotSupportedException, SystemException {
-        for (Company company2: CompanysListController.getAll(em)) {
-            if (company2.getName().equals(this.osiCompany)) {
-                this.company = company2;
+        for (Company company: CompanysListController.getAll()) {
+            if (company.getName().equals(this.osiCompany)) {
+                company = em.find(company.getClass(), company.getId());
+                this.company = company;
                 log.debug("Synced embedding os instance : {} {}", new Object[]{this.company.getId(), this.company.getName()});
                 break;
             }

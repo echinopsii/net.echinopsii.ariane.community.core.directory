@@ -4,8 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:spectralview="http://spectral.com/spectral/view">
+      xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
         <h:form id="mareaTableForm">
@@ -38,18 +37,20 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{marea.name}"/>
+                                <p:ajax event="save" listener="#{multicastAreasListController.update(marea)}" update="@form,:mareaTableForm:mareaTableMessages" />
                             </p:inplace>
                         </h:form>
                         <h:outputText value="Description : " styleClass="inputTitle"/>
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{marea.description}"/>
+                                <p:ajax event="save" listener="#{multicastAreasListController.update(marea)}" update="@form,:mareaTableForm:mareaTableMessages" />
                             </p:inplace>
                         </h:form>
 
                         <h:outputText value="Datacenters : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(marea.datacenters)}" var="dc" styleClass="ui-widget-content grid" rowKey="#{dc.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(marea,'datacenters')}" var="dc" styleClass="ui-widget-content grid" rowKey="#{dc.id}"
                                          rows="5" paginator="true" selection="#{multicastAreasListController.removedDCs[marea.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{dc.name}" filterBy="#{dc.name}">
                                     <h:outputText id="dcName" value="#{dc.name}"/>
@@ -66,22 +67,22 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select DC to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{multicastAreasListController.addedDC[marea.id]}">
-                                            <f:selectItems value="#{datacentersListController.getAll(multicastAreasListController.getEm())}" var="dc_"
+                                            <f:selectItems value="#{datacentersListController.getAll()}" var="dc_"
                                                            itemLabel="#{dc_.name}" itemValue="#{dc_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{multicastAreasListController.syncAddedDC(marea)}"
-                                                update="@form"/>
+                                                update="@form,:mareaTableForm:mareaTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected DC" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{multicastAreasListController.syncRemovedDCs(marea)}"
-                                                     update="@form"/>
+                                                     update="@form,:mareaTableForm:mareaTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
 
                         <h:outputText value="Subnets : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(marea.subnets)}" var="subnet" styleClass="ui-widget-content grid" rowKey="#{subnet.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(marea,'subnets')}" var="subnet" styleClass="ui-widget-content grid" rowKey="#{subnet.id}"
                                          rows="5" paginator="true" selection="#{multicastAreasListController.removedSubnets[marea.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{subnet.name}" filterBy="#{subnet.name}">
                                     <h:outputText id="subnetName" value="#{subnet.name}"/>
@@ -98,26 +99,26 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{multicastAreasListController.addedSubnet[marea.id]}">
-                                            <f:selectItems value="#{subnetsListController.getAll(multicastAreasListController.getEm())}" var="subnet_"
+                                            <f:selectItems value="#{subnetsListController.getAll()}" var="subnet_"
                                                            itemLabel="#{subnet_.name}" itemValue="#{subnet_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{multicastAreasListController.syncAddedSubnet(marea)}"
-                                                update="@form"/>
+                                                update="@form,:mareaTableForm:mareaTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{multicastAreasListController.syncRemovedSubnets(marea)}"
-                                                     update="@form"/>
+                                                     update="@form,:mareaTableForm:mareaTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
                     </h:panelGrid>
-                    <p:commandButton value="Save changes" update=":mareaTableForm:mareaTable,:mareaTableForm:mareaTableMessages" id="mareaUpdate" icon="ui-icon-disk"
-                                     actionListener="#{multicastAreasListController.update(marea)}" styleClass="ui-priority-primary icon-large"/>
                 </p:rowExpansion>
                 <f:facet name="footer">
                     <p:commandButton value="Create multicast area" icon="ui-icon-disk" onclick="mareaCreateDialog.show()"/>
                     <p:commandButton value="Remove selected multicast area" icon="ui-icon-closethick" onclick="mareaRemoveDialog.show()"
                                      update=":removeMareaDialogForm:display"/>
+                    <p:commandButton value="Refresh table" id="mareaUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                     update=":mareaTableForm:mareaTable"/>
                 </f:facet>
             </p:dataTable>
         </h:form>
@@ -139,7 +140,7 @@
                         <h:outputText value="#{selectedMarea.name}"/>
 
                         <h:outputText value="Datacenters : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{spectralview:asList2(selectedMarea.datacenters)}" var="_item"
+                        <p:dataTable  value="#{directoryViewUtils.asList(selectedMarea,'datacenters')}" var="_item"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{_item.name}"/>
@@ -156,7 +157,7 @@
                         </p:dataTable>
 
                         <h:outputText value="Subnets : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{spectralview:asList2(selectedMarea.subnets)}" var="_item"
+                        <p:dataTable  value="#{directoryViewUtils.asList(selectedMarea,'subnets')}" var="_item"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{_item.name}"/>

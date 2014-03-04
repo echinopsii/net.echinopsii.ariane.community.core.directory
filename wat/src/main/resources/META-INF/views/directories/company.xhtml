@@ -4,8 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:spectralview="http://spectral.com/spectral/view">
+      xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
 
@@ -39,6 +38,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{cmp.name}"/>
+                                <p:ajax event="save" listener="#{companysListController.update(cmp)}" update="@form,:companyTableForm:companyTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -46,12 +46,13 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{cmp.description}"/>
+                                <p:ajax event="save" listener="#{companysListController.update(cmp)}" update="@form,:companyTableForm:companyTableMessages" />
                             </p:inplace>
                         </h:form>
 
                         <h:outputText value="OS Types : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(cmp.osTypes)}" var="ost" styleClass="ui-widget-content grid" rowKey="#{ost.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(cmp,'osTypes')}" var="ost" styleClass="ui-widget-content grid" rowKey="#{ost.id}"
                                          rows="5" paginator="true" selection="#{companysListController.removedOSTypes[cmp.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{ost.name}" filterBy="#{ost.name}">
                                     <h:outputText id="ostName" value="#{ost.name}"/>
@@ -62,22 +63,22 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select OS types to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{companysListController.addedOSType[cmp.id]}">
-                                            <f:selectItems value="#{OSTypesListController.getAll(companysListController.getEm())}" var="ost_"
+                                            <f:selectItems value="#{OSTypesListController.getAll()}" var="ost_"
                                                            itemLabel="#{ost_.name}" itemValue="#{ost_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{companysListController.syncAddedOSType(cmp)}"
-                                                update="@form"/>
+                                                update="@form,:companyTableForm:companyTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected OS Type" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{companysListController.syncRemovedOSTypes(cmp)}"
-                                                     update="@form"/>
+                                                     update="@form,:companyTableForm:companyTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
 
                         <h:outputText value="Applications : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(cmp.applications)}" var="app" styleClass="ui-widget-content grid" rowKey="#{app.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(cmp,'applications')}" var="app" styleClass="ui-widget-content grid" rowKey="#{app.id}"
                                          rows="5" paginator="true" selection="#{companysListController.removedApplications[cmp.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{app.name}" filterBy="#{app.name}">
                                     <h:outputText id="appName" value="#{app.name}"/>
@@ -88,29 +89,28 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select application to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{companysListController.addedApplication[cmp.id]}">
-                                            <f:selectItems value="#{applicationsListController.getAll(companysListController.getEm())}" var="app_"
+                                            <f:selectItems value="#{applicationsListController.getAll()}" var="app_"
                                                            itemLabel="#{app_.name}" itemValue="#{app_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{companysListController.syncAddedApplication(cmp)}"
-                                                update="@form"/>
+                                                update="@form,:companyTableForm:companyTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected application" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{companysListController.syncRemovedApplications(cmp)}"
-                                                     update="@form"/>
+                                                     update="@form,:companyTableForm:companyTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
 
                     </h:panelGrid>
-
-                    <p:commandButton value="Save changes" update=":companyTableForm:companyTable,:companyTableForm:companyTableMessages" id="cmpUpdate" icon="ui-icon-disk"
-                                     actionListener="#{companysListController.update(cmp)}" styleClass="ui-priority-primary icon-large"/>
                 </p:rowExpansion>
 
                 <f:facet name="footer">
                     <p:commandButton value="Create company" icon="ui-icon-disk" onclick="companyCreateDialog.show()"/>
                     <p:commandButton value="Remove selected company" icon="ui-icon-closethick" onclick="companyRemoveDialog.show()"
                                      update=":removeCompanyDialogForm:display"/>
+                    <p:commandButton value="Refresh table" id="companyUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                     update=":companyTableForm:companyTable"/>
                 </f:facet>
             </p:dataTable>
         </h:form>
@@ -134,7 +134,7 @@
                         <h:outputText value="#{selectedCompany.name}"/>
 
                         <h:outputText value="OS Instances : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{spectralview:asList2(selectedCompany.osTyps)}" var="_item"
+                        <p:dataTable  value="#{directoryViewUtils.asList(selectedCompany,'osTypes')}" var="_item"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{_item.name}"/>

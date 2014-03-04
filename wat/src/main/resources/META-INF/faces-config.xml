@@ -24,6 +24,11 @@
         <managed-bean-class>com.spectral.cc.core.directory.wat.controller.DirectoryDashboardController</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
+    <managed-bean>
+        <managed-bean-name>directoryViewUtils</managed-bean-name>
+        <managed-bean-class>com.spectral.cc.core.directory.wat.controller.DirectoryViewUtils</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
 
     <managed-bean>
         <managed-bean-name>applicationNewController</managed-bean-name>

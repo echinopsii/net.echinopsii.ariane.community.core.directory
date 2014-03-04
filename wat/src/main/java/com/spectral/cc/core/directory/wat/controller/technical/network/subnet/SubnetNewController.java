@@ -120,16 +120,13 @@ public class SubnetNewController implements Serializable {
     }
 
     private void syncSubnetType() throws NotSupportedException, SystemException {
-        SubnetType type = null;
-        for (SubnetType ltype: SubnetsListController.getAllSubnetTypes(em)) {
-            if (ltype.getName().equals(this.subnetType)) {
-                type = ltype;
+        for (SubnetType type: SubnetsListController.getAllSubnetTypes()) {
+            if (type.getName().equals(this.subnetType)) {
+                type = em.find(type.getClass(), type.getId());
+                this.type  = type;
+                log.debug("Synced SubnetType : {} {}", new Object[]{this.type.getId(), this.type.getName()});
                 break;
             }
-        }
-        if (type != null) {
-            this.type  = type;
-            log.debug("Synced SubnetType : {} {}", new Object[]{this.type.getId(), this.type.getName()});
         }
     }
 
@@ -151,8 +148,9 @@ public class SubnetNewController implements Serializable {
 
     private void syncMulticastArea() throws NotSupportedException, SystemException {
         MulticastArea marea = null;
-        for (MulticastArea area: MulticastAreasListController.getAll(em)) {
+        for (MulticastArea area: MulticastAreasListController.getAll()) {
             if (area.getName().equals(this.mArea)) {
+                area = em.find(area.getClass(), area.getId());
                 marea = area;
                 break;
             }
@@ -181,9 +179,10 @@ public class SubnetNewController implements Serializable {
     }
 
     private void bindSelectedDatacenters() throws NotSupportedException, SystemException {
-        for (Datacenter dc: DatacentersListController.getAll(em)) {
+        for (Datacenter dc: DatacentersListController.getAll()) {
             for (String dcToBind : datacentersToBind)
                 if (dc.getName().equals(dcToBind)) {
+                    dc = em.find(dc.getClass(), dc.getId());
                     this.datacenters.add(dc);
                     log.debug("Synced datacenter : {} {}", new Object[]{dc.getId(), dc.getName()});
                     break;

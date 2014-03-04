@@ -4,8 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:spectralview="http://spectral.com/spectral/view">
+      xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
         <h:form id="datacenterTableForm">
@@ -54,6 +53,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{datacenter.name}"/>
+                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -61,6 +61,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{datacenter.description}"/>
+                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -68,6 +69,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{datacenter.address}"/>
+                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -75,6 +77,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{datacenter.zipCode}"/>
+                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -82,6 +85,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{datacenter.town}"/>
+                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -89,6 +93,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{datacenter.country}"/>
+                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -96,6 +101,7 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{datacenter.gpsLatitude}"/>
+                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                             </p:inplace>
                         </h:form>
 
@@ -103,12 +109,13 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{datacenter.gpsLongitude}"/>
+                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                             </p:inplace>
                         </h:form>
 
                         <h:outputText value="Subnets : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(datacenter.subnets)}" var="_subnet" styleClass="ui-widget-content grid" rowKey="#{_subnet.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(datacenter,'subnets')}" var="_subnet" styleClass="ui-widget-content grid" rowKey="#{_subnet.id}"
                                          rows="5" paginator="true" selection="#{datacentersListController.removedSubnets[datacenter.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{_subnet.name}" filterBy="#{_subnet.name}">
                                     <h:outputText id="subnetName" value="#{_subnet.name}"/>
@@ -122,22 +129,22 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{datacentersListController.addedSubnet[datacenter.id]}">
-                                            <f:selectItems value="#{subnetsListController.getAll(datacentersListController.getEm())}" var="subnet_"
+                                            <f:selectItems value="#{subnetsListController.getAll()}" var="subnet_"
                                                                itemLabel="#{subnet_.name}" itemValue="#{subnet_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{datacentersListController.syncAddedSubnet(datacenter)}"
-                                                update="@form"/>
+                                                update="@form,:datacenterTableForm:dcTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{datacentersListController.syncRemovedSubnets(datacenter)}"
-                                                     update="@form"/>
+                                                     update="@form,:datacenterTableForm:dcTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
 
                         <h:outputText value="Multicast Areas : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(datacenter.multicastAreas)}" var="_marea" styleClass="ui-widget-content grid" rowKey="#{_marea.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(datacenter,'multicastAreas')}" var="_marea" styleClass="ui-widget-content grid" rowKey="#{_marea.id}"
                                          rows="5" paginator="true" selection="#{datacentersListController.removedMareas[datacenter.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{_marea.name}" filterBy="#{_marea.name}">
                                     <h:outputText id="mareaName" value="#{_marea.name}"/>
@@ -148,26 +155,26 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select multicast area to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{datacentersListController.addedMArea[datacenter.id]}">
-                                            <f:selectItems value="#{multicastAreasListController.getAll(datacentersListController.getEm())}" var="marea_"
+                                            <f:selectItems value="#{multicastAreasListController.getAll()}" var="marea_"
                                                            itemLabel="#{marea_.name}" itemValue="#{marea_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{datacentersListController.syncAddedMArea(datacenter)}"
-                                                update="@form"/>
+                                                update="@form,:datacenterTableForm:dcTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected multicast area" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{datacentersListController.syncRemovedMAreas(datacenter)}"
-                                                     update="@form"/>
+                                                     update="@form,:datacenterTableForm:dcTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
                     </h:panelGrid>
-                    <p:commandButton value="Save changes" update=":datacenterTableForm:datacenterTable,:datacenterTableForm:dcTableMessages" id="dcUpdate" icon="ui-icon-disk"
-                                     actionListener="#{datacentersListController.update(datacenter)}" styleClass="ui-priority-primary icon-large"/>
                 </p:rowExpansion>
                 <f:facet name="footer">
                     <p:commandButton value="Create datacenter" icon="ui-icon-disk" onclick="dcCreateDialog.show()"/>
                     <p:commandButton value="Remove selected datacenter" icon="ui-icon-closethick" onclick="dcRemoveDialog.show()"
                                      update=":removeDCDialogForm:display"/>
+                    <p:commandButton value="Refresh table" id="dcUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                     update=":datacenterTableForm:datacenterTable"/>
                 </f:facet>
             </p:dataTable>
         </h:form>
@@ -189,7 +196,7 @@
                         <h:outputText value="#{selectedDC.name}"/>
 
                         <h:outputText value="Multicast areas : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{spectralview:asList2(selectedDC.multicastAreas)}" var="_item"
+                        <p:dataTable  value="#{directoryViewUtils.asList(selectedDC,'multicastAreas')}" var="_item"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{_item.name}"/>
@@ -200,7 +207,7 @@
                         </p:dataTable>
 
                         <h:outputText value="Subnets : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{spectralview:asList2(selectedDC.subnets)}" var="_item"
+                        <p:dataTable  value="#{directoryViewUtils.asList(selectedDC,'subnets')}" var="_item"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{_item.name}"/>

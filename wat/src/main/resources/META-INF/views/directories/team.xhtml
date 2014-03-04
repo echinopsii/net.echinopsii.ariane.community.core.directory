@@ -4,8 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:spectralview="http://spectral.com/spectral/view">
+      xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
 
@@ -43,22 +42,28 @@
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{team.name}"/>
+                                <p:ajax event="save" listener="#{teamsListController.update(team)}" update="@form,:teamTableForm:teamTableMessages" />
                             </p:inplace>
                         </h:form>
 
                         <h:outputText value="Color code : " styleClass="inputTitle"/>
-                        <p:colorPicker id="popupCP" value="#{team.colorCode}"/>
+                        <h:form>
+                            <p:colorPicker id="popupCP" value="#{team.colorCode}"/>
+                            <p:commandButton value="Save new color" update="@form,:teamTableForm:teamTableMessages" id="teamColorSave" icon="ui-icon-disk"
+                                             process="@form" actionListener="#{teamsListController.update(team)}" styleClass="ui-priority-primary icon-large"/>
+                        </h:form>
 
                         <h:outputText value="Description : " styleClass="inputTitle"/>
                         <h:form>
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="text" value="#{team.description}"/>
+                                <p:ajax event="save" listener="#{teamsListController.update(team)}" update="@form,:teamTableForm:teamTableMessages" />
                             </p:inplace>
                         </h:form>
 
                         <h:outputText value="OS instances : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(team.osInstances)}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(team,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
                                          rows="5" paginator="true" selection="#{teamsListController.removedOSInstances[team.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
                                     <h:outputText id="osiName" value="#{osi.name}"/>
@@ -69,22 +74,22 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{teamsListController.addedOSInstance[team.id]}">
-                                            <f:selectItems value="#{OSInstancesListController.getAll(teamsListController.getEm())}" var="osi_"
+                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
                                                            itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{teamsListController.syncAddedOSInstance(team)}"
-                                                update="@form"/>
+                                                update="@form,:teamTableForm:teamTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected OS Instance" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{teamsListController.syncRemovedOSInstances(team)}"
-                                                     update="@form"/>
+                                                     update="@form,:teamTableForm:teamTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
 
                         <h:outputText value="Applications : " styleClass="inputTitle"/>
                         <h:form>
-                            <p:dataTable value="#{spectralview:asList2(team.applications)}" var="app" styleClass="ui-widget-content grid" rowKey="#{app.id}"
+                            <p:dataTable value="#{directoryViewUtils.asList(team,'applications')}" var="app" styleClass="ui-widget-content grid" rowKey="#{app.id}"
                                          rows="5" paginator="true" selection="#{teamsListController.removedApplications[team.id]}" selectionMode="multiple">
                                 <p:column headerText="Name" sortBy="#{app.name}" filterBy="#{osi.name}">
                                     <h:outputText id="appName" value="#{app.name}"/>
@@ -95,29 +100,28 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select application to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{teamsListController.addedApplication[team.id]}">
-                                            <f:selectItems value="#{applicationsListController.getAll(teamsListController.getEm())}" var="app_"
+                                            <f:selectItems value="#{applicationsListController.getAll()}" var="app_"
                                                            itemLabel="#{app_.name}" itemValue="#{app_.name}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{teamsListController.syncAddedApplication(team)}"
-                                                update="@form"/>
+                                                update="@form,:teamTableForm:teamTableMessages"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected application" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{teamsListController.syncRemovedApplications(team)}"
-                                                     update="@form"/>
+                                                     update="@form,:teamTableForm:teamTableMessages"/>
                                 </f:facet>
                             </p:dataTable>
                         </h:form>
 
                     </h:panelGrid>
-
-                    <p:commandButton value="Save changes" update=":teamTableForm:teamTable,:teamTableForm:teamTableMessages" id="teamUpdate" icon="ui-icon-disk"
-                                     actionListener="#{teamsListController.update(team)}" styleClass="ui-priority-primary icon-large"/>
                 </p:rowExpansion>
 
                 <f:facet name="footer">
                     <p:commandButton value="Create team" icon="ui-icon-disk" onclick="teamCreateDialog.show()"/>
                     <p:commandButton value="Remove selected team" icon="ui-icon-closethick" onclick="teamRemoveDialog.show()"
                                      update=":removeTeamDialogForm:display"/>
+                    <p:commandButton value="Refresh table" id="teamUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                     update=":teamTableForm:teamTable"/>
                 </f:facet>
             </p:dataTable>
         </h:form>
@@ -141,7 +145,7 @@
                         <h:outputText value="#{selectedTeam.name}"/>
 
                         <h:outputText value="OS Instances : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{spectralview:asList2(selectedTeam.osInstances)}" var="_item"
+                        <p:dataTable  value="#{directoryViewUtils.asList(selectedTeam, 'osInstances')}" var="_item"
                                       rows="5" paginator="true">
                             <p:column headerText="Name">
                                 <h:outputText id="itemName" value="#{_item.name}"/>

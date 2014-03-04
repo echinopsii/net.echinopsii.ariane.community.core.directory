@@ -46,27 +46,13 @@ public class OSTypesListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(OSTypesListController.class);
 
-    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-
-    private HashMap<Long, OSType> rollback = new HashMap<Long, OSType>();
-
-    private LazyDataModel<OSType> lazyModel = new OSTypeLazyModel().setEntityManager(em);
+    private LazyDataModel<OSType> lazyModel = new OSTypeLazyModel();
     private OSType[]              selectedOSTypeList ;
 
     private HashMap<Long, String> changedCompany       = new HashMap<Long, String>();
 
     private HashMap<Long,String>           addedOSInstance    = new HashMap<Long, String>();
     private HashMap<Long,List<OSInstance>> removedOSInstances = new HashMap<Long, List<OSInstance>>();
-
-    @PreDestroy
-    public void clean() {
-        log.debug("Close entity manager");
-        em.close();
-    }
-
-    public EntityManager getEm() {
-        return em;
-    }
 
     /*
      * PrimeFaces table tools
@@ -86,14 +72,6 @@ public class OSTypesListController implements Serializable {
     /*
      * OS Type update tools
      */
-    public HashMap<Long, OSType> getRollback() {
-        return rollback;
-    }
-
-    public void setRollback(HashMap<Long, OSType> rollback) {
-        this.rollback = rollback;
-    }
-
     public HashMap<Long, String> getChangedCompany() {
         return changedCompany;
     }
@@ -103,12 +81,44 @@ public class OSTypesListController implements Serializable {
     }
 
     public void syncCompany(OSType osType) throws NotSupportedException, SystemException {
-        for(Company company: CompanysListController.getAll(em)) {
-            if (company.getName().equals(changedCompany.get(osType.getId()))) {
-                osType.setCompany(company);
-                break;
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for(Company company: CompanysListController.getAll()) {
+                if (company.getName().equals(changedCompany.get(osType.getId()))) {
+                    em.getTransaction().begin();
+                    company = em.find(company.getClass(), company.getId());
+                    osType = em.find(osType.getClass(), osType.getId());
+                    osType.setCompany(company);
+                    company.getOsTypes().add(osType);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                        "OS Type updated successfully !",
+                                                        "OS Type name : " + osType.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
             }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating OS Type " + osType.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
+    }
+
+    public String getOSTypeCompanyName(OSType osType) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        osType = em.find(osType.getClass(), osType.getId());
+        String companyName = (osType.getCompany()!=null) ? osType.getCompany().getName() : "None";
+        em.close();
+        return  companyName;
     }
 
     public HashMap<Long, String> getAddedOSInstance() {
@@ -120,10 +130,37 @@ public class OSTypesListController implements Serializable {
     }
 
     public void syncAddedOSInstance(OSType osType) throws NotSupportedException, SystemException {
-        for (OSInstance osInstance: OSInstancesListController.getAll(em)) {
-            if (osInstance.getName().equals(this.addedOSInstance.get(osType.getId()))) {
-                osType.getOsInstances().add(osInstance);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (OSInstance osInstance: OSInstancesListController.getAll()) {
+                if (osInstance.getName().equals(this.addedOSInstance.get(osType.getId()))) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    osType = em.find(osType.getClass(), osType.getId());
+                    osType.getOsInstances().add(osInstance);
+                    if (osInstance.getOsType()!=null)
+                        osInstance.getOsType().getOsInstances().remove(osInstance);
+                    osInstance.setOsType(osType);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                        "OS Type updated successfully !",
+                                                        "OS Type name : " + osType.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
             }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                "Throwable raised while updating OS Type " + osType.getName() + " !",
+                                                "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -136,9 +173,34 @@ public class OSTypesListController implements Serializable {
     }
 
     public void syncRemovedOSInstances(OSType osType) throws NotSupportedException, SystemException {
-        List<OSInstance> osInstances = this.removedOSInstances.get(osType.getId());
-        for (OSInstance osInstance : osInstances) {
-            osType.getOsInstances().remove(osInstance);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            osType = em.find(osType.getClass(), osType.getId());
+            List<OSInstance> osInstances = this.removedOSInstances.get(osType.getId());
+            for (OSInstance osInstance : osInstances) {
+                osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                osType = em.find(osType.getClass(), osType.getId());
+                osType.getOsInstances().remove(osInstance);
+                osInstance.setOsType(null);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                "OS Type updated successfully !",
+                                                "OS Type name : " + osType.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                "Throwable raised while updating OS Type " + osType.getName() + " !",
+                                                "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -146,14 +208,10 @@ public class OSTypesListController implements Serializable {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         OSType eventOSType = ((OSType) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
-            log.debug("EDITION MODE CLOSED: remove eventOSType {} clone from rollback map...", eventOSType.getId());
-            rollback.remove(eventOSType.getId());
             changedCompany.remove(eventOSType.getId());
             addedOSInstance.remove(eventOSType.getId());
             removedOSInstances.remove(eventOSType.getId());
         } else {
-            log.debug("EDITION MODE OPEN: store current eventOSType {} clone into rollback map...", eventOSType.getId());
-            rollback.put(eventOSType.getId(), eventOSType.clone());
             changedCompany.put(eventOSType.getId(),"");
             addedOSInstance.put(eventOSType.getId(),"");
             removedOSInstances.put(eventOSType.getId(),new ArrayList<OSInstance>());
@@ -161,53 +219,27 @@ public class OSTypesListController implements Serializable {
     }
 
     public void update(OSType osType) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            if (osType.getCompany()!=rollback.get(osType.getId()).getCompany()) {
-                if (rollback.get(osType.getId()).getCompany()!=null) {
-                    rollback.get(osType.getId()).getCompany().getOsTypes().remove(osType);
-                    em.merge(rollback.get(osType.getId()).getCompany());
-                }
-                if (osType.getCompany()!=null) {
-                    osType.getCompany().getOsTypes().add(osType);
-                    em.merge(osType.getCompany());
-                }
-            }
-            em.merge(osType);
-            for (OSInstance osInstance : rollback.get(osType.getId()).getOsInstances()) {
-                if (!osType.getOsInstances().contains(osInstance)) {
-                    osInstance.setOsType(null);
-                    em.merge(osInstance);
-                }
-            }
-            for (OSInstance osInstance : osType.getOsInstances()) {
-                if (!rollback.get(osType.getId()).getOsInstances().contains(osInstance)){
-                    OSType previousOSType = osInstance.getOsType();
-                    if (previousOSType!=null && previousOSType.getName()!=osType.getName()) {
-                        previousOSType.getOsInstances().remove(osInstance);
-                        em.merge(previousOSType);
-                    }
-                    osInstance.setOsType(osType);
-                    em.merge(osInstance);
-                }
-            }
-
+            osType = em.find(osType.getClass(), osType.getId()).setArchitectureR(osType.getArchitecture()).setNameR(osType.getName());
             em.flush();
             em.getTransaction().commit();
-            rollback.put(osType.getId(), osType);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                       "OS Type updated successfully !",
-                                                       "OS Type name : " + osType.getName());
+                                                "OS Type updated successfully !",
+                                                "OS Type name : " + osType.getName());
             FacesContext.getCurrentInstance().addMessage(null, msg);
         } catch (Throwable t) {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updeting OS Type " + rollback.get(osType.getId()).getName() + " !",
-                                                       "Throwable message : " + t.getMessage());
+                                                "Throwable raised while updating OS Type " + osType.getName() + " !",
+                                                "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -217,8 +249,14 @@ public class OSTypesListController implements Serializable {
     public void delete() {
         log.debug("Remove selected OS Type !");
         for (OSType osType: selectedOSTypeList) {
+            EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             try {
                 em.getTransaction().begin();
+                osType = em.find(osType.getClass(), osType.getId());
+                if (osType.getCompany()!=null)
+                    osType.getCompany().getOsTypes().remove(osType);
+                for (OSInstance osInstance : osType.getOsInstances())
+                    osInstance.setOsType(null);
                 em.remove(osType);
                 em.flush();
                 em.getTransaction().commit();
@@ -235,6 +273,8 @@ public class OSTypesListController implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (em.getTransaction().isActive())
                     em.getTransaction().rollback();
+            } finally {
+                em.close();
             }
         }
         selectedOSTypeList=null;
@@ -243,7 +283,8 @@ public class OSTypesListController implements Serializable {
     /*
      * OSType join tool
      */
-    public static List<OSType> getAll(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<OSType> getAll() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all OSTypes from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -260,14 +301,12 @@ public class OSTypesListController implements Serializable {
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<OSType> ret = em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(OSType ost : ret) {
-            em.refresh(ost);
-        }
+        em.close();
         return ret;
     }
 
-    public static List<OSType> getAllForSelector(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<OSType> getAllForSelector() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all OSTypes from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -278,17 +317,14 @@ public class OSTypesListController implements Serializable {
                                              (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
                                              (Thread.currentThread().getStackTrace().length>6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
                          });
-        CriteriaBuilder builder  = em.getCriteriaBuilder();
+        CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<OSType> criteria = builder.createQuery(OSType.class);
         Root<OSType> root = criteria.from(OSType.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        List<OSType> list =  em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(OSType ost : list) {
-            em.refresh(ost);
-        }
+        List<OSType> list = em.createQuery(criteria).getResultList();
         list.add(0, new OSType().setNameR("Select OS Type for this OS Instance"));
+        em.close();
         return list;
     }
 }

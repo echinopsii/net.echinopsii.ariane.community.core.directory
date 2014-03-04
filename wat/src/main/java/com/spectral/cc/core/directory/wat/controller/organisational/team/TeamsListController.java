@@ -30,7 +30,6 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
@@ -47,11 +46,7 @@ public class TeamsListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(TeamsListController.class);
 
-    private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-
-    private HashMap<Long, Team> rollback = new HashMap<Long, Team>();
-
-    private LazyDataModel<Team> lazyModel = new TeamLazyModel().setEntityManager(em) ;
+    private LazyDataModel<Team> lazyModel = new TeamLazyModel() ;
     private Team[]              selectedTeamList ;
 
     private HashMap<Long,String>           addedOSInstance    = new HashMap<Long, String>();
@@ -59,27 +54,6 @@ public class TeamsListController implements Serializable {
 
     private HashMap<Long,String>            addedApplication    = new HashMap<Long, String>();
     private HashMap<Long,List<Application>> removedApplications = new HashMap<Long, List<Application>>();
-
-    @PreDestroy
-    public void clean() {
-        log.debug("Close entity manager");
-        em.close();
-    }
-
-    public EntityManager getEm() {
-        return em;
-    }
-
-    /*
-     * PrimeFaces table tools
-     */
-    public HashMap<Long, Team> getRollback() {
-        return rollback;
-    }
-
-    public void setRollback(HashMap<Long, Team> rollback) {
-        this.rollback = rollback;
-    }
 
     public LazyDataModel<Team> getLazyModel() {
         return lazyModel;
@@ -105,10 +79,35 @@ public class TeamsListController implements Serializable {
     }
 
     public void syncAddedOSInstance(Team team) throws NotSupportedException, SystemException {
-        for (OSInstance osInstance: OSInstancesListController.getAll(em)) {
-            if (osInstance.getName().equals(this.addedOSInstance.get(team.getId()))) {
-                team.getOsInstances().add(osInstance);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (OSInstance osInstance: OSInstancesListController.getAll()) {
+                if (osInstance.getName().equals(this.addedOSInstance.get(team.getId()))) {
+                    em.getTransaction().begin();
+                    team = em.find(team.getClass(), team.getId());
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    team.getOsInstances().add(osInstance);
+                    osInstance.getTeams().add(team);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "Team updated successfully !",
+                                                               "Team name : " + team.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
             }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating Team " + team.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -121,9 +120,33 @@ public class TeamsListController implements Serializable {
     }
 
     public void syncRemovedOSInstances(Team team) throws NotSupportedException, SystemException {
-        List<OSInstance> osInstances = this.removedOSInstances.get(team.getId());
-        for (OSInstance osInstance : osInstances) {
-            team.getOsInstances().remove(osInstance);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            team = em.find(team.getClass(), team.getId());
+            List<OSInstance> osInstances = this.removedOSInstances.get(team.getId());
+            for (OSInstance osInstance : osInstances) {
+                osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                team.getOsInstances().remove(osInstance);
+                osInstance.getTeams().remove(team);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                       "Team updated successfully !",
+                                                       "Team name : " + team.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating Team " + team.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -136,10 +159,37 @@ public class TeamsListController implements Serializable {
     }
 
     public void syncAddedApplication(Team team) throws NotSupportedException, SystemException {
-        for (Application application: ApplicationsListController.getAll(em)) {
-            if (application.getName().equals(this.addedApplication.get(team.getId()))) {
-                team.getApplications().add(application);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (Application application: ApplicationsListController.getAll()) {
+                if (application.getName().equals(this.addedApplication.get(team.getId()))) {
+                    em.getTransaction().begin();
+                    application = em.find(application.getClass(), application.getId());
+                    team = em.find(team.getClass(), team.getId());
+                    team.getApplications().add(application);
+                    if (application.getTeam()!=null)
+                        application.getTeam().getApplications().remove(application);
+                    application.setTeam(team);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                               "Team updated successfully !",
+                                                               "Team name : " + team.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
             }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating Team " + team.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -152,9 +202,33 @@ public class TeamsListController implements Serializable {
     }
 
     public void syncRemovedApplications(Team team) throws NotSupportedException, SystemException {
-        List<Application> applications = this.removedApplications.get(team.getId());
-        for (Application application : applications) {
-            team.getApplications().remove(application);
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            team = em.find(team.getClass(), team.getId());
+            List<Application> applications = this.removedApplications.get(team.getId());
+            for (Application application : applications) {
+                application = em.find(application.getClass(), application.getId());
+                team.getApplications().remove(application);
+                application.setTeam(null);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                                "Team updated successfully !",
+                                                "Team name : " + team.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                       "Throwable raised while updating Team " + team.getName() + " !",
+                                                       "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -162,15 +236,11 @@ public class TeamsListController implements Serializable {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         Team eventTeam = ((Team) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
-            log.debug("EDITION MODE CLOSED: remove eventTeam {} clone from rollback map...", eventTeam.getId());
-            rollback.remove(eventTeam.getId());
             addedOSInstance.remove(eventTeam.getId());
             removedOSInstances.remove(eventTeam.getId());
             addedApplication.remove(eventTeam.getId());
             removedApplications.remove(eventTeam.getId());
         } else {
-            log.debug("EDITION MODE OPEN: store current eventTeam {} clone into rollback map...", eventTeam.getId());
-            rollback.put(eventTeam.getId(), eventTeam.clone());
             addedOSInstance.put(eventTeam.getId(),"");
             removedOSInstances.put(eventTeam.getId(),new ArrayList<OSInstance>());
             addedApplication.put(eventTeam.getId(),"");
@@ -179,37 +249,12 @@ public class TeamsListController implements Serializable {
     }
 
     public void update(Team team) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            for (OSInstance osInstance : rollback.get(team.getId()).getOsInstances()) {
-                if (!team.getOsInstances().contains(osInstance)) {
-                    osInstance.getTeams().remove(team);
-                    em.merge(osInstance);
-                }
-            }
-            for (OSInstance osInstance : team.getOsInstances()) {
-                if (!rollback.get(team.getId()).getOsInstances().contains(osInstance)){
-                    osInstance.getTeams().add(team);
-                    em.merge(osInstance);
-                }
-            }
-            for (Application application : rollback.get(team.getId()).getApplications()) {
-                if (!team.getApplications().contains(application)) {
-                    application.setTeam(null);
-                    em.merge(application);
-                }
-            }
-            for (Application application : team.getApplications()) {
-                if (!rollback.get(team.getId()).getApplications().contains(application)){
-                    application.setTeam(team);
-                    em.merge(application);
-                }
-            }
-            em.merge(team);
-
+            team = em.find(team.getClass(), team.getId()).setNameR(team.getName()).setDescriptionR(team.getDescription()).setColorCodeR(team.getColorCode());
             em.flush();
             em.getTransaction().commit();
-            rollback.put(team.getId(), team);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                        "Team updated successfully !",
                                                        "Team name : " + team.getName());
@@ -218,11 +263,13 @@ public class TeamsListController implements Serializable {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updating Team " + rollback.get(team.getId()).getName() + " !",
+                                                       "Throwable raised while updating Team " + team.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
@@ -232,10 +279,15 @@ public class TeamsListController implements Serializable {
     public void delete() {
         log.debug("Remove selected Team !");
         for (Team team: selectedTeamList) {
+            EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             try {
                 em.getTransaction().begin();
+                team = em.find(team.getClass(),team.getId());
+                for (Application application : team.getApplications())
+                    application.setTeam(null);
+                for (OSInstance osInstance : team.getOsInstances())
+                    osInstance.getTeams().remove(team);
                 em.remove(team);
-
                 em.flush();
                 em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -251,6 +303,8 @@ public class TeamsListController implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (em.getTransaction().isActive())
                     em.getTransaction().rollback();
+            } finally {
+                em.close();
             }
         }
         selectedTeamList=null;
@@ -259,7 +313,8 @@ public class TeamsListController implements Serializable {
     /*
      * Team join tool
      */
-    public static List<Team> getAll(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<Team> getAll() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all teams from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -275,14 +330,12 @@ public class TeamsListController implements Serializable {
         Root<Team> root = criteria.from(Team.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
         List<Team> ret = em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(Team team : ret) {
-            em.refresh(team);
-        }
+        em.close();
         return ret;
     }
 
-    public static List<Team> getAllForSelector(EntityManager em) throws SystemException, NotSupportedException {
+    public static List<Team> getAllForSelector() throws SystemException, NotSupportedException {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all teams from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
                                              (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
@@ -293,17 +346,13 @@ public class TeamsListController implements Serializable {
                                              (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
                                              (Thread.currentThread().getStackTrace().length>6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
                          });
-        CriteriaBuilder builder  = em.getCriteriaBuilder();
+        CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Team> criteria = builder.createQuery(Team.class);
         Root<Team> root = criteria.from(Team.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
-
         List<Team> list =  em.createQuery(criteria).getResultList();
-        // Refresh return list entities as operations can occurs on them from != em
-        for(Team team : list) {
-            em.refresh(team);
-        }
         list.add(0, new Team().setNameR("Select team"));
+        em.close();
         return list;
     }
 }

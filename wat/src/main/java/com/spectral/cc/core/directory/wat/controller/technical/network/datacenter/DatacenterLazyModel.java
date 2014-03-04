@@ -20,6 +20,7 @@
 package com.spectral.cc.core.directory.wat.controller.technical.network.datacenter;
 
 import com.spectral.cc.core.directory.base.model.technical.network.Datacenter;
+import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -38,11 +39,10 @@ public class DatacenterLazyModel extends LazyDataModel<Datacenter> {
     private static final Logger log = LoggerFactory.getLogger(DatacenterLazyModel.class);
 
     private int              rowCount      ;
-    private EntityManager    entityManager ;
     private List<Datacenter> pageItems ;
 
-    private Predicate[] getSearchPredicates(Root<Datacenter> root, Map<String,String> filters) {
-        CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+    private Predicate[] getSearchPredicates(EntityManager entityManager, Root<Datacenter> root, Map<String,String> filters) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         List<Predicate> predicatesList = new ArrayList<Predicate>();
 
         for(Iterator<String> it = filters.keySet().iterator(); it.hasNext();) {
@@ -57,29 +57,25 @@ public class DatacenterLazyModel extends LazyDataModel<Datacenter> {
     }
 
     private void paginate(int first, String sortField, SortOrder sortOrder, Map<String,String> filters) {
-        CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+        EntityManager entityManager = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 
         // Populate this.count
         CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
         Root<Datacenter> root = countCriteria.from(Datacenter.class);
-        countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(root,filters));
-        this.rowCount = (int) (long) this.entityManager.createQuery(countCriteria).getSingleResult();
+        countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(entityManager,root,filters));
+        this.rowCount = (int) (long) entityManager.createQuery(countCriteria).getSingleResult();
 
         // Populate this.pageItems
         CriteriaQuery<Datacenter> criteria = builder.createQuery(Datacenter.class);
         root = criteria.from(Datacenter.class);
-        criteria.select(root).where(getSearchPredicates(root,filters));
+        criteria.select(root).where(getSearchPredicates(entityManager,root,filters));
         if (sortOrder!=null && sortField!=null)
             criteria.orderBy(sortOrder.toString().equals("DESCENDING") ? builder.desc(root.get(sortField)) : builder.asc(root.get(sortField)));
-        TypedQuery<Datacenter> query = this.entityManager.createQuery(criteria);
+        TypedQuery<Datacenter> query = entityManager.createQuery(criteria);
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
-
-        // Refresh page items as operations can occurs on them from != em
-        for(Datacenter dc : this.pageItems) {
-            this.entityManager.refresh(dc);
-        }
     }
 
     @Override
@@ -94,11 +90,6 @@ public class DatacenterLazyModel extends LazyDataModel<Datacenter> {
     @Override
     public Object getRowKey(Datacenter datacenter) {
         return datacenter.getId();
-    }
-
-    public DatacenterLazyModel setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-        return this;
     }
 
     @Override

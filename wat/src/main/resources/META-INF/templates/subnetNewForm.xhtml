@@ -10,7 +10,7 @@
 
         <h:outputText value="Type : " styleClass="inputTitle"/>
         <h:selectOneMenu label="Select the subnet type" value="#{subnetNewController.subnetType}">
-            <f:selectItems value="#{subnetsListController.getAllSubnetTypesForSelector(subnetNewController.getEm())}"  var="subnetT"
+            <f:selectItems value="#{subnetsListController.getAllSubnetTypesForSelector()}"  var="subnetT"
                            itemLabel="#{subnetT.name}" itemValue="#{subnetT.name}"/>
         </h:selectOneMenu>
 
@@ -20,7 +20,7 @@
                 <h:outputText value=" create new datacenter"/>
             </p:commandLink><br/>
             <p:selectManyMenu id="basic" value="#{subnetNewController.datacentersToBind}" style="width:150px;height:100px">
-                <f:selectItems value="#{datacentersListController.getAll(subnetNewController.getEm())}"  var="dc"
+                <f:selectItems value="#{datacentersListController.getAll()}"  var="dc"
                                itemLabel="#{dc.name}" itemValue="#{dc.name}"/>
             </p:selectManyMenu>
         </h:panelGroup>
@@ -31,7 +31,7 @@
                 <h:outputText value=" create new multicast area"/>
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the subnet type" value="#{subnetNewController.mArea}">
-                <f:selectItems value="#{multicastAreasListController.getAllForSelector(subnetNewController.getEm())}"  var="marea"
+                <f:selectItems value="#{multicastAreasListController.getAllForSelector()}"  var="marea"
                                itemLabel="#{marea.name}" itemValue="#{marea.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>

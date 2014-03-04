@@ -22,6 +22,7 @@ package com.spectral.cc.core.directory.base.persistence.iPojo;
 import com.spectral.cc.core.directory.base.model.technical.network.SubnetType;
 import com.spectral.cc.core.directory.base.persistence.DirectoryJPAProvider;
 import org.apache.felix.ipojo.annotations.*;
+import org.hibernate.SessionFactory;
 import org.hibernate.osgi.HibernateOSGiService;
 import org.hibernate.osgi.OsgiScanner;
 import org.osgi.framework.Bundle;
@@ -48,7 +49,7 @@ import java.util.*;
  * This is the iPojo implementation of {@link DirectoryJPAProvider}. The component is instantiated at commons-services bundle startup.
  * It provides the {@link DirectoryJPAProvider} service.
  */
-@Component(managedservice="com.spectral.cc.core.directory.commons.DirectoryJPAProviderManagedService")
+@Component(managedservice="com.spectral.cc.core.DirectoryJPAProviderManagedService")
 @Provides
 @Instantiate
 public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
