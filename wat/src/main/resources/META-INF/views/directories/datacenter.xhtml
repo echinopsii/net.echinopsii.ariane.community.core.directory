@@ -2,241 +2,258 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ccidm="http://spectral.com/cc/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <h:form id="datacenterTableForm">
-            <p:growl id="dcTableMessages" showDetail="true" />
-            <p:dataTable id="datacenterTable" var="datacenter" value="#{datacentersListController.lazyModel}"
-                         selectionMode="multiple" selection="#{datacentersListController.selectedDCList}" rowKey="#{datacenter.id}"
-                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                         rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
-                <f:facet name="header">
-                    Datacenters
-                </f:facet>
+        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('ccDirComITiNtwDC:display')}">
 
-                <p:ajax event="rowToggle" listener="#{datacentersListController.onRowToggle}" />
+            <h:form id="datacenterTableForm">
+                <p:growl id="dcTableMessages" showDetail="true" />
+                <p:dataTable id="datacenterTable" var="datacenter" value="#{datacentersListController.lazyModel}"
+                             selectionMode="multiple" selection="#{datacentersListController.selectedDCList}" rowKey="#{datacenter.id}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
+                    <f:facet name="header">
+                        Datacenters
+                    </f:facet>
 
-                <p:column style="width:2%">
-                    <p:rowToggler/>
-                </p:column>
+                    <p:ajax event="rowToggle" listener="#{datacentersListController.onRowToggle}" />
 
-                <p:column headerText="Name" sortBy="#{datacenter.name}" filterBy="#{datacenter.name}">
-                    <h:outputText value="#{datacenter.name}" />
-                </p:column>
+                    <p:column style="width:2%">
+                        <p:rowToggler/>
+                    </p:column>
 
-                <p:column headerText="Description" sortBy="#{datacenter.description}" filterBy="#{datacenter.description}">
-                    <h:outputText value="#{datacenter.description}" />
-                </p:column>
+                    <p:column headerText="Name" sortBy="#{datacenter.name}" filterBy="#{datacenter.name}">
+                        <h:outputText value="#{datacenter.name}" />
+                    </p:column>
 
-                <p:column headerText="Address" sortBy="#{datacenter.address}" filterBy="#{datacenter.address}">
-                    <h:outputText value="#{datacenter.address}" />
-                </p:column>
+                    <p:column headerText="Description" sortBy="#{datacenter.description}" filterBy="#{datacenter.description}">
+                        <h:outputText value="#{datacenter.description}" />
+                    </p:column>
 
-                <p:column headerText="Zip Code" sortBy="#{datacenter.zipCode}">
-                    <h:outputText value="#{datacenter.zipCode}" />
-                </p:column>
+                    <p:column headerText="Address" sortBy="#{datacenter.address}" filterBy="#{datacenter.address}">
+                        <h:outputText value="#{datacenter.address}" />
+                    </p:column>
 
-                <p:column headerText="Town" sortBy="#{datacenter.town}" filterBy="#{datacenter.town}">
-                    <h:outputText value="#{datacenter.town}" />
-                </p:column>
+                    <p:column headerText="Zip Code" sortBy="#{datacenter.zipCode}">
+                        <h:outputText value="#{datacenter.zipCode}" />
+                    </p:column>
 
-                <p:column headerText="Country" sortBy="#{datacenter.country}" filterBy="#{datacenter.country}">
-                    <h:outputText value="#{datacenter.country}" />
-                </p:column>
+                    <p:column headerText="Town" sortBy="#{datacenter.town}" filterBy="#{datacenter.town}">
+                        <h:outputText value="#{datacenter.town}" />
+                    </p:column>
 
-                <p:rowExpansion>
-                    <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
-                        <h:outputText value="Name : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{datacenter.name}"/>
-                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                    <p:column headerText="Country" sortBy="#{datacenter.country}" filterBy="#{datacenter.country}">
+                        <h:outputText value="#{datacenter.country}" />
+                    </p:column>
 
-                        <h:outputText value="Description : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{datacenter.description}"/>
-                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                    <p:rowExpansion>
+                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{datacenter.name}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{datacenter.name}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
 
-                        <h:outputText value="Address : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{datacenter.address}"/>
-                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                            <h:outputText value="Description : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{datacenter.description}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{datacenter.description}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
 
-                        <h:outputText value="Zip Code : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{datacenter.zipCode}"/>
-                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                            <h:outputText value="Address : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{datacenter.address}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{datacenter.address}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
 
-                        <h:outputText value="Town : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{datacenter.town}"/>
-                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                            <h:outputText value="Zip Code : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{datacenter.zipCode}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{datacenter.zipCode}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
 
-                        <h:outputText value="Country : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{datacenter.country}"/>
-                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                            <h:outputText value="Town : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{datacenter.town}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{datacenter.town}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
 
-                        <h:outputText value="GPS latitude : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{datacenter.gpsLatitude}"/>
-                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                            <h:outputText value="Country : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{datacenter.country}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{datacenter.country}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
 
-                        <h:outputText value="GPS longitude : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{datacenter.gpsLongitude}"/>
-                                <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                            <h:outputText value="GPS latitude : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{datacenter.gpsLatitude}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{datacenter.gpsLatitude}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
 
-                        <h:outputText value="Subnets : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:dataTable value="#{directoryViewUtils.asList(datacenter,'subnets')}" var="_subnet" styleClass="ui-widget-content grid" rowKey="#{_subnet.id}"
-                                         rows="5" paginator="true" selection="#{datacentersListController.removedSubnets[datacenter.id]}" selectionMode="multiple">
-                                <p:column headerText="Name" sortBy="#{_subnet.name}" filterBy="#{_subnet.name}">
-                                    <h:outputText id="subnetName" value="#{_subnet.name}"/>
-                                </p:column>
-                                <p:column headerText="Subnet IP" sortBy="#{_subnet.subnetip}" filterBy="#{_subnet.subnetip}">
-                                    <h:outputText id="subnetSubnetIP" value="#{_subnet.subnetIP}"/>
-                                </p:column>
-                                <p:column headerText="Subnet Mask" sortBy="#{_subnet.subnetmask}" filterBy="#{_subnet.subnetmask}">
-                                    <h:outputText id="subnetSubnetMask" value="#{_subnet.subnetMask}"/>
-                                </p:column>
-                                <f:facet name="footer">
-                                    <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
-                                        <h:selectOneMenu value="#{datacentersListController.addedSubnet[datacenter.id]}">
-                                            <f:selectItems value="#{subnetsListController.getAll()}" var="subnet_"
-                                                               itemLabel="#{subnet_.name}" itemValue="#{subnet_.name}"/>
-                                        </h:selectOneMenu>
-                                        <p:ajax event="save" listener="#{datacentersListController.syncAddedSubnet(datacenter)}"
-                                                update="@form,:datacenterTableForm:dcTableMessages"/>
-                                    </p:inplace>
-                                    <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
-                                                     process="@form" actionListener="#{datacentersListController.syncRemovedSubnets(datacenter)}"
-                                                     update="@form,:datacenterTableForm:dcTableMessages"/>
-                                </f:facet>
-                            </p:dataTable>
-                        </h:form>
+                            <h:outputText value="GPS longitude : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{datacenter.gpsLongitude}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{datacenter.gpsLongitude}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
 
-                        <h:outputText value="Multicast Areas : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:dataTable value="#{directoryViewUtils.asList(datacenter,'multicastAreas')}" var="_marea" styleClass="ui-widget-content grid" rowKey="#{_marea.id}"
-                                         rows="5" paginator="true" selection="#{datacentersListController.removedMareas[datacenter.id]}" selectionMode="multiple">
-                                <p:column headerText="Name" sortBy="#{_marea.name}" filterBy="#{_marea.name}">
-                                    <h:outputText id="mareaName" value="#{_marea.name}"/>
-                                </p:column>
-                                <p:column headerText="Description" sortBy="#{_marea.description}" filterBy="#{_marea.description}">
-                                    <h:outputText id="mareaDescription" value="#{_marea.description}"/>
-                                </p:column>
-                                <f:facet name="footer">
-                                    <p:inplace label="Select multicast area to bind" effectSpeed="fast" editor="true">
-                                        <h:selectOneMenu value="#{datacentersListController.addedMArea[datacenter.id]}">
-                                            <f:selectItems value="#{multicastAreasListController.getAll()}" var="marea_"
-                                                           itemLabel="#{marea_.name}" itemValue="#{marea_.name}"/>
-                                        </h:selectOneMenu>
-                                        <p:ajax event="save" listener="#{datacentersListController.syncAddedMArea(datacenter)}"
-                                                update="@form,:datacenterTableForm:dcTableMessages"/>
-                                    </p:inplace>
-                                    <p:commandButton value="Unbind selected multicast area" icon="ui-icon-closethick"
-                                                     process="@form" actionListener="#{datacentersListController.syncRemovedMAreas(datacenter)}"
-                                                     update="@form,:datacenterTableForm:dcTableMessages"/>
-                                </f:facet>
-                            </p:dataTable>
-                        </h:form>
-                    </h:panelGrid>
-                </p:rowExpansion>
-                <f:facet name="footer">
-                    <p:commandButton value="Create datacenter" icon="ui-icon-disk" onclick="dcCreateDialog.show()"/>
-                    <p:commandButton value="Remove selected datacenter" icon="ui-icon-closethick" onclick="dcRemoveDialog.show()"
-                                     update=":removeDCDialogForm:display"/>
-                    <p:commandButton value="Refresh table" id="dcUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
-                                     update=":datacenterTableForm:datacenterTable"/>
-                </f:facet>
-            </p:dataTable>
-        </h:form>
+                            <h:outputText value="Subnets : " styleClass="inputTitle"/>
+                            <h:form>
+                                <p:dataTable value="#{directoryViewUtils.asList(datacenter,'subnets')}" var="_subnet" styleClass="ui-widget-content grid" rowKey="#{_subnet.id}"
+                                             rows="5" paginator="true" selection="#{datacentersListController.removedSubnets[datacenter.id]}" selectionMode="multiple">
+                                    <p:column headerText="Name" sortBy="#{_subnet.name}" filterBy="#{_subnet.name}">
+                                        <h:outputText id="subnetName" value="#{_subnet.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Subnet IP" sortBy="#{_subnet.subnetip}" filterBy="#{_subnet.subnetip}">
+                                        <h:outputText id="subnetSubnetIP" value="#{_subnet.subnetIP}"/>
+                                    </p:column>
+                                    <p:column headerText="Subnet Mask" sortBy="#{_subnet.subnetmask}" filterBy="#{_subnet.subnetmask}">
+                                        <h:outputText id="subnetSubnetMask" value="#{_subnet.subnetMask}"/>
+                                    </p:column>
+                                    <c:if test="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                        <f:facet name="footer">
+                                            <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
+                                                <h:selectOneMenu value="#{datacentersListController.addedSubnet[datacenter.id]}">
+                                                    <f:selectItems value="#{subnetsListController.getAll()}" var="subnet_"
+                                                                   itemLabel="#{subnet_.name}" itemValue="#{subnet_.name}"/>
+                                                </h:selectOneMenu>
+                                                <p:ajax event="save" listener="#{datacentersListController.syncAddedSubnet(datacenter)}"
+                                                        update="@form,:datacenterTableForm:dcTableMessages"/>
+                                            </p:inplace>
+                                            <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
+                                                             process="@form" actionListener="#{datacentersListController.syncRemovedSubnets(datacenter)}"
+                                                             update="@form,:datacenterTableForm:dcTableMessages"/>
+                                        </f:facet>
+                                    </c:if>
+                                </p:dataTable>
+                            </h:form>
 
-        <p:dialog header="Confirm your remove order !" widgetVar="dcRemoveDialog"
-                         width="450" showEffect="fade" hideEffect="explode">
-            <h:form id="removeDCDialogForm">
-                <h:outputText value="Are you sure you want delete following datacenter ?" styleClass="inputTitle"/><br/>
-                <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                 actionListener="#{datacentersListController.delete}" oncomplete="dcRemoveDialog.hide();"
-                                 update=":datacenterTableForm:datacenterTable,:datacenterTableForm:dcTableMessages"/>
-                <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="dcRemoveDialog.hide();"/>
-                <p:separator/>
-                <p:dataList id="display"
-                            value="#{datacentersListController.selectedDCList}"
-                            var="selectedDC" type="definition">
-                    <h:panelGrid columns="2" cellpadding="5">
-                        <h:outputText value="Name : " styleClass="inputTitle"/>
-                        <h:outputText value="#{selectedDC.name}"/>
+                            <h:outputText value="Multicast Areas : " styleClass="inputTitle"/>
+                            <h:form>
+                                <p:dataTable value="#{directoryViewUtils.asList(datacenter,'multicastAreas')}" var="_marea" styleClass="ui-widget-content grid" rowKey="#{_marea.id}"
+                                             rows="5" paginator="true" selection="#{datacentersListController.removedMareas[datacenter.id]}" selectionMode="multiple">
+                                    <p:column headerText="Name" sortBy="#{_marea.name}" filterBy="#{_marea.name}">
+                                        <h:outputText id="mareaName" value="#{_marea.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Description" sortBy="#{_marea.description}" filterBy="#{_marea.description}">
+                                        <h:outputText id="mareaDescription" value="#{_marea.description}"/>
+                                    </p:column>
+                                    <c:if test="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                        <f:facet name="footer">
+                                            <p:inplace label="Select multicast area to bind" effectSpeed="fast" editor="true">
+                                                <h:selectOneMenu value="#{datacentersListController.addedMArea[datacenter.id]}">
+                                                    <f:selectItems value="#{multicastAreasListController.getAll()}" var="marea_"
+                                                                   itemLabel="#{marea_.name}" itemValue="#{marea_.name}"/>
+                                                </h:selectOneMenu>
+                                                <p:ajax event="save" listener="#{datacentersListController.syncAddedMArea(datacenter)}"
+                                                        update="@form,:datacenterTableForm:dcTableMessages"/>
+                                            </p:inplace>
+                                            <p:commandButton value="Unbind selected multicast area" icon="ui-icon-closethick"
+                                                             process="@form" actionListener="#{datacentersListController.syncRemovedMAreas(datacenter)}"
+                                                             update="@form,:datacenterTableForm:dcTableMessages"/>
+                                        </f:facet>
+                                    </c:if>
+                                </p:dataTable>
+                            </h:form>
+                        </h:panelGrid>
+                    </p:rowExpansion>
+                    <f:facet name="footer">
+                        <p:commandButton value="Create datacenter" icon="ui-icon-disk" onclick="dcCreateDialog.show()"  rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:create')}"/>
+                        <p:commandButton value="Remove selected datacenter" icon="ui-icon-closethick" onclick="dcRemoveDialog.show()"
+                                         update=":removeDCDialogForm:display" rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:remove')}"/>
+                        <p:commandButton value="Refresh table" id="dcUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                         update=":datacenterTableForm:datacenterTable"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
 
-                        <h:outputText value="Multicast areas : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{directoryViewUtils.asList(selectedDC,'multicastAreas')}" var="_item"
-                                      rows="5" paginator="true">
-                            <p:column headerText="Name">
-                                <h:outputText id="itemName" value="#{_item.name}"/>
-                            </p:column>
-                            <p:column headerText="Description">
-                                <h:outputText id="itemDescription" value="#{_item.description}"/>
-                            </p:column>
-                        </p:dataTable>
-
-                        <h:outputText value="Subnets : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{directoryViewUtils.asList(selectedDC,'subnets')}" var="_item"
-                                      rows="5" paginator="true">
-                            <p:column headerText="Name">
-                                <h:outputText id="itemName" value="#{_item.name}"/>
-                            </p:column>
-                            <p:column headerText="Subnet IP">
-                                <h:outputText id="itemSubnetIP" value="#{_item.subnetIP}"/>
-                            </p:column>
-                            <p:column headerText="Subnet Mask">
-                                <h:outputText id="itemSubnetMask" value="#{_item.subnetMask}"/>
-                            </p:column>
-                        </p:dataTable>
-                    </h:panelGrid>
+            <p:dialog header="Confirm your remove order !" widgetVar="dcRemoveDialog"
+                      width="450" showEffect="fade" hideEffect="explode">
+                <h:form id="removeDCDialogForm">
+                    <h:outputText value="Are you sure you want delete following datacenter ?" styleClass="inputTitle"/><br/>
+                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{datacentersListController.delete}" oncomplete="dcRemoveDialog.hide();"
+                                     update=":datacenterTableForm:datacenterTable,:datacenterTableForm:dcTableMessages"/>
+                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="dcRemoveDialog.hide();"/>
                     <p:separator/>
-                </p:dataList>
-            </h:form>
-        </p:dialog>
+                    <p:dataList id="display"
+                                value="#{datacentersListController.selectedDCList}"
+                                var="selectedDC" type="definition">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="#{selectedDC.name}"/>
 
-        <p:dialog header="Create a new datacenter" widgetVar="dcCreateDialog"
-                  width="450" showEffect="fade" hideEffect="explode">
-            <h:form id="createDCDialogForm">
-                <ui:insert name="createMulticastArea" >
-                    <ui:include src="/templates/dcNewForm.xhtml" />
-                </ui:insert>
-                <p:commandButton value="Save this datacenter" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                 actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
-                                 update=":datacenterTableForm:datacenterTable,:datacenterTableForm:dcTableMessages"/>
-            </h:form>
-        </p:dialog>
+                            <h:outputText value="Multicast areas : " styleClass="inputTitle"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedDC,'multicastAreas')}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="Name">
+                                    <h:outputText id="itemName" value="#{_item.name}"/>
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText id="itemDescription" value="#{_item.description}"/>
+                                </p:column>
+                            </p:dataTable>
 
+                            <h:outputText value="Subnets : " styleClass="inputTitle"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedDC,'subnets')}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="Name">
+                                    <h:outputText id="itemName" value="#{_item.name}"/>
+                                </p:column>
+                                <p:column headerText="Subnet IP">
+                                    <h:outputText id="itemSubnetIP" value="#{_item.subnetIP}"/>
+                                </p:column>
+                                <p:column headerText="Subnet Mask">
+                                    <h:outputText id="itemSubnetMask" value="#{_item.subnetMask}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <p:separator/>
+                    </p:dataList>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="Create a new datacenter" widgetVar="dcCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode">
+                <h:form id="createDCDialogForm">
+                    <ui:insert name="createMulticastArea" >
+                        <ui:include src="/templates/dcNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this datacenter" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
+                                     update=":datacenterTableForm:datacenterTable,:datacenterTableForm:dcTableMessages"/>
+                </h:form>
+            </p:dialog>
+
+        </ui:fragment>
     </ui:define>
 </ui:composition>
 </html>

@@ -22,6 +22,8 @@ package com.spectral.cc.core.directory.wat.controller;
 import com.spectral.cc.core.directory.wat.consumer.DirectoryTreeMenuRootsRegistryServiceConsumer;
 import com.spectral.cc.core.portal.base.model.TreeMenuEntity;
 import com.spectral.cc.core.portal.base.model.MenuEntityType;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.primefaces.component.menuitem.MenuItem;
 import org.primefaces.component.separator.Separator;
 import org.primefaces.component.submenu.Submenu;
@@ -41,6 +43,27 @@ public class DirectoryMenuController {
 
     private MenuModel model     = new DefaultMenuModel();
 
+    private static boolean isAuthorized(Subject subject, TreeMenuEntity entity) {
+        boolean ret = false;
+        if (subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone") || entity.getDisplayRoles().size()==0) {
+            ret = true;
+        } else {
+            for (String role : entity.getDisplayRoles())
+                if (subject.hasRole(role)) {
+                    ret = true;
+                    break;
+                }
+            if (!ret) {
+                for (String perm : entity.getDisplayPermissions())
+                    if (subject.isPermitted(perm)) {
+                        ret = true;
+                        break;
+                    }
+            }
+        }
+        return ret;
+    }
+
     private MenuItem createMenuItemFromEntity(TreeMenuEntity entity) {
         FacesContext context = FacesContext.getCurrentInstance();
         MenuItem item = new MenuItem();
@@ -56,7 +79,7 @@ public class DirectoryMenuController {
         return item;
     }
 
-    private Submenu createSubMenuFromEntity(TreeMenuEntity entity) {
+    private Submenu createSubMenuFromEntity(Subject subject, TreeMenuEntity entity) {
         Submenu submenu = new Submenu();
         submenu.setId(entity.getId());
         submenu.setStyleClass("menuItem");
@@ -65,17 +88,23 @@ public class DirectoryMenuController {
         for (TreeMenuEntity subEntity : entity.getChildTreeMenuEntities()) {
             switch(subEntity.getType()) {
                 case MenuEntityType.TYPE_MENU_SUBMENU:
-                    Submenu subSubMenu = createSubMenuFromEntity(subEntity);
-                    submenu.getChildren().add(subSubMenu);
+                    if (isAuthorized(subject, subEntity)) {
+                        Submenu subSubMenu = createSubMenuFromEntity(subject, subEntity);
+                        submenu.getChildren().add(subSubMenu);
+                    }
                     break;
                 case MenuEntityType.TYPE_MENU_ITEM:
-                    MenuItem item = createMenuItemFromEntity(subEntity);
-                    submenu.getChildren().add(item);
+                    if (isAuthorized(subject, subEntity)) {
+                        MenuItem item = createMenuItemFromEntity(subEntity);
+                        submenu.getChildren().add(item);
+                    }
                     break;
                 case MenuEntityType.TYPE_MENU_SEPARATOR:
-                    Separator separator = new Separator();
-                    separator.setId(subEntity.getId());
-                    submenu.getChildren().add(separator);
+                    if (isAuthorized(subject, subEntity)) {
+                        Separator separator = new Separator();
+                        separator.setId(subEntity.getId());
+                        submenu.getChildren().add(separator);
+                    }
                     break;
                 default:
                     break;
@@ -86,16 +115,21 @@ public class DirectoryMenuController {
 
     public MenuModel getModel() {
         log.debug("Get Menu Model...");
+        Subject subject = SecurityUtils.getSubject();
         if (DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance()!=null) {
             for (TreeMenuEntity entity : DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance().getTreeMenuRootsRegistry().getTreeMenuRootsEntities()) {
                 switch (entity.getType()) {
                     case MenuEntityType.TYPE_MENU_ITEM:
-                        MenuItem item = createMenuItemFromEntity(entity);
-                        model.addMenuItem(item);
+                        if (isAuthorized(subject, entity)) {
+                            MenuItem item = createMenuItemFromEntity(entity);
+                            model.addMenuItem(item);
+                        }
                         break;
                     case MenuEntityType.TYPE_MENU_SUBMENU:
-                        Submenu submenu = createSubMenuFromEntity(entity);
-                        model.addSubmenu(submenu);
+                        if (isAuthorized(subject, entity)) {
+                            Submenu submenu = createSubMenuFromEntity(subject, entity);
+                            model.addSubmenu(submenu);
+                        }
                         break;
                     default:
                         break;

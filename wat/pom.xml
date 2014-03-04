@@ -33,6 +33,12 @@
             <version>${version.com.spectral.cc.core.portal}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.spectral.cc.core.portal</groupId>
+            <artifactId>com.spectral.cc.core.portal.idmwat</artifactId>
+            <version>${version.com.spectral.cc.core.portal}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

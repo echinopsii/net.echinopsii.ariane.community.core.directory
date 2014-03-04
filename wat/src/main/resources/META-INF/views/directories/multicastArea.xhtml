@@ -2,206 +2,217 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ccidm="http://spectral.com/cc/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <h:form id="mareaTableForm">
-            <p:growl id="mareaTableMessages" showDetail="true" />
-            <p:dataTable id="mareaTable" var="marea" value="#{multicastAreasListController.lazyModel}"
-                         selectionMode="multiple" selection="#{multicastAreasListController.selectedMareaList}" rowKey="#{marea.id}"
-                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                         rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
-                <f:facet name="header">
-                    Multicast Areas
-                </f:facet>
+        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('ccDirComITiNtwMarea:display')}">
+            <h:form id="mareaTableForm">
+                <p:growl id="mareaTableMessages" showDetail="true" />
+                <p:dataTable id="mareaTable" var="marea" value="#{multicastAreasListController.lazyModel}"
+                             selectionMode="multiple" selection="#{multicastAreasListController.selectedMareaList}" rowKey="#{marea.id}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
+                    <f:facet name="header">
+                        Multicast Areas
+                    </f:facet>
 
-                <p:ajax event="rowToggle" listener="#{multicastAreasListController.onRowToggle}" />
+                    <p:ajax event="rowToggle" listener="#{multicastAreasListController.onRowToggle}" />
 
-                <p:column style="width:2%">
-                    <p:rowToggler/>
-                </p:column>
+                    <p:column style="width:2%">
+                        <p:rowToggler/>
+                    </p:column>
 
-                <p:column headerText="Name" sortBy="#{marea.name}" filterBy="#{marea.name}">
-                    <h:outputText value="#{marea.name}" />
-                </p:column>
+                    <p:column headerText="Name" sortBy="#{marea.name}" filterBy="#{marea.name}">
+                        <h:outputText value="#{marea.name}" />
+                    </p:column>
 
-                <p:column headerText="Description" sortBy="#{marea.description}" filterBy="#{marea.description}">
-                    <h:outputText value="#{marea.description}" />
-                </p:column>
+                    <p:column headerText="Description" sortBy="#{marea.description}" filterBy="#{marea.description}">
+                        <h:outputText value="#{marea.description}" />
+                    </p:column>
 
-                <p:rowExpansion>
-                    <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
-                        <h:outputText value="Name : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{marea.name}"/>
-                                <p:ajax event="save" listener="#{multicastAreasListController.update(marea)}" update="@form,:mareaTableForm:mareaTableMessages" />
-                            </p:inplace>
-                        </h:form>
-                        <h:outputText value="Description : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{marea.description}"/>
-                                <p:ajax event="save" listener="#{multicastAreasListController.update(marea)}" update="@form,:mareaTableForm:mareaTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                    <p:rowExpansion>
+                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwMarea:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{marea.name}"/>
+                                    <p:ajax event="save" listener="#{multicastAreasListController.update(marea)}" update="@form,:mareaTableForm:mareaTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{marea.name}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwMarea:update'))}"/>
 
-                        <h:outputText value="Datacenters : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:dataTable value="#{directoryViewUtils.asList(marea,'datacenters')}" var="dc" styleClass="ui-widget-content grid" rowKey="#{dc.id}"
-                                         rows="5" paginator="true" selection="#{multicastAreasListController.removedDCs[marea.id]}" selectionMode="multiple">
-                                <p:column headerText="Name" sortBy="#{dc.name}" filterBy="#{dc.name}">
-                                    <h:outputText id="dcName" value="#{dc.name}"/>
-                                </p:column>
-                                <p:column headerText="Description" sortBy="#{dc.description}" filterBy="#{dc.description}">
-                                    <h:outputText id="itemDescription" value="#{dc.description}"/>
-                                </p:column>
-                                <p:column headerText="Town" sortBy="#{dc.town}" filterBy="#{dc.town}">
-                                    <h:outputText id="itemTown" value="#{dc.town}"/>
-                                </p:column>
-                                <p:column headerText="Country" sortBy="#{dc.country}" filterBy="#{dc.country}">
-                                    <h:outputText id="itemCountry" value="#{dc.country}"/>
-                                </p:column>
-                                <f:facet name="footer">
-                                    <p:inplace label="Select DC to bind" effectSpeed="fast" editor="true">
-                                        <h:selectOneMenu value="#{multicastAreasListController.addedDC[marea.id]}">
-                                            <f:selectItems value="#{datacentersListController.getAll()}" var="dc_"
-                                                           itemLabel="#{dc_.name}" itemValue="#{dc_.name}"/>
-                                        </h:selectOneMenu>
-                                        <p:ajax event="save" listener="#{multicastAreasListController.syncAddedDC(marea)}"
-                                                update="@form,:mareaTableForm:mareaTableMessages"/>
-                                    </p:inplace>
-                                    <p:commandButton value="Unbind selected DC" icon="ui-icon-closethick"
-                                                     process="@form" actionListener="#{multicastAreasListController.syncRemovedDCs(marea)}"
-                                                     update="@form,:mareaTableForm:mareaTableMessages"/>
-                                </f:facet>
-                            </p:dataTable>
-                        </h:form>
+                            <h:outputText value="Description : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwMarea:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{marea.description}"/>
+                                    <p:ajax event="save" listener="#{multicastAreasListController.update(marea)}" update="@form,:mareaTableForm:mareaTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{marea.description}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwMarea:update'))}"/>
 
-                        <h:outputText value="Subnets : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:dataTable value="#{directoryViewUtils.asList(marea,'subnets')}" var="subnet" styleClass="ui-widget-content grid" rowKey="#{subnet.id}"
-                                         rows="5" paginator="true" selection="#{multicastAreasListController.removedSubnets[marea.id]}" selectionMode="multiple">
-                                <p:column headerText="Name" sortBy="#{subnet.name}" filterBy="#{subnet.name}">
-                                    <h:outputText id="subnetName" value="#{subnet.name}"/>
-                                </p:column>
-                                <p:column headerText="Description" sortBy="#{subnet.description}" filterBy="#{subnet.description}">
-                                    <h:outputText id="subnetDescription" value="#{subnet.description}"/>
-                                </p:column>
-                                <p:column headerText="Subnet IP" sortBy="#{subnet.subnetIP}" filterBy="#{subnet.subnetIP}">
-                                    <h:outputText id="subnetSubnetIP" value="#{subnet.subnetIP}"/>
-                                </p:column>
-                                <p:column headerText="Subnet Mask" sortBy="#{subnet.subnetMask}" filterBy="#{subnet.subnetMask}">
-                                    <h:outputText id="subnetCountry" value="#{subnet.subnetMask}"/>
-                                </p:column>
-                                <f:facet name="footer">
-                                    <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
-                                        <h:selectOneMenu value="#{multicastAreasListController.addedSubnet[marea.id]}">
-                                            <f:selectItems value="#{subnetsListController.getAll()}" var="subnet_"
-                                                           itemLabel="#{subnet_.name}" itemValue="#{subnet_.name}"/>
-                                        </h:selectOneMenu>
-                                        <p:ajax event="save" listener="#{multicastAreasListController.syncAddedSubnet(marea)}"
-                                                update="@form,:mareaTableForm:mareaTableMessages"/>
-                                    </p:inplace>
-                                    <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
-                                                     process="@form" actionListener="#{multicastAreasListController.syncRemovedSubnets(marea)}"
-                                                     update="@form,:mareaTableForm:mareaTableMessages"/>
-                                </f:facet>
-                            </p:dataTable>
-                        </h:form>
-                    </h:panelGrid>
-                </p:rowExpansion>
-                <f:facet name="footer">
-                    <p:commandButton value="Create multicast area" icon="ui-icon-disk" onclick="mareaCreateDialog.show()"/>
-                    <p:commandButton value="Remove selected multicast area" icon="ui-icon-closethick" onclick="mareaRemoveDialog.show()"
-                                     update=":removeMareaDialogForm:display"/>
-                    <p:commandButton value="Refresh table" id="mareaUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
-                                     update=":mareaTableForm:mareaTable"/>
-                </f:facet>
-            </p:dataTable>
-        </h:form>
+                            <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+                            <h:form>
+                                <p:dataTable value="#{directoryViewUtils.asList(marea,'datacenters')}" var="dc" styleClass="ui-widget-content grid" rowKey="#{dc.id}"
+                                             rows="5" paginator="true" selection="#{multicastAreasListController.removedDCs[marea.id]}" selectionMode="multiple">
+                                    <p:column headerText="Name" sortBy="#{dc.name}" filterBy="#{dc.name}">
+                                        <h:outputText id="dcName" value="#{dc.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Description" sortBy="#{dc.description}" filterBy="#{dc.description}">
+                                        <h:outputText id="itemDescription" value="#{dc.description}"/>
+                                    </p:column>
+                                    <p:column headerText="Town" sortBy="#{dc.town}" filterBy="#{dc.town}">
+                                        <h:outputText id="itemTown" value="#{dc.town}"/>
+                                    </p:column>
+                                    <p:column headerText="Country" sortBy="#{dc.country}" filterBy="#{dc.country}">
+                                        <h:outputText id="itemCountry" value="#{dc.country}"/>
+                                    </p:column>
+                                    <c:if test="#{ccidm:hasPermission('ccDirComITiNtwMarea:update')}">
+                                        <f:facet name="footer">
+                                            <p:inplace label="Select DC to bind" effectSpeed="fast" editor="true">
+                                                <h:selectOneMenu value="#{multicastAreasListController.addedDC[marea.id]}">
+                                                    <f:selectItems value="#{datacentersListController.getAll()}" var="dc_"
+                                                                   itemLabel="#{dc_.name}" itemValue="#{dc_.name}"/>
+                                                </h:selectOneMenu>
+                                                <p:ajax event="save" listener="#{multicastAreasListController.syncAddedDC(marea)}"
+                                                        update="@form,:mareaTableForm:mareaTableMessages"/>
+                                            </p:inplace>
+                                            <p:commandButton value="Unbind selected DC" icon="ui-icon-closethick"
+                                                             process="@form" actionListener="#{multicastAreasListController.syncRemovedDCs(marea)}"
+                                                             update="@form,:mareaTableForm:mareaTableMessages"/>
+                                        </f:facet>
+                                    </c:if>
+                                </p:dataTable>
+                            </h:form>
 
-        <p:dialog header="Confirm your remove order !" widgetVar="mareaRemoveDialog"
-                         width="500" showEffect="fade" hideEffect="explode">
-            <h:form id="removeMareaDialogForm">
-                <h:outputText value="Are you sure you want delete following multicast area ?" styleClass="inputTitle"/><br/>
-                <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                 actionListener="#{multicastAreasListController.delete}" oncomplete="mareaRemoveDialog.hide();"
-                                 update=":mareaTableForm:mareaTable,:mareaTableForm:mareaTableMessages"/>
-                <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="mareaRemoveDialog.hide();"/>
-                <p:separator/>
-                <p:dataList id="display"
-                            value="#{multicastAreasListController.selectedMareaList}"
-                            var="selectedMarea" type="definition">
-                    <h:panelGrid columns="2" cellpadding="5">
-                        <h:outputText value="Name : " styleClass="inputTitle"/>
-                        <h:outputText value="#{selectedMarea.name}"/>
+                            <h:outputText value="Subnets : " styleClass="inputTitle"/>
+                            <h:form>
+                                <p:dataTable value="#{directoryViewUtils.asList(marea,'subnets')}" var="subnet" styleClass="ui-widget-content grid" rowKey="#{subnet.id}"
+                                             rows="5" paginator="true" selection="#{multicastAreasListController.removedSubnets[marea.id]}" selectionMode="multiple">
+                                    <p:column headerText="Name" sortBy="#{subnet.name}" filterBy="#{subnet.name}">
+                                        <h:outputText id="subnetName" value="#{subnet.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Description" sortBy="#{subnet.description}" filterBy="#{subnet.description}">
+                                        <h:outputText id="subnetDescription" value="#{subnet.description}"/>
+                                    </p:column>
+                                    <p:column headerText="Subnet IP" sortBy="#{subnet.subnetIP}" filterBy="#{subnet.subnetIP}">
+                                        <h:outputText id="subnetSubnetIP" value="#{subnet.subnetIP}"/>
+                                    </p:column>
+                                    <p:column headerText="Subnet Mask" sortBy="#{subnet.subnetMask}" filterBy="#{subnet.subnetMask}">
+                                        <h:outputText id="subnetCountry" value="#{subnet.subnetMask}"/>
+                                    </p:column>
+                                    <c:if test="#{ccidm:hasPermission('ccDirComITiNtwMarea:update')}">
+                                        <f:facet name="footer">
+                                            <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
+                                                <h:selectOneMenu value="#{multicastAreasListController.addedSubnet[marea.id]}">
+                                                    <f:selectItems value="#{subnetsListController.getAll()}" var="subnet_"
+                                                                   itemLabel="#{subnet_.name}" itemValue="#{subnet_.name}"/>
+                                                </h:selectOneMenu>
+                                                <p:ajax event="save" listener="#{multicastAreasListController.syncAddedSubnet(marea)}"
+                                                        update="@form,:mareaTableForm:mareaTableMessages"/>
+                                            </p:inplace>
+                                            <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
+                                                             process="@form" actionListener="#{multicastAreasListController.syncRemovedSubnets(marea)}"
+                                                             update="@form,:mareaTableForm:mareaTableMessages"/>
+                                        </f:facet>
+                                    </c:if>
+                                </p:dataTable>
+                            </h:form>
+                        </h:panelGrid>
+                    </p:rowExpansion>
+                    <f:facet name="footer">
+                        <p:commandButton value="Create multicast area" icon="ui-icon-disk" onclick="mareaCreateDialog.show()"
+                                         rendered="#{ccidm:hasPermission('ccDirComITiNtwMarea:create')}"/>
+                        <p:commandButton value="Remove selected multicast area" icon="ui-icon-closethick" onclick="mareaRemoveDialog.show()"
+                                         update=":removeMareaDialogForm:display" rendered="#{ccidm:hasPermission('ccDirComITiNtwMarea:remove')}"/>
+                        <p:commandButton value="Refresh table" id="mareaUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                         update=":mareaTableForm:mareaTable"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
 
-                        <h:outputText value="Datacenters : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{directoryViewUtils.asList(selectedMarea,'datacenters')}" var="_item"
-                                      rows="5" paginator="true">
-                            <p:column headerText="Name">
-                                <h:outputText id="itemName" value="#{_item.name}"/>
-                            </p:column>
-                            <p:column headerText="Description">
-                                <h:outputText id="itemDescription" value="#{_item.description}"/>
-                            </p:column>
-                            <p:column headerText="Town">
-                                <h:outputText id="itemTown" value="#{_item.town}"/>
-                            </p:column>
-                            <p:column headerText="Country">
-                                <h:outputText id="itemCountry" value="#{_item.country}"/>
-                            </p:column>
-                        </p:dataTable>
-
-                        <h:outputText value="Subnets : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{directoryViewUtils.asList(selectedMarea,'subnets')}" var="_item"
-                                      rows="5" paginator="true">
-                            <p:column headerText="Name">
-                                <h:outputText id="itemName" value="#{_item.name}"/>
-                            </p:column>
-                            <p:column headerText="Description">
-                                <h:outputText id="itemDescription" value="#{_item.description}"/>
-                            </p:column>
-                            <p:column headerText="Subnet IP">
-                                <h:outputText id="itemSubnetIP" value="#{_item.subnetIP}"/>
-                            </p:column>
-                            <p:column headerText="Subnet Mask">
-                                <h:outputText id="itemCountry" value="#{_item.subnetMask}"/>
-                            </p:column>
-                        </p:dataTable>
-                    </h:panelGrid>
+            <p:dialog header="Confirm your remove order !" widgetVar="mareaRemoveDialog"
+                      width="500" showEffect="fade" hideEffect="explode">
+                <h:form id="removeMareaDialogForm">
+                    <h:outputText value="Are you sure you want delete following multicast area ?" styleClass="inputTitle"/><br/>
+                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{multicastAreasListController.delete}" oncomplete="mareaRemoveDialog.hide();"
+                                     update=":mareaTableForm:mareaTable,:mareaTableForm:mareaTableMessages"/>
+                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="mareaRemoveDialog.hide();"/>
                     <p:separator/>
-                </p:dataList>
-            </h:form>
-        </p:dialog>
+                    <p:dataList id="display"
+                                value="#{multicastAreasListController.selectedMareaList}"
+                                var="selectedMarea" type="definition">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="#{selectedMarea.name}"/>
 
-        <p:dialog header="Create a new multicast area" widgetVar="mareaCreateDialog"
-                  width="450" showEffect="fade" hideEffect="explode">
-            <h:form id="createMareaDialogForm">
-                <ui:insert name="createMulticastArea" >
-                    <ui:include src="/templates/multicastAreaNewForm.xhtml" />
-                </ui:insert>
-                <p:commandButton value="Save this multicast area" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                 actionListener="#{multicastAreaNewController.save}" oncomplete="mareaCreateDialog.hide();"
-                                 update=":mareaTableForm:mareaTable,:mareaTableForm:mareaTableMessages"/>
-            </h:form>
-        </p:dialog>
+                            <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedMarea,'datacenters')}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="Name">
+                                    <h:outputText id="itemName" value="#{_item.name}"/>
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText id="itemDescription" value="#{_item.description}"/>
+                                </p:column>
+                                <p:column headerText="Town">
+                                    <h:outputText id="itemTown" value="#{_item.town}"/>
+                                </p:column>
+                                <p:column headerText="Country">
+                                    <h:outputText id="itemCountry" value="#{_item.country}"/>
+                                </p:column>
+                            </p:dataTable>
 
-        <p:dialog header="Create a new datacenter" widgetVar="dcCreateDialog"
-                  width="450" showEffect="fade" hideEffect="explode">
-            <h:form id="creatDCDialogForm">
-                <ui:insert name="createDatacenter" >
-                    <ui:include src="/templates/dcNewForm.xhtml" />
-                </ui:insert>
-                <p:commandButton value="Save this datacenter" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                 actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
-                                 update=":createMareaDialogForm:mareaNewGrid,:mareaTableForm:mareaTableMessages"/>
-            </h:form>
-        </p:dialog>
+                            <h:outputText value="Subnets : " styleClass="inputTitle"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedMarea,'subnets')}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="Name">
+                                    <h:outputText id="itemName" value="#{_item.name}"/>
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText id="itemDescription" value="#{_item.description}"/>
+                                </p:column>
+                                <p:column headerText="Subnet IP">
+                                    <h:outputText id="itemSubnetIP" value="#{_item.subnetIP}"/>
+                                </p:column>
+                                <p:column headerText="Subnet Mask">
+                                    <h:outputText id="itemCountry" value="#{_item.subnetMask}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <p:separator/>
+                    </p:dataList>
+                </h:form>
+            </p:dialog>
 
+            <p:dialog header="Create a new multicast area" widgetVar="mareaCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode">
+                <h:form id="createMareaDialogForm">
+                    <ui:insert name="createMulticastArea" >
+                        <ui:include src="/templates/multicastAreaNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this multicast area" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{multicastAreaNewController.save}" oncomplete="mareaCreateDialog.hide();"
+                                     update=":mareaTableForm:mareaTable,:mareaTableForm:mareaTableMessages"/>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="Create a new datacenter" widgetVar="dcCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode">
+                <h:form id="creatDCDialogForm">
+                    <ui:insert name="createDatacenter" >
+                        <ui:include src="/templates/dcNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this datacenter" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
+                                     update=":createMareaDialogForm:mareaNewGrid,:mareaTableForm:mareaTableMessages"/>
+                </h:form>
+            </p:dialog>
+        </ui:fragment>
     </ui:define>
 </ui:composition>
 </html>

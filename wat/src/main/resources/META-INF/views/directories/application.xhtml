@@ -2,218 +2,230 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ccidm="http://spectral.com/cc/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
+        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('ccDirComOrgApp:display')}">
 
-        <h:form id="applicationTableForm">
-            <p:growl id="applicationTableMessages" showDetail="true" />
-            <p:dataTable id="applicationTable" var="app" value="#{applicationsListController.lazyModel}"
-                         selectionMode="multiple" selection="#{applicationsListController.selectedApplicationList}" rowKey="#{app.id}"
-                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                         rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
-                <f:facet name="header">
-                    Applications
-                </f:facet>
+            <h:form id="applicationTableForm">
+                <p:growl id="applicationTableMessages" showDetail="true" />
+                <p:dataTable id="applicationTable" var="app" value="#{applicationsListController.lazyModel}"
+                             selectionMode="multiple" selection="#{applicationsListController.selectedApplicationList}" rowKey="#{app.id}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
+                    <f:facet name="header">
+                        Applications
+                    </f:facet>
 
-                <p:ajax event="rowToggle" listener="#{applicationsListController.onRowToggle}" />
+                    <p:ajax event="rowToggle" listener="#{applicationsListController.onRowToggle}" />
 
-                <p:column style="width:2%">
-                    <p:rowToggler/>
-                </p:column>
+                    <p:column style="width:2%">
+                        <p:rowToggler/>
+                    </p:column>
 
-                <p:column headerText="Name" sortBy="#{app.name}" filterBy="#{app.name}">
-                    <h:outputText value="#{app.name}" />
-                </p:column>
+                    <p:column headerText="Name" sortBy="#{app.name}" filterBy="#{app.name}">
+                        <h:outputText value="#{app.name}" />
+                    </p:column>
 
-                <p:column headerText="Short name" sortBy="#{app.shortName}" filterBy="#{app.shortName}">
-                    <h:outputText value="#{app.shortName}" />
-                </p:column>
+                    <p:column headerText="Short name" sortBy="#{app.shortName}" filterBy="#{app.shortName}">
+                        <h:outputText value="#{app.shortName}" />
+                    </p:column>
 
-                <p:column headerText="Color code" sortBy="#{app.colorCode}" filterBy="#{app.colorCode}">
-                    <h:outputText value="#{app.colorCode}" style="background-color:\##{app.colorCode};font-weight:bold" />
-                </p:column>
+                    <p:column headerText="Color code" sortBy="#{app.colorCode}" filterBy="#{app.colorCode}">
+                        <h:outputText value="#{app.colorCode}" style="background-color:\##{app.colorCode};font-weight:bold" />
+                    </p:column>
 
-                <p:column headerText="Description" sortBy="#{app.description}" filterBy="#{app.description}">
-                    <h:outputText value="#{app.description}" />
-                </p:column>
+                    <p:column headerText="Description" sortBy="#{app.description}" filterBy="#{app.description}">
+                        <h:outputText value="#{app.description}" />
+                    </p:column>
 
-                <p:column headerText="Supporting company">
-                    <h:outputText value="#{app.company.name}" />
-                </p:column>
+                    <p:column headerText="Supporting company">
+                        <h:outputText value="#{app.company.name}" />
+                    </p:column>
 
-                <p:column headerText="Supporting team">
-                    <h:outputText value="#{app.team.name}" />
-                </p:column>
+                    <p:column headerText="Supporting team">
+                        <h:outputText value="#{app.team.name}" />
+                    </p:column>
 
-                <p:rowExpansion>
-                    <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
-                        <h:outputText value="Name : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{app.name}"/>
-                                <p:ajax event="save" listener="#{applicationsListController.update(app)}" update="@form,:applicationTableForm:applicationTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                    <p:rowExpansion>
+                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgApp:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{app.name}"/>
+                                    <p:ajax event="save" listener="#{applicationsListController.update(app)}" update="@form,:applicationTableForm:applicationTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{app.name}" rendered="#{!ccidm:hasPermission('ccDirComOrgApp:update')}"/>
 
-                        <h:outputText value="Short name : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{app.shortName}"/>
-                                <p:ajax event="save" listener="#{applicationsListController.update(app)}" update="@form,:applicationTableForm:applicationTableMessages" />
-                            </p:inplace>
-                        </h:form>
-
-
-                        <h:outputText value="Color code : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:colorPicker id="popupCP" value="#{app.colorCode}"/>
-                            <p:commandButton value="Save new color" update="@form,:applicationTableForm:applicationTableMessages" id="appColorSave" icon="ui-icon-disk"
-                                             process="@form" actionListener="#{applicationsListController.update(app)}" styleClass="ui-priority-primary icon-large"/>
-                        </h:form>
-
-                        <h:outputText value="Description : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{app.description}"/>
-                                <p:ajax event="save" listener="#{applicationsListController.update(app)}" update="@form,:applicationTableForm:applicationTableMessages" />
-                            </p:inplace>
-                        </h:form>
-
-                        <h:outputText value="Supporting company : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace label="#{applicationsListController.getApplicationCompanyName(app)}" effectSpeed="fast" editor="true">
-                                <h:selectOneMenu value="#{applicationsListController.changedCompany[app.id]}">
-                                    <f:selectItems value="#{companysListController.getAllForSelector()}" var="cmp_"
-                                                   itemLabel="#{cmp_.name}" itemValue="#{cmp_.name}"/>
-                                </h:selectOneMenu>
-                                <p:ajax event="save" listener="#{applicationsListController.syncCompany(app)}" update="@form,:applicationTableForm:applicationTableMessages" />
-                            </p:inplace>
-                        </h:form>
-
-                        <h:outputText value="Supporting team : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace label="#{applicationsListController.getApplicationTeamName(app)}" effectSpeed="fast" editor="true">
-                                <h:selectOneMenu value="#{applicationsListController.changedTeam[app.id]}">
-                                    <f:selectItems value="#{teamsListController.getAllForSelector()}" var="team_"
-                                                   itemLabel="#{team_.name}" itemValue="#{team_.name}"/>
-                                </h:selectOneMenu>
-                                <p:ajax event="save" listener="#{applicationsListController.syncTeam(app)}" update="@form,:applicationTableForm:applicationTableMessages" />
-                            </p:inplace>
-                        </h:form>
-
-                        <h:outputText value="OS Instances : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:dataTable value="#{directoryViewUtils.asList(app,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
-                                         rows="5" paginator="true" selection="#{applicationsListController.removedOSInstances[app.id]}" selectionMode="multiple">
-                                <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
-                                    <h:outputText id="osiName" value="#{osi.name}"/>
-                                </p:column>
-                                <p:column headerText="Description" sortBy="#{osi.description}" filterBy="#{osi.description}">
-                                    <h:outputText id="itemDescription" value="#{osi.description}"/>
-                                </p:column>
-                                <f:facet name="footer">
-                                    <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
-                                        <h:selectOneMenu value="#{applicationsListController.addedOSInstance[app.id]}">
-                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
-                                                           itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
-                                        </h:selectOneMenu>
-                                        <p:ajax event="save" listener="#{applicationsListController.syncAddedOSInstance(app)}"
-                                                update="@form,:applicationTableForm:applicationTableMessages"/>
-                                    </p:inplace>
-                                    <p:commandButton value="Unbind selected OS Instance" icon="ui-icon-closethick"
-                                                     process="@form" actionListener="#{applicationsListController.syncRemovedOSInstances(app)}"
-                                                     update="@form,:applicationTableForm:applicationTableMessages"/>
-                                </f:facet>
-                            </p:dataTable>
-                        </h:form>
-
-                    </h:panelGrid>
-
-                </p:rowExpansion>
-
-                <f:facet name="footer">
-                    <p:commandButton value="Create application" icon="ui-icon-disk" onclick="applicationCreateDialog.show()"/>
-                    <p:commandButton value="Remove selected application" icon="ui-icon-closethick" onclick="applicationRemoveDialog.show()"
-                                     update=":removeApplicationDialogForm:display"/>
-                    <p:commandButton value="Refresh table" id="applicationUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
-                                     update=":applicationTableForm:applicationTable"/>
-                </f:facet>
-            </p:dataTable>
-        </h:form>
+                            <h:outputText value="Short name : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgApp:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{app.shortName}"/>
+                                    <p:ajax event="save" listener="#{applicationsListController.update(app)}" update="@form,:applicationTableForm:applicationTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{app.shortName}" rendered="#{!ccidm:hasPermission('ccDirComOrgApp:update')}"/>
 
 
+                            <h:outputText value="Color code : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgApp:update')}">
+                                <p:colorPicker id="popupCP" value="#{app.colorCode}"/>
+                                <p:commandButton value="Save new color" update="@form,:applicationTableForm:applicationTableMessages" id="appColorSave" icon="ui-icon-disk"
+                                                 process="@form" actionListener="#{applicationsListController.update(app)}" styleClass="ui-priority-primary icon-large"/>
+                            </h:form>
+                            <h:outputText value="#{app.colorCode}" style="background-color:\##{app.colorCode};font-weight:bold" rendered="#{!ccidm:hasPermission('ccDirComOrgApp:update')}"/>
 
-        <p:dialog header="Confirm your remove order !" widgetVar="applicationRemoveDialog"
-                  width="500" showEffect="fade" hideEffect="explode">
-            <h:form id="removeApplicationDialogForm">
-                <h:outputText value="Are you sure you want delete following Application ?" styleClass="inputTitle"/><br/>
-                <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                 actionListener="#{applicationsListController.delete}" oncomplete="applicationRemoveDialog.hide();"
-                                 update=":applicationTableForm:applicationTable,:applicationTableForm:applicationTableMessages"/>
-                <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="applicationRemoveDialog.hide();"/>
-                <p:separator/>
-                <p:dataList id="display"
-                            value="#{applicationsListController.selectedApplicationList}"
-                            var="selectedApplication" type="definition">
-                    <h:panelGrid columns="2" cellpadding="5">
-                        <h:outputText value="Name : " styleClass="inputTitle"/>
-                        <h:outputText value="#{selectedApplication.name}"/>
+                            <h:outputText value="Description : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgApp:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{app.description}"/>
+                                    <p:ajax event="save" listener="#{applicationsListController.update(app)}" update="@form,:applicationTableForm:applicationTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{app.description}" rendered="#{!ccidm:hasPermission('ccDirComOrgApp:update')}"/>
 
-                        <h:outputText value="OS Instances : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{directoryViewUtils.asList(selectedApplication,'osInstances')}" var="_item"
-                                      rows="5" paginator="true">
-                            <p:column headerText="Name">
-                                <h:outputText id="itemName" value="#{_item.name}"/>
-                            </p:column>
-                            <p:column headerText="Description">
-                                <h:outputText id="itemDescription" value="#{_item.description}"/>
-                            </p:column>
-                        </p:dataTable>
-                    </h:panelGrid>
+                            <h:outputText value="Supporting company : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgApp:update')}">
+                                <p:inplace label="#{applicationsListController.getApplicationCompanyName(app)}" effectSpeed="fast" editor="true">
+                                    <h:selectOneMenu value="#{applicationsListController.changedCompany[app.id]}">
+                                        <f:selectItems value="#{companysListController.getAllForSelector()}" var="cmp_"
+                                                       itemLabel="#{cmp_.name}" itemValue="#{cmp_.name}"/>
+                                    </h:selectOneMenu>
+                                    <p:ajax event="save" listener="#{applicationsListController.syncCompany(app)}" update="@form,:applicationTableForm:applicationTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{app.company.name}" rendered="#{!ccidm:hasPermission('ccDirComOrgApp:update')}"/>
+
+                            <h:outputText value="Supporting team : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgApp:update')}">
+                                <p:inplace label="#{applicationsListController.getApplicationTeamName(app)}" effectSpeed="fast" editor="true">
+                                    <h:selectOneMenu value="#{applicationsListController.changedTeam[app.id]}">
+                                        <f:selectItems value="#{teamsListController.getAllForSelector()}" var="team_"
+                                                       itemLabel="#{team_.name}" itemValue="#{team_.name}"/>
+                                    </h:selectOneMenu>
+                                    <p:ajax event="save" listener="#{applicationsListController.syncTeam(app)}" update="@form,:applicationTableForm:applicationTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{app.team.name}" rendered="#{!ccidm:hasPermission('ccDirComOrgApp:update')}"/>
+
+                            <h:outputText value="OS Instances : " styleClass="inputTitle"/>
+                            <h:form>
+                                <p:dataTable value="#{directoryViewUtils.asList(app,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
+                                             rows="5" paginator="true" selection="#{applicationsListController.removedOSInstances[app.id]}" selectionMode="multiple">
+                                    <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
+                                        <h:outputText id="osiName" value="#{osi.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Description" sortBy="#{osi.description}" filterBy="#{osi.description}">
+                                        <h:outputText id="itemDescription" value="#{osi.description}"/>
+                                    </p:column>
+                                    <c:if test="#{ccidm:hasPermission('ccDirComOrgApp:update')}">
+                                        <f:facet name="footer">
+                                            <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
+                                                <h:selectOneMenu value="#{applicationsListController.addedOSInstance[app.id]}">
+                                                    <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
+                                                                   itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
+                                                </h:selectOneMenu>
+                                                <p:ajax event="save" listener="#{applicationsListController.syncAddedOSInstance(app)}"
+                                                        update="@form,:applicationTableForm:applicationTableMessages"/>
+                                            </p:inplace>
+                                            <p:commandButton value="Unbind selected OS Instance" icon="ui-icon-closethick"
+                                                             process="@form" actionListener="#{applicationsListController.syncRemovedOSInstances(app)}"
+                                                             update="@form,:applicationTableForm:applicationTableMessages"/>
+                                        </f:facet>
+                                    </c:if>
+                                </p:dataTable>
+                            </h:form>
+
+                        </h:panelGrid>
+
+                    </p:rowExpansion>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Create application" icon="ui-icon-disk" onclick="applicationCreateDialog.show()" rendered="#{ccidm:hasPermission('ccDirComOrgApp:create')}"/>
+                        <p:commandButton value="Remove selected application" icon="ui-icon-closethick" onclick="applicationRemoveDialog.show()"
+                                         update=":removeApplicationDialogForm:display"  rendered="#{ccidm:hasPermission('ccDirComOrgApp:remove')}"/>
+                        <p:commandButton value="Refresh table" id="applicationUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                         update=":applicationTableForm:applicationTable"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+
+
+
+            <p:dialog header="Confirm your remove order !" widgetVar="applicationRemoveDialog"
+                      width="500" showEffect="fade" hideEffect="explode">
+                <h:form id="removeApplicationDialogForm">
+                    <h:outputText value="Are you sure you want delete following Application ?" styleClass="inputTitle"/><br/>
+                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{applicationsListController.delete}" oncomplete="applicationRemoveDialog.hide();"
+                                     update=":applicationTableForm:applicationTable,:applicationTableForm:applicationTableMessages"/>
+                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="applicationRemoveDialog.hide();"/>
                     <p:separator/>
-                </p:dataList>
-            </h:form>
-        </p:dialog>
+                    <p:dataList id="display"
+                                value="#{applicationsListController.selectedApplicationList}"
+                                var="selectedApplication" type="definition">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="#{selectedApplication.name}"/>
 
-        <p:dialog header="Create a new application" widgetVar="applicationCreateDialog"
-                  width="450" showEffect="fade" hideEffect="explode">
-            <h:form id="createApplicationDialogForm">
-                <ui:insert name="createApplication" >
-                    <ui:include src="/templates/applicationNewForm.xhtml" />
-                </ui:insert>
-                <p:commandButton value="Save this application" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                 actionListener="#{applicationNewController.save}" oncomplete="applicationCreateDialog.hide();"
-                                 update=":applicationTableForm:applicationTable,:applicationTableForm:applicationTableMessages"/>
-            </h:form>
-        </p:dialog>
+                            <h:outputText value="OS Instances : " styleClass="inputTitle"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedApplication,'osInstances')}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="Name">
+                                    <h:outputText id="itemName" value="#{_item.name}"/>
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText id="itemDescription" value="#{_item.description}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <p:separator/>
+                    </p:dataList>
+                </h:form>
+            </p:dialog>
 
-        <p:dialog header="Create a new company" widgetVar="companyCreateDialog"
-                  width="450" showEffect="fade" hideEffect="explode">
-            <h:form id="createCompanyDialogForm">
-                <ui:insert name="createCompany" >
-                    <ui:include src="/templates/companyNewForm.xhtml" />
-                </ui:insert>
-                <p:commandButton value="Save this company" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                 actionListener="#{companyNewController.save}" oncomplete="companyCreateDialog.hide();"
-                                 update=":createApplicationDialogForm:applicationNewGrid,:applicationTableForm:applicationTableMessages"/>
-            </h:form>
-        </p:dialog>
+            <p:dialog header="Create a new application" widgetVar="applicationCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode">
+                <h:form id="createApplicationDialogForm">
+                    <ui:insert name="createApplication" >
+                        <ui:include src="/templates/applicationNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this application" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{applicationNewController.save}" oncomplete="applicationCreateDialog.hide();"
+                                     update=":applicationTableForm:applicationTable,:applicationTableForm:applicationTableMessages"/>
+                </h:form>
+            </p:dialog>
 
-        <p:dialog header="Create a new team" widgetVar="teamCreateDialog"
-                  width="450" showEffect="fade" hideEffect="explode">
-            <h:form id="createTeamDialogForm">
-                <ui:insert name="createTeam" >
-                    <ui:include src="/templates/teamNewForm.xhtml" />
-                </ui:insert>
-                <p:commandButton value="Save this team" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                 actionListener="#{teamNewController.save}" oncomplete="teamCreateDialog.hide();"
-                                 update=":createApplicationDialogForm:applicationNewGrid,:applicationTableForm:applicationTableMessages"/>
-            </h:form>
-        </p:dialog>
+            <p:dialog header="Create a new company" widgetVar="companyCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode">
+                <h:form id="createCompanyDialogForm">
+                    <ui:insert name="createCompany" >
+                        <ui:include src="/templates/companyNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this company" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{companyNewController.save}" oncomplete="companyCreateDialog.hide();"
+                                     update=":createApplicationDialogForm:applicationNewGrid,:applicationTableForm:applicationTableMessages"/>
+                </h:form>
+            </p:dialog>
 
+            <p:dialog header="Create a new team" widgetVar="teamCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode">
+                <h:form id="createTeamDialogForm">
+                    <ui:insert name="createTeam" >
+                        <ui:include src="/templates/teamNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this team" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{teamNewController.save}" oncomplete="teamCreateDialog.hide();"
+                                     update=":createApplicationDialogForm:applicationNewGrid,:applicationTableForm:applicationTableMessages"/>
+                </h:form>
+            </p:dialog>
+
+        </ui:fragment>
     </ui:define>
 </ui:composition>
 </html>

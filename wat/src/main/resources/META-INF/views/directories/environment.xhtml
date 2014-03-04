@@ -2,139 +2,145 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ccidm="http://spectral.com/cc/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
+        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('ccDirComOrgEnvironment:display')}">
+            <h:form id="environmentTableForm">
+                <p:growl id="environmentTableMessages" showDetail="true" />
+                <p:dataTable id="environmentTable" var="env" value="#{environmentsListController.lazyModel}"
+                             selectionMode="multiple" selection="#{environmentsListController.selectedEnvironmentList}" rowKey="#{env.id}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
+                    <f:facet name="header">
+                        Environments
+                    </f:facet>
 
-        <h:form id="environmentTableForm">
-            <p:growl id="environmentTableMessages" showDetail="true" />
-            <p:dataTable id="environmentTable" var="env" value="#{environmentsListController.lazyModel}"
-                         selectionMode="multiple" selection="#{environmentsListController.selectedEnvironmentList}" rowKey="#{env.id}"
-                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                         rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
-                <f:facet name="header">
-                    Environments
-                </f:facet>
+                    <p:ajax event="rowToggle" listener="#{environmentsListController.onRowToggle}" />
 
-                <p:ajax event="rowToggle" listener="#{environmentsListController.onRowToggle}" />
+                    <p:column style="width:2%">
+                        <p:rowToggler/>
+                    </p:column>
 
-                <p:column style="width:2%">
-                    <p:rowToggler/>
-                </p:column>
+                    <p:column headerText="Name" sortBy="#{env.name}" filterBy="#{env.name}">
+                        <h:outputText value="#{env.name}" />
+                    </p:column>
 
-                <p:column headerText="Name" sortBy="#{env.name}" filterBy="#{env.name}">
-                    <h:outputText value="#{env.name}" />
-                </p:column>
+                    <p:column headerText="Description" sortBy="#{env.description}" filterBy="#{env.description}">
+                        <h:outputText value="#{env.description}" />
+                    </p:column>
 
-                <p:column headerText="Description" sortBy="#{env.description}" filterBy="#{env.description}">
-                    <h:outputText value="#{env.description}" />
-                </p:column>
+                    <p:rowExpansion>
+                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgEnvironment:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{env.name}"/>
+                                    <p:ajax event="save" listener="#{environmentsListController.update(env)}" update="@form,:environmentTableForm:environmentTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{env.name}" rendered="#{!ccidm:hasPermission('ccDirComOrgEnvironment:update')}"/>
 
-                <p:rowExpansion>
-                    <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
-                        <h:outputText value="Name : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{env.name}"/>
-                                <p:ajax event="save" listener="#{environmentsListController.update(env)}" update="@form,:environmentTableForm:environmentTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                            <h:outputText value="Description : " styleClass="inputTitle"/>
+                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgEnvironment:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{env.description}"/>
+                                    <p:ajax event="save" listener="#{environmentsListController.update(env)}" update="@form,:environmentTableForm:environmentTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{env.description}" rendered="#{!ccidm:hasPermission('ccDirComOrgEnvironment:update')}"/>
 
-                        <h:outputText value="Description : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:inplace editor="true">
-                                <p:inputText required="true" label="text" value="#{env.description}"/>
-                                <p:ajax event="save" listener="#{environmentsListController.update(env)}" update="@form,:environmentTableForm:environmentTableMessages" />
-                            </p:inplace>
-                        </h:form>
+                            <h:outputText value="OS Instances : " styleClass="inputTitle"/>
+                            <h:form>
+                                <p:dataTable value="#{directoryViewUtils.asList(env,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
+                                             rows="5" paginator="true" selection="#{environmentsListController.removedOSInstances[env.id]}" selectionMode="multiple">
+                                    <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
+                                        <h:outputText id="osiName" value="#{osi.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Description" sortBy="#{osi.description}" filterBy="#{osi.description}">
+                                        <h:outputText id="itemDescription" value="#{osi.description}"/>
+                                    </p:column>
+                                    <c:if test="#{ccidm:hasPermission('ccDirComOrgEnvironment:update')}">
+                                        <f:facet name="footer">
+                                            <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
+                                                <h:selectOneMenu value="#{environmentsListController.addedOSInstance[env.id]}">
+                                                    <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
+                                                                   itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
+                                                </h:selectOneMenu>
+                                                <p:ajax event="save" listener="#{environmentsListController.syncAddedOSInstance(env)}"
+                                                        update="@form,:environmentTableForm:environmentTableMessages"/>
+                                            </p:inplace>
+                                            <p:commandButton value="Unbind selected OS Instance" icon="ui-icon-closethick"
+                                                             process="@form" actionListener="#{environmentsListController.syncRemovedOSInstances(env)}"
+                                                             update="@form,:environmentTableForm:environmentTableMessages"/>
+                                        </f:facet>
+                                    </c:if>
+                                </p:dataTable>
+                            </h:form>
 
-                        <h:outputText value="OS Instances : " styleClass="inputTitle"/>
-                        <h:form>
-                            <p:dataTable value="#{directoryViewUtils.asList(env,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
-                                         rows="5" paginator="true" selection="#{environmentsListController.removedOSInstances[env.id]}" selectionMode="multiple">
-                                <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
-                                    <h:outputText id="osiName" value="#{osi.name}"/>
-                                </p:column>
-                                <p:column headerText="Description" sortBy="#{osi.description}" filterBy="#{osi.description}">
-                                    <h:outputText id="itemDescription" value="#{osi.description}"/>
-                                </p:column>
-                                <f:facet name="footer">
-                                    <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
-                                        <h:selectOneMenu value="#{environmentsListController.addedOSInstance[env.id]}">
-                                            <f:selectItems value="#{OSInstancesListController.getAll()}" var="osi_"
-                                                           itemLabel="#{osi_.name}" itemValue="#{osi_.name}"/>
-                                        </h:selectOneMenu>
-                                        <p:ajax event="save" listener="#{environmentsListController.syncAddedOSInstance(env)}"
-                                                update="@form,:environmentTableForm:environmentTableMessages"/>
-                                    </p:inplace>
-                                    <p:commandButton value="Unbind selected OS Instance" icon="ui-icon-closethick"
-                                                     process="@form" actionListener="#{environmentsListController.syncRemovedOSInstances(env)}"
-                                                     update="@form,:environmentTableForm:environmentTableMessages"/>
-                                </f:facet>
-                            </p:dataTable>
-                        </h:form>
+                        </h:panelGrid>
+                    </p:rowExpansion>
 
-                    </h:panelGrid>
-                </p:rowExpansion>
-
-                <f:facet name="footer">
-                    <p:commandButton value="Create environment" icon="ui-icon-disk" onclick="environmentCreateDialog.show()"/>
-                    <p:commandButton value="Remove selected environment" icon="ui-icon-closethick" onclick="environmentRemoveDialog.show()"
-                                     update=":removeEnvironmentDialogForm:display"/>
-                    <p:commandButton value="Refresh table" id="environmentUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
-                                     update=":environmentTableForm:environmentTable"/>
-                </f:facet>
-            </p:dataTable>
-        </h:form>
+                    <f:facet name="footer">
+                        <p:commandButton value="Create environment" icon="ui-icon-disk" onclick="environmentCreateDialog.show()" rendered="#{ccidm:hasPermission('ccDirComOrgEnvironment:create')}"/>
+                        <p:commandButton value="Remove selected environment" icon="ui-icon-closethick" onclick="environmentRemoveDialog.show()"
+                                         update=":removeEnvironmentDialogForm:display" rendered="#{ccidm:hasPermission('ccDirComOrgEnvironment:remove')}"/>
+                        <p:commandButton value="Refresh table" id="environmentUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                         update=":environmentTableForm:environmentTable"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
 
 
 
-        <p:dialog header="Confirm your remove order !" widgetVar="environmentRemoveDialog"
-                  width="500" showEffect="fade" hideEffect="explode">
-            <h:form id="removeEnvironmentDialogForm">
-                <h:outputText value="Are you sure you want delete following environment ?" styleClass="inputTitle"/><br/>
-                <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                 actionListener="#{environmentsListController.delete}" oncomplete="environmentRemoveDialog.hide();"
-                                 update=":environmentTableForm:environmentTable,:environmentTableForm:environmentTableMessages"/>
-                <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="environmentRemoveDialog.hide();"/>
-                <p:separator/>
-                <p:dataList id="display"
-                            value="#{environmentsListController.selectedEnvironmentList}"
-                            var="selectedEnvironment" type="definition">
-                    <h:panelGrid columns="2" cellpadding="5">
-                        <h:outputText value="Name : " styleClass="inputTitle"/>
-                        <h:outputText value="#{selectedEnvironment.name}"/>
-
-                        <h:outputText value="OS Instances : " styleClass="inputTitle"/>
-                        <p:dataTable  value="#{directoryViewUtils.asList(selectedEnvironment,'osInstances')}" var="_item"
-                                      rows="5" paginator="true">
-                            <p:column headerText="Name">
-                                <h:outputText id="itemName" value="#{_item.name}"/>
-                            </p:column>
-                            <p:column headerText="Description">
-                                <h:outputText id="itemDescription" value="#{_item.description}"/>
-                            </p:column>
-                        </p:dataTable>
-                    </h:panelGrid>
+            <p:dialog header="Confirm your remove order !" widgetVar="environmentRemoveDialog"
+                      width="500" showEffect="fade" hideEffect="explode">
+                <h:form id="removeEnvironmentDialogForm">
+                    <h:outputText value="Are you sure you want delete following environment ?" styleClass="inputTitle"/><br/>
+                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{environmentsListController.delete}" oncomplete="environmentRemoveDialog.hide();"
+                                     update=":environmentTableForm:environmentTable,:environmentTableForm:environmentTableMessages"/>
+                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="environmentRemoveDialog.hide();"/>
                     <p:separator/>
-                </p:dataList>
-            </h:form>
-        </p:dialog>
+                    <p:dataList id="display"
+                                value="#{environmentsListController.selectedEnvironmentList}"
+                                var="selectedEnvironment" type="definition">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="#{selectedEnvironment.name}"/>
 
-        <p:dialog header="Create a new environment" widgetVar="environmentCreateDialog"
-                  width="450" showEffect="fade" hideEffect="explode">
-            <h:form id="createEnvironmentDialogForm">
-                <ui:insert name="createEnvironment" >
-                    <ui:include src="/templates/environmentNewForm.xhtml" />
-                </ui:insert>
-                <p:commandButton value="Save this environment" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                 actionListener="#{environmentNewController.save}" oncomplete="environmentCreateDialog.hide();"
-                                 update=":environmentTableForm:environmentTable,:environmentTableForm:environmentTableMessages"/>
-            </h:form>
-        </p:dialog>
+                            <h:outputText value="OS Instances : " styleClass="inputTitle"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedEnvironment,'osInstances')}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="Name">
+                                    <h:outputText id="itemName" value="#{_item.name}"/>
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText id="itemDescription" value="#{_item.description}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <p:separator/>
+                    </p:dataList>
+                </h:form>
+            </p:dialog>
 
+            <p:dialog header="Create a new environment" widgetVar="environmentCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode">
+                <h:form id="createEnvironmentDialogForm">
+                    <ui:insert name="createEnvironment" >
+                        <ui:include src="/templates/environmentNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this environment" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{environmentNewController.save}" oncomplete="environmentCreateDialog.hide();"
+                                     update=":environmentTableForm:environmentTable,:environmentTableForm:environmentTableMessages"/>
+                </h:form>
+            </p:dialog>
+        </ui:fragment>
     </ui:define>
 </ui:composition>
 </html>

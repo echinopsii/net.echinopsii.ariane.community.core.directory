@@ -22,6 +22,8 @@ package com.spectral.cc.core.directory.wat.controller;
 import com.spectral.cc.core.directory.wat.consumer.DirectoryTreeMenuRootsRegistryServiceConsumer;
 import com.spectral.cc.core.portal.base.model.TreeMenuEntity;
 import com.spectral.cc.core.portal.base.model.MenuEntityType;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.primefaces.component.dashboard.Dashboard;
 import org.primefaces.model.DashboardColumn;
 import org.primefaces.model.DashboardModel;
@@ -45,21 +47,46 @@ public class DirectoryDashboardController {
     private DashboardModel                   model         = new DefaultDashboardModel();
     private Dashboard                        dashboard;
 
-    private void rootCreateRootSubmenuWidget(TreeMenuEntity curEntity, String curTitle, DefaultDashboardColumn lastColumn) {
+    private static boolean isAuthorized(Subject subject, TreeMenuEntity entity) {
+        boolean ret = false;
+        if (subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone") || entity.getDisplayRoles().size()==0) {
+            ret = true;
+        } else {
+            for (String role : entity.getDisplayRoles())
+                if (subject.hasRole(role)) {
+                    ret = true;
+                    break;
+                }
+            if (!ret) {
+                for (String perm : entity.getDisplayPermissions())
+                    if (subject.isPermitted(perm)) {
+                        ret = true;
+                        break;
+                    }
+            }
+        }
+        return ret;
+    }
+
+    private void rootCreateRootSubmenuWidget(Subject subject, TreeMenuEntity curEntity, String curTitle, DefaultDashboardColumn lastColumn) {
         DefaultDashboardColumn curColumn = lastColumn;
         for (TreeMenuEntity child : curEntity.getChildTreeMenuEntities()) {
             String nextTitle = curTitle+" / "+child.getValue();
             switch (child.getType()) {
                 case MenuEntityType.TYPE_MENU_ITEM:
-                    if (curColumn==null) {
-                        curColumn = new DefaultDashboardColumn();
-                        model.addColumn(curColumn);
+                    if (isAuthorized(subject, child)) {
+                        if (curColumn==null) {
+                            curColumn = new DefaultDashboardColumn();
+                            model.addColumn(curColumn);
+                        }
+                        log.debug("Add widget {} to column {} ...", new Object[]{nextTitle, curTitle});
+                        curColumn.addWidget(nextTitle);
                     }
-                    log.debug("Add widget {} to column {} ...", new Object[]{nextTitle, curTitle});
-                    curColumn.addWidget(nextTitle);
                     break;
                 case MenuEntityType.TYPE_MENU_SUBMENU:
-                    rootCreateRootSubmenuWidget(child, nextTitle, curColumn);
+                    if (isAuthorized(subject, child)) {
+                        rootCreateRootSubmenuWidget(subject, child, nextTitle, curColumn);
+                    }
                     break;
                 default:
                     break;
@@ -67,47 +94,23 @@ public class DirectoryDashboardController {
         }
     }
 
-    //TODO: RETRY !
-/*
-    @PostConstruct
-    private void init() {
-        FacesContext fc          = FacesContext.getCurrentInstance();
-        Application  application = fc.getApplication();
-        dashboard = (Dashboard) application.createComponent(fc, "org.primefaces.component.Dashboard", "org.primefaces.component.DashboardRenderer");
-        dashboard.setId("dashboard");
-
-        for (DashboardColumn column : model.getColumns()) {
-            for (String widget : column.getWidgets()) {
-                Panel panel = (Panel) application.createComponent(fc, "org.primefaces.component.Panel", "org.primefaces.component.PanelRenderer");
-                //panel.setId("p"+widget);
-                panel.setHeader(widget);
-                panel.setClosable(true);
-                panel.setToggleable(true);
-
-                dashboard.getChildren().add(panel);
-                column.addWidget(panel.getId());
-                HtmlOutputText text = new HtmlOutputText();
-                //text.setId("t"+widget);
-                text.setValue(getWidgetDescription(widget));
-
-                panel.getChildren().add(text);
-            }
-        }
-    }
-*/
-
     public DirectoryDashboardController() {
         log.debug("Init Dashboard Model...");
+        Subject subject = SecurityUtils.getSubject();
         if (DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance()!=null) {
             DefaultDashboardColumn lonlyItemColumn = new DefaultDashboardColumn();
             model.addColumn(lonlyItemColumn);
             for (TreeMenuEntity entity : DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance().getTreeMenuRootsRegistry().getTreeMenuRootsEntities()) {
                 switch (entity.getType()) {
                     case MenuEntityType.TYPE_MENU_ITEM:
-                        lonlyItemColumn.addWidget(entity.getValue());
+                        if (isAuthorized(subject, entity)) {
+                            lonlyItemColumn.addWidget(entity.getValue());
+                        }
                         break;
                     case MenuEntityType.TYPE_MENU_SUBMENU:
-                        rootCreateRootSubmenuWidget(entity, entity.getValue(), null);
+                        if (isAuthorized(subject, entity)) {
+                            rootCreateRootSubmenuWidget(subject, entity, entity.getValue(), null);
+                        }
                         break;
                     default:
                         break;
