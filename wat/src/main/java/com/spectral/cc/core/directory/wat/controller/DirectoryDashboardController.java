@@ -95,9 +95,8 @@ public class DirectoryDashboardController {
     }
 
     public DirectoryDashboardController() {
-        log.debug("Init Dashboard Model...");
-        Subject subject = SecurityUtils.getSubject();
         if (DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance()!=null) {
+            Subject subject = SecurityUtils.getSubject();
             DefaultDashboardColumn lonlyItemColumn = new DefaultDashboardColumn();
             model.addColumn(lonlyItemColumn);
             for (TreeMenuEntity entity : DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance().getTreeMenuRootsRegistry().getTreeMenuRootsEntities()) {
@@ -120,12 +119,10 @@ public class DirectoryDashboardController {
     }
 
     public DashboardModel getModel() {
-        log.debug("Get Dashboard Model...");
         return model;
     }
 
     public List<DashboardColumn> getDashboardColumn() {
-        log.debug("Get Dashboard Columns...");
         ArrayList<DashboardColumn> ret = new ArrayList<>();
         for (DashboardColumn column : model.getColumns()) {
             if (column.getWidgets().size()!=0)

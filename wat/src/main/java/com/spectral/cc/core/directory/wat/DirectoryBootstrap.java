@@ -135,8 +135,10 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
             mainMenuEntity.getDisplayPermissions().add("ccDirComOrgCompany:display");
             mainMenuEntity.getDisplayPermissions().add("ccDirComOrgEnvironment:display");
             mainMenuEntity.getDisplayPermissions().add("ccDirComOrgTeam:display");
+
             directoryMainMenuEntityList.add(mainMenuEntity);
             mainMenuEntityRegistry.registerMainMenuEntity(mainMenuEntity);
+            treeMenuRootsRegistry.setLinkedMainMenuEntity(mainMenuEntity);
             log.debug("{} has registered its main menu items", new Object[]{DIRECTORY_COMPONENT});
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

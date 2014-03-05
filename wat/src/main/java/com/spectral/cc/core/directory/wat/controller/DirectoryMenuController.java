@@ -114,9 +114,8 @@ public class DirectoryMenuController {
     }
 
     public MenuModel getModel() {
-        log.debug("Get Menu Model...");
-        Subject subject = SecurityUtils.getSubject();
         if (DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance()!=null) {
+            Subject subject = SecurityUtils.getSubject();
             for (TreeMenuEntity entity : DirectoryTreeMenuRootsRegistryServiceConsumer.getInstance().getTreeMenuRootsRegistry().getTreeMenuRootsEntities()) {
                 switch (entity.getType()) {
                     case MenuEntityType.TYPE_MENU_ITEM:
