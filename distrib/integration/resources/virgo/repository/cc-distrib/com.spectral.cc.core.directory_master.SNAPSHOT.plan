@@ -1,0 +1,10 @@
+<plan name="com.spectral.cc.core.directory" version="0.2.0.SNAPSHOT" scoped="false" atomic="false"
+                xmlns="http://www.eclipse.org/virgo/schema/plan"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xsi:schemaLocation="
+				        http://www.eclipse.org/virgo/schema/plan 
+				        http://www.eclipse.org/virgo/schema/plan/eclipse-virgo-plan.xsd">
+	<artifact type="configuration" name="com.spectral.cc.core.DirectoryJPAProviderManagedService"/>
+    <artifact type="bundle" name="com.spectral.cc.core.directory.base" version="0.2.0.SNAPSHOT"/>
+    <artifact type="bundle" name="com.spectral.cc.core.directory.wat" version="0.2.0.SNAPSHOT"/>
+</plan>
