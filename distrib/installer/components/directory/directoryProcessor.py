@@ -17,13 +17,14 @@
 import os
 from components.directory.cuDirectoryJPAProviderManagedService import directoryJPAProviderManagedServiceSyringe
 from components.directory.dbDirectoryMySQLInitiator import dbDirectoryMySQLInitiator
+from components.directory.dbIDMMySQLPopulator import dbIDMMySQLPopulator
 
 __author__ = 'mffrench'
 
 
 class directoryProcessor:
 
-    def __init__(self, homeDirPath, silent):
+    def __init__(self, homeDirPath, idmDBConfig, silent):
         print("\n%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--\n")
         print("%-- CC directory configuration : \n")
         self.silent = silent
@@ -35,6 +36,7 @@ class directoryProcessor:
         self.directoryJPAProviderSyringe.shootBuilder()
         self.directoryDBConfig = self.directoryJPAProviderSyringe.getDBConfigFromShoot()
         self.directorySQLInitiator = dbDirectoryMySQLInitiator(self.directoryDBConfig)
+        self.directoryIDMSQLPopulator = dbIDMMySQLPopulator(idmDBConfig)
 
     def process(self):
         self.directoryJPAProviderSyringe.inject()
