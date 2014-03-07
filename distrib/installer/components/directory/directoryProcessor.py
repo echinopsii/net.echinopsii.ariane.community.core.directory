@@ -41,4 +41,5 @@ class directoryProcessor:
     def process(self):
         self.directoryJPAProviderSyringe.inject()
         self.directorySQLInitiator.process()
+        self.directoryIDMSQLPopulator.process()
         return self
