@@ -45,7 +45,7 @@
         <version.ipojo.plugin>1.11.0</version.ipojo.plugin>
 
         <!-- CC module dependencies -->
-        <version.com.spectral.cc.core.portal>0.2.0.RELEASE</version.com.spectral.cc.core.portal>
+        <version.com.spectral.cc.core.portal>0.3.0.SNAPSHOT</version.com.spectral.cc.core.portal>
 
         <!-- Dependencies versions-->
         <version.com.fasterxml.jackson>2.1.2</version.com.fasterxml.jackson>
