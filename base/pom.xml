@@ -11,7 +11,7 @@
 
     <groupId>com.spectral.cc.core.directory</groupId>
     <artifactId>com.spectral.cc.core.directory.base</artifactId>
-    <name>Control and Conquer Core Directory Base</name>
+    <name>CC Core Directory Base</name>
     <packaging>bundle</packaging>
 
     <dependencies>

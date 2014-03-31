@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.spectral.cc.core.directory.commons.registry;
+package com.spectral.cc.core.directory.base.registry;
 
 import com.spectral.cc.core.directory.base.registry.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import com.spectral.cc.core.portal.base.model.TreeMenuEntity;

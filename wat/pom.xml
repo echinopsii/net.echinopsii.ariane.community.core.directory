@@ -11,7 +11,7 @@
 
     <groupId>com.spectral.cc.core.directory</groupId>
     <artifactId>com.spectral.cc.core.directory.wat</artifactId>
-    <name>Control and Conquer Core Directory WebApp Tooling</name>
+    <name>CC Core Directory WebApp Tooling</name>
     <packaging>bundle</packaging>
 
     <dependencies>
