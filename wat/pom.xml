@@ -27,12 +27,6 @@
             <version>${version.com.spectral.cc.core.portal}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.spectral.cc.core.portal</groupId>
-            <artifactId>com.spectral.cc.core.portal.idmwat</artifactId>
-            <version>${version.com.spectral.cc.core.portal}</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -83,7 +77,6 @@
                             com.spectral.cc.core.directory.wat.rest;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            com.spectral.cc.core.portal.idmwat.tools;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.portal.base.plugin;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.portal.base.model;version=${version.com.spectral.cc.core.portal},
                             com.spectral.cc.core.directory.base.model;version=${project.version},
