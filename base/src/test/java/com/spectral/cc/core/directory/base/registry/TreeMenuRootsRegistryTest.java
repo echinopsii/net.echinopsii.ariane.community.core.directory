@@ -22,7 +22,7 @@ package com.spectral.cc.core.directory.base.registry;
 import com.spectral.cc.core.directory.base.registry.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import com.spectral.cc.core.portal.base.model.TreeMenuEntity;
 import com.spectral.cc.core.portal.base.model.MenuEntityType;
-import com.spectral.cc.core.portal.base.registry.TreeMenuRootsRegistry;
+import com.spectral.cc.core.portal.base.plugin.TreeMenuRootsRegistry;
 import junit.framework.TestCase;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

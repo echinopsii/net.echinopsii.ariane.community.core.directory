@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.consumer;
 
-import com.spectral.cc.core.portal.base.registry.FacesMBeanRegistry;
+import com.spectral.cc.core.portal.base.plugin.FacesMBeanRegistry;
 import org.apache.felix.ipojo.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
