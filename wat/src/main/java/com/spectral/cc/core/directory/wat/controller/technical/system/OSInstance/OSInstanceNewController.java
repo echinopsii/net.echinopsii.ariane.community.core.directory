@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories OSInstance Create Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -18,7 +18,7 @@
  */
 package com.spectral.cc.core.directory.wat.controller.technical.system.OSInstance;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.organisational.application.ApplicationsListController;
 import com.spectral.cc.core.directory.wat.controller.organisational.environment.EnvironmentsListController;
 import com.spectral.cc.core.directory.wat.controller.organisational.team.TeamsListController;
@@ -45,6 +45,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class provide stuff to create and save a new OS Instance from the UI form
+ */
 public class OSInstanceNewController implements Serializable{
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(OSInstanceNewController.class);
@@ -123,6 +126,12 @@ public class OSInstanceNewController implements Serializable{
         this.type = type;
     }
 
+    /**
+     * synchronize this.type from DB
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
     private void syncOSType() throws NotSupportedException, SystemException {
         OSType type = null;
         for (OSType osType: OSTypesListController.getAll()) {
@@ -156,6 +165,12 @@ public class OSInstanceNewController implements Serializable{
         this.embingOSI = embingOSI;
     }
 
+    /**
+     * synchronize this.embingOSI from DB
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
     private void syncEmbingOSI() throws NotSupportedException, SystemException {
         OSInstance osInstance = null;
         for (OSInstance osInstance1: OSInstancesListController.getAll()) {
@@ -187,6 +202,12 @@ public class OSInstanceNewController implements Serializable{
         this.subnets = subnets;
     }
 
+    /**
+     * populate subnets list through subnetsToBind list provided through UI form
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
     private void bindSelectedSubnets() throws NotSupportedException, SystemException {
         for (Subnet subnet : SubnetsListController.getAll()) {
             for (String subnetToBind : subnetsToBind)
@@ -215,6 +236,12 @@ public class OSInstanceNewController implements Serializable{
         this.envs = envs;
     }
 
+    /**
+     * populate envs list through envsToBind list provided through UI form
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
     private void bindSelectedEnvs() throws NotSupportedException, SystemException {
         for (Environment environment: EnvironmentsListController.getAll()) {
             for (String envToBind : envsToBind)
@@ -242,6 +269,12 @@ public class OSInstanceNewController implements Serializable{
         this.teams = teams;
     }
 
+    /**
+     * populate teams list through teamsToBind list provided through UI form
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
     private void bindSelectedTeams() throws NotSupportedException, SystemException {
         for (Team team: TeamsListController.getAll()) {
             for (String teamToBind : teamsToBind)
@@ -269,6 +302,12 @@ public class OSInstanceNewController implements Serializable{
         this.apps = apps;
     }
 
+    /**
+     * populate applications list through appssToBind list provided through UI form
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
     private void bindSelectedApps() throws NotSupportedException, SystemException {
         for (Application application: ApplicationsListController.getAll()) {
             for (String appToBind : appsToBind)
@@ -280,6 +319,9 @@ public class OSInstanceNewController implements Serializable{
         }
     }
 
+    /**
+     * save a new OS Instance thanks data provided through UI form
+     */
     public void save() {
         try {
             syncOSType();

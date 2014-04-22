@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.organisational.application;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.organisational.company.CompanysListController;
 import com.spectral.cc.core.directory.wat.controller.organisational.team.TeamsListController;
 import com.spectral.cc.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;

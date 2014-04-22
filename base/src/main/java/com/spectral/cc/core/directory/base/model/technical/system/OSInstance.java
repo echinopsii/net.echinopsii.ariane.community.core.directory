@@ -1,6 +1,6 @@
 /**
- * Directory Main bundle
- * Directories OSInstance Entity
+ * Directory base
+ * Model technical/system/OSInstance
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify

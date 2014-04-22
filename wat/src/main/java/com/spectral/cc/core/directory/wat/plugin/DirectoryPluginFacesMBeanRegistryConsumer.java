@@ -1,5 +1,5 @@
 /**
- * Directory Commons JSF bundle
+ * Directory wat
  * Portal Plugin Faces MBean registry consumer singleton
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.spectral.cc.core.directory.wat.consumer;
+package com.spectral.cc.core.directory.wat.plugin;
 
 import com.spectral.cc.core.portal.base.plugin.FacesMBeanRegistry;
 import org.apache.felix.ipojo.annotations.*;

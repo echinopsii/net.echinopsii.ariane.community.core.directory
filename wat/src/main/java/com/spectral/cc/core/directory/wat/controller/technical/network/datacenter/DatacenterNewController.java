@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Datacenter Create Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.technical.network.datacenter;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.base.model.technical.network.Datacenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +30,9 @@ import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import java.io.Serializable;
 
+/**
+ * This class provide stuff to create and save a new datacenter from the UI form
+ */
 public class DatacenterNewController implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -116,6 +119,9 @@ public class DatacenterNewController implements Serializable {
         this.gpsLongitude = gpsLongitude;
     }
 
+    /**
+     * save a new datacenter thanks data provided through UI form
+     */
     public void save() {
         Datacenter newDatacenter = new Datacenter();
         newDatacenter.setName(name);

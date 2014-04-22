@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Subnet RUD Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -18,7 +18,7 @@
  */
 package com.spectral.cc.core.directory.wat.controller.technical.network.subnet;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
 import com.spectral.cc.core.directory.wat.controller.technical.network.multicastArea.MulticastAreasListController;
 import com.spectral.cc.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
@@ -44,6 +44,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This class provide stuff to display a subnets list in a PrimeFaces data table, display subnets, update a subnet and remove subnets
+ */
 public class SubnetsListController implements Serializable {
 
     private static final long   serialVersionUID = 1L;
@@ -61,9 +64,6 @@ public class SubnetsListController implements Serializable {
     private HashMap<Long,String>           addedOSI    = new HashMap<Long, String>();
     private HashMap<Long,List<OSInstance>> removedOSIs = new HashMap<Long, List<OSInstance>>();
 
-    /*
-     * PrimeFaces table tools
-     */
     public LazyDataModel<Subnet> getLazyModel() {
         return lazyModel;
     }
@@ -76,9 +76,6 @@ public class SubnetsListController implements Serializable {
         this.selectedSubnetList = selectedSubnetList;
     }
 
-    /*
-     * Subnet update tools
-     */
     public HashMap<Long, String> getChangedSubnetType() {
         return changedSubnetType;
     }
@@ -87,7 +84,12 @@ public class SubnetsListController implements Serializable {
         this.changedSubnetType = changedSubnetType;
     }
 
-    public void syncSubnetType(Subnet subnet) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize changed subnet type from a subnet to database
+     *
+     * @param subnet bean UI is working on
+     */
+    public void syncSubnetType(Subnet subnet) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for(SubnetType type: getAllSubnetTypes()) {
@@ -128,7 +130,12 @@ public class SubnetsListController implements Serializable {
         this.changedMarea = changedMarea;
     }
 
-    public void syncMarea(Subnet subnet) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize changed multicast area from a subnet to database
+     *
+     * @param subnet bean UI is working on
+     */
+    public void syncMarea(Subnet subnet) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             boolean noMarea = true;
@@ -190,7 +197,12 @@ public class SubnetsListController implements Serializable {
         this.addedDC = addedDC;
     }
 
-    public void syncAddedDC(Subnet subnet) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added datacenter into a subnet to database
+     *
+     * @param subnet bean UI is working on
+     */
+    public void syncAddedDC(Subnet subnet) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (Datacenter dc: DatacentersListController.getAll()) {
@@ -231,7 +243,12 @@ public class SubnetsListController implements Serializable {
         this.removedDCs = removedDCs;
     }
 
-    public void syncRemovedDCs(Subnet subnet) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed datacenters from a subnet to database
+     *
+     * @param subnet bean UI is working on
+     */
+    public void syncRemovedDCs(Subnet subnet) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -271,7 +288,12 @@ public class SubnetsListController implements Serializable {
         this.addedOSI = addedOSI;
     }
 
-    public void syncAddedOSI(Subnet subnet) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added OS instance into a subnet to database
+     *
+     * @param subnet bean UI is working on
+     */
+    public void syncAddedOSI(Subnet subnet) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -312,7 +334,12 @@ public class SubnetsListController implements Serializable {
         this.removedOSIs = removedOSIs;
     }
 
-    public void syncRemovedOSIs(Subnet subnet) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed OS instances from a subnet to database
+     *
+     * @param subnet bean UI is working on
+     */
+    public void syncRemovedOSIs(Subnet subnet) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -343,7 +370,15 @@ public class SubnetsListController implements Serializable {
         }
     }
 
-    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
+    /**
+     * When a PrimeFaces data table row is toogled init reference into the changedSubnetType, changedMarea,
+     * addedDC, removedDCs, addedOSI, removedOSIs lists with the correct multicastarea id<br/>
+     * When a PrimeFaces data table row is untoogled remove reference from the changedSubnetType, changedMarea,
+     * addedDC, removedDCs, addedOSI, removedOSIs lists with the correct multicastarea id<br/>
+     *
+     * @param event provided by the UI through PrimeFaces on a row toggle
+     */
+    public void onRowToggle(ToggleEvent event) {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         Subnet eventSubnet = ((Subnet) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
@@ -363,6 +398,11 @@ public class SubnetsListController implements Serializable {
         }
     }
 
+    /**
+     * When UI actions an update merge the corresponding subnet bean with the correct subnet instance in the DB and save this instance
+     *
+     * @param subnet bean UI is working on
+     */
     public void update(Subnet subnet) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
@@ -389,8 +429,8 @@ public class SubnetsListController implements Serializable {
         }
     }
 
-    /*
-     * Subnet delete tool
+    /**
+     * Remove selected subnets
      */
     public void delete() {
         log.debug("Remove selected Subnet !");
@@ -426,8 +466,12 @@ public class SubnetsListController implements Serializable {
         selectedSubnetList =null;
     }
 
-    /*
-     * Subnet join tools
+    /**
+     * Get all subnet types from the db
+     *
+     * @return all subnet types from the db
+     * @throws SystemException
+     * @throws NotSupportedException
      */
     public static List<SubnetType> getAllSubnetTypes() throws SystemException, NotSupportedException {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -451,6 +495,13 @@ public class SubnetsListController implements Serializable {
         return ret;
     }
 
+    /**
+     * Get all subnet types from the db + select string
+     *
+     * @return all subnet types from the db
+     * @throws SystemException
+     * @throws NotSupportedException
+     */
     public static List<SubnetType> getAllSubnetTypesForSelector() throws SystemException, NotSupportedException {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all subnets from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
@@ -474,6 +525,13 @@ public class SubnetsListController implements Serializable {
         return list;
     }
 
+    /**
+     * Get all subnets from the db
+     *
+     * @return all subnets from the db
+     * @throws SystemException
+     * @throws NotSupportedException
+     */
     public static List<Subnet> getAll() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all subnets from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",

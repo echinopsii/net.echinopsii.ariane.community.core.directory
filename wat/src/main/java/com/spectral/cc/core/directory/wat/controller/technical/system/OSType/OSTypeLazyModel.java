@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories OSType PrimeFaces Lazy Model
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -20,7 +20,7 @@
 package com.spectral.cc.core.directory.wat.controller.technical.system.OSType;
 
 import com.spectral.cc.core.directory.base.model.technical.system.OSType;
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -37,6 +37,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class provide lazy loading stuff for our OS Type PrimeFaces datatable implementation
+ */
 public class OSTypeLazyModel extends LazyDataModel<OSType> {
 
     private static final Logger log = LoggerFactory.getLogger(OSTypeLazyModel.class);
@@ -44,6 +47,14 @@ public class OSTypeLazyModel extends LazyDataModel<OSType> {
     private int          rowCount ;
     private List<OSType> pageItems ;
 
+    /**
+     * Add search predicate to the JPA query
+     *
+     * @param entityManager the current JPA entity manager in use
+     * @param root the current JPA root of the query
+     * @param filters the provided filters
+     * @return the generated JPA predicate
+     */
     private Predicate[] getSearchPredicates(EntityManager entityManager, Root<OSType> root, Map<String,String> filters) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         List<Predicate> predicatesList = new ArrayList<Predicate>();
@@ -59,6 +70,14 @@ public class OSTypeLazyModel extends LazyDataModel<OSType> {
         return ret;
     }
 
+    /**
+     * Generate a JPA query and push the result into pageItems
+     *
+     * @param first first result of the query (the OS Type id)
+     * @param sortField the sort field of the query
+     * @param sortOrder the sort order of the query
+     * @param filters the provided filters
+     */
     private void paginate(int first, String sortField, SortOrder sortOrder, Map<String,String> filters) {
         EntityManager entityManager = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -82,6 +101,13 @@ public class OSTypeLazyModel extends LazyDataModel<OSType> {
         entityManager.close();
     }
 
+    /**
+     * Return the OS Type assigned to a table row
+     *
+     * @param rowKey the row OS Type id
+     *
+     * @return OS Type object according to provided OS Type id
+     */
     @Override
     public OSType getRowData(String rowKey) {
         for(OSType osType : pageItems) {
@@ -91,11 +117,29 @@ public class OSTypeLazyModel extends LazyDataModel<OSType> {
         return null;
     }
 
+    /**
+     * Return the OS Type id assigned to a table row
+     *
+     * @param osType the row OS Type
+     *
+     * @return the OS Type id
+     */
     @Override
     public Object getRowKey(OSType osType) {
         return osType.getId();
     }
 
+    /**
+     * Return the OS Type list for the PrimeFaces table
+     *
+     * @param first first result of the query (the OS Type id)
+     * @param pageSize the page size
+     * @param sortField the sort field of the query
+     * @param sortOrder the sort order of the query
+     * @param filters the provided filters
+     *
+     * @return queried OS Type list
+     */
     @Override
     public List<OSType> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,String> filters) {
         this.setPageSize(pageSize);

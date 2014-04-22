@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Environment RUD Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.organisational.environment;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import com.spectral.cc.core.directory.base.model.organisational.Environment;
 import com.spectral.cc.core.directory.base.model.technical.system.OSInstance;
@@ -40,6 +40,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This class provide stuff to display a environments list in a PrimeFaces data table, display environments, update a environment and remove environments
+ */
 public class EnvironmentsListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(EnvironmentsListController.class);
@@ -62,9 +65,6 @@ public class EnvironmentsListController implements Serializable {
         this.selectedEnvironmentList = selectedEnvironmentList;
     }
 
-    /*
-     * Environment update tools
-     */
     public HashMap<Long, String> getAddedOSInstance() {
         return addedOSInstance;
     }
@@ -73,7 +73,12 @@ public class EnvironmentsListController implements Serializable {
         this.addedOSInstance = addedOSInstance;
     }
 
-    public void syncAddedOSInstance(Environment environment) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added OS Instance into an environment to database
+     *
+     * @param environment bean UI is working on
+     */
+    public void syncAddedOSInstance(Environment environment) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (OSInstance osInstance: OSInstancesListController.getAll()) {
@@ -114,7 +119,12 @@ public class EnvironmentsListController implements Serializable {
         this.removedOSInstances = removedOSInstances;
     }
 
-    public void syncRemovedOSInstances(Environment environment) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed OS Instance from an environment to database
+     *
+     * @param environment bean UI is working on
+     */
+    public void syncRemovedOSInstances(Environment environment) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -145,7 +155,13 @@ public class EnvironmentsListController implements Serializable {
         }
     }
 
-    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
+    /**
+     * When a PrimeFaces data table row is toogled init reference into the addedOSInstance, removedOSInstances lists with the correct environment id <br/>
+     * When a PrimeFaces data table row is untoogled remove reference from the addedOSInstance, removedOSInstances lists with the correct environment id <br/>
+     *
+     * @param event provided by the UI through PrimeFaces on a row toggle
+     */
+    public void onRowToggle(ToggleEvent event) {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         Environment eventEnvironment = ((Environment) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
@@ -157,7 +173,12 @@ public class EnvironmentsListController implements Serializable {
         }
     }
 
-    public void update(Environment environment) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    /**
+     * When UI actions an update merge the corresponding environment bean with the correct environment instance in the DB and save this instance
+     *
+     * @param environment bean UI is working on
+     */
+    public void update(Environment environment) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -182,8 +203,8 @@ public class EnvironmentsListController implements Serializable {
         }
     }
 
-    /*
-     * OSType delete tool
+    /**
+     * Remove selected environments
      */
     public void delete() {
         log.debug("Remove selected Environment !");
@@ -217,10 +238,12 @@ public class EnvironmentsListController implements Serializable {
         selectedEnvironmentList=null;
     }
 
-    /*
-     * Environment join tool
+    /**
+     * Get all environments from the db
+     *
+     * @return all environments from the db
      */
-    public static List<Environment> getAll() throws SystemException, NotSupportedException {
+    public static List<Environment> getAll() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all environments from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
@@ -242,7 +265,12 @@ public class EnvironmentsListController implements Serializable {
         return ret;
     }
 
-    public static List<Environment> getAllForSelector() throws SystemException, NotSupportedException {
+    /**
+     * Get all environments from the db + selection string
+     *
+     * @return all environments from the db + selection string
+     */
+    public static List<Environment> getAllForSelector() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all environments from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{

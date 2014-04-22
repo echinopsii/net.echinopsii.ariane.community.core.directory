@@ -1,5 +1,5 @@
 /**
- * Directory Commons JSF bundle
+ * Directory wat
  * Directories Layout Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *

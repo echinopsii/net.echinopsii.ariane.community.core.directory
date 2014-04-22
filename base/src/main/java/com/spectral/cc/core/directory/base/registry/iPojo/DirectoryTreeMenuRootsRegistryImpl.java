@@ -1,5 +1,5 @@
 /**
- * Directory Commons Services bundle
+ * Directory base
  * Directory Registry iPojo Impl
  * Copyright (C) 2013 Mathilde Ffrench
  *

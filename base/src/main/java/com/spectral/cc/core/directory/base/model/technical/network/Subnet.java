@@ -1,6 +1,6 @@
 /**
- * Directory Main bundle
- * Directories Subnet Entity
+ * Directory base
+ * Model technical/network/subnet
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify

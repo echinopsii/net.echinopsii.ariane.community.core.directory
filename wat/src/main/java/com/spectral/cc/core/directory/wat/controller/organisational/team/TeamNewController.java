@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Team Create controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.organisational.team;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.base.model.organisational.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +31,9 @@ import javax.persistence.EntityManager;
 import javax.transaction.*;
 import java.io.Serializable;
 
+/**
+ * This class provide stuff to create and save a new team from the UI form
+ */
 public class TeamNewController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(TeamNewController.class);
@@ -71,7 +74,10 @@ public class TeamNewController implements Serializable {
         this.colorCode = colorCode;
     }
 
-    public void save() throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    /**
+     * save a new team thanks data provided through UI form
+     */
+    public void save() {
         Team team = new Team();
         team.setName(name);
         team.setColorCodeR(colorCode);

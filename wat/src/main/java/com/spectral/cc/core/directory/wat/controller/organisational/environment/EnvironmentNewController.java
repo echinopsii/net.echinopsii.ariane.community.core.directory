@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Environment Create controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.organisational.environment;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.base.model.organisational.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +31,9 @@ import javax.persistence.EntityManager;
 import javax.transaction.*;
 import java.io.Serializable;
 
+/**
+ * This class provide stuff to create and save a new environment from the UI form
+ */
 public class EnvironmentNewController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(EnvironmentNewController.class);
@@ -62,7 +65,10 @@ public class EnvironmentNewController implements Serializable {
         this.description = description;
     }
 
-    public void save() throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    /**
+     * save a new environmnent thanks data provided through UI form
+     */
+    public void save() {
         Environment environment = new Environment();
         environment.setName(name);
         environment.setDescription(description);

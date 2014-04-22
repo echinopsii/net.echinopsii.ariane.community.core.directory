@@ -1,7 +1,7 @@
 /**
- * Directory commons services
+ * Directory base
  * JPA provider Interface
- * Copyright (C) 31/12/13 mffrench
+ * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as

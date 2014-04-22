@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Team RUD Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.organisational.team;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.organisational.application.ApplicationsListController;
 import com.spectral.cc.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import com.spectral.cc.core.directory.base.model.organisational.Application;
@@ -42,6 +42,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This class provide stuff to display a teams list in a PrimeFaces data table, display teams, update a team and remove teams
+ */
 public class TeamsListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(TeamsListController.class);
@@ -67,9 +70,6 @@ public class TeamsListController implements Serializable {
         this.selectedTeamList = selectedTeamList;
     }
 
-    /*
-     * Team update tools
-     */
     public HashMap<Long, String> getAddedOSInstance() {
         return addedOSInstance;
     }
@@ -78,7 +78,12 @@ public class TeamsListController implements Serializable {
         this.addedOSInstance = addedOSInstance;
     }
 
-    public void syncAddedOSInstance(Team team) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added OS Instance into a team to database
+     *
+     * @param team bean UI is working on
+     */
+    public void syncAddedOSInstance(Team team) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (OSInstance osInstance: OSInstancesListController.getAll()) {
@@ -119,7 +124,12 @@ public class TeamsListController implements Serializable {
         this.removedOSInstances = removedOSInstances;
     }
 
-    public void syncRemovedOSInstances(Team team) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed OS Instance from a team to database
+     *
+     * @param team bean UI is working on
+     */
+    public void syncRemovedOSInstances(Team team) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -158,7 +168,12 @@ public class TeamsListController implements Serializable {
         this.addedApplication = addedApplication;
     }
 
-    public void syncAddedApplication(Team team) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added application into a team to database
+     *
+     * @param team bean UI is working on
+     */
+    public void syncAddedApplication(Team team) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (Application application: ApplicationsListController.getAll()) {
@@ -201,7 +216,12 @@ public class TeamsListController implements Serializable {
         this.removedApplications = removedApplications;
     }
 
-    public void syncRemovedApplications(Team team) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed application from a team to database
+     *
+     * @param team bean UI is working on
+     */
+    public void syncRemovedApplications(Team team) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -232,7 +252,15 @@ public class TeamsListController implements Serializable {
         }
     }
 
-    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
+    /**
+     * When a PrimeFaces data table row is toogled init reference into the addedOSInstance, removedOSInstances, addedApplication, removedApplications lists
+     * with the correct team id <br/>
+     * When a PrimeFaces data table row is untoogled remove reference from the addedOSInstance, removedOSInstances, addedApplication, removedApplications lists
+     * with the correct team id <br/>
+     *
+     * @param event provided by the UI through PrimeFaces on a row toggle
+     */
+    public void onRowToggle(ToggleEvent event) {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         Team eventTeam = ((Team) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
@@ -248,7 +276,12 @@ public class TeamsListController implements Serializable {
         }
     }
 
-    public void update(Team team) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    /**
+     * When UI actions an update merge the corresponding team bean with the correct team instance in the DB and save this instance
+     *
+     * @param team bean UI is working on
+     */
+    public void update(Team team) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -273,8 +306,8 @@ public class TeamsListController implements Serializable {
         }
     }
 
-    /*
-     * Team delete tool
+    /**
+     * Remove selected teams
      */
     public void delete() {
         log.debug("Remove selected Team !");
@@ -310,10 +343,12 @@ public class TeamsListController implements Serializable {
         selectedTeamList=null;
     }
 
-    /*
-     * Team join tool
+    /**
+     * Get all teams from the db
+     *
+     * @return all teams from the db
      */
-    public static List<Team> getAll() throws SystemException, NotSupportedException {
+    public static List<Team> getAll() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all teams from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
@@ -334,7 +369,12 @@ public class TeamsListController implements Serializable {
         return ret;
     }
 
-    public static List<Team> getAllForSelector() throws SystemException, NotSupportedException {
+    /**
+     * Get all teams from the db + selection string
+     *
+     * @return all teams from the db + selection string
+     */
+    public static List<Team> getAllForSelector() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all teams from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{

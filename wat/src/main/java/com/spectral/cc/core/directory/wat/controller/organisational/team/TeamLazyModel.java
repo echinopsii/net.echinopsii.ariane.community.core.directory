@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Team PrimeFaces Lazy Model
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -20,7 +20,7 @@
 package com.spectral.cc.core.directory.wat.controller.organisational.team;
 
 import com.spectral.cc.core.directory.base.model.organisational.Team;
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -37,12 +37,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class provide lazy loading stuff for our team PrimeFaces datatable implementation
+ */
 public class TeamLazyModel extends LazyDataModel<Team> {
     private static final Logger log = LoggerFactory.getLogger(TeamLazyModel.class);
 
-    private int        rowCount ;
+    private int        rowCount  ;
     private List<Team> pageItems ;
 
+    /**
+     * Add search predicate to the JPA query
+     *
+     * @param entityManager the current JPA entity manager in use
+     * @param root the current JPA root of the query
+     * @param filters the provided filters
+     * @return the generated JPA predicate
+     */
     private Predicate[] getSearchPredicates(EntityManager entityManager, Root<Team> root, Map<String,String> filters) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         List<Predicate> predicatesList = new ArrayList<Predicate>();
@@ -58,6 +69,14 @@ public class TeamLazyModel extends LazyDataModel<Team> {
         return ret;
     }
 
+    /**
+     * Generate a JPA query and push the result into pageItems
+     *
+     * @param first first result of the query (the team id)
+     * @param sortField the sort field of the query
+     * @param sortOrder the sort order of the query
+     * @param filters the provided filters
+     */
     private void paginate(int first, String sortField, SortOrder sortOrder, Map<String,String> filters) {
         EntityManager entityManager = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -81,6 +100,13 @@ public class TeamLazyModel extends LazyDataModel<Team> {
         entityManager.close();
     }
 
+    /**
+     * Return the team assigned to a table row
+     *
+     * @param rowKey the row team id
+     *
+     * @return team object according to provided team id
+     */
     @Override
     public Team getRowData(String rowKey) {
         for(Team team : pageItems) {
@@ -90,11 +116,29 @@ public class TeamLazyModel extends LazyDataModel<Team> {
         return null;
     }
 
+    /**
+     * Return the team id assigned to a table row
+     *
+     * @param team the row team
+     *
+     * @return the team id
+     */
     @Override
     public Object getRowKey(Team team) {
         return team.getId();
     }
 
+    /**
+     * Return the teams list for the PrimeFaces table
+     *
+     * @param first first result of the query (the team id)
+     * @param pageSize the page size
+     * @param sortField the sort field of the query
+     * @param sortOrder the sort order of the query
+     * @param filters the provided filters
+     *
+     * @return queried teams list
+     */
     @Override
     public List<Team> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,String> filters) {
         this.setPageSize(pageSize);

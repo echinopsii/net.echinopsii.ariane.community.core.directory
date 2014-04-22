@@ -63,7 +63,7 @@
                         <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <Export-Package>
-                            com.spectral.cc.core.directory.wat.consumer;version=${project.version},
+                            com.spectral.cc.core.directory.wat.plugin;version=${project.version},
                             com.spectral.cc.core.directory.wat.controller;version=${project.version},
                             com.spectral.cc.core.directory.wat.controller.organisational.application;version=${project.version},
                             com.spectral.cc.core.directory.wat.controller.organisational.company;version=${project.version},
@@ -294,6 +294,18 @@
                         </Import-Package>
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

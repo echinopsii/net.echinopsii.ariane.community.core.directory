@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories OS Instance RUD Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -18,7 +18,7 @@
  */
 package com.spectral.cc.core.directory.wat.controller.technical.system.OSInstance;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.organisational.application.ApplicationsListController;
 import com.spectral.cc.core.directory.wat.controller.organisational.environment.EnvironmentsListController;
 import com.spectral.cc.core.directory.wat.controller.organisational.team.TeamsListController;
@@ -48,6 +48,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This class provide stuff to display a OS Instances list in a PrimeFaces data table, display OS Instances, update a OS Instance and remove OS Instances
+ */
 public class OSInstancesListController implements Serializable{
 
     private static final long   serialVersionUID = 1L;
@@ -82,9 +85,6 @@ public class OSInstancesListController implements Serializable{
         return selectedOSInstanceList;
     }
 
-    /*
-     * OSInstance update tools
-     */
     public void setSelectedOSInstanceList(OSInstance[] selectedOSInstanceList) {
         this.selectedOSInstanceList = selectedOSInstanceList;
     }
@@ -97,7 +97,12 @@ public class OSInstancesListController implements Serializable{
         this.changedOSType = changedOSType;
     }
 
-    public void syncOSType(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize changed OS Type from an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncOSType(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for(OSType osType: OSTypesListController.getAll()) {
@@ -139,7 +144,12 @@ public class OSInstancesListController implements Serializable{
         this.changedEmbeddingOSI = changedEmbeddingOSI;
     }
 
-    public void syncEmbeddingOSI(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize changed embedding OS instance from an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncEmbeddingOSI(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for(OSInstance osInstance1: OSInstancesListController.getAll()) {
@@ -188,7 +198,12 @@ public class OSInstancesListController implements Serializable{
         this.addedSubnet = addedSubnet;
     }
 
-    public void syncAddedSubnet(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added subnet into an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncAddedSubnet(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (Subnet subnet : SubnetsListController.getAll())
@@ -228,7 +243,12 @@ public class OSInstancesListController implements Serializable{
         this.removedSubnets = removedSubnets;
     }
 
-    public void syncRemovedSubnets(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed subnets from an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncRemovedSubnets(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -267,7 +287,12 @@ public class OSInstancesListController implements Serializable{
         this.addedEnv = addedEnv;
     }
 
-    public void syncAddedEnv(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added environment into an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncAddedEnv(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (Environment environment: EnvironmentsListController.getAll())
@@ -307,7 +332,12 @@ public class OSInstancesListController implements Serializable{
         this.removedEnvs = removedEnvs;
     }
 
-    public void syncRemovedEnvs(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed environments from an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncRemovedEnvs(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -346,7 +376,12 @@ public class OSInstancesListController implements Serializable{
         this.addedEmbeddedOSI = addedEmbeddedOSI;
     }
 
-    public void syncAddedEmbeddedOSI(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added embedded OS instance into an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncAddedEmbeddedOSI(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (OSInstance osInstance1: OSInstancesListController.getAll()) {
@@ -389,7 +424,12 @@ public class OSInstancesListController implements Serializable{
         this.removedEmbeddedOSI = removedEmbeddedOSI;
     }
 
-    public void syncRemovedEmbeddedOSI(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed embedded OS instance from an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncRemovedEmbeddedOSI(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -428,7 +468,12 @@ public class OSInstancesListController implements Serializable{
         this.addedApplication = addedApplication;
     }
 
-    public void syncAddedApplication(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added application into an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncAddedApplication(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (Application application: ApplicationsListController.getAll())
@@ -468,7 +513,12 @@ public class OSInstancesListController implements Serializable{
         this.removedApplication = removedApplication;
     }
 
-    public void syncRemovedApplication(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed applications from an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncRemovedApplication(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -507,7 +557,12 @@ public class OSInstancesListController implements Serializable{
         this.addedTeam = addedTeam;
     }
 
-    public void syncAddedTeam(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added team into an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncAddedTeam(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (Team team: TeamsListController.getAll())
@@ -547,7 +602,12 @@ public class OSInstancesListController implements Serializable{
         this.removedTeam = removedTeam;
     }
 
-    public void syncRemovedTeam(OSInstance osInstance) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed teams from an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncRemovedTeam(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -578,7 +638,17 @@ public class OSInstancesListController implements Serializable{
         }
     }
 
-    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
+    /**
+     * When a PrimeFaces data table row is toogled init reference into the changedOSType, changedEmbeddingOSI, addedSubnet,
+     * removedSubnets, addedEmbeddedOSI, removedEmbeddedOSIs, addedEnv, removedEnvs, addedApplication, removedApplications,
+     * addedTeam, removedTeams lists with the correct OSInstance id<br/>
+     * When a PrimeFaces data table row is untoogled remove reference from the changedOSType, changedEmbeddingOSI, addedSubnet,
+     * removedSubnets, addedEmbeddedOSI, removedEmbeddedOSIs, addedEnv, removedEnvs, addedApplication, removedApplications,
+     * addedTeam, removedTeams lists with the correct OSInstance id<br/>
+     *
+     * @param event provided by the UI through PrimeFaces on a row toggle
+     */
+    public void onRowToggle(ToggleEvent event) {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         OSInstance osInstance = ((OSInstance) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
@@ -610,6 +680,11 @@ public class OSInstancesListController implements Serializable{
         }
     }
 
+    /**
+     * When UI actions an update merge the corresponding OS Instance bean with the correct OS Instance instance in the DB and save this instance
+     *
+     * @param osInstance bean UI is working on
+     */
     public void update(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
@@ -636,8 +711,8 @@ public class OSInstancesListController implements Serializable{
         }
     }
 
-    /*
-     * Subnet delete tool
+    /**
+     * Remove selected OS Instances
      */
     public void delete() {
         log.debug("Remove selected Subnet !");
@@ -684,8 +759,12 @@ public class OSInstancesListController implements Serializable{
     }
 
 
-    /*
-     * OSInstance join tools
+    /**
+     * Get all OS Instances from the db
+     *
+     * @return all OS Instances from the db
+     * @throws SystemException
+     * @throws NotSupportedException
      */
     public static List<OSInstance> getAll() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -709,6 +788,13 @@ public class OSInstancesListController implements Serializable{
         return ret;
     }
 
+    /**
+     * Get all OS Instances from the db + select string
+     *
+     * @return all OS Instances from the db + select string
+     * @throws SystemException
+     * @throws NotSupportedException
+     */
     public static List<OSInstance> getAllForSelector() throws SystemException, NotSupportedException {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all OSInstances from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",

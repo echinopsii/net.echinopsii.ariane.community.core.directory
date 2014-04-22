@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories MulticastArea RUD Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.technical.network.multicastArea;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
 import com.spectral.cc.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
 import com.spectral.cc.core.directory.base.model.technical.network.Datacenter;
@@ -42,6 +42,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This class provide stuff to display a multicastareas list in a PrimeFaces data table, display multicastareas, update a multicastarea and remove multicastareas
+ */
 public class MulticastAreasListController implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -82,7 +85,12 @@ public class MulticastAreasListController implements Serializable {
         this.addedSubnet = addedSubnet;
     }
 
-    public void syncAddedSubnet(MulticastArea marea) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added subnet into a multicast area to database
+     *
+     * @param marea bean UI is working on
+     */
+    public void syncAddedSubnet(MulticastArea marea) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (Subnet subnet : SubnetsListController.getAll()) {
@@ -125,7 +133,12 @@ public class MulticastAreasListController implements Serializable {
         this.removedSubnets = removedSubnets;
     }
 
-    public void syncRemovedSubnets(MulticastArea marea) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed subnets from a multicast area to database
+     *
+     * @param marea bean UI is working on
+     */
+    public void syncRemovedSubnets(MulticastArea marea) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -164,7 +177,12 @@ public class MulticastAreasListController implements Serializable {
         this.addedDC = addedDC;
     }
 
-    public void syncAddedDC(MulticastArea marea) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added datacenter into a multicast area to database
+     *
+     * @param marea bean UI is working on
+     */
+    public void syncAddedDC(MulticastArea marea) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (Datacenter dc: DatacentersListController.getAll()) {
@@ -205,7 +223,12 @@ public class MulticastAreasListController implements Serializable {
         this.removedDCs = removedDCs;
     }
 
-    public void syncRemovedDCs(MulticastArea marea) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed datacenters from a multicast area to database
+     *
+     * @param marea bean UI is working on
+     */
+    public void syncRemovedDCs(MulticastArea marea) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -236,7 +259,15 @@ public class MulticastAreasListController implements Serializable {
         }
     }
 
-    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
+    /**
+     * When a PrimeFaces data table row is toogled init reference into the addedDC, removedDCs, addedSubnet, removedSubnets lists
+     * with the correct multicastarea id<br/>
+     * When a PrimeFaces data table row is untoogled remove reference from the addedDC, removedDCs, addedSubnet, removedSubnets lists
+     * with the correct multicastarea id<br/>
+     *
+     * @param event provided by the UI through PrimeFaces on a row toggle
+     */
+    public void onRowToggle(ToggleEvent event) {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         MulticastArea eventMarea = ((MulticastArea) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
@@ -252,7 +283,12 @@ public class MulticastAreasListController implements Serializable {
         }
     }
 
-    public void update(MulticastArea multicastArea) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    /**
+     * When UI actions an update merge the corresponding multicastarea bean with the correct multicastarea instance in the DB and save this instance
+     *
+     * @param multicastArea bean UI is working on
+     */
+    public void update(MulticastArea multicastArea) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -277,8 +313,8 @@ public class MulticastAreasListController implements Serializable {
         }
     }
 
-    /*
-     * Multicast Area delete tool
+    /**
+     * Remove selected multicastareas
      */
     public void delete() {
         log.debug("Remove selected Multicast Area !");
@@ -314,10 +350,12 @@ public class MulticastAreasListController implements Serializable {
         selectedMareaList=null;
     }
 
-    /*
-     * Multicast Area join tool
+    /**
+     * Get all multicastareas from the db
+     *
+     * @return all multicastareas from the db
      */
-    public static List<MulticastArea> getAll() throws SystemException, NotSupportedException {
+    public static List<MulticastArea> getAll() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all multicast areas from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
@@ -339,7 +377,12 @@ public class MulticastAreasListController implements Serializable {
         return ret ;
     }
 
-    public static List<MulticastArea> getAllForSelector() throws SystemException, NotSupportedException {
+    /**
+     * Get all multicastareas from the db + no multicast area choice + selection string
+     *
+     * @return all multicastareas from the db + no multicast area choice + selection string
+     */
+    public static List<MulticastArea> getAllForSelector() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all multicast areas from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{
@@ -363,6 +406,13 @@ public class MulticastAreasListController implements Serializable {
         return ret;
     }
 
+    /**
+     * Get all multicastareas from the db + no multicast area choice
+     *
+     * @return all multicastareas from the db + no multicast area choice
+     * @throws SystemException
+     * @throws NotSupportedException
+     */
     public static List<MulticastArea> getAllForInplace() throws SystemException, NotSupportedException {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all multicast areas from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",

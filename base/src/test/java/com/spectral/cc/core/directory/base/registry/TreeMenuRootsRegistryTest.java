@@ -1,5 +1,5 @@
 /**
- * Directory Commons Services bundle
+ * Directory base
  * Directory Menu Roots Tree Registry iPojo impl test
  * Copyright (C) 2014 Mathilde Ffrench
  *

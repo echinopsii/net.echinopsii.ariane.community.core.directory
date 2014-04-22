@@ -1,5 +1,5 @@
 /**
- * Directory commons-jsf
+ * Directory wat
  * PersistenceConsumer
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.spectral.cc.core.directory.wat.consumer;
+package com.spectral.cc.core.directory.wat.plugin;
 
 import com.spectral.cc.core.directory.base.persistence.DirectoryJPAProvider;
 import org.apache.felix.ipojo.annotations.*;

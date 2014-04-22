@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Datacenter RUD Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.technical.network.datacenter;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
 import com.spectral.cc.core.directory.wat.controller.technical.network.multicastArea.MulticastAreasListController;
 import com.spectral.cc.core.directory.base.model.technical.network.Datacenter;
@@ -42,6 +42,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This class provide stuff to display a datacenters list in a PrimeFaces data table, display datacenters, update a datacenter and remove datacenters
+ */
 public class DatacentersListController implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -56,9 +59,6 @@ public class DatacentersListController implements Serializable {
     private HashMap<Long,String>              addedMArea    = new HashMap<Long, String>();
     private HashMap<Long,List<MulticastArea>> removedMareas = new HashMap<Long, List<MulticastArea>>();
 
-    /*
-     * PrimeFaces table tools
-     */
     public LazyDataModel<Datacenter> getLazyModel() {
         return lazyModel;
     }
@@ -79,7 +79,12 @@ public class DatacentersListController implements Serializable {
         this.addedSubnet = addedSubnet;
     }
 
-    public void syncAddedSubnet(Datacenter dc) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added subnet into a datacenter to database
+     *
+     * @param dc bean UI is working on
+     */
+    public void syncAddedSubnet(Datacenter dc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (Subnet subnet : SubnetsListController.getAll()) {
@@ -120,7 +125,12 @@ public class DatacentersListController implements Serializable {
         this.removedSubnets = removedSubnets;
     }
 
-    public void syncRemovedSubnets(Datacenter dc) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed subnet from a datacenter to database
+     *
+     * @param dc bean UI is working on
+     */
+    public void syncRemovedSubnets(Datacenter dc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -159,7 +169,12 @@ public class DatacentersListController implements Serializable {
         this.addedMArea = addedMArea;
     }
 
-    public void syncAddedMArea(Datacenter dc) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added multicast area into a datacenter to database
+     *
+     * @param dc bean UI is working on
+     */
+    public void syncAddedMArea(Datacenter dc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (MulticastArea marea: MulticastAreasListController.getAll()) {
@@ -200,7 +215,12 @@ public class DatacentersListController implements Serializable {
         this.removedMareas = removedMareas;
     }
 
-    public void syncRemovedMAreas(Datacenter dc) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed multicast area from a datacenter to database
+     *
+     * @param dc bean UI is working on
+     */
+    public void syncRemovedMAreas(Datacenter dc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -231,15 +251,22 @@ public class DatacentersListController implements Serializable {
         }
     }
 
-    /*
-     * Datacenter update tools
+    /**
+     * When a PrimeFaces data table row is toogled init reference into the addedSubnet, removedSubnets, addedMArea, removedMareas lists
+     * with the correct datacenter id <br/>
+     * When a PrimeFaces data table row is untoogled remove reference from the addedSubnet, removedSubnets, addedMArea, removedMareas lists
+     * with the correct datacenter id <br/>
+     *
+     * @param event provided by the UI through PrimeFaces on a row toggle
      */
-    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
+    public void onRowToggle(ToggleEvent event) {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         Datacenter eventDc = ((Datacenter) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
             addedSubnet.remove(eventDc.getId());
             removedSubnets.remove(eventDc.getId());
+            addedMArea.remove(eventDc.getId());
+            removedMareas.remove(eventDc.getId());
         } else {
             addedSubnet.put(eventDc.getId(), "");
             removedSubnets.put(eventDc.getId(), new ArrayList<Subnet>());
@@ -248,6 +275,11 @@ public class DatacentersListController implements Serializable {
         }
     }
 
+    /**
+     * When UI actions an update merge the corresponding datacenter bean with the correct datacenter instance in the DB and save this instance
+     *
+     * @param dc bean UI is working on
+     */
     public void update(Datacenter dc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
@@ -274,8 +306,8 @@ public class DatacentersListController implements Serializable {
         }
     }
 
-    /*
-     * Datacenter delete tool
+    /**
+     * Remove selected datacenters
      */
     public void delete() {
         log.debug("Remove selected DC !");
@@ -311,7 +343,12 @@ public class DatacentersListController implements Serializable {
         selectedDCList=null;
     }
 
-    public static List<Datacenter> getAll() throws SystemException, NotSupportedException {
+    /**
+     * Get all datacenters from the db
+     *
+     * @return all datacenters from the db
+     */
+    public static List<Datacenter> getAll() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all datacenters from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                          new Object[]{

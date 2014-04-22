@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories OSType RUD Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -18,7 +18,7 @@
  */
 package com.spectral.cc.core.directory.wat.controller.technical.system.OSType;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.organisational.company.CompanysListController;
 import com.spectral.cc.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import com.spectral.cc.core.directory.base.model.organisational.Company;
@@ -29,7 +29,6 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
@@ -42,6 +41,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This class provide stuff to display a OS Types list in a PrimeFaces data table, display OS Types, update a OS Type and remove OS Types
+ */
 public class OSTypesListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(OSTypesListController.class);
@@ -204,7 +206,13 @@ public class OSTypesListController implements Serializable {
         }
     }
 
-    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
+    /**
+     * When a PrimeFaces data table row is toogled init reference into the changedCompany, addedOSInstance, removedOSInstances lists with the correct OSType id<br/>
+     * When a PrimeFaces data table row is untoogled remove reference from the changedCompany, addedOSInstance, removedOSInstances lists with the correct OSType id<br/>
+     *
+     * @param event provided by the UI through PrimeFaces on a row toggle
+     */
+    public void onRowToggle(ToggleEvent event) {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         OSType eventOSType = ((OSType) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
@@ -218,7 +226,12 @@ public class OSTypesListController implements Serializable {
         }
     }
 
-    public void update(OSType osType) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    /**
+     * When UI actions an update merge the corresponding OS Type bean with the correct OS Type instance in the DB and save this instance
+     *
+     * @param osType bean UI is working on
+     */
+    public void update(OSType osType) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -243,8 +256,8 @@ public class OSTypesListController implements Serializable {
         }
     }
 
-    /*
-     * OSType delete tool
+    /**
+     * Remove selected OS Types
      */
     public void delete() {
         log.debug("Remove selected OS Type !");
@@ -280,8 +293,12 @@ public class OSTypesListController implements Serializable {
         selectedOSTypeList=null;
     }
 
-    /*
-     * OSType join tool
+    /**
+     * Get all OS Types from the db
+     *
+     * @return all OS Types from the db
+     * @throws SystemException
+     * @throws NotSupportedException
      */
     public static List<OSType> getAll() throws SystemException, NotSupportedException {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -305,6 +322,13 @@ public class OSTypesListController implements Serializable {
         return ret;
     }
 
+    /**
+     * Get all OS Types from the db + select string
+     *
+     * @return all OS Types from the db + select string
+     * @throws SystemException
+     * @throws NotSupportedException
+     */
     public static List<OSType> getAllForSelector() throws SystemException, NotSupportedException {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all OSTypes from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",

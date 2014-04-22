@@ -1,5 +1,5 @@
 /**
- * Directory Commons JSF bundle
+ * Directory wat
  * Directories Menu Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryTreeMenuRootsRegistryServiceConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryTreeMenuRootsRegistryServiceConsumer;
 import com.spectral.cc.core.portal.base.model.TreeMenuEntity;
 import com.spectral.cc.core.portal.base.model.MenuEntityType;
 import org.apache.shiro.SecurityUtils;

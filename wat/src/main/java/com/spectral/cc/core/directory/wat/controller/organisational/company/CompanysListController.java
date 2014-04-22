@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Company RUD Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.organisational.company;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.organisational.application.ApplicationsListController;
 import com.spectral.cc.core.directory.wat.controller.technical.system.OSType.OSTypesListController;
 import com.spectral.cc.core.directory.base.model.organisational.Application;
@@ -42,6 +42,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This class provide stuff to display a companies list in a PrimeFaces data table, display companies, update a company and remove companies
+ */
 public class CompanysListController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(CompanysListController.class);
@@ -55,9 +58,6 @@ public class CompanysListController implements Serializable {
     private HashMap<Long,String>            addedApplication    = new HashMap<Long, String>();
     private HashMap<Long,List<Application>> removedApplications = new HashMap<Long, List<Application>>();
 
-    /*
-     * PrimeFaces table tools
-     */
     public LazyDataModel<Company> getLazyModel() {
         return lazyModel;
     }
@@ -70,9 +70,6 @@ public class CompanysListController implements Serializable {
         this.selectedCompanyList = selectedCompanyList;
     }
 
-    /*
-     * Company update tools
-     */
     public HashMap<Long, String> getAddedOSType() {
         return addedOSType;
     }
@@ -81,7 +78,12 @@ public class CompanysListController implements Serializable {
         this.addedOSType = addedOSType;
     }
 
-    public void syncAddedOSType(Company company) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added OS Type into a company to database
+     *
+     * @param company bean UI is working on
+     */
+    public void syncAddedOSType(Company company) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (OSType osType: OSTypesListController.getAll()) {
@@ -126,7 +128,12 @@ public class CompanysListController implements Serializable {
         this.removedOSTypes = removedOSTypes;
     }
 
-    public void syncRemovedOSTypes(Company company) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed OS Type from a company to database
+     *
+     * @param company bean UI is working on
+     */
+    public void syncRemovedOSTypes(Company company) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -166,7 +173,12 @@ public class CompanysListController implements Serializable {
         this.addedApplication = addedApplication;
     }
 
-    public void syncAddedApplication(Company company) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize added application into a company to database
+     *
+     * @param company bean UI is working on
+     */
+    public void syncAddedApplication(Company company) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (Application application: ApplicationsListController.getAll()) {
@@ -211,7 +223,12 @@ public class CompanysListController implements Serializable {
         this.removedApplications = removedApplications;
     }
 
-    public void syncRemovedApplications(Company company) throws NotSupportedException, SystemException {
+    /**
+     * Synchronize removed application from a company to database
+     *
+     * @param company bean UI is working on
+     */
+    public void syncRemovedApplications(Company company) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -244,7 +261,15 @@ public class CompanysListController implements Serializable {
         }
     }
 
-    public void onRowToggle(ToggleEvent event) throws CloneNotSupportedException {
+    /**
+     * When a PrimeFaces data table row is toogled init reference into the addedOSType, removedOSTypes, addedApplication and removedApplications lists
+     * with the correct company id <br/>
+     * When a PrimeFaces data table row is untoogled remove reference from the addedOSType, removedOSTypes, addedApplication and removedApplications lists
+     * with the correct company id <br/>
+     *
+     * @param event provided by the UI through PrimeFaces on a row toggle
+     */
+    public void onRowToggle(ToggleEvent event) {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         Company eventCompany = ((Company) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
@@ -260,7 +285,12 @@ public class CompanysListController implements Serializable {
         }
     }
 
-    public void update(Company company) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    /**
+     * When UI actions an update merge the corresponding company bean with the correct company instance in the DB and save this instance
+     *
+     * @param company bean UI is working on
+     */
+    public void update(Company company) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
@@ -283,8 +313,8 @@ public class CompanysListController implements Serializable {
         }
     }
 
-    /*
-     * Company delete tool
+    /**
+     * Remove selected companies
      */
     public void delete() {
         log.debug("Remove selected Company !");
@@ -320,8 +350,12 @@ public class CompanysListController implements Serializable {
         selectedCompanyList=null;
     }
 
-    /*
-     * Company join tool
+    /**
+     * Get all companies from the db
+     *
+     * @return all companies from the db
+     * @throws SystemException
+     * @throws NotSupportedException
      */
     public static List<Company> getAll() throws SystemException, NotSupportedException {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -344,6 +378,13 @@ public class CompanysListController implements Serializable {
         return ret;
     }
 
+    /**
+     * Get all companies from the db + selection string
+     *
+     * @return all companies from the db + selection string
+     * @throws SystemException
+     * @throws NotSupportedException
+     */
     public static List<Company> getAllForSelector() throws SystemException, NotSupportedException {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all companies from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",

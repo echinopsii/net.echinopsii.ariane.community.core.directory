@@ -1,6 +1,6 @@
 /**
- * Directory Main bundle
- * Directories Environment Entity
+ * Directory base
+ * Model organisational/environment
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify

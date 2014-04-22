@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories OSType Create Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.technical.system.OSType;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.organisational.company.CompanysListController;
 import com.spectral.cc.core.directory.base.model.organisational.Company;
 import com.spectral.cc.core.directory.base.model.technical.system.OSType;
@@ -34,6 +34,9 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import java.io.Serializable;
 
+/**
+ * This class provide stuff to create and save a new OS Type from the UI form
+ */
 public class OSTypeNewController implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -89,6 +92,12 @@ public class OSTypeNewController implements Serializable {
         this.company = company;
     }
 
+    /**
+     * synchronize this.company from DB
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
     private void syncCompany() throws NotSupportedException, SystemException {
         for (Company company: CompanysListController.getAll()) {
             if (company.getName().equals(this.osiCompany)) {
@@ -100,6 +109,9 @@ public class OSTypeNewController implements Serializable {
         }
     }
 
+    /**
+     * save a new OS Type thanks data provided through UI form
+     */
     public void save() {
         try {
             syncCompany();

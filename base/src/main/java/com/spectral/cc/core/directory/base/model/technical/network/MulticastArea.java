@@ -1,6 +1,6 @@
 /**
- * Directory Main bundle
- * Directories MulticastArea Entity
+ * Directory base
+ * Model technical/network/multicastarea
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify

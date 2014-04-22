@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories MulticastArea Create Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.technical.network.multicastArea;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
 import com.spectral.cc.core.directory.base.model.technical.network.Datacenter;
 import com.spectral.cc.core.directory.base.model.technical.network.MulticastArea;
@@ -37,6 +37,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class provide stuff to create and save a new multicastarea from the UI form
+ */
 public class MulticastAreaNewController implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -54,7 +57,7 @@ public class MulticastAreaNewController implements Serializable {
     private String description;
 
     private List<String> datacentersToBind = new ArrayList<String>();
-    private Set<Datacenter> datacenters       = new HashSet<Datacenter>();
+    private Set<Datacenter> datacenters    = new HashSet<Datacenter>();
 
     public EntityManager getEm() {
         return em;
@@ -92,6 +95,12 @@ public class MulticastAreaNewController implements Serializable {
         this.datacenters = datacenters;
     }
 
+    /**
+     * populate datacenters list through datacentersToBind list provided through UI form
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
     private void bindSelectedDatacenters() throws NotSupportedException, SystemException {
         for (Datacenter dc: DatacentersListController.getAll()) {
             for (String dcToBind : datacentersToBind)
@@ -104,7 +113,10 @@ public class MulticastAreaNewController implements Serializable {
         }
     }
 
-    public void save() throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    /**
+     * save a new multicast area thanks data provided through UI form
+     */
+    public void save() {
         try {
             bindSelectedDatacenters();
         } catch (Exception e) {

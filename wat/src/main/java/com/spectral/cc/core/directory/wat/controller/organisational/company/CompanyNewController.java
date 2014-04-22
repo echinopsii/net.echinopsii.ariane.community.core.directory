@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Company Create controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.organisational.company;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.base.model.organisational.Company;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +31,9 @@ import javax.persistence.EntityManager;
 import javax.transaction.*;
 import java.io.Serializable;
 
+/**
+ * This class provide stuff to create and save a new company from the UI form
+ */
 public class CompanyNewController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(CompanyNewController.class);
@@ -62,7 +65,10 @@ public class CompanyNewController implements Serializable {
         this.description = description;
     }
 
-    public void save() throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    /**
+     * save a new company thanks data provided through UI form
+     */
+    public void save() {
         Company company = new Company();
         company.setName(name);
         company.setDescription(description);

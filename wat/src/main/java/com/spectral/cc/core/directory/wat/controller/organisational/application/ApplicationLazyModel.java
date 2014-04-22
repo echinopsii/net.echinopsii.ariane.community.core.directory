@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Application PrimeFaces Lazy Model
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -20,7 +20,7 @@
 package com.spectral.cc.core.directory.wat.controller.organisational.application;
 
 import com.spectral.cc.core.directory.base.model.organisational.Application;
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -37,12 +37,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class provide lazy loading stuff for our application PrimeFaces datatable implementation
+ */
 public class ApplicationLazyModel extends LazyDataModel<Application> {
     private static final Logger log = LoggerFactory.getLogger(ApplicationLazyModel.class);
 
     private int               rowCount  ;
     private List<Application> pageItems ;
 
+    /**
+     * Add search predicate to the JPA query
+     *
+     * @param entityManager the current JPA entity manager in use
+     * @param root the current JPA root of the query
+     * @param filters the provided filters
+     * @return the generated JPA predicate
+     */
     private Predicate[] getSearchPredicates(EntityManager entityManager, Root<Application> root, Map<String,String> filters) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         List<Predicate> predicatesList = new ArrayList<Predicate>();
@@ -58,6 +69,14 @@ public class ApplicationLazyModel extends LazyDataModel<Application> {
         return ret;
     }
 
+    /**
+     * Generate a JPA query and push the result into pageItems
+     *
+     * @param first first result of the query (the application id)
+     * @param sortField the sort field of the query
+     * @param sortOrder the sort order of the query
+     * @param filters the provided filters
+     */
     private void paginate(int first, String sortField, SortOrder sortOrder, Map<String,String> filters) {
         EntityManager entityManager = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -82,6 +101,13 @@ public class ApplicationLazyModel extends LazyDataModel<Application> {
         entityManager.close();
     }
 
+    /**
+     * Return the application assigned to a table row
+     *
+     * @param rowKey the row application id
+     *
+     * @return application object according to provided application id
+     */
     @Override
     public Application getRowData(String rowKey) {
         for(Application application : pageItems) {
@@ -91,11 +117,29 @@ public class ApplicationLazyModel extends LazyDataModel<Application> {
         return null;
     }
 
+    /**
+     * Return the application id assigned to a table row
+     *
+     * @param application the row application
+     *
+     * @return the application id
+     */
     @Override
     public Object getRowKey(Application application) {
         return application.getId();
     }
 
+    /**
+     * Return the applications list for the PrimeFaces table
+     *
+     * @param first first result of the query (the application id)
+     * @param pageSize the page size
+     * @param sortField the sort field of the query
+     * @param sortOrder the sort order of the query
+     * @param filters the provided filters
+     *
+     * @return queried applications list
+     */
     @Override
     public List<Application> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,String> filters) {
         this.setPageSize(pageSize);

@@ -1,5 +1,5 @@
 /**
- * Directory Commons JSF bundle
+ * Directory wat
  * Directories BreadCrum Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -18,8 +18,8 @@
  */
 package com.spectral.cc.core.directory.wat.controller;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryPluginFacesMBeanRegistryConsumer;
-import com.spectral.cc.core.directory.wat.consumer.DirectoryTreeMenuRootsRegistryServiceConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryPluginFacesMBeanRegistryConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryTreeMenuRootsRegistryServiceConsumer;
 import com.spectral.cc.core.portal.base.model.TreeMenuEntity;
 import org.primefaces.component.menuitem.MenuItem;
 import org.primefaces.model.DefaultMenuModel;

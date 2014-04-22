@@ -1,5 +1,5 @@
 /**
- * Directory JSF Commons
+ * Directory wat
  * Directories Subnet Create Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -19,7 +19,7 @@
 
 package com.spectral.cc.core.directory.wat.controller.technical.network.subnet;
 
-import com.spectral.cc.core.directory.wat.consumer.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import com.spectral.cc.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
 import com.spectral.cc.core.directory.wat.controller.technical.network.multicastArea.MulticastAreasListController;
 import com.spectral.cc.core.directory.base.model.technical.network.Datacenter;
@@ -40,6 +40,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class provide stuff to create and save a new subnet from the UI form
+ */
 public class SubnetNewController implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -146,6 +149,12 @@ public class SubnetNewController implements Serializable {
         this.mArea = mArea;
     }
 
+    /**
+     * synchronize this.marea from DB
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
     private void syncMulticastArea() throws NotSupportedException, SystemException {
         MulticastArea marea = null;
         for (MulticastArea area: MulticastAreasListController.getAll()) {
@@ -178,6 +187,12 @@ public class SubnetNewController implements Serializable {
         this.datacenters = datacenters;
     }
 
+    /**
+     * populate datacenters list through datacentersToBind list provided through UI form
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
     private void bindSelectedDatacenters() throws NotSupportedException, SystemException {
         for (Datacenter dc: DatacentersListController.getAll()) {
             for (String dcToBind : datacentersToBind)
@@ -190,6 +205,9 @@ public class SubnetNewController implements Serializable {
         }
     }
 
+    /**
+     * save a new subnet thanks data provided through UI form
+     */
     public void save() {
         try {
             syncSubnetType();

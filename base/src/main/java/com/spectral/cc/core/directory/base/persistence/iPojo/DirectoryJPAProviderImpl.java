@@ -1,5 +1,5 @@
 /**
- * Directory commons services
+ * Directory base
  * JPA provider impl
  * Copyright (C) 2013 Mathilde Ffrench
  *

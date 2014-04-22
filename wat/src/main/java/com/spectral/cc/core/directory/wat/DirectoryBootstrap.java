@@ -1,5 +1,5 @@
 /**
- * Directory Commons JSF bundle
+ * Directory wat
  * Directory Component Bootstrap
  * Copyright (C) 2013 Mathilde Ffrench
  *
@@ -114,7 +114,6 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
     @Validate
     public void validate() throws Exception {
         restResourceRegistry.registerPluginRestEndpoints(DirectoryBootstrap.class.getResource(REST_EP_FILE_PATH));
-
         portalPluginFacesMBeanRegistry.registerPluginFacesMBeanConfig(DirectoryBootstrap.class.getResource(FACES_CONFIG_FILE_PATH));
         MAIN_MENU_DIRECTORY_CONTEXT = portalPluginFacesMBeanRegistry.getRegisteredServletContext().getContextPath()+"/";
 
