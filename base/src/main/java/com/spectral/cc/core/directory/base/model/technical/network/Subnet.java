@@ -247,11 +247,11 @@ public class Subnet implements Serializable
     }
 
     public final static String SUBNET_MAPPING_PROPERTIES = "Network";
-    private final static String SUBNET_TYPE_MAPPING_FIELD = "type";
-    private final static String SUBNET_MARE_MAPPING_FIELD = "marea";
-    private final static String SUBNET_NAME_MAPPING_FIELD = "lan";
-    private final static String SUBNET_IPAD_MAPPING_FIELD = "subnetip";
-    private final static String SUBNET_MASK_MAPPING_FIELD = "subnetmask";
+    public final static String SUBNET_TYPE_MAPPING_FIELD = "type";
+    public final static String SUBNET_MARE_MAPPING_FIELD = "marea";
+    public final static String SUBNET_NAME_MAPPING_FIELD = "lan";
+    public final static String SUBNET_IPAD_MAPPING_FIELD = "subnetip";
+    public final static String SUBNET_MASK_MAPPING_FIELD = "subnetmask";
 
     public HashMap<String,Object> toMappingProperties() {
         HashMap<String,Object> ret = new HashMap<String,Object>();
