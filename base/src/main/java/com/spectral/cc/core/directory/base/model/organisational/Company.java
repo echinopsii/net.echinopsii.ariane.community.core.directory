@@ -19,6 +19,8 @@
 package com.spectral.cc.core.directory.base.model.organisational;
 
 import com.spectral.cc.core.directory.base.model.technical.system.OSType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -48,12 +50,12 @@ public class Company implements Serializable {
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
-    @XmlTransient
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Application> applications = new HashSet<Application>();
 
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
-    @XmlTransient
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<OSType> osTypes = new HashSet<OSType>();
 
     public Long getId() {

@@ -22,6 +22,8 @@ import com.spectral.cc.core.directory.base.model.organisational.Application;
 import com.spectral.cc.core.directory.base.model.organisational.Environment;
 import com.spectral.cc.core.directory.base.model.organisational.Team;
 import com.spectral.cc.core.directory.base.model.technical.network.Subnet;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -55,24 +57,28 @@ public class OSInstance implements Serializable {
     @Column
     private String description;
 
-    @ManyToMany(mappedBy = "osInstances")
+    @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
     private Set<Subnet> networkSubnets;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private OSInstance embeddingOSInstance;
-    @OneToMany(mappedBy = "embeddingOSInstance", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "embeddingOSInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<OSInstance> embeddedOSInstances = new HashSet<OSInstance>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private OSType osType;
 
-    @ManyToMany(mappedBy = "osInstances")
+    @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Application> applications = new HashSet<Application>();
 
-    @ManyToMany(mappedBy = "osInstances")
+    @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Team> teams = new HashSet<Team>();
 
-    @ManyToMany(mappedBy = "osInstances")
+    @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Environment> environments = new HashSet<Environment>();
 
     public Long getId() {

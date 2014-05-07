@@ -19,6 +19,8 @@
 package com.spectral.cc.core.directory.base.model.technical.network;
 
 import com.spectral.cc.core.directory.base.model.technical.system.OSInstance;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,16 +62,18 @@ public class Subnet implements Serializable
     @NotNull
     private String subnetMask;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<OSInstance> osInstances = new HashSet<OSInstance>();
 
-    @ManyToMany(mappedBy = "subnets")
+    @ManyToMany(mappedBy = "subnets", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Datacenter> datacenters = new HashSet<Datacenter>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private SubnetType type;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private MulticastArea marea;
 
     public Long getId() {

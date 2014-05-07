@@ -19,6 +19,8 @@
 package com.spectral.cc.core.directory.base.model.technical.system;
 
 import com.spectral.cc.core.directory.base.model.organisational.Company;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -48,10 +50,11 @@ public class OSType implements Serializable
     @Column
     private String architecture;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Company company;
 
-    @OneToMany(mappedBy = "osType", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "osType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<OSInstance> osInstances = new HashSet<OSInstance>();
 
     public Long getId() {

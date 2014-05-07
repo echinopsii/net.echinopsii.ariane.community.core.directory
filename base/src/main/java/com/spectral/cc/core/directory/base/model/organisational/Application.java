@@ -19,6 +19,8 @@
 package com.spectral.cc.core.directory.base.model.organisational;
 
 import com.spectral.cc.core.directory.base.model.technical.system.OSInstance;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -56,13 +58,14 @@ public class Application implements Serializable {
     @Column
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<OSInstance> osInstances = new HashSet<OSInstance>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Team team;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Company company;
 
     public Long getId() {

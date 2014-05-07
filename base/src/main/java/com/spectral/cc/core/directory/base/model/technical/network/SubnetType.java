@@ -18,6 +18,9 @@
  */
 package com.spectral.cc.core.directory.base.model.technical.network;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -45,7 +48,8 @@ public class SubnetType implements Serializable {
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Subnet> subnets = new HashSet<Subnet>();
 
     public Long getId() {

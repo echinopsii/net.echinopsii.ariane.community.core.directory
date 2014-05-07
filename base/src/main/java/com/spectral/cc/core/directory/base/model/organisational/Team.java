@@ -19,6 +19,8 @@
 package com.spectral.cc.core.directory.base.model.organisational;
 
 import com.spectral.cc.core.directory.base.model.technical.system.OSInstance;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,10 +58,12 @@ public class Team implements Serializable {
     @NotNull
     private String colorCode;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<OSInstance> osInstances = new HashSet<OSInstance>();
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Application> applications = new HashSet<Application>();
 
     public Long getId() {

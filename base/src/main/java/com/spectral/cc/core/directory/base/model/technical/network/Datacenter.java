@@ -18,6 +18,8 @@
  */
 package com.spectral.cc.core.directory.base.model.technical.network;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,10 +72,12 @@ public class Datacenter implements Serializable
     @Column
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Subnet> subnets = new HashSet<Subnet>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<MulticastArea> multicastAreas = new HashSet<MulticastArea>();
 
     public Long getId() {
