@@ -19,6 +19,7 @@
 
 package com.spectral.cc.core.directory.wat;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.spectral.cc.core.portal.base.plugin.FaceletsResourceResolverService;
 import com.spectral.cc.core.portal.base.plugin.FacesMBeanRegistry;
 import com.spectral.cc.core.portal.base.model.MainMenuEntity;
@@ -62,6 +63,8 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
 
     @Requires
     private RestResourceRegistry restResourceRegistry = null;
+
+    private static JsonFactory jFactory = new JsonFactory();
 
     @Bind
     public void bindRestResourceRegistry(RestResourceRegistry r) {
@@ -254,6 +257,10 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
         directoryTreeEntityList.clear();
 
         log.info("{} is stopped", new Object[]{DIRECTORY_COMPONENT});
+    }
+
+    public static JsonFactory getjFactory() {
+        return jFactory;
     }
 
     @Override
