@@ -48,7 +48,7 @@ public class EnvironmentEndpoint {
     @Path("/{id:[0-9][0-9]*}")
     public Response displayEnvironment(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] get environment : {}", new Object[]{Thread.currentThread().getId(), id, subject.getPrincipal()});
+        log.debug("[{}-{}] get environment : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
         if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgEnvironment:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
         {
@@ -111,6 +111,52 @@ public class EnvironmentEndpoint {
             }
         } else {
             return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display environments. Contact your administrator.").build();
+        }
+    }
+
+    @GET
+    @Path("/get")
+    public Response getEnvironment(@QueryParam("name")String name, @QueryParam("id")long id) {
+        if (id!=0) {
+            return displayEnvironment(id);
+        } else if (name!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] get environment : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
+            if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgEnvironment:display") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                TypedQuery<Environment> findByIdQuery = em.createQuery("SELECT DISTINCT e FROM Environment e LEFT JOIN FETCH e.osInstances WHERE e.name = :entityName ORDER BY e.name", Environment.class);
+                findByIdQuery.setParameter("entityName", name);
+                Environment entity;
+                try {
+                    entity = findByIdQuery.getSingleResult();
+                } catch (NoResultException nre) {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+
+                Response ret = null;
+                String result;
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                try {
+                    EnvironmentJSON.oneEnvironment2JSON(entity, outStream);
+                    result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
+                    ret = Response.status(Status.OK).entity(result).build();
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                    e.printStackTrace();
+                    result = e.getMessage();
+                    ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity(result).build();
+                } finally {
+                    em.close();
+                    return ret;
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display environments. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 }

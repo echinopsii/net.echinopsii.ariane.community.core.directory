@@ -48,7 +48,7 @@ public class SubnetEndpoint {
     @Path("/{id:[0-9][0-9]*}")
     public Response displaySubnet(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] get subnet : {}", new Object[]{Thread.currentThread().getId(), id, subject.getPrincipal()});
+        log.debug("[{}-{}] get subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
         if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwSubnet:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
         {
@@ -110,6 +110,51 @@ public class SubnetEndpoint {
             }
         } else {
             return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display subnets. Contact your administrator.").build();
+        }
+    }
+
+    @GET
+    @Path("/get")
+    public Response getSubnet(@QueryParam("name")String name, @QueryParam("id")long id) {
+        if (id!=0) {
+            return displaySubnet(id);
+        } else if (name != null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] get subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
+            if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwSubnet:display") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                TypedQuery<Subnet> findByIdQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.type LEFT JOIN FETCH l.marea WHERE l.name = :entityName ORDER BY l.name", Subnet.class);
+                findByIdQuery.setParameter("entityName", name);
+                Subnet entity;
+                try {
+                    entity = findByIdQuery.getSingleResult();
+                } catch (NoResultException nre) {
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+
+                Response ret = null;
+                String result;
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                try {
+                    SubnetJSON.oneSubnet2JSON(entity, outStream);
+                    result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
+                    ret = Response.status(Status.OK).entity(result).build();
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                    e.printStackTrace();
+                    result = e.getMessage();
+                    ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity(result).build();
+                } finally {
+                    em.close();
+                    return ret;
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display subnets. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 }

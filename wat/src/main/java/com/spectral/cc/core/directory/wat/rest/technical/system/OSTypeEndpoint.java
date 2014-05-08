@@ -51,7 +51,7 @@ public class OSTypeEndpoint {
     @Path("/{id:[0-9][0-9]*}")
     public Response displayOSType(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] get os instance : {}", new Object[]{Thread.currentThread().getId(), id, subject.getPrincipal()});
+        log.debug("[{}-{}] get os instance : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
         if (subject.hasRole("ccsysadmin") || subject.hasRole("ccsysreviewer") || subject.isPermitted("ccDirComITiSysOst:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
         {
@@ -118,4 +118,49 @@ public class OSTypeEndpoint {
         }
     }
 
+    @GET
+    @Path("/get")
+    public Response getOSType(@QueryParam("name")String name, @QueryParam("id")long id) {
+        if (id!=0) {
+            return displayOSType(id);
+        } else if (name != null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] get os instance : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
+            if (subject.hasRole("ccsysadmin") || subject.hasRole("ccsysreviewer") || subject.isPermitted("ccDirComITiSysOst:display") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                TypedQuery<OSType> findByIdQuery = em.createQuery("SELECT DISTINCT o FROM OSType o LEFT JOIN FETCH o.osInstances WHERE o.name = :entityName ORDER BY o.name", OSType.class);
+                findByIdQuery.setParameter("entityName", name);
+                OSType entity;
+                try {
+                    entity = findByIdQuery.getSingleResult();
+                } catch (NoResultException nre) {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+
+                Response ret = null;
+                String result;
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                try {
+                    OSTypeJSON.oneOSType2JSON(entity, outStream);
+                    result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
+                    ret = Response.status(Status.OK).entity(result).build();
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                    e.printStackTrace();
+                    result = e.getMessage();
+                    ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity(result).build();
+                } finally {
+                    em.close();
+                    return ret;
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display OS Instances. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+        }
+    }
 }

@@ -49,7 +49,7 @@ public class ApplicationEndpoint {
     @Path("/{id:[0-9][0-9]*}")
     public Response displayApplication(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] get application : {}", new Object[]{Thread.currentThread().getId(), id, subject.getPrincipal()});
+        log.debug("[{}-{}] get application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
         if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgApp:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
         {
@@ -112,6 +112,53 @@ public class ApplicationEndpoint {
             }
         } else {
             return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display applications. Contact your administrator.").build();
+        }
+    }
+
+    @GET
+    @Path("/get")
+    public Response getApplication(@QueryParam("name")String name, @QueryParam("id")long id) {
+        if (id!=0) {
+            return displayApplication(id);
+        } else if (name!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] get application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
+            if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgApp:display") ||
+                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                TypedQuery<Application> findByIdQuery = em.createQuery("SELECT DISTINCT a FROM Application a LEFT JOIN FETCH a.osInstances LEFT JOIN FETCH a.company WHERE a.name = :entityName ORDER BY a.name", Application.class);
+                findByIdQuery.setParameter("entityName", name);
+                Application entity;
+                try {
+                    entity = findByIdQuery.getSingleResult();
+                } catch (NoResultException nre) {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+
+                Response ret = null;
+                String result;
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                try {
+                    ApplicationJSON.oneApplication2JSON(entity, outStream);
+                    result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
+                    ret = Response.status(Status.OK).entity(result).build();
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                    e.printStackTrace();
+                    result = e.getMessage();
+                    ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity(result).build();
+                } finally {
+                    em.close();
+                    return ret;
+                }
+
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display applications. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 }

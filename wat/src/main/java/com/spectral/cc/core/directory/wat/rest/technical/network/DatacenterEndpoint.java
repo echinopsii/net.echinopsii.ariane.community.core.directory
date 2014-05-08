@@ -51,7 +51,7 @@ public class DatacenterEndpoint {
     @Path("/{id:[0-9][0-9]*}")
     public Response displayDatacenter(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] get datacenter : {}", new Object[]{Thread.currentThread().getId(), id, subject.getPrincipal()});
+        log.debug("[{}-{}] get datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
         if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwDC:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
         {
@@ -115,6 +115,52 @@ public class DatacenterEndpoint {
             }
         } else {
             return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display datacenters. Contact your administrator.").build();
+        }
+    }
+
+    @GET
+    @Path("/get")
+    public Response getDatacenter(@QueryParam("name")String name, @QueryParam("id")long id) {
+        if (id!=0) {
+            return displayDatacenter(id);
+        } else if (name != null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] get datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
+            if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwDC:display") ||
+                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                TypedQuery<Datacenter> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.multicastAreas WHERE d.name = :entityName ORDER BY d.name", Datacenter.class);
+                findByIdQuery.setParameter("entityName", name);
+                Datacenter entity;
+                try {
+                    entity = findByIdQuery.getSingleResult();
+                } catch (NoResultException nre) {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+
+                Response ret = null;
+                String result;
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                try {
+                    DatacenterJSON.oneDatacenter2JSON(entity, outStream);
+                    result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
+                    ret = Response.status(Status.OK).entity(result).build();
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                    e.printStackTrace();
+                    result = e.getMessage();
+                    ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity(result).build();
+                } finally {
+                    em.close();
+                    return ret;
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display datacenters. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 }
