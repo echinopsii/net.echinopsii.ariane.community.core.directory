@@ -52,21 +52,27 @@ public class Datacenter implements Serializable
     private String name;
 
     @Column
+    @NotNull
     private String address;
 
     @Column
+    @NotNull
     private String town;
 
     @Column
+    @NotNull
     private Long   zipCode;
 
     @Column
+    @NotNull
     private String country;
 
     @Column
+    @NotNull
     private double gpsLatitude;
 
     @Column
+    @NotNull
     private double gpsLongitude;
 
     @Column

@@ -61,8 +61,9 @@ public class OSInstanceJSON {
         jgenerator.writeStringField(OSI_ADMIN_GATE_URI, osInstance.getAdminGateURI());
         jgenerator.writeStringField(OSI_DESCRIPTION, osInstance.getDescription());
         jgenerator.writeArrayFieldStart(OSI_SUBNETS_ID);
-        for (Subnet subnet : osInstance.getNetworkSubnets())
-            jgenerator.writeNumber(subnet.getId());
+        if (osInstance.getNetworkSubnets()!=null)
+            for (Subnet subnet : osInstance.getNetworkSubnets())
+                jgenerator.writeNumber(subnet.getId());
         jgenerator.writeEndArray();
         jgenerator.writeNumberField(OSI_EMBEDDING_OSI_ID, ((osInstance.getEmbeddingOSInstance()!=null) ? osInstance.getEmbeddingOSInstance().getId():-1));
         jgenerator.writeArrayFieldStart(OSI_EMBEDDED_OSI_ID);

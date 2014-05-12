@@ -18,11 +18,14 @@
  */
 package com.spectral.cc.core.directory.wat.rest.organisational;
 
+import com.spectral.cc.core.directory.base.model.organisational.Application;
 import com.spectral.cc.core.directory.base.model.organisational.Company;
+import com.spectral.cc.core.directory.base.model.technical.system.OSType;
 import com.spectral.cc.core.directory.wat.json.ToolBox;
 import com.spectral.cc.core.directory.wat.json.ds.organisational.ApplicationJSON;
 import com.spectral.cc.core.directory.wat.json.ds.organisational.CompanyJSON;
 import com.spectral.cc.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
+import com.spectral.cc.core.directory.wat.rest.technical.system.OSTypeEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -48,6 +51,47 @@ public class CompanyEndpoint {
     private static final Logger log = LoggerFactory.getLogger(CompanyEndpoint.class);
     private EntityManager em;
 
+    public static Response companyToJSON(Company entity) {
+        Response ret = null;
+        String result;
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        try {
+            CompanyJSON.oneCompany2JSON(entity, outStream);
+            result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
+            ret = Response.status(Status.OK).entity(result).build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+            result = e.getMessage();
+            ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity(result).build();
+        }
+        return ret;
+    }
+
+    public static Company findCompanyById(EntityManager em, Long id) {
+        TypedQuery<Company> findByIdQuery = em.createQuery("SELECT DISTINCT c FROM Company c LEFT JOIN FETCH c.applications WHERE c.id = :entityId ORDER BY c.id", Company.class);
+        findByIdQuery.setParameter("entityId", id);
+        Company entity;
+        try {
+            entity = findByIdQuery.getSingleResult();
+        } catch (NoResultException nre) {
+            entity = null;
+        }
+        return entity;
+    }
+
+    public static Company findCompanyByName(EntityManager em, String name) {
+        TypedQuery<Company> findByNameQuery = em.createQuery("SELECT DISTINCT c FROM Company c LEFT JOIN FETCH c.applications WHERE c.name = :entityName ORDER BY c.name", Company.class);
+        findByNameQuery.setParameter("entityName", name);
+        Company entity;
+        try {
+            entity = findByNameQuery.getSingleResult();
+        } catch (NoResultException nre) {
+            entity = null;
+        }
+        return entity;
+    }
+
     @GET
     @Path("/{id:[0-9][0-9]*}")
     public Response displayCompany(@PathParam("id") Long id) {
@@ -57,32 +101,15 @@ public class CompanyEndpoint {
             subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            TypedQuery<Company> findByIdQuery = em.createQuery("SELECT DISTINCT c FROM Company c LEFT JOIN FETCH c.applications WHERE c.id = :entityId ORDER BY c.id", Company.class);
-            findByIdQuery.setParameter("entityId", id);
-            Company entity;
-            try {
-                entity = findByIdQuery.getSingleResult();
-            } catch (NoResultException nre) {
+            Company entity = findCompanyById(em, id);
+            if (entity == null) {
                 em.close();
                 return Response.status(Status.NOT_FOUND).build();
             }
 
-            Response ret = null;
-            String result;
-            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            try {
-                CompanyJSON.oneCompany2JSON(entity, outStream);
-                result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
-                ret = Response.status(Status.OK).entity(result).build();
-            } catch (Exception e) {
-                log.error(e.getMessage());
-                e.printStackTrace();
-                result = e.getMessage();
-                ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity(result).build();
-            } finally {
-                em.close();
-                return ret;
-            }
+            Response ret = companyToJSON(entity);
+            em.close();
+            return ret;
         } else {
             return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display companies. Contact your administrator.").build();
         }
@@ -125,42 +152,346 @@ public class CompanyEndpoint {
              return displayCompany(id);
         } else if (name != null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] get company : {},{}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
+            log.debug("[{}-{}] get company : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
             if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgCompany:display") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                TypedQuery<Company> findByIdQuery = em.createQuery("SELECT DISTINCT c FROM Company c LEFT JOIN FETCH c.applications WHERE c.name = :entityName ORDER BY c.name", Company.class);
-                findByIdQuery.setParameter("entityName", name);
-                Company entity;
-                try {
-                    entity = findByIdQuery.getSingleResult();
-                } catch (NoResultException nre) {
+                Company entity = findCompanyByName(em, name);
+                if (entity == null) {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
                 }
 
-                Response ret = null;
-                String result;
-                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                try {
-                    CompanyJSON.oneCompany2JSON(entity, outStream);
-                    result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
-                    ret = Response.status(Status.OK).entity(result).build();
-                } catch (Exception e) {
-                    log.error(e.getMessage());
-                    e.printStackTrace();
-                    result = e.getMessage();
-                    ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity(result).build();
-                } finally {
-                    em.close();
-                    return ret;
-                }
+                Response ret = companyToJSON(entity);
+                em.close();
+                return ret;
             } else {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display companies. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/create")
+    public Response createCompany(@QueryParam("name")String name, @QueryParam("description")String description) {
+        if (name!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] create company : {},{}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, description});
+            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Company entity = findCompanyByName(em, name);
+                if (entity == null) {
+                    entity = new Company().setNameR(name).setDescriptionR(description);
+                    try {
+                        em.getTransaction().begin();
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } catch (Throwable t) {
+                        if(em.getTransaction().isActive())
+                            em.getTransaction().rollback();
+                        em.close();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating company " + entity.getName() + " : " + t.getMessage()).build();
+                    }
+                }
+
+                Response ret = companyToJSON(entity);
+                em.close();
+                return ret;
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create companies. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name is not defined. You must define this parameter.").build();
+        }
+    }
+
+    @GET
+    @Path("/delete")
+    public Response deleteCompany(@QueryParam("id")Long id) {
+        if (id!=0) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] delete company : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
+            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:delete") ||
+                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Company entity = findCompanyById(em, id);
+                if (entity != null) {
+                    try {
+                        em.getTransaction().begin();
+                        for (OSType osType : entity.getOsTypes())
+                            osType.setCompany(null);
+                        for (Application application : entity.getApplications())
+                            application.setCompany(null);
+                        em.remove(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                        em.close();
+                        return Response.status(Status.OK).entity("Company " + id + " has been successfully deleted").build();
+                    } catch (Throwable t) {
+                        if(em.getTransaction().isActive())
+                            em.getTransaction().rollback();
+                        em.close();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while deleting company " + entity.getName() + " : " + t.getMessage()).build();
+                    }
+                } else {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete companies. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define this parameter.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/name")
+    public Response updateCompanyName(@QueryParam("id")Long id, @QueryParam("name")String name) {
+        if (id!=0 && name!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update company {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
+            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Company entity = findCompanyById(em, id);
+                if (entity != null) {
+                    try {
+                        em.getTransaction().begin();
+                        entity.setName(name);
+                        em.flush();
+                        em.getTransaction().commit();
+                        em.close();
+                        return Response.status(Status.OK).entity("Company " + id + " has been successfully updated with name " + name).build();
+                    } catch (Throwable t) {
+                        if(em.getTransaction().isActive())
+                            em.getTransaction().rollback();
+                        em.close();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating company " + entity.getName() + " : " + t.getMessage()).build();
+                    }
+                } else {
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/description")
+    public Response updateCompanyDescription(@QueryParam("id")Long id, @QueryParam("description")String description) {
+        if (id!=0 && description!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update company {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, description});
+            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Company entity = findCompanyById(em, id);
+                if (entity != null) {
+                    try {
+                        em.getTransaction().begin();
+                        entity.setDescription(description);
+                        em.flush();
+                        em.getTransaction().commit();
+                        em.close();
+                        return Response.status(Status.OK).entity("Company " + id + " has been successfully updated with description " + description).build();
+                    } catch (Throwable t) {
+                        if(em.getTransaction().isActive())
+                            em.getTransaction().rollback();
+                        em.close();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating company " + entity.getName() + " : " + t.getMessage()).build();
+                    }
+                } else {
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/applications/add")
+    public Response updateCompanyAddApplication(@QueryParam("id")Long id, @QueryParam("applicationID")Long applicationID) {
+        if (id!=0 && applicationID!=0) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update company {} by adding application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, applicationID});
+            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone")) {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Company entity = findCompanyById(em, id);
+                if (entity != null) {
+                    Application application = ApplicationEndpoint.findApplicationById(em, applicationID);
+                    if (application!=null) {
+                        try {
+                            em.getTransaction().begin();
+                            entity.getApplications().add(application);
+                            if (application.getCompany()!=null && !application.getColorCode().equals(entity))
+                                application.getCompany().getApplications().remove(application);
+                            application.setCompany(entity);
+                            em.flush();
+                            em.getTransaction().commit();
+                            em.close();
+                            return Response.status(Status.OK).entity("Company " + id + " has been successfully updated by adding application " + applicationID).build();
+                        } catch (Throwable t) {
+                            if(em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating company " + entity.getName() + " : " + t.getMessage()).build();
+                        }
+                    } else {
+                        return Response.status(Status.NOT_FOUND).entity("Application " + id + " not found.").build();
+                    }
+                } else {
+                    return Response.status(Status.NOT_FOUND).entity("Company " + id + " not found.").build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or applicationID are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/applications/delete")
+    public Response updateCompanyDeleteApplication(@QueryParam("id")Long id, @QueryParam("applicationID")Long applicationID) {
+        if (id!=0 && applicationID!=0) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update company {} by deleting application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, applicationID});
+            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Company entity = findCompanyById(em, id);
+                if (entity != null) {
+                    Application application = ApplicationEndpoint.findApplicationById(em, applicationID);
+                    if (application!=null) {
+                        try {
+                            em.getTransaction().begin();
+                            entity.getApplications().remove(application);
+                            if (application.getColorCode()!=null && application.getCompany().equals(entity))
+                                application.setCompany(null);
+                            em.flush();
+                            em.getTransaction().commit();
+                            em.close();
+                            return Response.status(Status.OK).entity("Company " + id + " has been successfully updated by deleting application " + applicationID).build();
+                        } catch (Throwable t) {
+                            if(em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating company " + entity.getName() + " : " + t.getMessage()).build();
+                        }
+                    } else {
+                        return Response.status(Status.NOT_FOUND).entity("Application " + id + " not found.").build();
+                    }
+                } else {
+                    return Response.status(Status.NOT_FOUND).entity("Company " + id + " not found.").build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or applicationID are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/ostypes/add")
+    public Response updateCompanyAddOSType(@QueryParam("id")Long id, @QueryParam("ostypeID")Long ostypeID) {
+        if (id!=0 && ostypeID!=0) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update company {} by adding OS Type : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, ostypeID});
+            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone")) {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Company entity = findCompanyById(em, id);
+                if (entity != null) {
+                    OSType osType = OSTypeEndpoint.findOSTypeById(em, ostypeID);
+                    if (osType!=null) {
+                        try {
+                            em.getTransaction().begin();
+                            entity.getOsTypes().add(osType);
+                            if (osType.getCompany()!=null && !osType.getCompany().equals(entity))
+                                osType.getCompany().getOsTypes().remove(osType);
+                            osType.setCompany(entity);
+                            em.flush();
+                            em.getTransaction().commit();
+                            em.close();
+                            return Response.status(Status.OK).entity("Company " + id + " has been successfully updated by adding os type " + ostypeID).build();
+                        } catch (Throwable t) {
+                            if(em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating company " + entity.getName() + " : " + t.getMessage()).build();
+                        }
+                    } else {
+                        return Response.status(Status.NOT_FOUND).entity("OS Type " + id + " not found.").build();
+                    }
+                } else {
+                    return Response.status(Status.NOT_FOUND).entity("Company " + id + " not found.").build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ostypeID are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/ostypes/delete")
+    public Response updateCompanyDeleteOSType(@QueryParam("id")Long id, @QueryParam("ostypeID")Long ostypeID) {
+        if (id!=0 && ostypeID!=0) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update company {} by deleting OS Type : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, ostypeID});
+            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone")) {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Company entity = findCompanyById(em, id);
+                if (entity != null) {
+                    OSType osType = OSTypeEndpoint.findOSTypeById(em, ostypeID);
+                    if (osType!=null) {
+                        try {
+                            em.getTransaction().begin();
+                            entity.getOsTypes().remove(osType);
+                            if (osType.getCompany()!=null && osType.getCompany().equals(entity))
+                                osType.setCompany(null);
+                            em.flush();
+                            em.getTransaction().commit();
+                            em.close();
+                            return Response.status(Status.OK).entity("Company " + id + " has been successfully updated by deleting os type " + ostypeID).build();
+                        } catch (Throwable t) {
+                            if(em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating company " + entity.getName() + " : " + t.getMessage()).build();
+                        }
+                    } else {
+                        return Response.status(Status.NOT_FOUND).entity("OS Type " + id + " not found.").build();
+                    }
+                } else {
+                    return Response.status(Status.NOT_FOUND).entity("Company " + id + " not found.").build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ostypeID are not defined. You must define these parameters.").build();
         }
     }
 }

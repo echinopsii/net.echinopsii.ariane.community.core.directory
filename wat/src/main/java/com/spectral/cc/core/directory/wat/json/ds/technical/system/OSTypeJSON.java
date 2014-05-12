@@ -53,7 +53,7 @@ public class OSTypeJSON {
         jgenerator.writeNumberField(OST_VERSION, osType.getVersion());
         jgenerator.writeStringField(OST_NAME, osType.getName());
         jgenerator.writeStringField(OST_ARCHITECTURE, osType.getArchitecture());
-        jgenerator.writeNumberField(OST_CMP_ID, osType.getCompany().getId());
+        jgenerator.writeNumberField(OST_CMP_ID, ((osType.getCompany()!=null) ? osType.getCompany().getId():-1));
         jgenerator.writeArrayFieldStart(OST_OSI_ID);
         for (OSInstance osi : osType.getOsInstances())
             jgenerator.writeNumber(osi.getId());

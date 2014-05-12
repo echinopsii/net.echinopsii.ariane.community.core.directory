@@ -48,6 +48,7 @@ public class OSType implements Serializable
     private String name;
 
     @Column
+    @NotNull
     private String architecture;
 
     @ManyToOne(fetch = FetchType.EAGER)

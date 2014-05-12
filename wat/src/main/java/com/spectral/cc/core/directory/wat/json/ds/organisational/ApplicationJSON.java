@@ -59,8 +59,8 @@ public class ApplicationJSON {
         for (OSInstance osi : application.getOsInstances())
             jgenerator.writeNumber(osi.getId());
         jgenerator.writeEndArray();
-        jgenerator.writeNumberField(APP_TEAM_ID, application.getTeam().getId());
-        jgenerator.writeNumberField(APP_COMPANY_ID, application.getCompany().getId());
+        jgenerator.writeNumberField(APP_TEAM_ID, ((application.getTeam()!=null) ? application.getTeam().getId(): -1));
+        jgenerator.writeNumberField(APP_COMPANY_ID, ((application.getCompany()!=null) ? application.getCompany().getId() : -1));
         jgenerator.writeEndObject();
     }
 

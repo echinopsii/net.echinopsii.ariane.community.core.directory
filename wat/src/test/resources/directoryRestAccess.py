@@ -127,7 +127,53 @@ r.status_code
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
+applicationParams={'name':'DPP','shortName':'DPP','description':'A fake app','colorCode':'ffffff'}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/create', params=applicationParams)
+r.status_code
+#200
+# pprint(r.json())
+#{'applicationColorCode': 'ffffff',
+# 'applicationCompanyID': 0,
+# 'applicationDescription': 'A fake app',
+# 'applicationID': 11,
+# 'applicationName': 'DPP',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'DPP',
+# 'applicationTeamID': 0,
+# 'applicationVersion': 0}
+dppID=r.json().get('applicationID')
 
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/update/name', params={'id':dppID, 'name':'dPP'})
+r.status_code
+#200
+#r.text
+#'Application 11 has been successfully updated with name dPP'
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/update/name', params={'id':dppID, 'name':'DPP'})
+r.status_code
+#200
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/update/shortName', params={'id':dppID, 'shortName':'dPP'})
+r.status_code
+#200
+#r.text
+#'Application 11 has been successfully updated with short name dPP'
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/update/shortName', params={'id':dppID, 'shortName':'DPP'})
+r.status_code
+#200
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/update/description', params={'id':dppID, 'description':'another fake app'})
+r.status_code
+#200
+#r.text
+#'Application 11 has been successfully updated with description another fake app'
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/update/colorCode', params={'id':dppID, 'colorCode':'ddffddff'})
+r.status_code
+#200
+#r.text
+#'Application 11 has been successfully updated with color code ddffddff'
 
 
 
@@ -187,6 +233,7 @@ r.status_code
 companyParams = {'name':"Tibco"}
 r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/get', params=companyParams);
 r.status_code
+tibcoCmp = r.json().get('companyID')
 #200
 #pprint(r.json())
 #{'companyApplicationsID': [1],
@@ -202,6 +249,123 @@ r.status_code
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/update/applications/add', params={'id':tibcoCmp,'applicationID':dppID})
+r.status_code
+#200
+#r.text
+#'Company 1 has been successfully updated by adding application 11'
+
+companyParams = {'name':"Tibco"}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/get', params=companyParams);
+r.status_code
+#200
+#pprint(r.json())
+#{'companyApplicationsID': [1, 11],
+# 'companyDescription': 'Tibco',
+# 'companyID': 1,
+# 'companyName': 'Tibco',
+# 'companyOSTypesID': [],
+# 'companyVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/get/', params={'id':dppID});
+r.status_code
+#200
+#pprint(r.json())
+#{'applicationColorCode': 'ffffff',
+# 'applicationCompanyID': 1,
+# 'applicationDescription': 'A fake app',
+# 'applicationID': 11,
+# 'applicationName': 'DPP',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'DPP',
+# 'applicationTeamID': 0,
+# 'applicationVersion': 3}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/update/applications/delete', params={'id':tibcoCmp,'applicationID':dppID})
+r.status_code
+#200
+#r.text
+#'Company 1 has been successfully updated by deleting application 11'
+
+companyParams = {'name':"Tibco"}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/get', params=companyParams);
+r.status_code
+#200
+#pprint(r.json())
+#{'companyApplicationsID': [1],
+# 'companyDescription': 'Tibco',
+# 'companyID': 1,
+# 'companyName': 'Tibco',
+# 'companyOSTypesID': [],
+# 'companyVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r.status_code
+#200
+#pprint(r.json())
+#{'applicationColorCode': 'ffffff',
+# 'applicationCompanyID': 0,
+# 'applicationDescription': 'A fake app',
+# 'applicationID': 11,
+# 'applicationName': 'DPP',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'DPP',
+# 'applicationTeamID': 0,
+# 'applicationVersion': 4}
+
+companyParams = {'name':"Spectral"}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/get', params=companyParams);
+r.status_code
+spectralCmp = r.json().get('companyID')
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/update/company', params={'id':dppID, 'companyID':spectralCmp})
+r.text
+#'Application 11 has been successfully updated with company 3'
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/get', params={'id':dppID})
+r.status_code
+#200
+#pprint(r.json())
+#{'applicationColorCode': 'ddffddff',
+# 'applicationCompanyID': 3,
+# 'applicationDescription': 'another fake app',
+# 'applicationID': 11,
+# 'applicationName': 'DPP',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'DPP',
+# 'applicationTeamID': 0,
+# 'applicationVersion': 11}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/get', params={'id':spectralCmp})
+r.status_code
+#200
+#pprint(r.json())
+#{'companyApplicationsID': [3, 4, 5, 11],
+# 'companyDescription': 'The world is sound',
+# 'companyID': 3,
+# 'companyName': 'Spectral',
+# 'companyOSTypesID': [],
+# 'companyVersion': 1}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/create', params={'name':'Oracle','description':'the devil company'})
+r.status_code
+#200
+#pprint(r.json())
+#{'companyApplicationsID': [],
+# 'companyDescription': 'the devil company',
+# 'companyID': 25,
+# 'companyName': 'Oracle',
+# 'companyOSTypesID': [],
+# 'companyVersion': 0}
+oracleCmp=r.json().get('companyID')
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/update/name', params={'id':oracleCmp,'name':'Oracle Corp'})
+r.status_code
+#200
+r.text
+#'Company 25 has been successfully updated with name Oracle Corp'
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/update/description', params={'id':oracleCmp,'description':'The devil company'})
+r.status_code
+#200
+r.text
+#'Company 25 has been successfully updated with description The devil company'
 
 
 
@@ -255,7 +419,28 @@ r.status_code
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/create', params={'name':'HOM','description':'Homologation environment'});
+r.status_code
+#200
+#pprint(r.json())
+#{'environmentDescription': 'Homologation environment',
+# 'environmentID': 2,
+# 'environmentName': 'HOM',
+# 'environmentOSInstancesID': [],
+# 'environmentVersion': 0}
+qaEnv = r.json().get('environmentID')
 
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/update/name', params={'id':qaEnv,'name':'QA'});
+r.status_code
+#200
+r.text
+#'Environment 2 has been successfully updated with name QA'
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/update/description', params={'id':qaEnv,'description':'QA environment'});
+r.status_code
+#200
+r.text
+#'Environment 2 has been successfully updated with name QA'
 
 
 
@@ -352,6 +537,139 @@ r.status_code
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
+r  = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/create', params={'name':'DEV DPP','description':'Dev. DPP team','colorCode':'1f45de'})
+r.status_code
+#200
+#pprint(r.json())
+#{'teamApplicationsID': [],
+# 'teamColorCode': '1f45de',
+# 'teamDescription': 'DPP dev team',
+# 'teamID': 10,
+# 'teamName': 'DEV DPP',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 0}
+dppTeamID = r.json().get('teamID')
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/update/name', params={'id':dppTeamID,'name':'DEV dpp'})
+r.status_code
+#200
+#r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/get', params={'id':dppTeamID})
+#pprint(r.json())
+#{'teamApplicationsID': [],
+# 'teamColorCode': '1f45de',
+# 'teamDescription': 'DPP dev team',
+# 'teamID': 10,
+# 'teamName': 'DEV dpp',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 2}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/update/name', params={'id':dppTeamID,'name':'DEV DPP'})
+r.status_code
+#200
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/update/description', params={'id':dppTeamID,'description':'Dev. DPP team'})
+r.status_code
+#200
+#r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/get', params={'id':dppTeamID})
+#pprint(r.json())
+#{'teamApplicationsID': [],
+# 'teamColorCode': '1f45de',
+# 'teamDescription': 'Dev. DPP team',
+# 'teamID': 10,
+# 'teamName': 'DEV DPP',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 3}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/delete', params={'id':dppTeamID})
+r.status_code
+#200
+r.text
+#'Team 10 has been successfully removed'
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams')
+#pprint(r.json())
+#{'teams': [{'teamApplicationsID': [2],
+#            'teamColorCode': '054d31',
+#            'teamDescription': 'Unix server support team',
+#            'teamID': 1,
+#            'teamName': 'SRV UNIX',
+#            'teamOSInstancesID': [1, 2, 3, 4, 5],
+#            'teamVersion': 7},
+#           {'teamApplicationsID': [1],
+#            'teamColorCode': '11301f',
+#            'teamDescription': 'Middleware bus support team',
+#            'teamID': 2,
+#            'teamName': 'MDW BUS',
+#            'teamOSInstancesID': [2, 3, 4, 5],
+#            'teamVersion': 8},
+#           {'teamApplicationsID': [3],
+#            'teamColorCode': '71ab90',
+#            'teamDescription': 'Dev. APP team',
+#            'teamID': 3,
+#            'teamName': 'DEV APP',
+#            'teamOSInstancesID': [],
+#            'teamVersion': 0},
+#           {'teamApplicationsID': [4],
+#            'teamColorCode': 'ad853b',
+#            'teamDescription': 'Dev. BPP team',
+#            'teamID': 4,
+#            'teamName': 'DEV BPP',
+#            'teamOSInstancesID': [],
+#            'teamVersion': 0},
+#           {'teamApplicationsID': [5],
+#            'teamColorCode': 'b799cf',
+#            'teamDescription': 'Dev. CPP team',
+#            'teamID': 5,
+#            'teamName': 'DEV CPP',
+#            'teamOSInstancesID': [],
+#            'teamVersion': 1},
+#           {'teamApplicationsID': [10],
+#            'teamColorCode': '946fde',
+#            'teamDescription': 'MDW AKKA TEAM',
+#            'teamID': 9,
+#            'teamName': 'MDW AKKA',
+#            'teamOSInstancesID': [],
+#            'teamVersion': 4}]}
+r  = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/create', params={'name':'DEV DPP','description':'Dev. DPP team','colorCode':'1f45de'})
+r.status_code
+#200
+#pprint(r.json())
+#{'teamApplicationsID': [],
+# 'teamColorCode': '1f45de',
+# 'teamDescription': 'Dev. DPP team',
+# 'teamID': 11,
+# 'teamName': 'DEV DPP',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 0}
+dppTeamID = r.json().get('teamID')
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/update/applications/add', params={'id':dppTeamID,'applicationID':dppID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/get', params={'id':dppTeamID})
+r.status_code
+#200
+#pprint(r.json())
+#{'teamApplicationsID': [11],
+# 'teamColorCode': '1f45de',
+# 'teamDescription': 'Dev. DPP team',
+# 'teamID': 11,
+# 'teamName': 'DEV DPP',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/get', params={'id':dppID})
+r.status_code
+#200
+#pprint(r.json())
+#{'applicationColorCode': 'ddffddff',
+# 'applicationCompanyID': 3,
+# 'applicationDescription': 'another fake app',
+# 'applicationID': 11,
+# 'applicationName': 'DPP',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'DPP',
+# 'applicationTeamID': 11,
+# 'applicationVersion': 12}
+
 
 
 
@@ -431,7 +749,108 @@ r.status_code
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/create',
+          params={'name':'Somewhere in hell [DR]', 'address':"Devil's Island", 'zipCode':666, 'town':"Devil's Island", 'country':'France',
+                  'gpsLatitude':5.295366, 'gpsLongitude':-52.582179, 'description':'A fantasy DR DC'})
+r.status_code
+#200
+#pprint(r.json())
+#{'datacenterAddress': "Devil's Island",
+# 'datacenterCountry': 'France',
+# 'datacenterDescription': 'A fantasy DR DC',
+# 'datacenterGPSLat': 5.295366,
+# 'datacenterGPSLng': -52.582179,
+# 'datacenterID': 2,
+# 'datacenterMulticastAreasID': [],
+# 'datacenterName': 'Somewhere in hell [DR]',
+# 'datacenterSubnetsID': [],
+# 'datacenterTown': "Devil's Island",
+# 'datacenterVersion': 0,
+# 'datacenterZipCode': 666}
+devilDCID=r.json().get('datacenterID')
 
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/update/name', params={'id':devilDCID, 'name':'Hell (DR)'})
+r.status_code
+#200
+r.text
+#'Datacenter 2 has been successfully updated with name Hell (DR)'
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
+r.status_code
+#200
+#pprint(r.json())
+#{'datacenterAddress': "Devil's Island",
+# 'datacenterCountry': 'France',
+# 'datacenterDescription': 'A fantasy DR DC',
+# 'datacenterGPSLat': 5.295366,
+# 'datacenterGPSLng': -52.582179,
+# 'datacenterID': 2,
+# 'datacenterMulticastAreasID': [],
+# 'datacenterName': 'Hell (DR)',
+# 'datacenterSubnetsID': [],
+# 'datacenterTown': "Devil's Island",
+# 'datacenterVersion': 1,
+# 'datacenterZipCode': 666}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/update/description', params={'id':devilDCID, 'description':'A fantasy DC for DR'})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
+r.status_code
+#200
+#pprint(r.json())
+#{'datacenterAddress': "Devil's Island",
+# 'datacenterCountry': 'France',
+# 'datacenterDescription': 'A fantasy DC for DR',
+# 'datacenterGPSLat': 5.295366,
+# 'datacenterGPSLng': -52.582179,
+# 'datacenterID': 2,
+# 'datacenterMulticastAreasID': [],
+# 'datacenterName': 'Hell (DR)',
+# 'datacenterSubnetsID': [],
+# 'datacenterTown': "Devil's Island",
+# 'datacenterVersion': 2,
+# 'datacenterZipCode': 666}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/update/fullAddress', params={'id':devilDCID, 'address':'dreyfus hole', 'zipCode':666666, 'town':'666 Island', 'country':'France'})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
+r.status_code
+#200
+#pprint(r.json())
+#{'datacenterAddress': 'dreyfus hole',
+# 'datacenterCountry': 'France',
+# 'datacenterDescription': 'A fantasy DC for DR',
+# 'datacenterGPSLat': 5.295366,
+# 'datacenterGPSLng': -52.582179,
+# 'datacenterID': 2,
+# 'datacenterMulticastAreasID': [],
+# 'datacenterName': 'Hell (DR)',
+# 'datacenterSubnetsID': [],
+# 'datacenterTown': '666 Island',
+# 'datacenterVersion': 3,
+# 'datacenterZipCode': 666666}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/update/gpsCoord', params={'id':devilDCID, 'gpsLatitude':5.295666, 'gpsLongitude':-52.582169})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
+r.status_code
+#200
+#pprint(r.json())
+#{'datacenterAddress': 'dreyfus hole',
+# 'datacenterCountry': 'France',
+# 'datacenterDescription': 'A fantasy DC for DR',
+# 'datacenterGPSLat': 5.295666,
+# 'datacenterGPSLng': -52.582169,
+# 'datacenterID': 2,
+# 'datacenterMulticastAreasID': [],
+# 'datacenterName': 'Hell (DR)',
+# 'datacenterSubnetsID': [],
+# 'datacenterTown': '666 Island',
+# 'datacenterVersion': 5,
+# 'datacenterZipCode': 666666}
 
 
 
@@ -482,11 +901,146 @@ r.status_code
 # 'multicastAreaSubnetsID': [1],
 # 'multicastAreaVersion': 5}
 
-r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/get');
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get');
 r.status_code
 #500
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/create', params={'name':"Devil's mind", 'description':"666 mind"})
+r.status_code
+#200
+#pprint(r.json())
+#{'multicastAreaDatacentersID': [],
+# 'multicastAreaDescription': '666 mind',
+# 'multicastAreaID': 2,
+# 'multicastAreaName': "Devil's mind",
+# 'multicastAreaSubnetsID': [],
+# 'multicastAreaVersion': 0}
+devilMareaID = r.json().get("multicastAreaID")
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/update/multicastareas/add', params={'id':devilDCID, 'multicastareaID':devilMareaID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
+r.status_code
+#200
+#pprint(r.json())
+#{'datacenterAddress': 'dreyfus hole',
+# 'datacenterCountry': 'France',
+# 'datacenterDescription': 'A fantasy DC for DR',
+# 'datacenterGPSLat': 5.295666,
+# 'datacenterGPSLng': -52.582169,
+# 'datacenterID': 2,
+# 'datacenterMulticastAreasID': [2],
+# 'datacenterName': 'Hell (DR)',
+# 'datacenterSubnetsID': [],
+# 'datacenterTown': '666 Island',
+# 'datacenterVersion': 6,
+# 'datacenterZipCode': 666666}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
+r.status_code
+#200
+#pprint(r.json())
+#{'multicastAreaDatacentersID': [2],
+# 'multicastAreaDescription': '666 mind',
+# 'multicastAreaID': 2,
+# 'multicastAreaName': "Devil's mind",
+# 'multicastAreaSubnetsID': [],
+# 'multicastAreaVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/update/multicastareas/delete', params={'id':devilDCID, 'multicastareaID':devilMareaID})
+r.status_code
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
+r.status_code
+#200
+#pprint(r.json())
+#{'datacenterAddress': 'dreyfus hole',
+# 'datacenterCountry': 'France',
+# 'datacenterDescription': 'A fantasy DC for DR',
+# 'datacenterGPSLat': 5.295666,
+# 'datacenterGPSLng': -52.582169,
+# 'datacenterID': 2,
+# 'datacenterMulticastAreasID': [],
+# 'datacenterName': 'Hell (DR)',
+# 'datacenterSubnetsID': [],
+# 'datacenterTown': '666 Island',
+# 'datacenterVersion': 6,
+# 'datacenterZipCode': 666666}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
+r.status_code
+#200
+#pprint(r.json())
+#{'multicastAreaDatacentersID': [],
+# 'multicastAreaDescription': '666 mind',
+# 'multicastAreaID': 2,
+# 'multicastAreaName': "Devil's mind",
+# 'multicastAreaSubnetsID': [],
+# 'multicastAreaVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/update/name', params={'id':devilMareaID, 'name':'Mind of devil'})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
+r.status_code
+#200
+#pprint(r.json())
+#{'multicastAreaDatacentersID': [],
+# 'multicastAreaDescription': '666 mind',
+# 'multicastAreaID': 2,
+# 'multicastAreaName': "Mind of devil",
+# 'multicastAreaSubnetsID': [],
+# 'multicastAreaVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/update/description', params={'id':devilMareaID, 'description':'just a crazy mind'})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
+r.status_code
+#200
+#pprint(r.json())
+#{'multicastAreaDatacentersID': [],
+# 'multicastAreaDescription': 'just a crazy mind',
+# 'multicastAreaID': 2,
+# 'multicastAreaName': "Mind of devil",
+# 'multicastAreaSubnetsID': [],
+# 'multicastAreaVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/update/datacenters/add', params={'id':devilMareaID, 'datacenterID':devilDCID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
+r.status_code
+#200
+#pprint(r.json())
+#{'multicastAreaDatacentersID': [2],
+# 'multicastAreaDescription': 'just a crazy mind',
+# 'multicastAreaID': 2,
+# 'multicastAreaName': "Mind of devil",
+# 'multicastAreaSubnetsID': [],
+# 'multicastAreaVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/update/datacenters/delete', params={'id':devilMareaID, 'datacenterID':devilDCID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
+r.status_code
+#200
+#pprint(r.json())
+#{'multicastAreaDatacentersID': [],
+# 'multicastAreaDescription': 'just a crazy mind',
+# 'multicastAreaID': 2,
+# 'multicastAreaName': "Mind of devil",
+# 'multicastAreaSubnetsID': [],
+# 'multicastAreaVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/update/datacenters/add', params={'id':devilMareaID, 'datacenterID':devilDCID})
+r.status_code
+#200
+
+
+
+
 
 
 
@@ -581,6 +1135,415 @@ r.status_code
 #500
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/create', params={'name':'fake.subnet', 'subnetIP':'192.168.66.0', 'subnetMask':'255.255.255.0',
+                                                                                               'type':'TOTO', 'description':'a fake subnet'})
+r.status_code
+#500
+r.text
+#'Wrong subnet type TOTO. Available subnet types are : [LAN, MAN, WAN]'
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/create', params={'name':'fake.subnet', 'subnetIP':'192.168.66.0', 'subnetMask':'255.255.255.0',
+                                                                                               'type':'LAN', 'description':'a fake subnet'})
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'a fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.66.0',
+# 'subnetMask': '255.255.255.0',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.subnet',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'LAN',
+# 'subnetVersion': 0}
+fakesubnetID = r.json().get('subnetID')
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/name', params={'id':fakesubnetID,'name':'fake.lan'});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'a fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.66.0',
+# 'subnetMask': '255.255.255.0',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'LAN',
+# 'subnetVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/subnetip', params={'id':fakesubnetID,'subnetIP':'192.168.69.69'});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'a fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.0',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'LAN',
+# 'subnetVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/subnetmask', params={'id':fakesubnetID,'subnetMask':'255.255.255.255'});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'a fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.255',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'LAN',
+# 'subnetVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/description', params={'id':fakesubnetID,'description':'A fake subnet'});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'A fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.255',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'LAN',
+# 'subnetVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/type', params={'id':fakesubnetID,'type':'TOTO'});
+r.status_code
+#500
+r.text
+#'Wrong subnet type TOTO. Available subnet types are : [LAN, MAN, WAN]'
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/type', params={'id':fakesubnetID,'type':'MAN'});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'A fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.255',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'MAN',
+# 'subnetVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/multicastarea', params={'id':fakesubnetID,'multicastareaID':devilMareaID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'A fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.255',
+# 'subnetMulticastAreaID': 2,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'MAN',
+# 'subnetVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID});
+r.status_code
+#200
+#pprint(r.json())
+#{'multicastAreaDatacentersID': [],
+# 'multicastAreaDescription': 'just a crazy mind',
+# 'multicastAreaID': 2,
+# 'multicastAreaName': "Mind of devil",
+# 'multicastAreaSubnetsID': [4],
+# 'multicastAreaVersion': 0}
+
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/multicastarea', params={'id':fakesubnetID,'multicastareaID':-1});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'A fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.255',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'MAN',
+# 'subnetVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID});
+r.status_code
+#200
+#pprint(r.json())
+#{'multicastAreaDatacentersID': [],
+# 'multicastAreaDescription': 'just a crazy mind',
+# 'multicastAreaID': 2,
+# 'multicastAreaName': "Mind of devil",
+# 'multicastAreaSubnetsID': [],
+# 'multicastAreaVersion': 0}
+
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/update/subnets/add', params={'id':devilMareaID, 'subnetID':fakesubnetID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'A fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.255',
+# 'subnetMulticastAreaID': 2,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'MAN',
+# 'subnetVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID});
+r.status_code
+#200
+#pprint(r.json())
+#{'multicastAreaDatacentersID': [],
+# 'multicastAreaDescription': 'just a crazy mind',
+# 'multicastAreaID': 2,
+# 'multicastAreaName': "Mind of devil",
+# 'multicastAreaSubnetsID': [4],
+# 'multicastAreaVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/update/subnets/delete', params={'id':devilMareaID, 'subnetID':fakesubnetID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'A fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.255',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'MAN',
+# 'subnetVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID});
+r.status_code
+#200
+#pprint(r.json())
+#{'multicastAreaDatacentersID': [],
+# 'multicastAreaDescription': 'just a crazy mind',
+# 'multicastAreaID': 2,
+# 'multicastAreaName': "Mind of devil",
+# 'multicastAreaSubnetsID': [],
+# 'multicastAreaVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/multicastarea', params={'id':fakesubnetID,'multicastareaID':devilMareaID});
+r.status_code
+#200
+
+
+
+
+
+
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes');
+r.status_code
+#200
+#pprint(r.json())
+#{'osTypes': [{'osTypeArchitecture': 'x86_64',
+#              'osTypeCompanyID': 2,
+#              'osTypeID': 1,
+#              'osTypeName': 'Fedora 18',
+#              'osTypeOSInstancesID': [1, 2, 3, 4, 5],
+#              'osTypeVersion': 8}]}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/1');
+r.status_code
+#200
+#pprint(r.json())
+#{'osTypeArchitecture': 'x86_64',
+# 'osTypeCompanyID': 2,
+# 'osTypeID': 1,
+# 'osTypeName': 'Fedora 18',
+# 'osTypeOSInstancesID': [1, 2, 3, 4, 5],
+# 'osTypeVersion': 8}
+
+ostParams={'id':1}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get', params=ostParams);
+#200
+#pprint(r.json())
+#{'osTypeArchitecture': 'x86_64',
+# 'osTypeCompanyID': 2,
+# 'osTypeID': 1,
+# 'osTypeName': 'Fedora 18',
+# 'osTypeOSInstancesID': [1, 2, 3, 4, 5],
+# 'osTypeVersion': 8}
+
+ostParams={'name':"Fedora 18"}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get', params=ostParams);
+#200
+#pprint(r.json())
+#{'osTypeArchitecture': 'x86_64',
+# 'osTypeCompanyID': 2,
+# 'osTypeID': 1,
+# 'osTypeName': 'Fedora 18',
+# 'osTypeOSInstancesID': [1, 2, 3, 4, 5],
+# 'osTypeVersion': 8}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get');
+r.status_code
+#500
+#r.text
+#'Request error: id and name are not defined. You must define one of these parameters'
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/create', params={'name':'Solaris', 'architecture':'sparc-32'});
+r.status_code
+#200
+#pprint(r.json())
+#{'osTypeArchitecture': 'sparc-32',
+# 'osTypeCompanyID': -1,
+# 'osTypeID': 2,
+# 'osTypeName': 'Solaris',
+# 'osTypeOSInstancesID': [],
+# 'osTypeVersion': 0}
+solID = r.json().get('osTypeID')
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/update/name', params={'id':solID, 'name':'Solaris OS'});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osTypeArchitecture': 'sparc-32',
+# 'osTypeCompanyID': -1,
+# 'osTypeID': 2,
+# 'osTypeName': 'Solaris OS',
+# 'osTypeOSInstancesID': [],
+# 'osTypeVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/update/architecture', params={'id':solID, 'architecture':'x86_64'});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osTypeArchitecture': 'x86_64',
+# 'osTypeCompanyID': -1,
+# 'osTypeID': 2,
+# 'osTypeName': 'Solaris OS',
+# 'osTypeOSInstancesID': [],
+# 'osTypeVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/update/company', params={'id':solID, 'companyID':oracleCmp});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osTypeArchitecture': 'x86_64',
+# 'osTypeCompanyID': 25,
+# 'osTypeID': 2,
+# 'osTypeName': 'Solaris OS',
+# 'osTypeOSInstancesID': [],
+# 'osTypeVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/get', params={'id':oracleCmp})
+r.status_code
+#200
+#pprint(r.json())
+#{'companyApplicationsID': [],
+# 'companyDescription': 'The devil company',
+# 'companyID': 25,
+# 'companyName': 'Oracle Corp',
+# 'companyOSTypesID': [2],
+# 'companyVersion': 2}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/update/ostypes/delete', params={'id':oracleCmp,'ostypeID':solID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/get', params={'id':oracleCmp})
+r.status_code
+#pprint(r.json())
+#{'companyApplicationsID': [],
+# 'companyDescription': 'The devil company',
+# 'companyID': 25,
+# 'companyName': 'Oracle Corp',
+# 'companyOSTypesID': [],
+# 'companyVersion': 2}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osTypeArchitecture': 'x86_64',
+# 'osTypeCompanyID': -1,
+# 'osTypeID': 2,
+# 'osTypeName': 'Solaris OS',
+# 'osTypeOSInstancesID': [],
+# 'osTypeVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/update/ostypes/add', params={'id':oracleCmp,'ostypeID':solID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/get', params={'id':oracleCmp})
+r.status_code
+#200
+#pprint(r.json())
+#{'companyApplicationsID': [],
+# 'companyDescription': 'The devil company',
+# 'companyID': 25,
+# 'companyName': 'Oracle Corp',
+# 'companyOSTypesID': [2],
+# 'companyVersion': 2}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osTypeArchitecture': 'x86_64',
+# 'osTypeCompanyID': 25,
+# 'osTypeID': 2,
+# 'osTypeName': 'Solaris OS',
+# 'osTypeOSInstancesID': [],
+# 'osTypeVersion': 0}
+
+
+
+
 
 
 
@@ -709,59 +1672,788 @@ r.status_code
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
-
-
-
-
-
-
-
-r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes');
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/create', params={'name':'fakeOs', 'adminGateURI':'ssh://fakeOs.fake.lan', 'description':'a fake os'});
 r.status_code
 #200
 #pprint(r.json())
-#{'osTypes': [{'osTypeArchitecture': 'x86_64',
-#              'osTypeCompanyID': 2,
-#              'osTypeID': 1,
-#              'osTypeName': 'Fedora 18',
-#              'osTypeOSInstancesID': [1, 2, 3, 4, 5],
-#              'osTypeVersion': 8}]}
+#{'osInstanceAdminGateURI': 'ssh://fakeOs.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'a fake os',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': -1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs',
+# 'osInstanceOSTypeID': -1,
+# 'osInstanceSubnetsID': [],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+fakeOSID=r.json().get("osInstanceID")
 
-r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/1');
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/name', params={'id':fakeOSID, 'name':'fakeOs1'});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
 r.status_code
 #200
 #pprint(r.json())
-#{'osTypeArchitecture': 'x86_64',
-# 'osTypeCompanyID': 2,
-# 'osTypeID': 1,
-# 'osTypeName': 'Fedora 18',
-# 'osTypeOSInstancesID': [1, 2, 3, 4, 5],
-# 'osTypeVersion': 8}
+#{'osInstanceAdminGateURI': 'ssh://fakeOs.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'a fake os',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': -1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': -1,
+# 'osInstanceSubnetsID': [],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
 
-ostParams={'id':1}
-r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get', params=ostParams);
-#200
-#pprint(r.json())
-#{'osTypeArchitecture': 'x86_64',
-# 'osTypeCompanyID': 2,
-# 'osTypeID': 1,
-# 'osTypeName': 'Fedora 18',
-# 'osTypeOSInstancesID': [1, 2, 3, 4, 5],
-# 'osTypeVersion': 8}
-
-ostParams={'name':"Fedora 18"}
-r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get', params=ostParams);
-#200
-#pprint(r.json())
-#{'osTypeArchitecture': 'x86_64',
-# 'osTypeCompanyID': 2,
-# 'osTypeID': 1,
-# 'osTypeName': 'Fedora 18',
-# 'osTypeOSInstancesID': [1, 2, 3, 4, 5],
-# 'osTypeVersion': 8}
-
-r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get');
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/description', params={'id':fakeOSID, 'description':'A fake OS'});
 r.status_code
-#500
-#r.text
-#'Request error: id and name are not defined. You must define one of these parameters'
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': -1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': -1,
+# 'osInstanceSubnetsID': [],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/admingateuri', params={'id':fakeOSID, 'adminGateURI':"ssh://fakeOs1.fake.lan"});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': -1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': -1,
+# 'osInstanceSubnetsID': [],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/ostype', params={'id':fakeOSID, 'ostID':solID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': -1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/embeddingOSInstance', params={'id':fakeOSID, 'osiID':1})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':1});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://hvirt.lab01.dev.dekatonshivr.echinopsii.net',
+# 'osInstanceApplicationsID': [2],
+# 'osInstanceDescription': 'DekatonshIVr QEMU-KVM OS Instance',
+# 'osInstanceEmbeddedOSInstancesID': [2, 3, 4, 5, 7],
+# 'osInstanceEmbeddingOSInstanceID': -1,
+# 'osInstanceEnvironmentsID': [1],
+# 'osInstanceID': 1,
+# 'osInstanceName': 'hvirt.dekatonshIVr',
+# 'osInstanceOSTypeID': 1,
+# 'osInstanceSubnetsID': [1, 2, 3],
+# 'osInstanceTeamsID': [1],
+# 'osInstanceVersion': 4}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/embeddedOSInstances/delete', params={'id':1, 'osiID':fakeOSID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':1});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://hvirt.lab01.dev.dekatonshivr.echinopsii.net',
+# 'osInstanceApplicationsID': [2],
+# 'osInstanceDescription': 'DekatonshIVr QEMU-KVM OS Instance',
+# 'osInstanceEmbeddedOSInstancesID': [2, 3, 4, 5],
+# 'osInstanceEmbeddingOSInstanceID': -1,
+# 'osInstanceEnvironmentsID': [1],
+# 'osInstanceID': 1,
+# 'osInstanceName': 'hvirt.dekatonshIVr',
+# 'osInstanceOSTypeID': 1,
+# 'osInstanceSubnetsID': [1, 2, 3],
+# 'osInstanceTeamsID': [1],
+# 'osInstanceVersion': 4}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': -1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/embeddedOSInstances/add', params={'id':1, 'osiID':fakeOSID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':1});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://hvirt.lab01.dev.dekatonshivr.echinopsii.net',
+# 'osInstanceApplicationsID': [2],
+# 'osInstanceDescription': 'DekatonshIVr QEMU-KVM OS Instance',
+# 'osInstanceEmbeddedOSInstancesID': [2, 3, 4, 5, 7],
+# 'osInstanceEmbeddingOSInstanceID': -1,
+# 'osInstanceEnvironmentsID': [1],
+# 'osInstanceID': 1,
+# 'osInstanceName': 'hvirt.dekatonshIVr',
+# 'osInstanceOSTypeID': 1,
+# 'osInstanceSubnetsID': [1, 2, 3],
+# 'osInstanceTeamsID': [1],
+# 'osInstanceVersion': 4}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/subnets/add', params={'id':fakeOSID, 'subnetID':fakesubnetID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'A fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.255',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [7],
+# 'subnetType': 'MAN',
+# 'subnetVersion': 12}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/subnets/delete', params={'id':fakeOSID, 'subnetID':fakesubnetID})
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'A fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.255',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'MAN',
+# 'subnetVersion': 12}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/osinstances/add', params={'id':fakesubnetID,'osiID':fakeOSID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'A fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.255',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [7],
+# 'subnetType': 'MAN',
+# 'subnetVersion': 12}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/osinstances/delete', params={'id':fakesubnetID,'osiID':fakeOSID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'A fake subnet',
+# 'subnetID': 4,
+# 'subnetIP': '192.168.69.69',
+# 'subnetMask': '255.255.255.255',
+# 'subnetMulticastAreaID': -1,
+# 'subnetName': 'fake.lan',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'MAN',
+# 'subnetVersion': 12}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/update/osinstances/add', params={'id':fakeOSID,'osiID':fakeOSID});
+r.status_code
+#200
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/applications/add', params={'id':fakeOSID,'applicationID':dppID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r.status_code
+#200
+#pprint(r.json())
+#{'applicationColorCode': 'ddffddff',
+# 'applicationCompanyID': 3,
+# 'applicationDescription': 'another fake app',
+# 'applicationID': 11,
+# 'applicationName': 'DPP',
+# 'applicationOSInstancesID': [7],
+# 'applicationShortName': 'DPP',
+# 'applicationTeamID': 11,
+# 'applicationVersion': 14}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/applications/delete', params={'id':fakeOSID,'applicationID':dppID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r.status_code
+#200
+#pprint(r.json())
+#{'applicationColorCode': 'ddffddff',
+# 'applicationCompanyID': 3,
+# 'applicationDescription': 'another fake app',
+# 'applicationID': 11,
+# 'applicationName': 'DPP',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'DPP',
+# 'applicationTeamID': 11,
+# 'applicationVersion': 14}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/update/osinstances/add', params={'id':dppID, 'osiID':fakeOSID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r.status_code
+#200
+#pprint(r.json())
+#{'applicationColorCode': 'ddffddff',
+# 'applicationCompanyID': 3,
+# 'applicationDescription': 'another fake app',
+# 'applicationID': 11,
+# 'applicationName': 'DPP',
+# 'applicationOSInstancesID': [7],
+# 'applicationShortName': 'DPP',
+# 'applicationTeamID': 11,
+# 'applicationVersion': 14}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/update/osinstances/delete', params={'id':dppID, 'osiID':fakeOSID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r.status_code
+#200
+#pprint(r.json())
+#{'applicationColorCode': 'ddffddff',
+# 'applicationCompanyID': 3,
+# 'applicationDescription': 'another fake app',
+# 'applicationID': 11,
+# 'applicationName': 'DPP',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'DPP',
+# 'applicationTeamID': 11,
+# 'applicationVersion': 14}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/update/osinstances/add', params={'id':dppID, 'osiID':fakeOSID});
+r.status_code
+#200
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/environments/add', params={'id':fakeOSID,'environmentID':qaEnv});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [2],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/get', params={'id':qaEnv});
+r.status_code
+#200
+#pprint(r.json())
+#{'environmentDescription': 'QA environment',
+# 'environmentID': 2,
+# 'environmentName': 'QA',
+# 'environmentOSInstancesID': [7],
+# 'environmentVersion': 3}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/environments/delete', params={'id':fakeOSID,'environmentID':qaEnv});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/get', params={'id':qaEnv});
+r.status_code
+#200
+#pprint(r.json())
+#{'environmentDescription': 'QA environment',
+# 'environmentID': 2,
+# 'environmentName': 'QA',
+# 'environmentOSInstancesID': [],
+# 'environmentVersion': 3}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/update/osinstances/add', params={'id':qaEnv, 'osiID':fakeOSID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [2],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/get', params={'id':qaEnv});
+r.status_code
+#200
+#pprint(r.json())
+#{'environmentDescription': 'QA environment',
+# 'environmentID': 2,
+# 'environmentName': 'QA',
+# 'environmentOSInstancesID': [7],
+# 'environmentVersion': 3}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/update/osinstances/delete', params={'id':qaEnv, 'osiID':fakeOSID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/get', params={'id':qaEnv});
+r.status_code
+#200
+#pprint(r.json())
+#{'environmentDescription': 'QA environment',
+# 'environmentID': 2,
+# 'environmentName': 'QA',
+# 'environmentOSInstancesID': [],
+# 'environmentVersion': 3}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/update/osinstances/add', params={'id':qaEnv, 'osiID':fakeOSID});
+r.status_code
+#200
+
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/teams/add', params={'id':fakeOSID,'teamID':dppTeamID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [2],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [11],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/get', params={'id':dppTeamID});
+r.status_code
+#200
+#pprint(r.json())
+#{'teamApplicationsID': [11],
+# 'teamColorCode': '1f45de',
+# 'teamDescription': 'Dev. DPP team',
+# 'teamID': 11,
+# 'teamName': 'DEV DPP',
+# 'teamOSInstancesID': [7],
+# 'teamVersion': 1}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/update/teams/delete', params={'id':fakeOSID,'teamID':dppTeamID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [2],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/get', params={'id':dppTeamID});
+r.status_code
+#200
+#pprint(r.json())
+#{'teamApplicationsID': [11],
+# 'teamColorCode': '1f45de',
+# 'teamDescription': 'Dev. DPP team',
+# 'teamID': 11,
+# 'teamName': 'DEV DPP',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 1}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/update/osinstances/add', params={'id':dppTeamID,'osiID':fakeOSID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [2],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [11],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/get', params={'id':dppTeamID});
+r.status_code
+#200
+#pprint(r.json())
+#{'teamApplicationsID': [11],
+# 'teamColorCode': '1f45de',
+# 'teamDescription': 'Dev. DPP team',
+# 'teamID': 11,
+# 'teamName': 'DEV DPP',
+# 'teamOSInstancesID': [7],
+# 'teamVersion': 1}
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/update/osinstances/delete', params={'id':dppTeamID,'osiID':fakeOSID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [2],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/get', params={'id':dppTeamID});
+r.status_code
+#200
+#pprint(r.json())
+#{'teamApplicationsID': [11],
+# 'teamColorCode': '1f45de',
+# 'teamDescription': 'Dev. DPP team',
+# 'teamID': 11,
+# 'teamName': 'DEV DPP',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 1}
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/delete', params={'id':fakeOSID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r.status_code
+#404
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/delete', params={'id':solID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r.status_code
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/delete', params={'id':fakesubnetID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r.status_code
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/delete', params={'id':devilMareaID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID});
+r.status_code
+#404
+
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/delete', params={'id':devilDCID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID});
+r.status_code
+#404
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/delete', params={'id':dppID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r.status_code
+#404
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/delete', params={'id':dppTeamID});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/teams/get', params={'id':dppTeamID});
+r.status_code
+#404
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/delete', params={'id':qaEnv});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/environments/get', params={'id':qaEnv});
+r.status_code
+#404
+
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/delete', params={'id':oracleCmp});
+r.status_code
+#200
+r = s.get(srvurl + 'CC/rest/directories/common/organisation/companies/get', params={'id':oracleCmp});
+r.status_code
+#404
