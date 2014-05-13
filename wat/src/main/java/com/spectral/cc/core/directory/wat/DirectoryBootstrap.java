@@ -255,6 +255,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
             }
         }
         directoryTreeEntityList.clear();
+        restResourceRegistry.unregisterPluginRestEndpoints(DirectoryBootstrap.class.getResource(REST_EP_FILE_PATH));
 
         log.info("{} is stopped", new Object[]{DIRECTORY_COMPONENT});
     }
