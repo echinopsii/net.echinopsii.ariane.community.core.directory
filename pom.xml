@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- General information -->
-    <groupId>com.spectral.cc.core</groupId>
-    <artifactId>com.spectral.cc.core.directory</artifactId>
-    <version>0.4.0.RELEASE</version>
-    <name>CC Core Directory Parent</name>
+    <groupId>net.echinopsii.ariane.core</groupId>
+    <artifactId>net.echinopsii.ariane.core.directory</artifactId>
+    <version>0.5.0-SNAPSHOT</version>
+    <name>Ariane Core Directory Parent</name>
     <packaging>pom</packaging>
 
     <modules>
@@ -45,7 +45,7 @@
         <version.ipojo.plugin>1.11.0</version.ipojo.plugin>
 
         <!-- CC module dependencies -->
-        <version.com.spectral.cc.core.portal>0.4.0.RELEASE</version.com.spectral.cc.core.portal>
+        <version.net.echinopsii.ariane.core.portal>0.5.0-SNAPSHOT</version.net.echinopsii.ariane.core.portal>
 
         <!-- Dependencies versions-->
         <version.com.fasterxml.jackson>2.1.2</version.com.fasterxml.jackson>
