@@ -1,4 +1,4 @@
-# CC installer directory JPA provider configuration parameters
+# installer directory JPA provider configuration parameters
 #
 # Copyright (C) 2014 Mathilde Ffrench
 #
@@ -28,7 +28,7 @@ __author__ = 'echinopsii'
 class cpHibernateConnectionPassword(AConfParamNotNone):
 
     name = "##hibernateConnectionPassword"
-    description = "CC directory hibernate connection password"
+    description = "Directory DB connection password"
     hide = True
 
     def __init__(self):
@@ -38,7 +38,7 @@ class cpHibernateConnectionPassword(AConfParamNotNone):
 class cpHibernateConnectionURL(AConfParamNotNone):
 
     name = "##hibernateConnectionURL"
-    description = "CC directory hibernate connection URL"
+    description = "Directory DB connection URL"
     hide = False
 
     def __init__(self):
@@ -48,7 +48,7 @@ class cpHibernateConnectionURL(AConfParamNotNone):
 class cpHibernateConnectionUsername(AConfParamNotNone):
 
     name = "##hibernateConnectionUsername"
-    description = "CC directory hibernate username"
+    description = "Directory DB username"
     hide = False
 
     def __init__(self):
@@ -58,7 +58,7 @@ class cpHibernateConnectionUsername(AConfParamNotNone):
 class cpHibernateDialect(AConfParamNotNone):
 
     name = "##hibernateDialect"
-    description = "CC directory hibernate dialect"
+    description = "Directory DB dialect"
     hide = False
 
     def __init__(self):
@@ -68,7 +68,7 @@ class cpHibernateDialect(AConfParamNotNone):
 class cpHibernateDriverClass(AConfParamNotNone):
 
     name = "##hibernateDriverClass"
-    description = "CC directory hibernate driver class"
+    description = "Directory DB driver class"
     hide = False
 
     def __init__(self):
@@ -78,9 +78,9 @@ class cpHibernateDriverClass(AConfParamNotNone):
 class cuDirectoryJPAProviderManagedServiceProcessor(AConfUnit):
 
     def __init__(self, targetConfDir):
-        self.confUnitName = "CC directory JPA provider"
-        self.confTemplatePath = os.path.abspath("resources/templates/components/com.spectral.cc.core.DirectoryJPAProviderManagedService.properties.tpl")
-        self.confFinalPath = targetConfDir + "com.spectral.cc.core.DirectoryJPAProviderManagedService.properties"
+        self.confUnitName = "Directory JPA provider"
+        self.confTemplatePath = os.path.abspath("resources/templates/components/net.echinopsii.ariane.core.DirectoryJPAProviderManagedService.properties.tpl")
+        self.confFinalPath = targetConfDir + "net.echinopsii.ariane.core.DirectoryJPAProviderManagedService.properties"
         hibernateDriverClass = cpHibernateDriverClass()
         hibernateDialect = cpHibernateDialect()
         hibernateConnectionURL = cpHibernateConnectionURL()
@@ -133,7 +133,7 @@ class directoryJPAProviderManagedServiceSyringe:
                 while not directoryJPAProviderManagedServiceConnectionDefined:
 
                     if not self.silent:
-                        dbServerFQDN = input("%-- >> Define CC directory DB FQDN " + dbServerFQDNDefaultUI + ": ")
+                        dbServerFQDN = input("%-- >> Define Directory DB FQDN " + dbServerFQDNDefaultUI + ": ")
                         if dbServerFQDN == "" or dbServerFQDN is None:
                             dbServerFQDN = dbServerFQDNDefault
                         else:
@@ -147,7 +147,7 @@ class directoryJPAProviderManagedServiceSyringe:
                         dbServerPortStr = ""
                         while not serverPortIsValid:
                             dbServerPort = 0
-                            dbServerPortStr = input("%-- >> Define CC directory DB port " + dbServerPortDefaultUI + ": ")
+                            dbServerPortStr = input("%-- >> Define Directory DB port " + dbServerPortDefaultUI + ": ")
                             if dbServerPortStr == "" or dbServerPortStr is None:
                                 dbServerPortStr = dbServerPortDefault
                                 dbServerPort = int(dbServerPortDefault)
@@ -171,7 +171,7 @@ class directoryJPAProviderManagedServiceSyringe:
                         dbNameIsValid = False
                         dbName = ""
                         while not dbNameIsValid:
-                            dbName = input("%-- >> Define CC directory DB name " + dbNameDefaultUI + ": ")
+                            dbName = input("%-- >> Define Directory DB name " + dbNameDefaultUI + ": ")
                             if dbName != "":
                                 dbNameIsValid = True
                                 dbNameDefault = dbName
@@ -192,7 +192,7 @@ class directoryJPAProviderManagedServiceSyringe:
 
                         dbServerUsernameIsValid = False
                         while not dbServerUsernameIsValid:
-                            self.directoryJPAProviderManagedServiceCUValues[cpHibernateConnectionUsername.name] = input("%-- >> Define CC directory DB username " + dbServerUsernameDefaultUI + ": ")
+                            self.directoryJPAProviderManagedServiceCUValues[cpHibernateConnectionUsername.name] = input("%-- >> Define Directory DB username " + dbServerUsernameDefaultUI + ": ")
                             if self.directoryJPAProviderManagedServiceCUValues[cpHibernateConnectionUsername.name] != "":
                                 dbServerUsernameIsValid = True
                                 dbServerUsernameDefault = self.directoryJPAProviderManagedServiceCUValues[cpHibernateConnectionUsername.name]
@@ -206,7 +206,7 @@ class directoryJPAProviderManagedServiceSyringe:
                     if not self.silent:
                         dbServerPasswordIsValid = False
                         while not dbServerPasswordIsValid:
-                            self.directoryJPAProviderManagedServiceCUValues[cpHibernateConnectionPassword.name] = getpass.getpass("%-- >> Define CC directory DB password : ")
+                            self.directoryJPAProviderManagedServiceCUValues[cpHibernateConnectionPassword.name] = getpass.getpass("%-- >> Define Directory DB password : ")
                             if self.directoryJPAProviderManagedServiceCUValues[cpHibernateConnectionPassword.name] != "":
                                 dbServerPasswordIsValid = True
                     else:

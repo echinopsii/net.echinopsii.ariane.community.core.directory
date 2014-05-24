@@ -1,4 +1,4 @@
-# CC installer directory processor
+# installer directory processor
 #
 # Copyright (C) 2014 Mathilde Ffrench
 #
@@ -26,10 +26,10 @@ class directoryProcessor:
 
     def __init__(self, homeDirPath, idmDBConfig, silent):
         print("\n%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--\n")
-        print("%-- CC directory configuration : \n")
+        print("%-- Directory configuration : \n")
         self.silent = silent
         self.homeDirPath = homeDirPath
-        kernelRepositoryDirPath = self.homeDirPath + "/repository/cc-distrib/"
+        kernelRepositoryDirPath = self.homeDirPath + "/repository/ariane-distrib/"
         if not os.path.exists(kernelRepositoryDirPath):
             os.makedirs(kernelRepositoryDirPath, 0o755)
         self.directoryJPAProviderSyringe = directoryJPAProviderManagedServiceSyringe(kernelRepositoryDirPath, silent)

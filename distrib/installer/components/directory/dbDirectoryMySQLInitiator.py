@@ -1,4 +1,4 @@
-# CC installer directory MySQL db initiator
+# installer directory MySQL db initiator
 #
 # Copyright (C) 2014 Mathilde Ffrench
 #
@@ -27,4 +27,4 @@ class dbDirectoryMySQLInitiator(AMySQLdbInit):
         self.dbServerHost = dbConfig['host']
         self.dbServerPort = dbConfig['port']
         self.dbName = dbConfig['database']
-        self.sqlScriptFilePath = "resources/sqlscripts/components/cc_directory.sql"
+        self.sqlScriptFilePath = "resources/sqlscripts/components/directory.sql"

@@ -27,4 +27,4 @@ class dbIDMMySQLPopulator(AMySQLdbInit):
         self.dbServerHost = dbConfig['host']
         self.dbServerPort = dbConfig['port']
         self.dbName = dbConfig['database']
-        self.sqlScriptFilePath = "resources/sqlscripts/components/cc_idm_directory_insert.sql"
+        self.sqlScriptFilePath = "resources/sqlscripts/components/idm_directory_insert.sql"
