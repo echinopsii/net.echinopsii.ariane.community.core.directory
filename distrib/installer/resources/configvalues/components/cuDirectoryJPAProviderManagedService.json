@@ -1,7 +1,7 @@
 {
     "##hibernateConnectionPassword": "password",
-    "##hibernateConnectionURL": "jdbc:mysql://localhost:3306/cc_directory",
-    "##hibernateConnectionUsername": "cc",
+    "##hibernateConnectionURL": "jdbc:mysql://localhost:3306/ariane_directory",
+    "##hibernateConnectionUsername": "ariane",
     "##hibernateDialect": "org.hibernate.dialect.MySQLDialect",
     "##hibernateDriverClass": "org.mariadb.jdbc.Driver"
 }
