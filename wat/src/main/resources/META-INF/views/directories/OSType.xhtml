@@ -9,7 +9,7 @@
       xmlns:ccidm="http://spectral.com/cc/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('ccDirComITiSysOst:display')}">
+        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('dirComITiSysOst:display')}">
 
             <h:form id="osTypeTableForm">
                 <p:growl id="osTypeTableMessages" showDetail="true" />
@@ -42,25 +42,25 @@
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
                             <h:outputText value="Name : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiSysOst:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiSysOst:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{ost.name}"/>
                                     <p:ajax event="save" listener="#{OSTypesListController.update(ost)}" update="@form,:osTypeTableForm:osTypeTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{ost.name}" rendered="#{!(ccidm:hasPermission('ccDirComITiSysOst:update'))}"/>
+                            <h:outputText value="#{ost.name}" rendered="#{!(ccidm:hasPermission('dirComITiSysOst:update'))}"/>
 
                             <h:outputText value="Architecture : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiSysOst:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiSysOst:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{ost.architecture}"/>
                                     <p:ajax event="save" listener="#{OSTypesListController.update(ost)}" update="@form,:osTypeTableForm:osTypeTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{ost.architecture}" rendered="#{!(ccidm:hasPermission('ccDirComITiSysOst:update'))}"/>
+                            <h:outputText value="#{ost.architecture}" rendered="#{!(ccidm:hasPermission('dirComITiSysOst:update'))}"/>
 
                             <h:outputText value="Supporting company : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiSysOst:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiSysOst:update')}">
                                 <p:inplace label="#{OSTypesListController.getOSTypeCompanyName(ost)}" effectSpeed="fast" editor="true">
                                     <h:selectOneMenu value="#{OSTypesListController.changedCompany[ost.id]}">
                                         <f:selectItems value="#{companysListController.getAllForSelector()}" var="cmp_"
@@ -69,7 +69,7 @@
                                     <p:ajax event="save" listener="#{OSTypesListController.syncCompany(ost)}" update="@form,:osTypeTableForm:osTypeTableMessages"/>
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{OSTypesListController.getOSTypeCompanyName(ost)}" rendered="#{!(ccidm:hasPermission('ccDirComITiSysOst:update'))}"/>
+                            <h:outputText value="#{OSTypesListController.getOSTypeCompanyName(ost)}" rendered="#{!(ccidm:hasPermission('dirComITiSysOst:update'))}"/>
 
                             <h:outputText value="OS instances : " styleClass="inputTitle"/>
                             <h:form>
@@ -81,7 +81,7 @@
                                     <p:column headerText="Description" sortBy="#{osi.description}" filterBy="#{osi.description}">
                                         <h:outputText id="itemDescription" value="#{osi.description}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('ccDirComITiSysOsi:update')}">
+                                    <c:if test="#{ccidm:hasPermission('dirComITiSysOsi:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select OS instance to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{OSTypesListController.addedOSInstance[ost.id]}">
@@ -103,9 +103,9 @@
                     </p:rowExpansion>
 
                     <f:facet name="footer">
-                        <p:commandButton value="Create OS type" icon="ui-icon-disk" onclick="osTypeCreateDialog.show()" rendered="#{ccidm:hasPermission('ccDirComITiSysOst:create')}"/>
+                        <p:commandButton value="Create OS type" icon="ui-icon-disk" onclick="osTypeCreateDialog.show()" rendered="#{ccidm:hasPermission('dirComITiSysOst:create')}"/>
                         <p:commandButton value="Remove selected OS type" icon="ui-icon-closethick" onclick="osTypeRemoveDialog.show()"
-                                         update=":removeOSTypeDialogForm:display" rendered="#{ccidm:hasPermission('ccDirComITiSysOst:remove')}"/>
+                                         update=":removeOSTypeDialogForm:display" rendered="#{ccidm:hasPermission('dirComITiSysOst:remove')}"/>
                         <p:commandButton value="Refresh table" id="applicationUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
                                          update=":osTypeTableForm:osTypeTable"/>
                     </f:facet>

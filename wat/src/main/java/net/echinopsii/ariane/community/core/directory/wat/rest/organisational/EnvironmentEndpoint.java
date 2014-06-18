@@ -92,8 +92,8 @@ public class EnvironmentEndpoint {
     public Response displayEnvironment(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get environment : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-        if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgEnvironment:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgEnvironment:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             Environment entity = findEnvironmentByID(em, id);
@@ -114,8 +114,8 @@ public class EnvironmentEndpoint {
     public Response displayAllEnvironments() {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get environments", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
-        if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgEnvironment:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgEnvironment:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             final HashSet<Environment> results = new HashSet(em.createQuery("SELECT DISTINCT e FROM Environment e LEFT JOIN FETCH e.osInstances ORDER BY e.id", Environment.class).getResultList());
@@ -148,8 +148,8 @@ public class EnvironmentEndpoint {
         } else if (name!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] get environment : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgEnvironment:display") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgEnvironment:display") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Environment entity = findEnvironmentByName(em, name);
@@ -175,8 +175,8 @@ public class EnvironmentEndpoint {
         if (name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create environment : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, description});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgEnvironment:create") ||
-                subject.hasRole("jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgEnvironment:create") ||
+                subject.hasRole("jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Environment environment = findEnvironmentByName(em, name);
@@ -214,8 +214,8 @@ public class EnvironmentEndpoint {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] delete environment : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgEnvironment:remove") ||
-                subject.hasRole("jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgEnvironment:remove") ||
+                subject.hasRole("jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Environment environment = findEnvironmentByID(em, id);
@@ -253,8 +253,8 @@ public class EnvironmentEndpoint {
         if (id != 0 && name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update environment name : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgEnvironment:update") ||
-                subject.hasRole("jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgEnvironment:update") ||
+                subject.hasRole("jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Environment environment = findEnvironmentByID(em, id);
@@ -290,8 +290,8 @@ public class EnvironmentEndpoint {
         if (id != 0 && description != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update environment description : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, description});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgEnvironment:update") ||
-                subject.hasRole("jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgEnvironment:update") ||
+                subject.hasRole("jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Environment environment = findEnvironmentByID(em, id);
@@ -327,8 +327,8 @@ public class EnvironmentEndpoint {
         if (id != 0 && osiID != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update environment by adding new os instance : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osiID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgEnvironment:update") ||
-                        subject.hasRole("jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgEnvironment:update") ||
+                        subject.hasRole("jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Environment environment = findEnvironmentByID(em, id);
@@ -371,8 +371,8 @@ public class EnvironmentEndpoint {
         if (id != 0 && osiID != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update environment by adding new os instance : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osiID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgEnvironment:update") ||
-                subject.hasRole("jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgEnvironment:update") ||
+                subject.hasRole("jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Environment environment = findEnvironmentByID(em, id);

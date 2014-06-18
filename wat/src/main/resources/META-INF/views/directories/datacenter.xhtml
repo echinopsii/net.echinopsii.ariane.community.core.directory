@@ -9,7 +9,7 @@
       xmlns:ccidm="http://spectral.com/cc/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('ccDirComITiNtwDC:display')}">
+        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('dirComITiNtwDC:display')}">
 
             <h:form id="datacenterTableForm">
                 <p:growl id="dcTableMessages" showDetail="true" />
@@ -54,76 +54,76 @@
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
                             <h:outputText value="Name : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.name}"/>
                                     <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.name}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{datacenter.name}" rendered="#{!(ccidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Description : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.description}"/>
                                     <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.description}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{datacenter.description}" rendered="#{!(ccidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Address : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.address}"/>
                                     <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.address}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{datacenter.address}" rendered="#{!(ccidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Zip Code : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.zipCode}"/>
                                     <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.zipCode}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{datacenter.zipCode}" rendered="#{!(ccidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Town : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.town}"/>
                                     <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.town}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{datacenter.town}" rendered="#{!(ccidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Country : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.country}"/>
                                     <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.country}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{datacenter.country}" rendered="#{!(ccidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="GPS latitude : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.gpsLatitude}"/>
                                     <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.gpsLatitude}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{datacenter.gpsLatitude}" rendered="#{!(ccidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="GPS longitude : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.gpsLongitude}"/>
                                     <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.gpsLongitude}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{datacenter.gpsLongitude}" rendered="#{!(ccidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Subnets : " styleClass="inputTitle"/>
                             <h:form>
@@ -138,7 +138,7 @@
                                     <p:column headerText="Subnet Mask" sortBy="#{_subnet.subnetmask}" filterBy="#{_subnet.subnetmask}">
                                         <h:outputText id="subnetSubnetMask" value="#{_subnet.subnetMask}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                    <c:if test="#{ccidm:hasPermission('dirComITiNtwDC:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{datacentersListController.addedSubnet[datacenter.id]}">
@@ -166,7 +166,7 @@
                                     <p:column headerText="Description" sortBy="#{_marea.description}" filterBy="#{_marea.description}">
                                         <h:outputText id="mareaDescription" value="#{_marea.description}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('ccDirComITiNtwDC:update')}">
+                                    <c:if test="#{ccidm:hasPermission('dirComITiNtwDC:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select multicast area to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{datacentersListController.addedMArea[datacenter.id]}">
@@ -186,9 +186,9 @@
                         </h:panelGrid>
                     </p:rowExpansion>
                     <f:facet name="footer">
-                        <p:commandButton value="Create datacenter" icon="ui-icon-disk" onclick="dcCreateDialog.show()"  rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:create')}"/>
+                        <p:commandButton value="Create datacenter" icon="ui-icon-disk" onclick="dcCreateDialog.show()"  rendered="#{ccidm:hasPermission('dirComITiNtwDC:create')}"/>
                         <p:commandButton value="Remove selected datacenter" icon="ui-icon-closethick" onclick="dcRemoveDialog.show()"
-                                         update=":removeDCDialogForm:display" rendered="#{ccidm:hasPermission('ccDirComITiNtwDC:remove')}"/>
+                                         update=":removeDCDialogForm:display" rendered="#{ccidm:hasPermission('dirComITiNtwDC:remove')}"/>
                         <p:commandButton value="Refresh table" id="dcUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
                                          update=":datacenterTableForm:datacenterTable"/>
                     </f:facet>

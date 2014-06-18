@@ -93,8 +93,8 @@ public class CompanyEndpoint {
     public Response displayCompany(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get company : {},{}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-        if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgCompany:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgCompany:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             Company entity = findCompanyById(em, id);
@@ -115,8 +115,8 @@ public class CompanyEndpoint {
     public Response DisplayAllCompanies() {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get company : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
-        if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgCompany:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgCompany:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             final HashSet<Company> results = new HashSet(em.createQuery("SELECT DISTINCT c FROM Company c LEFT JOIN FETCH c.applications ORDER BY c.id", Company.class).getResultList());
@@ -149,8 +149,8 @@ public class CompanyEndpoint {
         } else if (name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] get company : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgCompany:display") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgCompany:display") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Company entity = findCompanyByName(em, name);
@@ -176,8 +176,8 @@ public class CompanyEndpoint {
         if (name!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create company : {},{}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, description});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:create") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgCompany:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Company entity = findCompanyByName(em, name);
@@ -213,8 +213,8 @@ public class CompanyEndpoint {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] delete company : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:delete") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgCompany:delete") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Company entity = findCompanyById(em, id);
@@ -254,8 +254,8 @@ public class CompanyEndpoint {
         if (id!=0 && name!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update company {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgCompany:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Company entity = findCompanyById(em, id);
@@ -290,8 +290,8 @@ public class CompanyEndpoint {
         if (id!=0 && description!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update company {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, description});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgCompany:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Company entity = findCompanyById(em, id);
@@ -326,8 +326,8 @@ public class CompanyEndpoint {
         if (id!=0 && applicationID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update company {} by adding application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, applicationID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone")) {
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgCompany:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Company entity = findCompanyById(em, id);
                 if (entity != null) {
@@ -369,8 +369,8 @@ public class CompanyEndpoint {
         if (id!=0 && applicationID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update company {} by deleting application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, applicationID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgCompany:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Company entity = findCompanyById(em, id);
@@ -412,8 +412,8 @@ public class CompanyEndpoint {
         if (id!=0 && ostypeID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update company {} by adding OS Type : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, ostypeID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone")) {
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgCompany:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Company entity = findCompanyById(em, id);
                 if (entity != null) {
@@ -455,8 +455,8 @@ public class CompanyEndpoint {
         if (id!=0 && ostypeID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update company {} by deleting OS Type : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, ostypeID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgCompany:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone")) {
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgCompany:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Company entity = findCompanyById(em, id);
                 if (entity != null) {

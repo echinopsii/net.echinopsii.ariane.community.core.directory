@@ -9,7 +9,7 @@
       xmlns:ccidm="http://spectral.com/cc/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('ccDirComITiNtwMarea:display')}">
+        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('dirComITiNtwMarea:display')}">
             <h:form id="mareaTableForm">
                 <p:growl id="mareaTableMessages" showDetail="true" />
                 <p:dataTable id="mareaTable" var="marea" value="#{multicastAreasListController.lazyModel}"
@@ -37,22 +37,22 @@
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
                             <h:outputText value="Name : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwMarea:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwMarea:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{marea.name}"/>
                                     <p:ajax event="save" listener="#{multicastAreasListController.update(marea)}" update="@form,:mareaTableForm:mareaTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{marea.name}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwMarea:update'))}"/>
+                            <h:outputText value="#{marea.name}" rendered="#{!(ccidm:hasPermission('dirComITiNtwMarea:update'))}"/>
 
                             <h:outputText value="Description : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwMarea:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwMarea:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{marea.description}"/>
                                     <p:ajax event="save" listener="#{multicastAreasListController.update(marea)}" update="@form,:mareaTableForm:mareaTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{marea.description}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwMarea:update'))}"/>
+                            <h:outputText value="#{marea.description}" rendered="#{!(ccidm:hasPermission('dirComITiNtwMarea:update'))}"/>
 
                             <h:outputText value="Datacenters : " styleClass="inputTitle"/>
                             <h:form>
@@ -70,7 +70,7 @@
                                     <p:column headerText="Country" sortBy="#{dc.country}" filterBy="#{dc.country}">
                                         <h:outputText id="itemCountry" value="#{dc.country}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('ccDirComITiNtwMarea:update')}">
+                                    <c:if test="#{ccidm:hasPermission('dirComITiNtwMarea:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select DC to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{multicastAreasListController.addedDC[marea.id]}">
@@ -104,7 +104,7 @@
                                     <p:column headerText="Subnet Mask" sortBy="#{subnet.subnetMask}" filterBy="#{subnet.subnetMask}">
                                         <h:outputText id="subnetCountry" value="#{subnet.subnetMask}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('ccDirComITiNtwMarea:update')}">
+                                    <c:if test="#{ccidm:hasPermission('dirComITiNtwMarea:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{multicastAreasListController.addedSubnet[marea.id]}">
@@ -125,9 +125,9 @@
                     </p:rowExpansion>
                     <f:facet name="footer">
                         <p:commandButton value="Create multicast area" icon="ui-icon-disk" onclick="mareaCreateDialog.show()"
-                                         rendered="#{ccidm:hasPermission('ccDirComITiNtwMarea:create')}"/>
+                                         rendered="#{ccidm:hasPermission('dirComITiNtwMarea:create')}"/>
                         <p:commandButton value="Remove selected multicast area" icon="ui-icon-closethick" onclick="mareaRemoveDialog.show()"
-                                         update=":removeMareaDialogForm:display" rendered="#{ccidm:hasPermission('ccDirComITiNtwMarea:remove')}"/>
+                                         update=":removeMareaDialogForm:display" rendered="#{ccidm:hasPermission('dirComITiNtwMarea:remove')}"/>
                         <p:commandButton value="Refresh table" id="mareaUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
                                          update=":mareaTableForm:mareaTable"/>
                     </f:facet>

@@ -24,7 +24,7 @@ import org.osgi.framework.Bundle;
 import javax.persistence.EntityManager;
 
 /**
- * The directory JPA provider provide tools to create EntityManager for the cc-directory persistence unit. It also add a feature to extend the cc-directory persistance unit through Ariane plugins. <br/><br/>
+ * The directory JPA provider provide tools to create EntityManager for the ariane-directory persistence unit. It also add a feature to extend the ariane-directory persistance unit through Ariane plugins. <br/><br/>
  * To make work this feature you must have the spectral hibernate distribution which enables this feature.<br/>
  *
  * @see <a href="https://github.com/mffrench/hibernate-orm/tree/4.3.0.Final.spectral">spectral hibernate distribution</a>
@@ -32,14 +32,14 @@ import javax.persistence.EntityManager;
  */
 public interface DirectoryJPAProvider {
     /**
-     * Create entity manager for cc-directory pu
+     * Create entity manager for ariane-directory pu
      *
-     * @return entity manager for cc-directory pu
+     * @return entity manager for ariane-directory pu
      */
     public EntityManager createEM();
 
     /**
-     * Add a persistence bundle to cc-directory pu
+     * Add a persistence bundle to ariane-directory pu
      *
      * @param persistenceBundle
      */

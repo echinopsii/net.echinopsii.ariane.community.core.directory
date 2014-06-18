@@ -93,8 +93,8 @@ public class TeamEndpoint {
     public Response displayTeam(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get team : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-        if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgTeam:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgTeam:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             Team entity = findTeamById(em, id);
@@ -115,8 +115,8 @@ public class TeamEndpoint {
     public Response displayAllTeams() {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get teams", new Object[]{Thread.currentThread().getId(),subject.getPreviousPrincipals()});
-        if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgTeam:display") ||
-                    subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone")) {
+        if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgTeam:display") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             final HashSet<Team> results = new HashSet(em.createQuery("SELECT DISTINCT t FROM Team t LEFT JOIN FETCH t.osInstances ORDER BY t.id", Team.class).getResultList());
             String result;
@@ -148,8 +148,8 @@ public class TeamEndpoint {
         } else if (name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] get team : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgTeam:display") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgTeam:display") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Team entity = findTeamByName(em, name);
@@ -175,8 +175,8 @@ public class TeamEndpoint {
         if (name != null && colorCode != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create team : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgTeam:create") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgTeam:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Team entity = findTeamByName(em, name);
@@ -213,8 +213,8 @@ public class TeamEndpoint {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] delete team : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgTeam:delete") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone")) {
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgTeam:delete") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Team entity = findTeamById(em, id);
                 if (entity!=null) {
@@ -252,8 +252,8 @@ public class TeamEndpoint {
         if (id!=0 && name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update team {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgTeam:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgTeam:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Team entity = findTeamById(em, id);
@@ -289,8 +289,8 @@ public class TeamEndpoint {
         if (id!=0 && description != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update team {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, description});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgTeam:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgTeam:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Team entity = findTeamById(em, id);
@@ -326,8 +326,8 @@ public class TeamEndpoint {
         if (id!=0 && colorCode != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update team {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, colorCode});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgTeam:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgTeam:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Team entity = findTeamById(em, id);
@@ -363,8 +363,8 @@ public class TeamEndpoint {
         if (id!=0 && applicationID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update team {} by adding application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, applicationID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgTeam:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgTeam:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Team entity = findTeamById(em, id);
@@ -409,8 +409,8 @@ public class TeamEndpoint {
         if (id!=0 && applicationID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update team {} by deleting application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, applicationID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgTeam:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgTeam:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Team entity = findTeamById(em, id);
@@ -453,8 +453,8 @@ public class TeamEndpoint {
         if (id!=0 && osiID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update team {} by adding OS instance : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osiID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgTeam:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgTeam:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Team entity = findTeamById(em, id);
@@ -497,8 +497,8 @@ public class TeamEndpoint {
         if (id!=0 && osiID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update team {} by adding OS instance : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osiID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgTeam:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgTeam:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Team entity = findTeamById(em, id);

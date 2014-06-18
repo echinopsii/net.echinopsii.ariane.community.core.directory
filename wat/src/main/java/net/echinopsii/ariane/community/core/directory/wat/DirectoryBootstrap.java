@@ -122,21 +122,21 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
 
         try {
             MainMenuEntity mainMenuEntity = new MainMenuEntity("directoriesMItem", "Directories", MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/main.jsf", MenuEntityType.TYPE_MENU_ITEM, MAIN_MENU_DIR_RANK, "icon-book icon-large");
-            mainMenuEntity.getDisplayRoles().add("ccntwadmin");
-            mainMenuEntity.getDisplayRoles().add("ccsysadmin");
-            mainMenuEntity.getDisplayRoles().add("ccorgadmin");
-            mainMenuEntity.getDisplayRoles().add("ccntwreviewer");
-            mainMenuEntity.getDisplayRoles().add("ccsysreviewer");
-            mainMenuEntity.getDisplayRoles().add("ccorgreviewer");
-            mainMenuEntity.getDisplayPermissions().add("ccDirComITiNtwDC:display");
-            mainMenuEntity.getDisplayPermissions().add("ccDirComITiNtwMarea:display");
-            mainMenuEntity.getDisplayPermissions().add("ccDirComITiNtwSubnet:display");
-            mainMenuEntity.getDisplayPermissions().add("ccDirComITiSysOsi:display");
-            mainMenuEntity.getDisplayPermissions().add("ccDirComITiSysOst:display");
-            mainMenuEntity.getDisplayPermissions().add("ccDirComOrgApp:display");
-            mainMenuEntity.getDisplayPermissions().add("ccDirComOrgCompany:display");
-            mainMenuEntity.getDisplayPermissions().add("ccDirComOrgEnvironment:display");
-            mainMenuEntity.getDisplayPermissions().add("ccDirComOrgTeam:display");
+            mainMenuEntity.getDisplayRoles().add("ntwadmin");
+            mainMenuEntity.getDisplayRoles().add("sysadmin");
+            mainMenuEntity.getDisplayRoles().add("orgadmin");
+            mainMenuEntity.getDisplayRoles().add("ntwreviewer");
+            mainMenuEntity.getDisplayRoles().add("sysreviewer");
+            mainMenuEntity.getDisplayRoles().add("orgreviewer");
+            mainMenuEntity.getDisplayPermissions().add("dirComITiNtwDC:display");
+            mainMenuEntity.getDisplayPermissions().add("dirComITiNtwMarea:display");
+            mainMenuEntity.getDisplayPermissions().add("dirComITiNtwSubnet:display");
+            mainMenuEntity.getDisplayPermissions().add("dirComITiSysOsi:display");
+            mainMenuEntity.getDisplayPermissions().add("dirComITiSysOst:display");
+            mainMenuEntity.getDisplayPermissions().add("dirComOrgApp:display");
+            mainMenuEntity.getDisplayPermissions().add("dirComOrgCompany:display");
+            mainMenuEntity.getDisplayPermissions().add("dirComOrgEnvironment:display");
+            mainMenuEntity.getDisplayPermissions().add("dirComOrgTeam:display");
 
             directoryMainMenuEntityList.add(mainMenuEntity);
             mainMenuEntityRegistry.registerMainMenuEntity(mainMenuEntity);
@@ -148,13 +148,13 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
 
         try {
             TreeMenuEntity commonRootTreeMenuEntity = new TreeMenuEntity().setId("commonsDir").setValue("Common").setType(MenuEntityType.TYPE_MENU_SUBMENU).
-                                                                           addDisplayRole("ccntwadmin").addDisplayRole("ccsysadmin").addDisplayRole("ccorgadmin").
-                                                                           addDisplayRole("ccntwreviewer").addDisplayRole("ccsysreviewer").addDisplayRole("ccorgreviewer").
-                                                                           addDisplayPermission("ccDirComITiNtwDC:display").addDisplayPermission("ccDirComITiNtwMarea:display").
-                                                                           addDisplayPermission("ccDirComITiNtwSubnet:display").addDisplayPermission("ccDirComITiSysOsi:display").
-                                                                           addDisplayPermission("ccDirComITiSysOst:display").addDisplayPermission("ccDirComOrgApp:display").
-                                                                           addDisplayPermission("ccDirComOrgCompany:display").addDisplayPermission("ccDirComOrgEnvironment:display").
-                                                                           addDisplayPermission("ccDirComOrgTeam:display");
+                                                                           addDisplayRole("ntwadmin").addDisplayRole("sysadmin").addDisplayRole("orgadmin").
+                                                                           addDisplayRole("ntwreviewer").addDisplayRole("sysreviewer").addDisplayRole("orgreviewer").
+                                                                           addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwMarea:display").
+                                                                           addDisplayPermission("dirComITiNtwSubnet:display").addDisplayPermission("dirComITiSysOsi:display").
+                                                                           addDisplayPermission("dirComITiSysOst:display").addDisplayPermission("dirComOrgApp:display").
+                                                                           addDisplayPermission("dirComOrgCompany:display").addDisplayPermission("dirComOrgEnvironment:display").
+                                                                           addDisplayPermission("dirComOrgTeam:display");
             directoryTreeEntityList.add(commonRootTreeMenuEntity);
             treeMenuRootsRegistry.registerTreeMenuRootEntity(commonRootTreeMenuEntity);
 
@@ -162,74 +162,74 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
             TreeMenuEntity organisationalTreeMenuEntity = new TreeMenuEntity().setId("commonsOrgDir").setValue("Organisation").
                                                                                setType(MenuEntityType.TYPE_MENU_SUBMENU).
                                                                                setParentTreeMenuEntity(commonRootTreeMenuEntity).
-                                                                               addDisplayRole("ccorgadmin").addDisplayRole("ccorgreviewer").
-                                                                               addDisplayPermission("ccDirComOrgApp:display").addDisplayPermission("ccDirComOrgCompany:display").
-                                                                               addDisplayPermission("ccDirComOrgEnvironment:display").addDisplayPermission("ccDirComOrgTeam:display");
+                                                                               addDisplayRole("orgadmin").addDisplayRole("orgreviewer").
+                                                                               addDisplayPermission("dirComOrgApp:display").addDisplayPermission("dirComOrgCompany:display").
+                                                                               addDisplayPermission("dirComOrgEnvironment:display").addDisplayPermission("dirComOrgTeam:display");
             commonRootTreeMenuEntity.addChildTreeMenuEntity(organisationalTreeMenuEntity);
 
 
             organisationalTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("applicationTreeID").setValue("Application").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("icon-cogs").
                                                                                      setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/application.jsf").
                                                                                      setDescription("Your IT applications definitions").
-                                                                                     addDisplayRole("ccorgadmin").addDisplayRole("ccorgreviewer").addDisplayPermission("ccDirComOrgApp:display")).
+                                                                                     addDisplayRole("orgadmin").addDisplayRole("orgreviewer").addDisplayPermission("dirComOrgApp:display")).
                                          addChildTreeMenuEntity(new TreeMenuEntity().setId("teamTreeID").setValue("Team").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("icon-group").
                                                                                      setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/team.jsf").
                                                                                      setDescription("Your teams (ops, devs, ...) definitions").
-                                                                                     addDisplayRole("ccorgreviewer").addDisplayRole("ccorgadmin").addDisplayPermission("ccDirComOrgTeam:display")).
+                                                                                     addDisplayRole("orgreviewer").addDisplayRole("orgadmin").addDisplayPermission("dirComOrgTeam:display")).
                                          addChildTreeMenuEntity(new TreeMenuEntity().setId("companyTreeID").setValue("Company").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("icon-building").
                                                                                      setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/company.jsf").
                                                                                      setDescription("Definition of companies involved in your IT system (yours included)").
-                                                                                     addDisplayRole("ccorgreviewer").addDisplayRole("ccorgadmin").addDisplayPermission("ccDirComOrgCompany:display")).
+                                                                                     addDisplayRole("orgreviewer").addDisplayRole("orgadmin").addDisplayPermission("dirComOrgCompany:display")).
                                          addChildTreeMenuEntity(new TreeMenuEntity().setId("environmentTreeID").setValue("Environment").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("icon-tag").
                                                                                      setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/environment.jsf").
                                                                                      setDescription("Your IT environment (development, homologation, QA, production ...)").
-                                                                                     addDisplayRole("ccorgreviewer").addDisplayRole("ccorgadmin").addDisplayPermission("ccDirComOrgEnvironment:display"));
+                                                                                     addDisplayRole("orgreviewer").addDisplayRole("orgadmin").addDisplayPermission("dirComOrgEnvironment:display"));
 
 
 
             TreeMenuEntity technicalTreeMenuEntity = new TreeMenuEntity().setId("commonsTechDir").setValue("IT infrastructure").
                                                                           setType(MenuEntityType.TYPE_MENU_SUBMENU).
                                                                           setParentTreeMenuEntity(commonRootTreeMenuEntity).
-                                                                          addDisplayRole("ccntwadmin").addDisplayRole("ccsysadmin").
-                                                                          addDisplayRole("ccntwreviewer").addDisplayRole("ccsysreviewer").addDisplayPermission("ccDirComITiNtwSubnet:display").
-                                                                          addDisplayPermission("ccDirComITiNtwDC:display").addDisplayPermission("ccDirComITiNtwMarea:display");
+                                                                          addDisplayRole("ntwadmin").addDisplayRole("sysadmin").
+                                                                          addDisplayRole("ntwreviewer").addDisplayRole("sysreviewer").addDisplayPermission("dirComITiNtwSubnet:display").
+                                                                          addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwMarea:display");
             commonRootTreeMenuEntity.addChildTreeMenuEntity(technicalTreeMenuEntity);
 
 
             TreeMenuEntity networkTreeMenuEntity = new TreeMenuEntity().setId("commontNtwDir").setValue("Network").
                                                                         setType(MenuEntityType.TYPE_MENU_SUBMENU).
                                                                         setParentTreeMenuEntity(technicalTreeMenuEntity).
-                                                                        addDisplayRole("ccntwreviewer").addDisplayRole("ccntwadmin").
-                                                                        addDisplayPermission("ccDirComITiNtwDC:display").addDisplayPermission("ccDirComITiNtwMarea:display");
+                                                                        addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
+                                                                        addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwMarea:display");
             technicalTreeMenuEntity.addChildTreeMenuEntity(networkTreeMenuEntity);
             networkTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("datacenterTreeID").setValue("Datacenter").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-building").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/datacenter.jsf").
-                                                                              setDescription("Your datacenters definitions").addDisplayRole("ccntwreviewer").addDisplayRole("ccntwadmin").
-                                                                              addDisplayPermission("ccDirComITiNtwDC:display")).
+                                                                              setDescription("Your datacenters definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
+                                                                              addDisplayPermission("dirComITiNtwDC:display")).
                                   addChildTreeMenuEntity(new TreeMenuEntity().setId("subnetTreeID").setValue("Subnet").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-road").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/subnet.jsf").
-                                                                              setDescription("Your subnets definitions").addDisplayRole("ccntwreviewer").addDisplayRole("ccntwadmin").
-                                                                              addDisplayPermission("ccDirComITiNtwSubnet:display")).
+                                                                              setDescription("Your subnets definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
+                                                                              addDisplayPermission("dirComITiNtwSubnet:display")).
                                   addChildTreeMenuEntity(new TreeMenuEntity().setId("multicastAreaTreeID").setValue("Multicast area").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-asterisk").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/multicastArea.jsf").
-                                                                              setDescription("Your multicast areas definitions").addDisplayRole("ccntwreviewer").addDisplayRole("ccntwadmin").
-                                                                              addDisplayPermission("ccDirComITiNtwMarea:display"));
+                                                                              setDescription("Your multicast areas definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
+                                                                              addDisplayPermission("dirComITiNtwMarea:display"));
 
 
             TreeMenuEntity systemTreeMenuEntity = new TreeMenuEntity().setId("commonSysDir").setValue("System").
                                                                        setType(MenuEntityType.TYPE_MENU_SUBMENU).
                                                                        setParentTreeMenuEntity(technicalTreeMenuEntity).
-                                                                       addDisplayRole("ccsysreviewer").addDisplayRole("ccsysadmin").addDisplayPermission("ccDirComITiSysOsi:display").
-                                                                       addDisplayPermission("ccDirComITiSysOst:display");
+                                                                       addDisplayRole("sysreviewer").addDisplayRole("sysadmin").addDisplayPermission("dirComITiSysOsi:display").
+                                                                       addDisplayPermission("dirComITiSysOst:display");
             technicalTreeMenuEntity.addChildTreeMenuEntity(systemTreeMenuEntity);
             systemTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("OSInstanceTreeID").setValue("OS Instance").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-cogs").
                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/OSInstance.jsf").
-                                                                             setDescription("Your OS instances definitions").addDisplayRole("ccsysreviewer").addDisplayRole("ccsysadmin").
-                                                                             addDisplayPermission("ccDirComITiSysOsi:display")).
+                                                                             setDescription("Your OS instances definitions").addDisplayRole("sysreviewer").addDisplayRole("sysadmin").
+                                                                             addDisplayPermission("dirComITiSysOsi:display")).
                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("OSTypeTreeID").setValue("OS Type").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-tag").
                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/OSType.jsf").
-                                                                             setDescription("Your OS types definitions").addDisplayRole("ccsysreviewer").addDisplayRole("ccsysadmin").
-                                                                             addDisplayPermission("ccDirComITiSysOst:display"));
+                                                                             setDescription("Your OS types definitions").addDisplayRole("sysreviewer").addDisplayRole("sysadmin").
+                                                                             addDisplayPermission("dirComITiSysOst:display"));
 
             log.debug("{} has registered its commons directory items", new Object[]{DIRECTORY_COMPONENT});
 

@@ -93,8 +93,8 @@ public class OSTypeEndpoint {
     public Response displayOSType(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get os type : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-        if (subject.hasRole("ccsysadmin") || subject.hasRole("ccsysreviewer") || subject.isPermitted("ccDirComITiSysOst:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("sysadmin") || subject.hasRole("sysreviewer") || subject.isPermitted("dirComITiSysOst:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             OSType entity = findOSTypeById(em, id);
@@ -115,8 +115,8 @@ public class OSTypeEndpoint {
     public Response displayAllOSTypes() {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get os types", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
-        if (subject.hasRole("ccsysadmin") || subject.hasRole("ccsysreviewer") || subject.isPermitted("ccDirComITiSysOst:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("sysadmin") || subject.hasRole("sysreviewer") || subject.isPermitted("dirComITiSysOst:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             final HashSet<OSType> results = new HashSet(em.createQuery("SELECT DISTINCT o FROM OSType o LEFT JOIN FETCH o.osInstances ORDER BY o.id", OSType.class).getResultList());
@@ -150,8 +150,8 @@ public class OSTypeEndpoint {
         } else if (name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] get os type : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ccsysadmin") || subject.hasRole("ccsysreviewer") || subject.isPermitted("ccDirComITiSysOst:display") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("sysadmin") || subject.hasRole("sysreviewer") || subject.isPermitted("dirComITiSysOst:display") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSType entity = findOSTypeByName(em, name);
@@ -177,8 +177,8 @@ public class OSTypeEndpoint {
         if (name != null && arc != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create os type : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, arc});
-            if (subject.hasRole("ccsysadmin") || subject.isPermitted("ccDirComITiSysOst:create") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("sysadmin") || subject.isPermitted("dirComITiSysOst:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSType entity = findOSTypeByName(em, name);
@@ -214,8 +214,8 @@ public class OSTypeEndpoint {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] delete os type : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-            if (subject.hasRole("ccsysadmin") || subject.isPermitted("ccDirComITiSysOst:delete") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("sysadmin") || subject.isPermitted("dirComITiSysOst:delete") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSType entity = findOSTypeById(em, id);
@@ -255,8 +255,8 @@ public class OSTypeEndpoint {
         if (id!=0 && name!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update os type {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
-            if (subject.hasRole("ccsysadmin") || subject.isPermitted("ccDirComITiSysOst:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("sysadmin") || subject.isPermitted("dirComITiSysOst:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSType entity = findOSTypeById(em, id);
@@ -292,8 +292,8 @@ public class OSTypeEndpoint {
         if (id!=0 && arc!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update os type {} architecture: {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, arc});
-            if (subject.hasRole("ccsysadmin") || subject.isPermitted("ccDirComITiSysOst:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("sysadmin") || subject.isPermitted("dirComITiSysOst:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSType entity = findOSTypeById(em, id);
@@ -329,8 +329,8 @@ public class OSTypeEndpoint {
         if (id!=0 && companyID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update os type {} company: {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, companyID});
-            if (subject.hasRole("ccsysadmin") || subject.isPermitted("ccDirComITiSysOst:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("sysadmin") || subject.isPermitted("dirComITiSysOst:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSType entity = findOSTypeById(em, id);
@@ -375,8 +375,8 @@ public class OSTypeEndpoint {
         if (id!=0 && osiID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update os type {} by adding OS instance: {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osiID});
-            if (subject.hasRole("ccsysadmin") || subject.isPermitted("ccDirComITiSysOst:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("sysadmin") || subject.isPermitted("dirComITiSysOst:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSType entity = findOSTypeById(em, id);
@@ -422,8 +422,8 @@ public class OSTypeEndpoint {
         if (id!=0 && osiID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update os type {} by deleting OS instance: {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osiID});
-            if (subject.hasRole("ccsysadmin") || subject.isPermitted("ccDirComITiSysOst:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("sysadmin") || subject.isPermitted("dirComITiSysOst:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSType entity = findOSTypeById(em, id);

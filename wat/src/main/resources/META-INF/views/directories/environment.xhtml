@@ -9,7 +9,7 @@
       xmlns:ccidm="http://spectral.com/cc/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('ccDirComOrgEnvironment:display')}">
+        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('dirComOrgEnvironment:display')}">
             <h:form id="environmentTableForm">
                 <p:growl id="environmentTableMessages" showDetail="true" />
                 <p:dataTable id="environmentTable" var="env" value="#{environmentsListController.lazyModel}"
@@ -37,22 +37,22 @@
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
                             <h:outputText value="Name : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgEnvironment:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComOrgEnvironment:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{env.name}"/>
                                     <p:ajax event="save" listener="#{environmentsListController.update(env)}" update="@form,:environmentTableForm:environmentTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{env.name}" rendered="#{!ccidm:hasPermission('ccDirComOrgEnvironment:update')}"/>
+                            <h:outputText value="#{env.name}" rendered="#{!ccidm:hasPermission('dirComOrgEnvironment:update')}"/>
 
                             <h:outputText value="Description : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgEnvironment:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComOrgEnvironment:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{env.description}"/>
                                     <p:ajax event="save" listener="#{environmentsListController.update(env)}" update="@form,:environmentTableForm:environmentTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{env.description}" rendered="#{!ccidm:hasPermission('ccDirComOrgEnvironment:update')}"/>
+                            <h:outputText value="#{env.description}" rendered="#{!ccidm:hasPermission('dirComOrgEnvironment:update')}"/>
 
                             <h:outputText value="OS Instances : " styleClass="inputTitle"/>
                             <h:form>
@@ -64,7 +64,7 @@
                                     <p:column headerText="Description" sortBy="#{osi.description}" filterBy="#{osi.description}">
                                         <h:outputText id="itemDescription" value="#{osi.description}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('ccDirComOrgEnvironment:update')}">
+                                    <c:if test="#{ccidm:hasPermission('dirComOrgEnvironment:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{environmentsListController.addedOSInstance[env.id]}">
@@ -86,9 +86,9 @@
                     </p:rowExpansion>
 
                     <f:facet name="footer">
-                        <p:commandButton value="Create environment" icon="ui-icon-disk" onclick="environmentCreateDialog.show()" rendered="#{ccidm:hasPermission('ccDirComOrgEnvironment:create')}"/>
+                        <p:commandButton value="Create environment" icon="ui-icon-disk" onclick="environmentCreateDialog.show()" rendered="#{ccidm:hasPermission('dirComOrgEnvironment:create')}"/>
                         <p:commandButton value="Remove selected environment" icon="ui-icon-closethick" onclick="environmentRemoveDialog.show()"
-                                         update=":removeEnvironmentDialogForm:display" rendered="#{ccidm:hasPermission('ccDirComOrgEnvironment:remove')}"/>
+                                         update=":removeEnvironmentDialogForm:display" rendered="#{ccidm:hasPermission('dirComOrgEnvironment:remove')}"/>
                         <p:commandButton value="Refresh table" id="environmentUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
                                          update=":environmentTableForm:environmentTable"/>
                     </f:facet>

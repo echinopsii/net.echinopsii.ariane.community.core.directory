@@ -9,7 +9,7 @@
       xmlns:ccidm="http://spectral.com/cc/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('ccDirComITiNtwSubnet:display')}">
+        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('dirComITiNtwSubnet:display')}">
 
             <h:form id="subnetTableForm">
                 <p:growl id="subnetTableMessages" showDetail="true" />
@@ -54,25 +54,25 @@
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
                             <h:outputText value="Name : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwSubnet:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="name" value="#{subnet.name}"/>
                                     <p:ajax event="save" listener="#{subnetsListController.update(subnet)}" update="@form,:subnetTableForm:subnetTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{subnet.name}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwSubnet:update'))}"/>
+                            <h:outputText value="#{subnet.name}" rendered="#{!(ccidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
                             <h:outputText value="Description : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwSubnet:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="description" value="#{subnet.description}"/>
                                     <p:ajax event="save" listener="#{subnetsListController.update(subnet)}" update="@form,:subnetTableForm:subnetTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{subnet.description}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwSubnet:update'))}"/>
+                            <h:outputText value="#{subnet.description}" rendered="#{!(ccidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
                             <h:outputText value="Type : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwSubnet:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace label="#{subnet.type.name}" effectSpeed="fast" editor="true">
                                     <h:selectOneMenu value="#{subnetsListController.changedSubnetType[subnet.id]}">
                                         <f:selectItems value="#{subnetsListController.getAllSubnetTypes()}"  var="subnetT"
@@ -81,10 +81,10 @@
                                     <p:ajax event="save" listener="#{subnetsListController.syncSubnetType(subnet)}" update="@form,:subnetTableForm:subnetTableMessages"/>
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{subnet.type.name}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwSubnet:update'))}"/>
+                            <h:outputText value="#{subnet.type.name}" rendered="#{!(ccidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
                             <h:outputText value="Multicast area : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwSubnet:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace label="#{subnetsListController.getSubnetMareaName(subnet)}" effectSpeed="fast" editor="true">
                                     <h:selectOneMenu value="#{subnetsListController.changedMarea[subnet.id]}">
                                         <f:selectItems value="#{multicastAreasListController.getAllForInplace()}"  var="marea"
@@ -93,25 +93,25 @@
                                     <p:ajax event="save" listener="#{subnetsListController.syncMarea(subnet)}" update="@form,:subnetTableForm:subnetTableMessages"/>
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{subnetsListController.getSubnetMareaName(subnet)}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwSubnet:update'))}"/>
+                            <h:outputText value="#{subnetsListController.getSubnetMareaName(subnet)}" rendered="#{!(ccidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
                             <h:outputText value="Subnet IP : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwSubnet:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="subnetIP" value="#{subnet.subnetIP}"/>
                                     <p:ajax event="save" listener="#{subnetsListController.update(subnet)}" update="@form,:subnetTableForm:subnetTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{subnet.subnetIP}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwSubnet:update'))}"/>
+                            <h:outputText value="#{subnet.subnetIP}" rendered="#{!(ccidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
                             <h:outputText value="Subnet Mask : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComITiNtwSubnet:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="subnetMask" value="#{subnet.subnetMask}"/>
                                     <p:ajax event="save" listener="#{subnetsListController.update(subnet)}" update="@form,:subnetTableForm:subnetTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{subnet.subnetMask}" rendered="#{!(ccidm:hasPermission('ccDirComITiNtwSubnet:update'))}"/>
+                            <h:outputText value="#{subnet.subnetMask}" rendered="#{!(ccidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
                             <h:outputText value="Datacenters : " styleClass="inputTitle"/>
                             <h:form>
@@ -129,7 +129,7 @@
                                     <p:column headerText="Country" sortBy="#{dc.country}" filterBy="#{dc.country}">
                                         <h:outputText id="itemCountry" value="#{dc.country}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('ccDirComITiNtwSubnet:update')}">
+                                    <c:if test="#{ccidm:hasPermission('dirComITiNtwSubnet:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select datacenter to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{subnetsListController.addedDC[subnet.id]}">
@@ -158,7 +158,7 @@
                                     <p:column headerText="Description" sortBy="#{os.description}" filterBy="#{os.description}">
                                         <h:outputText id="itemDescription" value="#{os.description}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('ccDirComITiNtwSubnet:update')}">
+                                    <c:if test="#{ccidm:hasPermission('dirComITiNtwSubnet:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{subnetsListController.addedOSI[subnet.id]}">
@@ -179,9 +179,9 @@
                         </h:panelGrid>
                     </p:rowExpansion>
                     <f:facet name="footer">
-                        <p:commandButton value="Create subnet" icon="ui-icon-disk" onclick="subnetCreateDialog.show()" rendered="#{ccidm:hasPermission('ccDirComITiNtwSubnet:create')}"/>
+                        <p:commandButton value="Create subnet" icon="ui-icon-disk" onclick="subnetCreateDialog.show()" rendered="#{ccidm:hasPermission('dirComITiNtwSubnet:create')}"/>
                         <p:commandButton value="Remove selected subnet" icon="ui-icon-closethick" onclick="subnetRemoveDialog.show()"
-                                         update=":removeSubnetDialogForm:display" rendered="#{ccidm:hasPermission('ccDirComITiNtwSubnet:remove')}"/>
+                                         update=":removeSubnetDialogForm:display" rendered="#{ccidm:hasPermission('dirComITiNtwSubnet:remove')}"/>
                         <p:commandButton value="Refresh table" id="subnetUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
                                          update=":subnetTableForm:subnetTable"/>
                     </f:facet>

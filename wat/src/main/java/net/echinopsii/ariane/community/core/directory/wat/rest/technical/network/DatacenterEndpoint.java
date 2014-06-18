@@ -92,8 +92,8 @@ public class DatacenterEndpoint {
     public Response displayDatacenter(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-        if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwDC:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("irComITiNtwDC:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             Datacenter entity = findDatacenterById(em, id);
@@ -114,8 +114,8 @@ public class DatacenterEndpoint {
     public Response displayAllDatacenters() {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get datacenters", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
-        if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwDC:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("irComITiNtwDC:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             final HashSet<Datacenter> results = new HashSet(em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.multicastAreas ORDER BY d.id", Datacenter.class).getResultList());
@@ -149,8 +149,8 @@ public class DatacenterEndpoint {
         } else if (name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] get datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwDC:display") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("irComITiNtwDC:display") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterByName(em, name);
@@ -178,8 +178,8 @@ public class DatacenterEndpoint {
         if (name!=null && address!=null && zipCode!=null && town!=null && country!=null && gpsLat!=null && gpsLng!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwDC:create") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:create") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterByName(em, name);
@@ -215,8 +215,8 @@ public class DatacenterEndpoint {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] delete datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwDC:delete") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:delete") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
@@ -255,8 +255,8 @@ public class DatacenterEndpoint {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwDC:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
@@ -286,8 +286,8 @@ public class DatacenterEndpoint {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} full address : ({},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id,
                                                                                                 address, zipCode, town, country});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwDC:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
@@ -325,8 +325,8 @@ public class DatacenterEndpoint {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} gps coord : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id,
                                                                                        gpsLat, gpsLng});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwDC:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
@@ -361,8 +361,8 @@ public class DatacenterEndpoint {
         if (id!=0 && description!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, description});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwDC:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
@@ -396,8 +396,8 @@ public class DatacenterEndpoint {
         if (id!=0 && subnetID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} by adding subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwDC:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
@@ -439,8 +439,8 @@ public class DatacenterEndpoint {
         if (id!=0 && subnetID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} by deleting subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwDC:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
@@ -482,8 +482,8 @@ public class DatacenterEndpoint {
         if (id!=0 && mareaID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} by adding multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwDC:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
@@ -525,8 +525,8 @@ public class DatacenterEndpoint {
         if (id!=0 && mareaID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} by deleting multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwDC:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);

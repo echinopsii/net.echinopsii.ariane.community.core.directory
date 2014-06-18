@@ -9,7 +9,7 @@
       xmlns:ccidm="http://spectral.com/cc/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('ccDirComOrgTeam:display')}">
+        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('dirComOrgTeam:display')}">
             <h:form id="teamTableForm">
                 <p:growl id="teamTableMessages" showDetail="true" />
                 <p:dataTable id="teamTable" var="team" value="#{teamsListController.lazyModel}"
@@ -41,30 +41,30 @@
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
                             <h:outputText value="Name : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgTeam:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComOrgTeam:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{team.name}"/>
                                     <p:ajax event="save" listener="#{teamsListController.update(team)}" update="@form,:teamTableForm:teamTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{team.name}" rendered="#{!ccidm:hasPermission('ccDirComOrgTeam:update')}"/>
+                            <h:outputText value="#{team.name}" rendered="#{!ccidm:hasPermission('dirComOrgTeam:update')}"/>
 
                             <h:outputText value="Color code : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgTeam:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComOrgTeam:update')}">
                                 <p:colorPicker id="popupCP" value="#{team.colorCode}"/>
                                 <p:commandButton value="Save new color" update="@form,:teamTableForm:teamTableMessages" id="teamColorSave" icon="ui-icon-disk"
                                                  process="@form" actionListener="#{teamsListController.update(team)}" styleClass="ui-priority-primary icon-large"/>
                             </h:form>
-                            <h:outputText value="#{team.colorCode}" style="background-color:\##{team.colorCode};font-weight:bold" rendered="#{!ccidm:hasPermission('ccDirComOrgTeam:update')}"/>
+                            <h:outputText value="#{team.colorCode}" style="background-color:\##{team.colorCode};font-weight:bold" rendered="#{!ccidm:hasPermission('dirComOrgTeam:update')}"/>
 
                             <h:outputText value="Description : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('ccDirComOrgTeam:update')}">
+                            <h:form rendered="#{ccidm:hasPermission('dirComOrgTeam:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{team.description}"/>
                                     <p:ajax event="save" listener="#{teamsListController.update(team)}" update="@form,:teamTableForm:teamTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{team.description}" rendered="#{!ccidm:hasPermission('ccDirComOrgTeam:update')}"/>
+                            <h:outputText value="#{team.description}" rendered="#{!ccidm:hasPermission('dirComOrgTeam:update')}"/>
 
                             <h:outputText value="OS instances : " styleClass="inputTitle"/>
                             <h:form>
@@ -76,7 +76,7 @@
                                     <p:column headerText="Description" sortBy="#{osi.description}" filterBy="#{osi.description}">
                                         <h:outputText id="osiDescription" value="#{osi.description}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('ccDirComOrgTeam:update')}">
+                                    <c:if test="#{ccidm:hasPermission('dirComOrgTeam:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select OS Instance to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{teamsListController.addedOSInstance[team.id]}">
@@ -104,7 +104,7 @@
                                     <p:column headerText="Description" sortBy="#{app.description}" filterBy="#{app.description}">
                                         <h:outputText id="appDescription" value="#{app.description}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('ccDirComOrgTeam:update')}">
+                                    <c:if test="#{ccidm:hasPermission('dirComOrgTeam:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select application to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{teamsListController.addedApplication[team.id]}">
@@ -126,9 +126,9 @@
                     </p:rowExpansion>
 
                     <f:facet name="footer">
-                        <p:commandButton value="Create team" icon="ui-icon-disk" onclick="teamCreateDialog.show()" rendered="#{ccidm:hasPermission('ccDirComOrgTeam:create')}"/>
+                        <p:commandButton value="Create team" icon="ui-icon-disk" onclick="teamCreateDialog.show()" rendered="#{ccidm:hasPermission('dirComOrgTeam:create')}"/>
                         <p:commandButton value="Remove selected team" icon="ui-icon-closethick" onclick="teamRemoveDialog.show()"
-                                         update=":removeTeamDialogForm:display" rendered="#{ccidm:hasPermission('ccDirComOrgTeam:remove')}"/>
+                                         update=":removeTeamDialogForm:display" rendered="#{ccidm:hasPermission('dirComOrgTeam:remove')}"/>
                         <p:commandButton value="Refresh table" id="teamUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
                                          update=":teamTableForm:teamTable"/>
                     </f:facet>

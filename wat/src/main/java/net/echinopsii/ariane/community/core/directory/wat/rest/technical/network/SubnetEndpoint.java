@@ -117,8 +117,8 @@ public class SubnetEndpoint {
     public Response displaySubnet(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-        if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwSubnet:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwSubnet:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             Subnet entity = findSubnetById(em, id);
@@ -139,8 +139,8 @@ public class SubnetEndpoint {
     public Response displayAllSubnets() {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get subnets", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
-        if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwSubnet:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone")) {
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwSubnet:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             final HashSet<Subnet> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.type LEFT JOIN FETCH l.marea ORDER BY l.id", Subnet.class).getResultList());
 
@@ -173,8 +173,8 @@ public class SubnetEndpoint {
         } else if (name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] get subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwSubnet:display") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwSubnet:display") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetByName(em, name);
@@ -201,8 +201,8 @@ public class SubnetEndpoint {
         if (name!=null && subnetIP!=null && subnetMask!=null && type!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create subnet : ({},{},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, subnetIP, subnetMask, type, description});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:create") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetByName(em, name);
@@ -246,8 +246,8 @@ public class SubnetEndpoint {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] delete subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:delete") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:delete") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
@@ -288,8 +288,8 @@ public class SubnetEndpoint {
         if (id!=0 && name!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update subnet {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
@@ -324,8 +324,8 @@ public class SubnetEndpoint {
         if (id!=0 && description!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update subnet {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, description});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
@@ -360,8 +360,8 @@ public class SubnetEndpoint {
         if (id!=0 && subnetIP!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update subnet {} IP : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetIP});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
@@ -396,8 +396,8 @@ public class SubnetEndpoint {
         if (id!=0 && subnetMask!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update subnet {} mask : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetMask});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
@@ -432,8 +432,8 @@ public class SubnetEndpoint {
         if (id!=0 && type!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update subnet {} type : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, type});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
@@ -479,8 +479,8 @@ public class SubnetEndpoint {
         if (id!=0 && mareaID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update subnet {} multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
@@ -540,8 +540,8 @@ public class SubnetEndpoint {
         if (id!=0 && osiID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update subnet {} by adding os instance : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osiID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
@@ -583,8 +583,8 @@ public class SubnetEndpoint {
         if (id!=0 && osiID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update subnet {} by deleting os instance : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osiID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
@@ -626,8 +626,8 @@ public class SubnetEndpoint {
         if (id!=0 && dcID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update subnet {} by adding datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, dcID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
@@ -669,8 +669,8 @@ public class SubnetEndpoint {
         if (id!=0 && dcID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update subnet {} by adding datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, dcID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwSubnet:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);

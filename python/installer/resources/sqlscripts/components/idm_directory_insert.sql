@@ -4,15 +4,15 @@
 
 LOCK TABLES `resource` WRITE;
 INSERT IGNORE INTO `resource` (description, resourceName, version) VALUES
-    ('CC directory common IT network datacenter','ccDirComITiNtwDC',1),
-    ('CC directory common IT network multicast area','ccDirComITiNtwMarea',1),
-    ('CC directory common IT network subnet','ccDirComITiNtwSubnet',1),
-    ('CC directory common IT system OS instance','ccDirComITiSysOsi',1),
-    ('CC directory common IT system OS type','ccDirComITiSysOst',1),
-    ('CC directory common organisation application','ccDirComOrgApp',1),
-    ('CC directory common organisation company','ccDirComOrgCompany',1),
-    ('CC directory common organisation environment','ccDirComOrgEnvironment',1),
-    ('CC directory common organisation team','ccDirComOrgTeam',1);
+    ('Directory common IT network datacenter','dirComITiNtwDC',1),
+    ('Directory common IT network multicast area','dirComITiNtwMarea',1),
+    ('Directory common IT network subnet','dirComITiNtwSubnet',1),
+    ('Directory common IT system OS instance','dirComITiSysOsi',1),
+    ('Directory common IT system OS type','dirComITiSysOst',1),
+    ('Directory common organisation application','dirComOrgApp',1),
+    ('Directory common organisation company','dirComOrgCompany',1),
+    ('Directory common organisation environment','dirComOrgEnvironment',1),
+    ('Directory common organisation team','dirComOrgTeam',1);
 UNLOCK TABLES;
 
 
@@ -23,85 +23,85 @@ UNLOCK TABLES;
 
 LOCK TABLES `permission` WRITE,`resource` WRITE;
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can display CC directory common IT network datacenter', 'ccDirComITiNtwDC:display', 1, id FROM resource WHERE resourceName='ccDirComITiNtwDC';
+SELECT 'can display Directory common IT network datacenter', 'dirComITiNtwDC:display', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can create CC directory common IT network datacenter', 'ccDirComITiNtwDC:create', 1, id FROM resource WHERE resourceName='ccDirComITiNtwDC';
+SELECT 'can create Directory common IT network datacenter', 'dirComITiNtwDC:create', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can remove CC directory common IT network datacenter', 'ccDirComITiNtwDC:remove', 1, id FROM resource WHERE resourceName='ccDirComITiNtwDC';
+SELECT 'can remove Directory common IT network datacenter', 'dirComITiNtwDC:remove', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can update CC directory common IT network datacenter', 'ccDirComITiNtwDC:update', 1, id FROM resource WHERE resourceName='ccDirComITiNtwDC';
+SELECT 'can update Directory common IT network datacenter', 'dirComITiNtwDC:update', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can display CC directory common IT network multicast area', 'ccDirComITiNtwMarea:display', 1, id FROM resource WHERE resourceName='ccDirComITiNtwMarea';
+SELECT 'can display Directory common IT network multicast area', 'dirComITiNtwMarea:display', 1, id FROM resource WHERE resourceName='dirComITiNtwMarea';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can create CC directory common IT network multicast area', 'ccDirComITiNtwMarea:create', 1, id FROM resource WHERE resourceName='ccDirComITiNtwMarea';
+SELECT 'can create Directory common IT network multicast area', 'dirComITiNtwMarea:create', 1, id FROM resource WHERE resourceName='dirComITiNtwMarea';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can remove CC directory common IT network multicast area', 'ccDirComITiNtwMarea:remove', 1, id FROM resource WHERE resourceName='ccDirComITiNtwMarea';
+SELECT 'can remove Directory common IT network multicast area', 'dirComITiNtwMarea:remove', 1, id FROM resource WHERE resourceName='dirComITiNtwMarea';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can update CC directory common IT network multicast area', 'ccDirComITiNtwMarea:update', 1, id FROM resource WHERE resourceName='ccDirComITiNtwMarea';
+SELECT 'can update Directory common IT network multicast area', 'dirComITiNtwMarea:update', 1, id FROM resource WHERE resourceName='dirComITiNtwMarea';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can display CC directory common IT network subnet', 'ccDirComITiNtwSubnet:display', 1, id FROM resource WHERE resourceName='ccDirComITiNtwSubnet';
+SELECT 'can display Directory common IT network subnet', 'dirComITiNtwSubnet:display', 1, id FROM resource WHERE resourceName='dirComITiNtwSubnet';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can create CC directory common IT network subnet', 'ccDirComITiNtwSubnet:create', 1, id FROM resource WHERE resourceName='ccDirComITiNtwSubnet';
+SELECT 'can create Directory common IT network subnet', 'dirComITiNtwSubnet:create', 1, id FROM resource WHERE resourceName='dirComITiNtwSubnet';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can remove CC directory common IT network subnet', 'ccDirComITiNtwSubnet:remove', 1, id FROM resource WHERE resourceName='ccDirComITiNtwSubnet';
+SELECT 'can remove Directory common IT network subnet', 'dirComITiNtwSubnet:remove', 1, id FROM resource WHERE resourceName='dirComITiNtwSubnet';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can update CC directory common IT network subnet', 'ccDirComITiNtwSubnet:update', 1, id FROM resource WHERE resourceName='ccDirComITiNtwSubnet';
+SELECT 'can update Directory common IT network subnet', 'dirComITiNtwSubnet:update', 1, id FROM resource WHERE resourceName='dirComITiNtwSubnet';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can display CC directory common IT system OS instance', 'ccDirComITiSysOsi:display', 1, id FROM resource WHERE resourceName='ccDirComITiSysOsi';
+SELECT 'can display Directory common IT system OS instance', 'dirComITiSysOsi:display', 1, id FROM resource WHERE resourceName='dirComITiSysOsi';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can create CC directory common IT system OS instance', 'ccDirComITiSysOsi:create', 1, id FROM resource WHERE resourceName='ccDirComITiSysOsi';
+SELECT 'can create Directory common IT system OS instance', 'dirComITiSysOsi:create', 1, id FROM resource WHERE resourceName='dirComITiSysOsi';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can remove CC directory common IT system OS instance', 'ccDirComITiSysOsi:remove', 1, id FROM resource WHERE resourceName='ccDirComITiSysOsi';
+SELECT 'can remove Directory common IT system OS instance', 'dirComITiSysOsi:remove', 1, id FROM resource WHERE resourceName='dirComITiSysOsi';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can update CC directory common IT system OS instance', 'ccDirComITiSysOsi:update', 1, id FROM resource WHERE resourceName='ccDirComITiSysOsi';
+SELECT 'can update Directory common IT system OS instance', 'dirComITiSysOsi:update', 1, id FROM resource WHERE resourceName='dirComITiSysOsi';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can display CC directory common IT system OS type', 'ccDirComITiSysOst:display', 1, id FROM resource WHERE resourceName='ccDirComITiSysOst';
+SELECT 'can display Directory common IT system OS type', 'dirComITiSysOst:display', 1, id FROM resource WHERE resourceName='dirComITiSysOst';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can create CC directory common IT system OS type', 'ccDirComITiSysOst:create', 1, id FROM resource WHERE resourceName='ccDirComITiSysOst';
+SELECT 'can create Directory common IT system OS type', 'dirComITiSysOst:create', 1, id FROM resource WHERE resourceName='dirComITiSysOst';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can remove CC directory common IT system OS type', 'ccDirComITiSysOst:remove', 1, id FROM resource WHERE resourceName='ccDirComITiSysOst';
+SELECT 'can remove Directory common IT system OS type', 'dirComITiSysOst:remove', 1, id FROM resource WHERE resourceName='dirComITiSysOst';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can update CC directory common IT system OS type', 'ccDirComITiSysOst:update', 1, id FROM resource WHERE resourceName='ccDirComITiSysOst';
+SELECT 'can update Directory common IT system OS type', 'dirComITiSysOst:update', 1, id FROM resource WHERE resourceName='dirComITiSysOst';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can display CC directory common organisation application', 'ccDirComOrgApp:display', 1, id FROM resource WHERE resourceName='ccDirComOrgApp';
+SELECT 'can display Directory common organisation application', 'dirComOrgApp:display', 1, id FROM resource WHERE resourceName='dirComOrgApp';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can create CC directory common organisation application', 'ccDirComOrgApp:create', 1, id FROM resource WHERE resourceName='ccDirComOrgApp';
+SELECT 'can create Directory common organisation application', 'dirComOrgApp:create', 1, id FROM resource WHERE resourceName='dirComOrgApp';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can remove CC directory common organisation application', 'ccDirComOrgApp:remove', 1, id FROM resource WHERE resourceName='ccDirComOrgApp';
+SELECT 'can remove Directory common organisation application', 'dirComOrgApp:remove', 1, id FROM resource WHERE resourceName='dirComOrgApp';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can update CC directory common organisation application', 'ccDirComOrgApp:update', 1, id FROM resource WHERE resourceName='ccDirComOrgApp';
+SELECT 'can update Directory common organisation application', 'dirComOrgApp:update', 1, id FROM resource WHERE resourceName='dirComOrgApp';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can display CC directory common organisation company', 'ccDirComOrgCompany:display', 1, id FROM resource WHERE resourceName='ccDirComOrgCompany';
+SELECT 'can display Directory common organisation company', 'dirComOrgCompany:display', 1, id FROM resource WHERE resourceName='dirComOrgCompany';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can create CC directory common organisation company', 'ccDirComOrgCompany:create', 1, id FROM resource WHERE resourceName='ccDirComOrgCompany';
+SELECT 'can create Directory common organisation company', 'dirComOrgCompany:create', 1, id FROM resource WHERE resourceName='dirComOrgCompany';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can remove CC directory common organisation company', 'ccDirComOrgCompany:remove', 1, id FROM resource WHERE resourceName='ccDirComOrgCompany';
+SELECT 'can remove Directory common organisation company', 'dirComOrgCompany:remove', 1, id FROM resource WHERE resourceName='dirComOrgCompany';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can update CC directory common organisation company', 'ccDirComOrgCompany:update', 1, id FROM resource WHERE resourceName='ccDirComOrgCompany';
+SELECT 'can update Directory common organisation company', 'dirComOrgCompany:update', 1, id FROM resource WHERE resourceName='dirComOrgCompany';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can display CC directory common organisation environment', 'ccDirComOrgEnvironment:display', 1, id FROM resource WHERE resourceName='ccDirComOrgEnvironment';
+SELECT 'can display Directory common organisation environment', 'dirComOrgEnvironment:display', 1, id FROM resource WHERE resourceName='dirComOrgEnvironment';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can create CC directory common organisation environment', 'ccDirComOrgEnvironment:create', 1, id FROM resource WHERE resourceName='ccDirComOrgEnvironment';
+SELECT 'can create Directory common organisation environment', 'dirComOrgEnvironment:create', 1, id FROM resource WHERE resourceName='dirComOrgEnvironment';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can remove CC directory common organisation environment', 'ccDirComOrgEnvironment:remove', 1, id FROM resource WHERE resourceName='ccDirComOrgEnvironment';
+SELECT 'can remove Directory common organisation environment', 'dirComOrgEnvironment:remove', 1, id FROM resource WHERE resourceName='dirComOrgEnvironment';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can update CC directory common organisation environment', 'ccDirComOrgEnvironment:update', 1, id FROM resource WHERE resourceName='ccDirComOrgEnvironment';
+SELECT 'can update Directory common organisation environment', 'dirComOrgEnvironment:update', 1, id FROM resource WHERE resourceName='dirComOrgEnvironment';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can display CC directory common organisation team', 'ccDirComOrgTeam:display', 1, id FROM resource WHERE resourceName='ccDirComOrgTeam';
+SELECT 'can display Directory common organisation team', 'dirComOrgTeam:display', 1, id FROM resource WHERE resourceName='dirComOrgTeam';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can create CC directory common organisation team', 'ccDirComOrgTeam:create', 1, id FROM resource WHERE resourceName='ccDirComOrgTeam';
+SELECT 'can create Directory common organisation team', 'dirComOrgTeam:create', 1, id FROM resource WHERE resourceName='dirComOrgTeam';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can remove CC directory common organisation team', 'ccDirComOrgTeam:remove', 1, id FROM resource WHERE resourceName='ccDirComOrgTeam';
+SELECT 'can remove Directory common organisation team', 'dirComOrgTeam:remove', 1, id FROM resource WHERE resourceName='dirComOrgTeam';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can update CC directory common organisation team', 'ccDirComOrgTeam:update', 1, id FROM resource WHERE resourceName='ccDirComOrgTeam';
+SELECT 'can update Directory common organisation team', 'dirComOrgTeam:update', 1, id FROM resource WHERE resourceName='dirComOrgTeam';
 
 UNLOCK TABLES;
 
@@ -113,85 +113,85 @@ UNLOCK TABLES;
 
 LOCK TABLES `resource_permission` WRITE,`permission` AS p WRITE,`resource` AS r WRITE ;
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwDC' AND p.permissionName='ccDirComITiNtwDC:display';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwDC' AND p.permissionName='dirComITiNtwDC:display';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwDC' AND p.permissionName='ccDirComITiNtwDC:create';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwDC' AND p.permissionName='dirComITiNtwDC:create';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwDC' AND p.permissionName='ccDirComITiNtwDC:remove';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwDC' AND p.permissionName='dirComITiNtwDC:remove';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwDC' AND p.permissionName='ccDirComITiNtwDC:update';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwDC' AND p.permissionName='dirComITiNtwDC:update';
 
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwMarea' AND p.permissionName='ccDirComITiNtwMarea:display';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwMarea' AND p.permissionName='dirComITiNtwMarea:display';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwMarea' AND p.permissionName='ccDirComITiNtwMarea:create';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwMarea' AND p.permissionName='dirComITiNtwMarea:create';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwMarea' AND p.permissionName='ccDirComITiNtwMarea:remove';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwMarea' AND p.permissionName='dirComITiNtwMarea:remove';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwMarea' AND p.permissionName='ccDirComITiNtwMarea:update';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwMarea' AND p.permissionName='dirComITiNtwMarea:update';
 
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwSubnet' AND p.permissionName='ccDirComITiNtwSubnet:display';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwSubnet' AND p.permissionName='dirComITiNtwSubnet:display';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwSubnet' AND p.permissionName='ccDirComITiNtwSubnet:create';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwSubnet' AND p.permissionName='dirComITiNtwSubnet:create';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwSubnet' AND p.permissionName='ccDirComITiNtwSubnet:remove';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwSubnet' AND p.permissionName='dirComITiNtwSubnet:remove';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiNtwSubnet' AND p.permissionName='ccDirComITiNtwSubnet:update';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwSubnet' AND p.permissionName='dirComITiNtwSubnet:update';
 
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiSysOsi' AND p.permissionName='ccDirComITiSysOsi:display';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiSysOsi' AND p.permissionName='dirComITiSysOsi:display';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiSysOsi' AND p.permissionName='ccDirComITiSysOsi:create';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiSysOsi' AND p.permissionName='dirComITiSysOsi:create';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiSysOsi' AND p.permissionName='ccDirComITiSysOsi:remove';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiSysOsi' AND p.permissionName='dirComITiSysOsi:remove';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiSysOsi' AND p.permissionName='ccDirComITiSysOsi:update';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiSysOsi' AND p.permissionName='dirComITiSysOsi:update';
 
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiSysOst' AND p.permissionName='ccDirComITiSysOst:display';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiSysOst' AND p.permissionName='dirComITiSysOst:display';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiSysOst' AND p.permissionName='ccDirComITiSysOst:create';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiSysOst' AND p.permissionName='dirComITiSysOst:create';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiSysOst' AND p.permissionName='ccDirComITiSysOst:remove';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiSysOst' AND p.permissionName='dirComITiSysOst:remove';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComITiSysOst' AND p.permissionName='ccDirComITiSysOst:update';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiSysOst' AND p.permissionName='dirComITiSysOst:update';
 
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgApp' AND p.permissionName='ccDirComOrgApp:display';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgApp' AND p.permissionName='dirComOrgApp:display';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgApp' AND p.permissionName='ccDirComOrgApp:create';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgApp' AND p.permissionName='dirComOrgApp:create';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgApp' AND p.permissionName='ccDirComOrgApp:remove';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgApp' AND p.permissionName='dirComOrgApp:remove';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgApp' AND p.permissionName='ccDirComOrgApp:update';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgApp' AND p.permissionName='dirComOrgApp:update';
 
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgCompany' AND p.permissionName='ccDirComOrgCompany:display';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgCompany' AND p.permissionName='dirComOrgCompany:display';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgCompany' AND p.permissionName='ccDirComOrgCompany:create';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgCompany' AND p.permissionName='dirComOrgCompany:create';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgCompany' AND p.permissionName='ccDirComOrgCompany:remove';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgCompany' AND p.permissionName='dirComOrgCompany:remove';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgCompany' AND p.permissionName='ccDirComOrgCompany:update';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgCompany' AND p.permissionName='dirComOrgCompany:update';
 
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgEnvironment' AND p.permissionName='ccDirComOrgEnvironment:display';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgEnvironment' AND p.permissionName='dirComOrgEnvironment:display';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgEnvironment' AND p.permissionName='ccDirComOrgEnvironment:create';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgEnvironment' AND p.permissionName='dirComOrgEnvironment:create';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgEnvironment' AND p.permissionName='ccDirComOrgEnvironment:remove';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgEnvironment' AND p.permissionName='dirComOrgEnvironment:remove';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgEnvironment' AND p.permissionName='ccDirComOrgEnvironment:update';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgEnvironment' AND p.permissionName='dirComOrgEnvironment:update';
 
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgTeam' AND p.permissionName='ccDirComOrgTeam:display';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgTeam' AND p.permissionName='dirComOrgTeam:display';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgTeam' AND p.permissionName='ccDirComOrgTeam:create';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgTeam' AND p.permissionName='dirComOrgTeam:create';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgTeam' AND p.permissionName='ccDirComOrgTeam:remove';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgTeam' AND p.permissionName='dirComOrgTeam:remove';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='ccDirComOrgTeam' AND p.permissionName='ccDirComOrgTeam:update';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComOrgTeam' AND p.permissionName='dirComOrgTeam:update';
 
 UNLOCK TABLES;
 
@@ -203,12 +203,12 @@ UNLOCK TABLES;
 
 LOCK TABLES `role` WRITE;
 INSERT IGNORE INTO `role` (description, roleName, version) VALUES
-    ('CC network administrator role','ccntwadmin',1),
-    ('CC system administrator role','ccsysadmin',1),
-    ('CC organisation administrator role','ccorgadmin',1),
-    ('CC network reviewer role','ccntwreviewer',1),
-    ('CC system reviewer role','ccsysreviewer',1),
-    ('CC organisation reviewer role','ccorgreviewer',1);
+    ('network administrator role','ntwadmin',1),
+    ('system administrator role','sysadmin',1),
+    ('organisation administrator role','orgadmin',1),
+    ('network reviewer role','ntwreviewer',1),
+    ('system reviewer role','sysreviewer',1),
+    ('organisation reviewer role','orgreviewer',1);
 UNLOCK TABLES;
 
 
@@ -219,175 +219,175 @@ UNLOCK TABLES;
 
 LOCK TABLES `permission_role` WRITE,`permission` AS p WRITE,`role` AS r WRITE;
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:display' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:display' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:display' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:display' AND r.roleName='ccntwreviewer';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:display' AND r.roleName='ntwreviewer';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:create' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:create' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:create' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:remove' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:create' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:create' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:update' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:update' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:update' AND r.roleName='ntwadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:display' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:display' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:display' AND r.roleName='ccntwreviewer';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='ntwreviewer';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:create' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:create' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:create' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:remove' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:create' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:create' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:update' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:update' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:update' AND r.roleName='ntwadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:display' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:display' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:display' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:display' AND r.roleName='ccntwreviewer';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:display' AND r.roleName='ntwreviewer';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:create' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:create' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:create' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:remove' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:create' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:create' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:update' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:update' AND r.roleName='ccntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:update' AND r.roleName='ntwadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:display' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:display' AND r.roleName='ccsysadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:display' AND r.roleName='sysadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:display' AND r.roleName='ccsysreviewer';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:display' AND r.roleName='sysreviewer';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:create' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:create' AND r.roleName='ccsysadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:create' AND r.roleName='sysadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:remove' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:create' AND r.roleName='ccsysadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:create' AND r.roleName='sysadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:update' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:update' AND r.roleName='ccsysadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:update' AND r.roleName='sysadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:display' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:display' AND r.roleName='ccsysadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:display' AND r.roleName='sysadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:display' AND r.roleName='ccsysreviewer';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:display' AND r.roleName='sysreviewer';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:create' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:create' AND r.roleName='ccsysadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:create' AND r.roleName='sysadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:remove' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:create' AND r.roleName='ccsysadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:create' AND r.roleName='sysadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:update' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:update' AND r.roleName='ccsysadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:update' AND r.roleName='sysadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:display' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:display' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:display' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:display' AND r.roleName='ccorgreviewer';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:display' AND r.roleName='orgreviewer';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:create' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:create' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:create' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:remove' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:create' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:create' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:update' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:update' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:update' AND r.roleName='orgadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:display' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:display' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:display' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:display' AND r.roleName='ccorgreviewer';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:display' AND r.roleName='orgreviewer';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:create' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:create' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:create' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:remove' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:create' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:create' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:update' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:update' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:update' AND r.roleName='orgadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:display' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:display' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:display' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:display' AND r.roleName='ccorgreviewer';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:display' AND r.roleName='orgreviewer';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:create' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:create' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:create' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:remove' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:create' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:create' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:update' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:update' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:update' AND r.roleName='orgadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:display' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:display' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:display' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:display' AND r.roleName='ccorgreviewer';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:display' AND r.roleName='orgreviewer';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:create' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:create' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:create' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:remove' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:create' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:create' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:update' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:update' AND r.roleName='ccorgadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:update' AND r.roleName='orgadmin';
 
 UNLOCK TABLES;
 
@@ -400,191 +400,191 @@ UNLOCK TABLES;
 LOCK TABLES `role_permission` WRITE,`permission` AS p WRITE,`role` AS r WRITE;
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:display' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:create' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:remove' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:update' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:update' AND r.roleName='Jedi';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:display' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:create' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:remove' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:update' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:update' AND r.roleName='Jedi';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:display' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:create' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:remove' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:update' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:update' AND r.roleName='Jedi';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:display' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:create' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:remove' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:update' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:update' AND r.roleName='Jedi';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:display' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:create' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:remove' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:update' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:update' AND r.roleName='Jedi';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:display' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:create' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:remove' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:update' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:update' AND r.roleName='Jedi';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:display' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:create' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:remove' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:update' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:update' AND r.roleName='Jedi';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:display' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:create' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:remove' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:update' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:update' AND r.roleName='Jedi';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:display' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:create' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:remove' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:update' AND r.roleName='Jedi';
-
-
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:display' AND r.roleName='ccntwadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:create' AND r.roleName='ccntwadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:remove' AND r.roleName='ccntwadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:update' AND r.roleName='ccntwadmin';
-
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:display' AND r.roleName='ccntwadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:create' AND r.roleName='ccntwadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:remove' AND r.roleName='ccntwadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:update' AND r.roleName='ccntwadmin';
-
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:display' AND r.roleName='ccntwadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:create' AND r.roleName='ccntwadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:remove' AND r.roleName='ccntwadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:update' AND r.roleName='ccntwadmin';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:update' AND r.roleName='Jedi';
 
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwDC:display' AND r.roleName='ccntwreviewer';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:display' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwMarea:display' AND r.roleName='ccntwreviewer';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:create' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiNtwSubnet:display' AND r.roleName='ccntwreviewer';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:remove' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:update' AND r.roleName='ntwadmin';
+
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:create' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:remove' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:update' AND r.roleName='ntwadmin';
+
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:display' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:create' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:remove' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:update' AND r.roleName='ntwadmin';
 
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:display' AND r.roleName='ccsysadmin';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:display' AND r.roleName='ntwreviewer';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:create' AND r.roleName='ccsysadmin';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='ntwreviewer';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:remove' AND r.roleName='ccsysadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:update' AND r.roleName='ccsysadmin';
-
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:display' AND r.roleName='ccsysadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:create' AND r.roleName='ccsysadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:remove' AND r.roleName='ccsysadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:update' AND r.roleName='ccsysadmin';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:display' AND r.roleName='ntwreviewer';
 
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOsi:display' AND r.roleName='ccsysreviewer';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:display' AND r.roleName='sysadmin';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComITiSysOst:display' AND r.roleName='ccsysreviewer';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:create' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:remove' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:update' AND r.roleName='sysadmin';
+
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:display' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:create' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:remove' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:update' AND r.roleName='sysadmin';
 
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:display' AND r.roleName='ccorgadmin';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:display' AND r.roleName='sysreviewer';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:create' AND r.roleName='ccorgadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:remove' AND r.roleName='ccorgadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:update' AND r.roleName='ccorgadmin';
-
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:display' AND r.roleName='ccorgadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:create' AND r.roleName='ccorgadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:remove' AND r.roleName='ccorgadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:update' AND r.roleName='ccorgadmin';
-
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:display' AND r.roleName='ccorgadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:create' AND r.roleName='ccorgadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:remove' AND r.roleName='ccorgadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:update' AND r.roleName='ccorgadmin';
-
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:display' AND r.roleName='ccorgadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:create' AND r.roleName='ccorgadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:remove' AND r.roleName='ccorgadmin';
-INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:update' AND r.roleName='ccorgadmin';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOst:display' AND r.roleName='sysreviewer';
 
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgApp:display' AND r.roleName='ccorgreviewer';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:display' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgCompany:display' AND r.roleName='ccorgreviewer';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:create' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgEnvironment:display' AND r.roleName='ccorgreviewer';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:remove' AND r.roleName='orgadmin';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='ccDirComOrgTeam:display' AND r.roleName='ccorgreviewer';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:update' AND r.roleName='orgadmin';
+
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:display' AND r.roleName='orgadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:create' AND r.roleName='orgadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:remove' AND r.roleName='orgadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:update' AND r.roleName='orgadmin';
+
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:display' AND r.roleName='orgadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:create' AND r.roleName='orgadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:remove' AND r.roleName='orgadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:update' AND r.roleName='orgadmin';
+
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:display' AND r.roleName='orgadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:create' AND r.roleName='orgadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:remove' AND r.roleName='orgadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:update' AND r.roleName='orgadmin';
+
+
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgApp:display' AND r.roleName='orgreviewer';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgCompany:display' AND r.roleName='orgreviewer';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgEnvironment:display' AND r.roleName='orgreviewer';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:display' AND r.roleName='orgreviewer';
 UNLOCK TABLES;

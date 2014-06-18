@@ -92,8 +92,8 @@ public class MulticastAreaEndpoint {
     public Response displayMulticastArea(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-        if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwMarea:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwMarea:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             MulticastArea entity = findMulticastAreaById(em, id);
@@ -114,8 +114,8 @@ public class MulticastAreaEndpoint {
     public Response displayAllMulticastAreas() {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get multicast areas", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
-        if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwMarea:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwMarea:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             final HashSet<MulticastArea> results = new HashSet(em.createQuery("SELECT DISTINCT m FROM MulticastArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters ORDER BY m.id", MulticastArea.class).getResultList());
@@ -149,8 +149,8 @@ public class MulticastAreaEndpoint {
         } else if (name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] get multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ccntwadmin") || subject.hasRole("ccntwreviewer") || subject.isPermitted("ccDirComITiNtwMarea:display") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwMarea:display") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 MulticastArea entity = findMulticastAreaByName(em, name);
@@ -176,8 +176,8 @@ public class MulticastAreaEndpoint {
         if (name!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwMarea:create") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwMarea:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 MulticastArea entity = findMulticastAreaByName(em, name);
@@ -212,8 +212,8 @@ public class MulticastAreaEndpoint {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] delete multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwMarea:delete") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwMarea:delete") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 MulticastArea entity = findMulticastAreaById(em, id);
@@ -251,8 +251,8 @@ public class MulticastAreaEndpoint {
         if (id!=0 && name!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update multicast area {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwMarea:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwMarea:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 MulticastArea entity = findMulticastAreaById(em, id);
@@ -286,8 +286,8 @@ public class MulticastAreaEndpoint {
         if (id!=0 && description!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update multicast area {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, description});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwMarea:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwMarea:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 MulticastArea entity = findMulticastAreaById(em, id);
@@ -321,8 +321,8 @@ public class MulticastAreaEndpoint {
         if (id!=0 && dcID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update multicast area {} by adding datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, dcID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwMarea:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwMarea:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 MulticastArea entity = findMulticastAreaById(em, id);
@@ -363,8 +363,8 @@ public class MulticastAreaEndpoint {
         if (id!=0 && dcID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update multicast area {} by deleting datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, dcID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwMarea:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwMarea:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 MulticastArea entity = findMulticastAreaById(em, id);
@@ -405,8 +405,8 @@ public class MulticastAreaEndpoint {
         if (id!=0 && subnetID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update multicast area {} by adding subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwMarea:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwMarea:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 MulticastArea entity = findMulticastAreaById(em, id);
@@ -449,8 +449,8 @@ public class MulticastAreaEndpoint {
         if (id!=0 && subnetID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update multicast area {} by deleting subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetID});
-            if (subject.hasRole("ccntwadmin") || subject.isPermitted("ccDirComITiNtwMarea:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwMarea:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 MulticastArea entity = findMulticastAreaById(em, id);

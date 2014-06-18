@@ -95,8 +95,8 @@ public class ApplicationEndpoint {
     public Response displayApplication(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-        if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgApp:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgApp:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             Application entity = findApplicationById(em, id);
@@ -117,8 +117,8 @@ public class ApplicationEndpoint {
     public Response displayAllApplications() {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get applications", new Object[]{Thread.currentThread().getId(),subject.getPrincipal()});
-        if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgApp:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+        if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgApp:display") ||
+            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             final HashSet<Application> results = new HashSet(em.createQuery("SELECT DISTINCT a FROM Application a LEFT JOIN FETCH a.osInstances LEFT JOIN FETCH a.company ORDER BY a.id", Application.class).getResultList());
@@ -151,8 +151,8 @@ public class ApplicationEndpoint {
         } else if (name!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] get application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ccorgadmin") || subject.hasRole("ccorgreviewer") || subject.isPermitted("ccDirComOrgApp:display") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgApp:display") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationByName(em, name);
@@ -179,8 +179,8 @@ public class ApplicationEndpoint {
         if (name!=null && shortName!=null && colorCode!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create application : ({},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, shortName, description, colorCode});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgApp:create") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationByName(em, name);
@@ -217,8 +217,8 @@ public class ApplicationEndpoint {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] delete application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgApp:delete") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:delete") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationById(em, id);
@@ -257,8 +257,8 @@ public class ApplicationEndpoint {
         if (id!=0 && name!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update application {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgApp:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationById(em, id);
@@ -293,8 +293,8 @@ public class ApplicationEndpoint {
         if (id!=0 && shortName!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update application {} short name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, shortName});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgApp:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationById(em, id);
@@ -329,8 +329,8 @@ public class ApplicationEndpoint {
         if (id!=0 && description!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update application {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, description});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgApp:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationById(em, id);
@@ -365,8 +365,8 @@ public class ApplicationEndpoint {
         if (id!=0 && colorCode!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update application {} color code : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, colorCode});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgApp:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationById(em, id);
@@ -401,8 +401,8 @@ public class ApplicationEndpoint {
         if (id!=0 && companyID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update application {} company : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, companyID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgApp:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationById(em, id);
@@ -445,8 +445,8 @@ public class ApplicationEndpoint {
         if (id!=0 && teamID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update application {} team : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, teamID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgApp:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationById(em, id);
@@ -488,8 +488,8 @@ public class ApplicationEndpoint {
         if (id!=0 && osiID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update application {} by adding os instance : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osiID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgApp:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:update") ||
+                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationById(em, id);
@@ -503,7 +503,7 @@ public class ApplicationEndpoint {
                             em.flush();
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Application " + id + " has been successfully updated by adding os instance " + osiID).build();
+                            return Response.status(Status.OK).entity("Application " + id + " has been suessfully updated by adding os instance " + osiID).build();
                         } catch (Throwable t) {
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -530,8 +530,8 @@ public class ApplicationEndpoint {
         if (id!=0 && osiID!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update application {} by adding os instance : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osiID});
-            if (subject.hasRole("ccorgadmin") || subject.isPermitted("ccDirComOrgApp:update") ||
-                subject.hasRole("Jedi") || subject.isPermitted("ccuniverse:zeone"))
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:update") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationById(em, id);
@@ -545,7 +545,7 @@ public class ApplicationEndpoint {
                             em.flush();
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Application " + id + " has been successfully updated by adding os instance " + osiID).build();
+                            return Response.status(Status.OK).entity("Application " + id + " has been suessfully updated by adding os instance " + osiID).build();
                         } catch (Throwable t) {
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
