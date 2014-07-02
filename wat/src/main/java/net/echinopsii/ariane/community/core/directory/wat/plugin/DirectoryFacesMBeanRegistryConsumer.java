@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
  */
 @Component(publicFactory = false, factoryMethod = "getInstance")
 @Instantiate
-public class DirectoryPluginFacesMBeanRegistryConsumer {
-    private static final Logger log = LoggerFactory.getLogger(DirectoryPluginFacesMBeanRegistryConsumer.class);
-    private static DirectoryPluginFacesMBeanRegistryConsumer INSTANCE;
+public class DirectoryFacesMBeanRegistryConsumer {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryFacesMBeanRegistryConsumer.class);
+    private static DirectoryFacesMBeanRegistryConsumer INSTANCE;
 
     @Requires(from="ArianePortalFacesMBeanRegistry")
     private FacesMBeanRegistry portalPluginFacesMBeanRegistry = null;
@@ -64,9 +64,9 @@ public class DirectoryPluginFacesMBeanRegistryConsumer {
      *
      * @return instantiated directory plugin faces mbean registry consumer
      */
-    public static DirectoryPluginFacesMBeanRegistryConsumer getInstance() {
+    public static DirectoryFacesMBeanRegistryConsumer getInstance() {
         if (INSTANCE == null)
-            INSTANCE = new DirectoryPluginFacesMBeanRegistryConsumer();
+            INSTANCE = new DirectoryFacesMBeanRegistryConsumer();
         return INSTANCE;
     }
 }

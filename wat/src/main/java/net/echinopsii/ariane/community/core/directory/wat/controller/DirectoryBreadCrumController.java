@@ -18,7 +18,7 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.controller;
 
-import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryPluginFacesMBeanRegistryConsumer;
+import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryFacesMBeanRegistryConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryTreeMenuRootsRegistryServiceConsumer;
 import net.echinopsii.ariane.community.core.portal.base.model.TreeMenuEntity;
 import org.primefaces.component.menuitem.MenuItem;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
  */
 public class DirectoryBreadCrumController {
     private static final Logger log = LoggerFactory.getLogger(DirectoryBreadCrumController.class);
-    private static String MAIN_MENU_DIRECTORY_CONTEXT = DirectoryPluginFacesMBeanRegistryConsumer.getInstance().getPortalPluginFacesMBeanRegistry().getRegisteredServletContext().getContextPath();
+    private static String MAIN_MENU_DIRECTORY_CONTEXT = DirectoryFacesMBeanRegistryConsumer.getInstance().getPortalPluginFacesMBeanRegistry().getRegisteredServletContext().getContextPath();
 
     private MenuModel model     = new DefaultMenuModel();
 
