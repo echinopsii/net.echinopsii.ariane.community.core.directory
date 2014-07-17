@@ -29,7 +29,6 @@
         </repository>
     </repositories>
 
-    <!--
     <distributionManagement>
         <repository>
             <id>echinopsii.community</id>
@@ -40,7 +39,6 @@
             <url>http://nexus.echinopsii.net/nexus/content/repositories/echinopsii.community.snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-    -->
 
     <properties>
         <!-- Encoding -->
