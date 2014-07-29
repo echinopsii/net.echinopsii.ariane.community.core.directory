@@ -5,7 +5,7 @@
     <parent>
         <groupId>net.echinopsii.ariane.community.core</groupId>
         <artifactId>net.echinopsii.ariane.community.core.directory</artifactId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.1</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -109,8 +109,8 @@
                             com.fasterxml.jackson.core.sym;version="${version.com.fasterxml.jackson}",
                             com.fasterxml.jackson.core.type;version="${version.com.fasterxml.jackson}",
                             com.fasterxml.jackson.core.util;version="${version.com.fasterxml.jackson}",
-                            net.echinopsii.ariane.community.core.portal.base.plugin;version=${version.net.echinopsii.ariane.core.portal},
-                            net.echinopsii.ariane.community.core.portal.base.model;version=${version.net.echinopsii.ariane.core.portal},
+                            net.echinopsii.ariane.community.core.portal.base.plugin;version="[${version.net.echinopsii.ariane.core.portal.min},${version.net.echinopsii.ariane.core.portal.max})",
+                            net.echinopsii.ariane.community.core.portal.base.model;version="[${version.net.echinopsii.ariane.core.portal.min},${version.net.echinopsii.ariane.core.portal.max})",
                             net.echinopsii.ariane.community.core.directory.base.model;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.base.model.organisational;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.base.model.technical.network;version=${project.version},
