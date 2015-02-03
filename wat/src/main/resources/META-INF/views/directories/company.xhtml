@@ -6,10 +6,10 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ccidm="http://spectral.com/cc/idm">
+      xmlns:arianeidm="http://echinopsii.net/ariane/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('dirComOrgCompany:display')}">
+        <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComOrgCompany:display')}">
 
             <h:form id="companyTableForm">
                 <p:growl id="companyTableMessages" showDetail="true" />
@@ -38,22 +38,22 @@
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
                             <h:outputText value="Name : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('dirComOrgCompany:update')}">
+                            <h:form rendered="#{arianeidm:hasPermission('dirComOrgCompany:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{cmp.name}"/>
                                     <p:ajax event="save" listener="#{companysListController.update(cmp)}" update="@form,:companyTableForm:companyTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{cmp.name}" rendered="#{!ccidm:hasPermission('dirComOrgCompany:update')}"/>
+                            <h:outputText value="#{cmp.name}" rendered="#{!arianeidm:hasPermission('dirComOrgCompany:update')}"/>
 
                             <h:outputText value="Description : " styleClass="inputTitle"/>
-                            <h:form rendered="#{ccidm:hasPermission('dirComOrgCompany:update')}">
+                            <h:form rendered="#{arianeidm:hasPermission('dirComOrgCompany:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{cmp.description}"/>
                                     <p:ajax event="save" listener="#{companysListController.update(cmp)}" update="@form,:companyTableForm:companyTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{cmp.description}" rendered="#{!ccidm:hasPermission('dirComOrgCompany:update')}"/>
+                            <h:outputText value="#{cmp.description}" rendered="#{!arianeidm:hasPermission('dirComOrgCompany:update')}"/>
 
                             <h:outputText value="OS Types : " styleClass="inputTitle"/>
                             <h:form>
@@ -65,7 +65,7 @@
                                     <p:column headerText="Architecture" sortBy="#{ost.architecture}" filterBy="#{ost.architecture}">
                                         <h:outputText id="ostArchitecture" value="#{ost.architecture}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('dirComOrgCompany:update')}">
+                                    <c:if test="#{arianeidm:hasPermission('dirComOrgCompany:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select OS types to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{companysListController.addedOSType[cmp.id]}">
@@ -93,7 +93,7 @@
                                     <p:column headerText="Description" sortBy="#{app.description}" filterBy="#{app.descrition}">
                                         <h:outputText id="appDescription" value="#{app.description}"/>
                                     </p:column>
-                                    <c:if test="#{ccidm:hasPermission('dirComOrgCompany:update')}">
+                                    <c:if test="#{arianeidm:hasPermission('dirComOrgCompany:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select application to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{companysListController.addedApplication[cmp.id]}">
@@ -115,9 +115,9 @@
                     </p:rowExpansion>
 
                     <f:facet name="footer">
-                        <p:commandButton value="Create company" icon="ui-icon-disk" onclick="companyCreateDialog.show()"  rendered="#{ccidm:hasPermission('dirComOrgCompany:create')}"/>
+                        <p:commandButton value="Create company" icon="ui-icon-disk" onclick="companyCreateDialog.show()"  rendered="#{arianeidm:hasPermission('dirComOrgCompany:create')}"/>
                         <p:commandButton value="Remove selected company" icon="ui-icon-closethick" onclick="companyRemoveDialog.show()"
-                                         update=":removeCompanyDialogForm:display"  rendered="#{ccidm:hasPermission('dirComOrgCompany:remove')}"/>
+                                         update=":removeCompanyDialogForm:display"  rendered="#{arianeidm:hasPermission('dirComOrgCompany:remove')}"/>
                         <p:commandButton value="Refresh table" id="companyUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
                                          update=":companyTableForm:companyTable"/>
                     </f:facet>

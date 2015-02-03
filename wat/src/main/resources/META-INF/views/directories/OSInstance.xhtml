@@ -6,10 +6,10 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ccidm="http://spectral.com/cc/idm">
+      xmlns:arianeidm="http://echinopsii.net/ariane/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{ccidm:isAuthenticated() and ccidm:hasPermission('dirComITiSysOsi:display')}">
+        <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiSysOsi:display')}">
             <h:form id="osInstanceTableForm">
             <p:growl id="osInstanceTableMessages" showDetail="true" />
             <p:dataTable id="osInstanceTable" var="osi" value="#{OSInstancesListController.lazyModel}"
@@ -41,34 +41,34 @@
             <p:rowExpansion>
                 <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
                     <h:outputText value="Name : " styleClass="inputTitle"/>
-                    <h:form rendered="#{ccidm:hasPermission('dirComITiSysOsi:update')}">
+                    <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace editor="true">
                             <p:inputText required="true" label="text" value="#{osi.name}"/>
                             <p:ajax event="save" listener="#{OSInstancesListController.update(osi)}" update="@form,:osInstanceTableForm:osInstanceTableMessages"/>
                         </p:inplace>
                     </h:form>
-                    <h:outputText value="#{osi.name}" rendered="#{!(ccidm:hasPermission('dirComITiSysOsi:update'))}"/>
+                    <h:outputText value="#{osi.name}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOsi:update'))}"/>
 
                     <h:outputText value="Description : " styleClass="inputTitle"/>
-                    <h:form rendered="#{ccidm:hasPermission('dirComITiSysOsi:update')}">
+                    <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace editor="true">
                             <p:inputText required="true" label="text" value="#{osi.description}"/>
                             <p:ajax event="save" listener="#{OSInstancesListController.update(osi)}" update="@form,:osInstanceTableForm:osInstanceTableMessages"/>
                         </p:inplace>
                     </h:form>
-                    <h:outputText value="#{osi.description}" rendered="#{!(ccidm:hasPermission('dirComITiSysOsi:update'))}"/>
+                    <h:outputText value="#{osi.description}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOsi:update'))}"/>
 
                     <h:outputText value="Admin gate URI : " styleClass="inputTitle"/>
-                    <h:form rendered="#{ccidm:hasPermission('dirComITiSysOsi:update')}">
+                    <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace editor="true">
                             <p:inputText required="true" label="text" value="#{osi.adminGateURI}"/>
                             <p:ajax event="save" listener="#{OSInstancesListController.update(osi)}" update="@form,:osInstanceTableForm:osInstanceTableMessages"/>
                         </p:inplace>
                     </h:form>
-                    <h:outputText value="#{osi.adminGateURI}" rendered="#{!(ccidm:hasPermission('dirComITiSysOsi:update'))}"/>
+                    <h:outputText value="#{osi.adminGateURI}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOsi:update'))}"/>
 
                     <h:outputText value="Type : " styleClass="inputTitle"/>
-                    <h:form rendered="#{ccidm:hasPermission('dirComITiSysOsi:update')}">
+                    <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace label="#{osi.osType.name} - #{osi.osType.architecture}" effectSpeed="fast" editor="true">
                             <h:selectOneMenu value="#{OSInstancesListController.changedOSType[osi.id]}">
                                 <f:selectItems value="#{OSTypesListController.getAll()}" var="ost_"
@@ -77,7 +77,7 @@
                             <p:ajax event="save" listener="#{OSInstancesListController.syncOSType(osi)}" update="@form,:osInstanceTableForm:osInstanceTableMessages"/>
                         </p:inplace>
                     </h:form>
-                    <h:outputText value="#{osi.osType.name} - #{osi.osType.architecture}" rendered="#{!(ccidm:hasPermission('dirComITiSysOsi:update'))}"/>
+                    <h:outputText value="#{osi.osType.name} - #{osi.osType.architecture}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOsi:update'))}"/>
 
                     <h:outputText value="Environments : " styleClass="inputTitle"/>
                     <h:form>
@@ -89,7 +89,7 @@
                             <p:column headerText="Description" sortBy="#{env.description}" filterBy="#{env.description}">
                                 <h:outputText id="networkDescription" value="#{env.description}"/>
                             </p:column>
-                            <c:if test="#{ccidm:hasPermission('dirComITiSysOsi:update')}">
+                            <c:if test="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                                 <f:facet name="footer">
                                     <p:inplace label="Select environment to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedEnv[osi.id]}">
@@ -117,7 +117,7 @@
                             <p:column headerText="Description" sortBy="#{_app.description}" filterBy="#{_app.description}">
                                 <h:outputText id="appDescription" value="#{_app.description}"/>
                             </p:column>
-                            <c:if test="#{ccidm:hasPermission('dirComITiSysOsi:update')}">
+                            <c:if test="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                                 <f:facet name="footer">
                                     <p:inplace label="Select application to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedApplication[osi.id]}">
@@ -145,7 +145,7 @@
                             <p:column headerText="Description" sortBy="#{team.description}" filterBy="#{team.description}">
                                 <h:outputText id="teamDescription" value="#{team.description}"/>
                             </p:column>
-                            <c:if test="#{ccidm:hasPermission('dirComITiSysOsi:update')}">
+                            <c:if test="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                                 <f:facet name="footer">
                                     <p:inplace label="Select team to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedTeam[osi.id]}">
@@ -173,7 +173,7 @@
                             <p:column headerText="Description" sortBy="#{ntw.description}" filterBy="#{ntw.description}">
                                 <h:outputText id="subNetworkDescription" value="#{ntw.description}"/>
                             </p:column>
-                            <c:if test="#{ccidm:hasPermission('dirComITiSysOsi:update')}">
+                            <c:if test="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                                 <f:facet name="footer">
                                     <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedSubnet[osi.id]}">
@@ -192,7 +192,7 @@
                     </h:form>
 
                     <h:outputText value="Embedding OS Instance : " styleClass="inputTitle"/>
-                    <h:form rendered="#{ccidm:hasPermission('dirComITiSysOsi:update')}">
+                    <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace label="#{OSInstancesListController.getOSInstanceEmbeddingOSI(osi)}" effectSpeed="fast" editor="true">
                             <h:selectOneMenu value="#{OSInstancesListController.changedEmbeddingOSI[osi.id]}">
                                 <f:selectItems value="#{OSInstancesListController.getAllForSelector()}" var="osi_"
@@ -201,7 +201,7 @@
                             <p:ajax event="save" listener="#{OSInstancesListController.syncEmbeddingOSI(osi)}" update="@form,:osInstanceTableForm:osInstanceTableMessages"/>
                         </p:inplace>
                     </h:form>
-                    <h:outputText value="#{OSInstancesListController.getOSInstanceEmbeddingOSI(osi)}" rendered="#{!(ccidm:hasPermission('dirComITiSysOsi:update'))}"/>
+                    <h:outputText value="#{OSInstancesListController.getOSInstanceEmbeddingOSI(osi)}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOsi:update'))}"/>
 
                     <h:outputText value="Embedded OS Instances : " styleClass="inputTitle"/>
                     <h:form>
@@ -213,7 +213,7 @@
                             <p:column headerText="Description" sortBy="#{_osi.description}" filterBy="#{_osi.description}">
                                 <h:outputText id="embedosDescription" value="#{_osi.description}"/>
                             </p:column>
-                            <c:if test="#{ccidm:hasPermission('dirComITiSysOsi:update')}">
+                            <c:if test="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                                 <f:facet name="footer">
                                     <p:inplace label="Select embedded OS instance to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedEmbeddedOSI[osi.id]}">
@@ -235,9 +235,9 @@
             </p:rowExpansion>
 
             <f:facet name="footer">
-                <p:commandButton value="Create OS instance" icon="ui-icon-disk" onclick="osInstanceCreateDialog.show()" rendered="#{ccidm:hasPermission('dirComITiSysOsi:create')}"/>
+                <p:commandButton value="Create OS instance" icon="ui-icon-disk" onclick="osInstanceCreateDialog.show()" rendered="#{arianeidm:hasPermission('dirComITiSysOsi:create')}"/>
                 <p:commandButton value="Remove selected OS instance" icon="ui-icon-closethick" onclick="osInstanceRemoveDialog.show()"
-                                 update=":removeOSInstanceDialogForm:display" rendered="#{ccidm:hasPermission('dirComITiSysOsi:remove')}"/>
+                                 update=":removeOSInstanceDialogForm:display" rendered="#{arianeidm:hasPermission('dirComITiSysOsi:remove')}"/>
                 <p:commandButton value="Refresh table" id="osiUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
                                  update=":osInstanceTableForm:osInstanceTable"/>
             </f:facet>
