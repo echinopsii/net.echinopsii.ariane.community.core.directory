@@ -69,7 +69,7 @@ public class SubnetJSON {
             jgenerator.writeNumber(dc.getId());
         jgenerator.writeEndArray();
 
-        jgenerator.writeNumberField(SUBNET_MAREA_ID, ((subnet.getMarea()!=null)?subnet.getMarea().getId():-1));
+        jgenerator.writeNumberField(SUBNET_MAREA_ID, ((subnet.getRarea()!=null)?subnet.getRarea().getId():-1));
 
         jgenerator.writeEndObject();
     }

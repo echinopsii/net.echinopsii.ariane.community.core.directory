@@ -30,8 +30,8 @@ import java.util.Set;
 
 @Entity
 @XmlRootElement
-@Table(name="multicastArea",uniqueConstraints = @UniqueConstraint(columnNames = {"mareaName"}))
-public class MulticastArea implements Serializable
+@Table(name="routingArea",uniqueConstraints = @UniqueConstraint(columnNames = {"rareaName"}))
+public class RoutingArea implements Serializable
 {
 
     @Id
@@ -42,18 +42,18 @@ public class MulticastArea implements Serializable
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="mareaName",unique=true)
+    @Column(name="rareaName",unique=true)
     @NotNull
     private String name;
 
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "marea", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "rarea", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<Subnet> subnets = new HashSet<Subnet>();
 
-    @ManyToMany(mappedBy = "multicastAreas", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "routingAreas", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<Datacenter> datacenters = new HashSet<Datacenter>();
 
@@ -65,7 +65,7 @@ public class MulticastArea implements Serializable
         this.id = id;
     }
 
-    public MulticastArea setIdR(final Long id) {
+    public RoutingArea setIdR(final Long id) {
         this.id = id;
         return this;
     }
@@ -78,7 +78,7 @@ public class MulticastArea implements Serializable
         this.version = version;
     }
 
-    public MulticastArea setVersionR(final int version) {
+    public RoutingArea setVersionR(final int version) {
         this.version = version ;
         return this;
     }
@@ -96,7 +96,7 @@ public class MulticastArea implements Serializable
             return false;
         }
         if (id != null) {
-            return id.equals(((MulticastArea) that).id);
+            return id.equals(((RoutingArea) that).id);
         }
         return super.equals(that);
     }
@@ -117,7 +117,7 @@ public class MulticastArea implements Serializable
         this.name = name;
     }
 
-    public MulticastArea setNameR(final String name) {
+    public RoutingArea setNameR(final String name) {
         this.name = name;
         return this;
     }
@@ -130,7 +130,7 @@ public class MulticastArea implements Serializable
         this.description = description;
     }
 
-    public MulticastArea setDescriptionR(final String description) {
+    public RoutingArea setDescriptionR(final String description) {
         this.description = description;
         return this;
     }
@@ -153,7 +153,7 @@ public class MulticastArea implements Serializable
         this.subnets = subnets;
     }
 
-    public MulticastArea setSubnetsR(final Set<Subnet> subnets) {
+    public RoutingArea setSubnetsR(final Set<Subnet> subnets) {
         this.subnets = subnets;
         return this;
     }
@@ -166,13 +166,13 @@ public class MulticastArea implements Serializable
         this.datacenters = datacenters;
     }
 
-    public MulticastArea setDatacentersR(final Set<Datacenter> datacenters) {
+    public RoutingArea setDatacentersR(final Set<Datacenter> datacenters) {
         this.datacenters = datacenters;
         return this;
     }
 
-    public MulticastArea clone() {
-        return new MulticastArea().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).
+    public RoutingArea clone() {
+        return new RoutingArea().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).
                                    setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setSubnetsR(new HashSet<Subnet>(this.subnets));
     }
 }

@@ -19,7 +19,7 @@
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.MulticastArea;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.wat.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.wat.json.ds.technical.network.MulticastAreaJSON;
@@ -46,7 +46,7 @@ public class MulticastAreaEndpoint {
     private static final Logger log = LoggerFactory.getLogger(MulticastAreaEndpoint.class);
     private EntityManager em;
 
-    public static Response multicastAreaToJSON(MulticastArea entity) {
+    public static Response multicastAreaToJSON(RoutingArea entity) {
         Response ret = null;
         String result;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -63,10 +63,10 @@ public class MulticastAreaEndpoint {
         return ret;
     }
 
-    public static MulticastArea findMulticastAreaById(EntityManager em, long id) {
-        TypedQuery<MulticastArea> findByIdQuery = em.createQuery("SELECT DISTINCT m FROM MulticastArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters WHERE m.id = :entityId ORDER BY m.id", MulticastArea.class);
+    public static RoutingArea findMulticastAreaById(EntityManager em, long id) {
+        TypedQuery<RoutingArea> findByIdQuery = em.createQuery("SELECT DISTINCT m FROM MulticastArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters WHERE m.id = :entityId ORDER BY m.id", RoutingArea.class);
         findByIdQuery.setParameter("entityId", id);
-        MulticastArea entity;
+        RoutingArea entity;
         try {
             entity = findByIdQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -75,10 +75,10 @@ public class MulticastAreaEndpoint {
         return entity;
     }
 
-    public static MulticastArea findMulticastAreaByName(EntityManager em, String name) {
-        TypedQuery<MulticastArea> findByNameQuery = em.createQuery("SELECT DISTINCT m FROM MulticastArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters WHERE m.name = :entityName ORDER BY m.name", MulticastArea.class);
+    public static RoutingArea findMulticastAreaByName(EntityManager em, String name) {
+        TypedQuery<RoutingArea> findByNameQuery = em.createQuery("SELECT DISTINCT m FROM MulticastArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters WHERE m.name = :entityName ORDER BY m.name", RoutingArea.class);
         findByNameQuery.setParameter("entityName", name);
-        MulticastArea entity;
+        RoutingArea entity;
         try {
             entity = findByNameQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -96,7 +96,7 @@ public class MulticastAreaEndpoint {
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            MulticastArea entity = findMulticastAreaById(em, id);
+            RoutingArea entity = findMulticastAreaById(em, id);
             if (entity == null) {
                 em.close();
                 return Response.status(Status.NOT_FOUND).build();
@@ -118,7 +118,7 @@ public class MulticastAreaEndpoint {
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            final HashSet<MulticastArea> results = new HashSet(em.createQuery("SELECT DISTINCT m FROM MulticastArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters ORDER BY m.id", MulticastArea.class).getResultList());
+            final HashSet<RoutingArea> results = new HashSet(em.createQuery("SELECT DISTINCT m FROM MulticastArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters ORDER BY m.id", RoutingArea.class).getResultList());
 
             Response ret = null;
             String result;
@@ -153,7 +153,7 @@ public class MulticastAreaEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                MulticastArea entity = findMulticastAreaByName(em, name);
+                RoutingArea entity = findMulticastAreaByName(em, name);
                 if (entity == null) {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
@@ -180,9 +180,9 @@ public class MulticastAreaEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                MulticastArea entity = findMulticastAreaByName(em, name);
+                RoutingArea entity = findMulticastAreaByName(em, name);
                 if (entity == null) {
-                    entity = new MulticastArea().setNameR(name).setDescriptionR(description);
+                    entity = new RoutingArea().setNameR(name).setDescriptionR(description);
                     try {
                         em.getTransaction().begin();
                         em.persist(entity);
@@ -216,14 +216,14 @@ public class MulticastAreaEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                MulticastArea entity = findMulticastAreaById(em, id);
+                RoutingArea entity = findMulticastAreaById(em, id);
                 if (entity!=null) {
                     try {
                         em.getTransaction().begin();
                         for (Datacenter datacenter : entity.getDatacenters())
-                            datacenter.getMulticastAreas().remove(entity);
+                            datacenter.getRoutingAreas().remove(entity);
                         for (Subnet subnet : entity.getSubnets())
-                            subnet.setMarea(null);
+                            subnet.setRarea(null);
                         em.remove(entity);
                         em.getTransaction().commit();
                         return Response.status(Status.OK).entity("Multicast area " + id + " has been successfully deleted").build();
@@ -255,7 +255,7 @@ public class MulticastAreaEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                MulticastArea entity = findMulticastAreaById(em, id);
+                RoutingArea entity = findMulticastAreaById(em, id);
                 if (entity!=null) {
                     try {
                         em.getTransaction().begin();
@@ -290,7 +290,7 @@ public class MulticastAreaEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                MulticastArea entity = findMulticastAreaById(em, id);
+                RoutingArea entity = findMulticastAreaById(em, id);
                 if (entity!=null) {
                     try {
                         em.getTransaction().begin();
@@ -325,13 +325,13 @@ public class MulticastAreaEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                MulticastArea entity = findMulticastAreaById(em, id);
+                RoutingArea entity = findMulticastAreaById(em, id);
                 if (entity!=null) {
                     Datacenter datacenter = DatacenterEndpoint.findDatacenterById(em, dcID);
                     if (datacenter!=null) {
                         try {
                             em.getTransaction().begin();
-                            datacenter.getMulticastAreas().add(entity);
+                            datacenter.getRoutingAreas().add(entity);
                             entity.getDatacenters().add(datacenter);
                             em.getTransaction().commit();
                             return Response.status(Status.OK).entity("Multicast area " + id + " has been successfully updated by adding datacenter " + dcID).build();
@@ -367,13 +367,13 @@ public class MulticastAreaEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                MulticastArea entity = findMulticastAreaById(em, id);
+                RoutingArea entity = findMulticastAreaById(em, id);
                 if (entity!=null) {
                     Datacenter datacenter = DatacenterEndpoint.findDatacenterById(em, dcID);
                     if (datacenter!=null) {
                         try {
                             em.getTransaction().begin();
-                            datacenter.getMulticastAreas().remove(entity);
+                            datacenter.getRoutingAreas().remove(entity);
                             entity.getDatacenters().remove(datacenter);
                             em.getTransaction().commit();
                             return Response.status(Status.OK).entity("Multicast area " + id + " has been successfully updated by deleting datacenter " + dcID).build();
@@ -409,15 +409,15 @@ public class MulticastAreaEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                MulticastArea entity = findMulticastAreaById(em, id);
+                RoutingArea entity = findMulticastAreaById(em, id);
                 if (entity!=null) {
                     Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetID);
                     if (subnet!=null) {
                         try {
                             em.getTransaction().begin();
-                            if (subnet.getMarea()!=null && !subnet.getMarea().equals(entity))
-                                subnet.getMarea().getSubnets().remove(subnet);
-                            subnet.setMarea(entity);
+                            if (subnet.getRarea()!=null && !subnet.getRarea().equals(entity))
+                                subnet.getRarea().getSubnets().remove(subnet);
+                            subnet.setRarea(entity);
                             entity.getSubnets().add(subnet);
                             em.getTransaction().commit();
                             return Response.status(Status.OK).entity("Multicast area " + id + " has been successfully updated by adding subnet " + subnetID).build();
@@ -453,13 +453,13 @@ public class MulticastAreaEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                MulticastArea entity = findMulticastAreaById(em, id);
+                RoutingArea entity = findMulticastAreaById(em, id);
                 if (entity!=null) {
                     Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetID);
                     if (subnet!=null) {
                         try {
                             em.getTransaction().begin();
-                            subnet.setMarea(null);
+                            subnet.setRarea(null);
                             entity.getSubnets().remove(subnet);
                             em.getTransaction().commit();
                             return Response.status(Status.OK).entity("Multicast area " + id + " has been successfully updated by deleting subnet " + subnetID).build();

@@ -25,14 +25,14 @@
             </p:selectManyMenu>
         </h:panelGroup>
 
-        <h:outputText value="Multicast Area : " styleClass="inputTitle"/>
+        <h:outputText value="Routing Area : " styleClass="inputTitle"/>
         <h:panelGroup>
-            <p:commandLink onclick="mareaCreateDialog.show()">
-                <h:outputText value=" create new multicast area"/>
+            <p:commandLink onclick="rareaCreateDialog.show()">
+                <h:outputText value=" create new routing area"/>
             </p:commandLink><br/>
-            <h:selectOneMenu label="Select the subnet type" value="#{subnetNewController.mArea}">
-                <f:selectItems value="#{multicastAreasListController.getAllForSelector()}"  var="marea"
-                               itemLabel="#{marea.name}" itemValue="#{marea.name}"/>
+            <h:selectOneMenu label="Select the subnet type" value="#{subnetNewController.rArea}">
+                <f:selectItems value="#{routingAreasListController.getAllForSelector()}"  var="rarea"
+                               itemLabel="#{rarea.name}" itemValue="#{rarea.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>
 

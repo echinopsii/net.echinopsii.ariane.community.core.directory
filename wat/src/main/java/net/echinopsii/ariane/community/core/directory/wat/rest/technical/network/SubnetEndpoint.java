@@ -19,7 +19,7 @@
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.MulticastArea;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.SubnetType;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
@@ -258,8 +258,8 @@ public class SubnetEndpoint {
                             dc.getSubnets().remove(entity);
                         for (OSInstance osi : entity.getOsInstances())
                             osi.getNetworkSubnets().remove(entity);
-                        if (entity.getMarea()!=null)
-                            entity.getMarea().getSubnets().remove(entity);
+                        if (entity.getRarea()!=null)
+                            entity.getRarea().getSubnets().remove(entity);
                         em.remove(entity);
                         em.getTransaction().commit();
                         em.close();
@@ -485,14 +485,14 @@ public class SubnetEndpoint {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
                 if (entity!=null) {
-                    MulticastArea marea = MulticastAreaEndpoint.findMulticastAreaById(em, mareaID);
+                    RoutingArea marea = MulticastAreaEndpoint.findMulticastAreaById(em, mareaID);
                     if (marea!=null) {
                         try {
                             em.getTransaction().begin();
-                            if (entity.getMarea()!=null)
-                                entity.getMarea().getSubnets().remove(entity);
+                            if (entity.getRarea()!=null)
+                                entity.getRarea().getSubnets().remove(entity);
                             marea.getSubnets().add(entity);
-                            entity.setMarea(marea);
+                            entity.setRarea(marea);
                             em.getTransaction().commit();
                             em.close();
                             return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with multicast area " + mareaID).build();
@@ -506,9 +506,9 @@ public class SubnetEndpoint {
                         if (mareaID==-1) {
                             try {
                                 em.getTransaction().begin();
-                                if (entity.getMarea()!=null)
-                                    entity.getMarea().getSubnets().remove(entity);
-                                entity.setMarea(null);
+                                if (entity.getRarea()!=null)
+                                    entity.getRarea().getSubnets().remove(entity);
+                                entity.setRarea(null);
                                 em.getTransaction().commit();
                                 em.close();
                                 return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with multicast area " + mareaID).build();

@@ -1,6 +1,6 @@
 /**
  * Directory WAT
- * MulticastArea to JSON tools
+ * RoutingArea to JSON tools
  * Copyright (C) 06/05/14 echinopsii
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ package net.echinopsii.ariane.community.core.directory.wat.json.ds.technical.net
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.MulticastArea;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.wat.DirectoryBootstrap;
 
@@ -45,36 +45,36 @@ public class MulticastAreaJSON {
     public final static String MAREA_SUBNETS_ID  = "multicastAreaSubnetsID";
     public final static String MAREA_DC_ID       = "multicastAreaDatacentersID";
 
-    public final static void multicastArea2JSON(MulticastArea multicastArea, JsonGenerator jgenerator) throws IOException {
+    public final static void multicastArea2JSON(RoutingArea routingArea, JsonGenerator jgenerator) throws IOException {
         jgenerator.writeStartObject();
-        jgenerator.writeNumberField(MAREA_ID, multicastArea.getId());
-        jgenerator.writeNumberField(MAREA_VERSION, multicastArea.getVersion());
-        jgenerator.writeStringField(MAREA_NAME, multicastArea.getName());
-        jgenerator.writeStringField(MAREA_DESCRIPTION, multicastArea.getDescription());
+        jgenerator.writeNumberField(MAREA_ID, routingArea.getId());
+        jgenerator.writeNumberField(MAREA_VERSION, routingArea.getVersion());
+        jgenerator.writeStringField(MAREA_NAME, routingArea.getName());
+        jgenerator.writeStringField(MAREA_DESCRIPTION, routingArea.getDescription());
         jgenerator.writeArrayFieldStart(MAREA_SUBNETS_ID);
-        for (Subnet subnet : multicastArea.getSubnets())
+        for (Subnet subnet : routingArea.getSubnets())
             jgenerator.writeNumber(subnet.getId());
         jgenerator.writeEndArray();
         jgenerator.writeArrayFieldStart(MAREA_DC_ID);
-        for (Datacenter dc : multicastArea.getDatacenters())
+        for (Datacenter dc : routingArea.getDatacenters())
             jgenerator.writeNumber(dc.getId());
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
     }
 
-    public final static void oneMulticastArea2JSON(MulticastArea multicastArea, ByteArrayOutputStream outStream) throws IOException {
+    public final static void oneMulticastArea2JSON(RoutingArea routingArea, ByteArrayOutputStream outStream) throws IOException {
         JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
-        MulticastAreaJSON.multicastArea2JSON(multicastArea, jgenerator);
+        MulticastAreaJSON.multicastArea2JSON(routingArea, jgenerator);
         jgenerator.close();
     }
 
-    public final static void manyMulticastAreas2JSON(HashSet<MulticastArea> multicastAreas, ByteArrayOutputStream outStream) throws IOException {
+    public final static void manyMulticastAreas2JSON(HashSet<RoutingArea> routingAreas, ByteArrayOutputStream outStream) throws IOException {
         JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
         jgenerator.writeStartObject();
-        jgenerator.writeArrayFieldStart("multicastAreas");
-        Iterator<MulticastArea> iter = multicastAreas.iterator();
+        jgenerator.writeArrayFieldStart("routingAreas");
+        Iterator<RoutingArea> iter = routingAreas.iterator();
         while (iter.hasNext()) {
-            MulticastArea current = iter.next();
+            RoutingArea current = iter.next();
             MulticastAreaJSON.multicastArea2JSON(current, jgenerator);
         }
         jgenerator.writeEndArray();

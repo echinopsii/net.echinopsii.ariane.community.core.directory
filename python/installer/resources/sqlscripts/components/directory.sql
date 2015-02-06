@@ -47,16 +47,16 @@ CREATE TABLE IF NOT EXISTS `environment` (
 
 
 --
--- Table structure for table `multicastArea`
+-- Table structure for table `routingArea`
 --
 
-CREATE TABLE IF NOT EXISTS `multicastArea` (
+CREATE TABLE IF NOT EXISTS `routingArea` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `description` varchar(255) DEFAULT NULL,
-  `mareaName` varchar(255) DEFAULT NULL,
+  `rareaName` varchar(255) DEFAULT NULL,
   `version` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_3m10gbw3td2mlw7exlwmerkvw` (`mareaName`)
+  UNIQUE KEY `UK_3m10gbw3td2mlw7exlwmerkvw` (`rareaName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 
@@ -140,14 +140,14 @@ CREATE TABLE IF NOT EXISTS  `subnet` (
   `subnetIP` varchar(255) DEFAULT NULL,
   `subnetMask` varchar(255) DEFAULT NULL,
   `version` int(11) DEFAULT NULL,
-  `marea_id` bigint(20) DEFAULT NULL,
+  `rarea_id` bigint(20) DEFAULT NULL,
   `type_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_2o6k6apvpj6ruxg8j9pi9s62d` (`subnetName`),
   KEY `FK_6kwi7i739mnpcpreb2qrhh7s5` (`marea_id`),
   KEY `FK_n6yhnv2hrp6ydt0kaoh5eqnpb` (`type_id`),
   CONSTRAINT `FK_n6yhnv2hrp6ydt0kaoh5eqnpb` FOREIGN KEY (`type_id`) REFERENCES `subnetType` (`id`),
-  CONSTRAINT `FK_6kwi7i739mnpcpreb2qrhh7s5` FOREIGN KEY (`marea_id`) REFERENCES `multicastArea` (`id`)
+  CONSTRAINT `FK_6kwi7i739mnpcpreb2qrhh7s5` FOREIGN KEY (`rarea_id`) REFERENCES `routingArea` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 
@@ -193,13 +193,13 @@ CREATE TABLE IF NOT EXISTS `application_osInstance` (
 -- Table structure for table `datacenter_multicastArea`
 --
 
-CREATE TABLE IF NOT EXISTS `datacenter_multicastArea` (
+CREATE TABLE IF NOT EXISTS `datacenter_routingArea` (
   `datacenters_id` bigint(20) NOT NULL,
-  `multicastAreas_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`datacenters_id`,`multicastAreas_id`),
-  KEY `FK_4265wup5gxmnvhoyqij45r6jy` (`multicastAreas_id`),
+  `routingAreas_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`datacenters_id`,`routingAreas_id`),
+  KEY `FK_4265wup5gxmnvhoyqij45r6jy` (`routingAreas_id`),
   CONSTRAINT `FK_1nsal1wsgs28gt1eajihrcf00` FOREIGN KEY (`datacenters_id`) REFERENCES `datacenter` (`id`),
-  CONSTRAINT `FK_4265wup5gxmnvhoyqij45r6jy` FOREIGN KEY (`multicastAreas_id`) REFERENCES `multicastArea` (`id`)
+  CONSTRAINT `FK_4265wup5gxmnvhoyqij45r6jy` FOREIGN KEY (`routingAreas_id`) REFERENCES `routingArea` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 

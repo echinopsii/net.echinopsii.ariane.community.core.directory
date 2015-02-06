@@ -39,8 +39,8 @@
                         <h:outputText value="#{subnet.type.name}" />
                     </p:column>
 
-                    <p:column headerText="Multicast area">
-                        <h:outputText value="#{subnet.marea.name}" />
+                    <p:column headerText="Routing Area">
+                        <h:outputText value="#{subnet.rarea.name}" />
                     </p:column>
 
                     <p:column headerText="Subnet IP" sortBy="#{subnet.subnetIP}" filterBy="#{subnet.subnetIP}">
@@ -83,17 +83,17 @@
                             </h:form>
                             <h:outputText value="#{subnet.type.name}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
-                            <h:outputText value="Multicast area : " styleClass="inputTitle"/>
+                            <h:outputText value="Routing Area : " styleClass="inputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
-                                <p:inplace label="#{subnetsListController.getSubnetMareaName(subnet)}" effectSpeed="fast" editor="true">
-                                    <h:selectOneMenu value="#{subnetsListController.changedMarea[subnet.id]}">
-                                        <f:selectItems value="#{multicastAreasListController.getAllForInplace()}"  var="marea"
-                                                       itemLabel="#{marea.name}" itemValue="#{marea.name}"/>
+                                <p:inplace label="#{subnetsListController.getSubnetRareaName(subnet)}" effectSpeed="fast" editor="true">
+                                    <h:selectOneMenu value="#{subnetsListController.changedRarea[subnet.id]}">
+                                        <f:selectItems value="#{routingAreasListController.getAllForInplace()}"  var="rarea"
+                                                       itemLabel="#{rarea.name}" itemValue="#{rarea.name}"/>
                                     </h:selectOneMenu>
-                                    <p:ajax event="save" listener="#{subnetsListController.syncMarea(subnet)}" update="@form,:subnetTableForm:subnetTableMessages"/>
+                                    <p:ajax event="save" listener="#{subnetsListController.syncRarea(subnet)}" update="@form,:subnetTableForm:subnetTableMessages"/>
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{subnetsListController.getSubnetMareaName(subnet)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
+                            <h:outputText value="#{subnetsListController.getSubnetRareaName(subnet)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
                             <h:outputText value="Subnet IP : " styleClass="inputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
@@ -221,14 +221,14 @@
                                 </p:column>
                             </p:dataTable>
 
-                            <h:outputText value="Multicast areas : " styleClass="inputTitle"/>
-                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'multicastAreas')}" var="_item"
+                            <h:outputText value="Routing areas : " styleClass="inputTitle"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'routingAreas')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
-                                    <h:outputText id="maitemName" value="#{_item.name}"/>
+                                    <h:outputText id="raitemName" value="#{_item.name}"/>
                                 </p:column>
                                 <p:column headerText="Description">
-                                    <h:outputText id="maitemDescription" value="#{_item.description}"/>
+                                    <h:outputText id="raitemDescription" value="#{_item.description}"/>
                                 </p:column>
                             </p:dataTable>
 
@@ -260,14 +260,14 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Create a new multicast area" widgetVar="mareaCreateDialog"
+            <p:dialog header="Create a new routing area" widgetVar="rareaCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode">
                 <h:form id="createMareaDialogForm">
-                    <ui:insert name="createMulticastArea" >
-                        <ui:include src="/templates/multicastAreaNewForm.xhtml" />
+                    <ui:insert name="createRoutingArea" >
+                        <ui:include src="/templates/routingAreaNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this multicast area" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
-                                     actionListener="#{multicastAreaNewController.save}" oncomplete="mareaCreateDialog.hide();"
+                    <p:commandButton value="Save this routing area" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                                     actionListener="#{routingAreaNewController.save}" oncomplete="rareaCreateDialog.hide();"
                                      update=":createSubnetDialogForm:subnetNewGrid,:subnetTableForm:subnetTableMessages"/>
                 </h:form>
             </p:dialog>

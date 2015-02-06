@@ -84,7 +84,7 @@ public class Datacenter implements Serializable
 
     @ManyToMany(fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private Set<MulticastArea> multicastAreas = new HashSet<MulticastArea>();
+    private Set<RoutingArea> routingAreas = new HashSet<RoutingArea>();
 
     public Long getId() {
         return this.id;
@@ -273,16 +273,16 @@ public class Datacenter implements Serializable
         return this;
     }
 
-    public Set<MulticastArea> getMulticastAreas() {
-        return this.multicastAreas;
+    public Set<RoutingArea> getRoutingAreas() {
+        return this.routingAreas;
     }
 
-    public void setMulticastAreas(final Set<MulticastArea> multicastAreas) {
-        this.multicastAreas = multicastAreas;
+    public void setRoutingAreas(final Set<RoutingArea> routingAreas) {
+        this.routingAreas = routingAreas;
     }
 
-    public Datacenter setMulticastAreasR(final Set<MulticastArea> multicastAreas) {
-        this.multicastAreas = multicastAreas;
+    public Datacenter setMulticastAreasR(final Set<RoutingArea> routingAreas) {
+        this.routingAreas = routingAreas;
         return this;
     }
 
@@ -290,7 +290,7 @@ public class Datacenter implements Serializable
     public Datacenter clone() throws CloneNotSupportedException {
         return new Datacenter().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setAddressR(this.address).setZipCodeR(this.zipCode).setTownR(this.town).
                                 setCountryR(this.country).setDescriptionR(this.description).setGpsLatitudeR(this.gpsLatitude).setGpsLongitudeR(this.gpsLongitude).
-                                setSubnetsR(new HashSet<Subnet>(this.subnets)).setMulticastAreasR(new HashSet<MulticastArea>(this.multicastAreas));
+                                setSubnetsR(new HashSet<Subnet>(this.subnets)).setMulticastAreasR(new HashSet<RoutingArea>(this.routingAreas));
     }
 
     public  final static String DC_MAPPING_PROPERTIES = "Datacenter";

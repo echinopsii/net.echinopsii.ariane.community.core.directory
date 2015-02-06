@@ -150,7 +150,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
             TreeMenuEntity commonRootTreeMenuEntity = new TreeMenuEntity().setId("commonsDir").setValue("Common").setType(MenuEntityType.TYPE_MENU_SUBMENU).
                                                                            addDisplayRole("ntwadmin").addDisplayRole("sysadmin").addDisplayRole("orgadmin").
                                                                            addDisplayRole("ntwreviewer").addDisplayRole("sysreviewer").addDisplayRole("orgreviewer").
-                                                                           addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwMarea:display").
+                                                                           addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwRarea:display").
                                                                            addDisplayPermission("dirComITiNtwSubnet:display").addDisplayPermission("dirComITiSysOsi:display").
                                                                            addDisplayPermission("dirComITiSysOst:display").addDisplayPermission("dirComOrgApp:display").
                                                                            addDisplayPermission("dirComOrgCompany:display").addDisplayPermission("dirComOrgEnvironment:display").
@@ -192,7 +192,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                           setParentTreeMenuEntity(commonRootTreeMenuEntity).
                                                                           addDisplayRole("ntwadmin").addDisplayRole("sysadmin").
                                                                           addDisplayRole("ntwreviewer").addDisplayRole("sysreviewer").addDisplayPermission("dirComITiNtwSubnet:display").
-                                                                          addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwMarea:display");
+                                                                          addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwRarea:display");
             commonRootTreeMenuEntity.addChildTreeMenuEntity(technicalTreeMenuEntity);
 
 
@@ -200,7 +200,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                         setType(MenuEntityType.TYPE_MENU_SUBMENU).
                                                                         setParentTreeMenuEntity(technicalTreeMenuEntity).
                                                                         addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
-                                                                        addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwMarea:display");
+                                                                        addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwRarea:display");
             technicalTreeMenuEntity.addChildTreeMenuEntity(networkTreeMenuEntity);
             networkTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("datacenterTreeID").setValue("Datacenter").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-building").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/datacenter.jsf").
@@ -210,10 +210,10 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/subnet.jsf").
                                                                               setDescription("Your subnets definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                               addDisplayPermission("dirComITiNtwSubnet:display")).
-                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("multicastAreaTreeID").setValue("Multicast area").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-asterisk").
-                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/multicastArea.jsf").
-                                                                              setDescription("Your multicast areas definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
-                                                                              addDisplayPermission("dirComITiNtwMarea:display"));
+                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("multicastAreaTreeID").setValue("Routing Area").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-asterisk").
+                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/routingArea.jsf").
+                                                                              setDescription("Your routing areas definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
+                                                                              addDisplayPermission("dirComITiNtwRarea:display"));
 
 
             TreeMenuEntity systemTreeMenuEntity = new TreeMenuEntity().setId("commonSysDir").setValue("System").

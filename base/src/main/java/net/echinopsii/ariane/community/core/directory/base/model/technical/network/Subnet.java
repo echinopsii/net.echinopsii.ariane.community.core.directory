@@ -74,7 +74,7 @@ public class Subnet implements Serializable
     private SubnetType type;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    private MulticastArea marea;
+    private RoutingArea rarea;
 
     public Long getId() {
         return this.id;
@@ -232,27 +232,27 @@ public class Subnet implements Serializable
         return this;
     }
 
-    public MulticastArea getMarea() {
-        return this.marea;
+    public RoutingArea getRarea() {
+        return this.rarea;
     }
 
-    public void setMarea(final MulticastArea marea) {
-        this.marea = marea;
+    public void setRarea(final RoutingArea rarea) {
+        this.rarea = rarea;
     }
 
-    public Subnet setMareaR(final MulticastArea marea) {
-        this.marea = marea;
+    public Subnet setMareaR(final RoutingArea marea) {
+        this.rarea = marea;
         return this;
     }
 
     public Subnet clone() {
         return new Subnet().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setSubnetIPR(this.subnetIP).
-                       setSubnetMaskR(this.subnetMask).setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setMareaR(this.marea).setOsInstancesR(new HashSet<OSInstance>(this.osInstances)).setTypeR(this.type);
+                       setSubnetMaskR(this.subnetMask).setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setMareaR(this.rarea).setOsInstancesR(new HashSet<OSInstance>(this.osInstances)).setTypeR(this.type);
     }
 
     public final static String SUBNET_MAPPING_PROPERTIES = "Network";
     public final static String SUBNET_TYPE_MAPPING_FIELD = "type";
-    public final static String SUBNET_MARE_MAPPING_FIELD = "marea";
+    public final static String SUBNET_MARE_MAPPING_FIELD = "rarea";
     public final static String SUBNET_NAME_MAPPING_FIELD = "lan";
     public final static String SUBNET_IPAD_MAPPING_FIELD = "subnetip";
     public final static String SUBNET_MASK_MAPPING_FIELD = "subnetmask";
@@ -260,7 +260,7 @@ public class Subnet implements Serializable
     public HashMap<String,Object> toMappingProperties() {
         HashMap<String,Object> ret = new HashMap<String,Object>();
         ret.put(SUBNET_TYPE_MAPPING_FIELD,type.getName());
-        if (marea!=null) ret.put(SUBNET_MARE_MAPPING_FIELD, marea.getName());
+        if (rarea !=null) ret.put(SUBNET_MARE_MAPPING_FIELD, rarea.getName());
         ret.put(SUBNET_NAME_MAPPING_FIELD,name);
         ret.put(SUBNET_IPAD_MAPPING_FIELD,subnetIP);
         ret.put(SUBNET_MASK_MAPPING_FIELD,subnetMask);

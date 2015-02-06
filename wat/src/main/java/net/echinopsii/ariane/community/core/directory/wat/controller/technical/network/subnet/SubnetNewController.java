@@ -19,13 +19,13 @@
 
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea.RoutingAreasListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.multicastArea.MulticastAreasListController;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.SubnetType;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.MulticastArea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,8 +64,8 @@ public class SubnetNewController implements Serializable {
     private String subnetType;
     private SubnetType type;
 
-    private String mArea = "";
-    private MulticastArea marea;
+    private String rArea = "";
+    private RoutingArea rarea;
 
     private List<String>    datacentersToBind = new ArrayList<String>();
     private Set<Datacenter> datacenters       = new HashSet<Datacenter>();
@@ -133,32 +133,32 @@ public class SubnetNewController implements Serializable {
         }
     }
 
-    public MulticastArea getMarea() {
-        return marea;
+    public RoutingArea getRarea() {
+        return rarea;
     }
 
-    public void setMarea(MulticastArea marea) {
-        this.marea = marea;
+    public void setRarea(RoutingArea rarea) {
+        this.rarea = rarea;
     }
 
-    public String getmArea() {
-        return mArea;
+    public String getrArea() {
+        return rArea;
     }
 
-    public void setmArea(String mArea) {
-        this.mArea = mArea;
+    public void setrArea(String rArea) {
+        this.rArea = rArea;
     }
 
     /**
-     * synchronize this.marea from DB
+     * synchronize this.rarea from DB
      *
      * @throws NotSupportedException
      * @throws SystemException
      */
-    private void syncMulticastArea() throws NotSupportedException, SystemException {
-        MulticastArea marea = null;
-        for (MulticastArea area: MulticastAreasListController.getAll()) {
-            if (area.getName().equals(this.mArea)) {
+    private void syncRoutingArea() throws NotSupportedException, SystemException {
+        RoutingArea marea = null;
+        for (RoutingArea area: RoutingAreasListController.getAll()) {
+            if (area.getName().equals(this.rArea)) {
                 area = em.find(area.getClass(), area.getId());
                 marea = area;
                 break;
@@ -166,8 +166,8 @@ public class SubnetNewController implements Serializable {
         }
 
         if (marea!=null) {
-            this.marea = marea;
-            log.debug("Synced Multicast Area : {} {}", new Object[]{this.marea.getId(), this.marea.getName()});
+            this.rarea = marea;
+            log.debug("Synced Routing Area : {} {}", new Object[]{this.rarea.getId(), this.rarea.getName()});
         }
     }
 
@@ -211,7 +211,7 @@ public class SubnetNewController implements Serializable {
     public void save() {
         try {
             syncSubnetType();
-            syncMulticastArea();
+            syncRoutingArea();
             bindSelectedDatacenters();
         } catch (Exception e) {
             e.printStackTrace();
@@ -228,7 +228,7 @@ public class SubnetNewController implements Serializable {
         newSubnet.setSubnetIP(subnetIP);
         newSubnet.setSubnetMask(subnetMask);
         newSubnet.setType(type);
-        newSubnet.setMarea(marea);
+        newSubnet.setRarea(rarea);
         newSubnet.setDatacenters(this.datacenters);
 
         try {
@@ -239,13 +239,14 @@ public class SubnetNewController implements Serializable {
                 for (Datacenter dc: this.datacenters) {
                     dc.getSubnets().add(newSubnet);
                     em.merge(dc);
-                    if (marea!=null) {
-                        if (!marea.getDatacenters().contains(dc)) {
-                            marea.getDatacenters().add(dc);
+                    if (rarea !=null) {
+                        if (!rarea.getDatacenters().contains(dc)) {
+                            rarea.getDatacenters().add(dc);
                         }
                     }
                 }
-            if (marea!=null) {marea.getSubnets().add(newSubnet); em.merge(marea);}
+            if (rarea !=null) {
+                rarea.getSubnets().add(newSubnet); em.merge(rarea);}
             em.flush();
             em.getTransaction().commit();
             log.debug("Save new Subnet {} !", new Object[]{name});

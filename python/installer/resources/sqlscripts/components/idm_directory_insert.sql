@@ -4,8 +4,8 @@
 
 LOCK TABLES `resource` WRITE;
 INSERT IGNORE INTO `resource` (description, resourceName, version) VALUES
-    ('Directory common IT network datacenter','dirComITiNtwDC',1),
-    ('Directory common IT network multicast area','dirComITiNtwMarea',1),
+  ('Directory common IT network routing area','dirComITiNtwRarea',1),
+  ('Directory common IT network datacenter','dirComITiNtwDC',1),
     ('Directory common IT network subnet','dirComITiNtwSubnet',1),
     ('Directory common IT system OS instance','dirComITiSysOsi',1),
     ('Directory common IT system OS type','dirComITiSysOst',1),
@@ -32,13 +32,13 @@ INSERT IGNORE INTO `permission` (description, permissionName, version, resource_
 SELECT 'can update Directory common IT network datacenter', 'dirComITiNtwDC:update', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can display Directory common IT network multicast area', 'dirComITiNtwMarea:display', 1, id FROM resource WHERE resourceName='dirComITiNtwMarea';
+SELECT 'can display Directory common IT network routing area', 'dirComITiNtwRarea:display', 1, id FROM resource WHERE resourceName='dirComITiNtwRarea';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can create Directory common IT network multicast area', 'dirComITiNtwMarea:create', 1, id FROM resource WHERE resourceName='dirComITiNtwMarea';
+SELECT 'can create Directory common IT network routing area', 'dirComITiNtwRarea:create', 1, id FROM resource WHERE resourceName='dirComITiNtwRarea';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can remove Directory common IT network multicast area', 'dirComITiNtwMarea:remove', 1, id FROM resource WHERE resourceName='dirComITiNtwMarea';
+SELECT 'can remove Directory common IT network routing area', 'dirComITiNtwRarea:remove', 1, id FROM resource WHERE resourceName='dirComITiNtwRarea';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can update Directory common IT network multicast area', 'dirComITiNtwMarea:update', 1, id FROM resource WHERE resourceName='dirComITiNtwMarea';
+SELECT 'can update Directory common IT network routing area', 'dirComITiNtwRarea:update', 1, id FROM resource WHERE resourceName='dirComITiNtwRarea';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
 SELECT 'can display Directory common IT network subnet', 'dirComITiNtwSubnet:display', 1, id FROM resource WHERE resourceName='dirComITiNtwSubnet';
@@ -122,13 +122,13 @@ INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
 SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwDC' AND p.permissionName='dirComITiNtwDC:update';
 
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwMarea' AND p.permissionName='dirComITiNtwMarea:display';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwRarea' AND p.permissionName='dirComITiNtwRarea:display';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwMarea' AND p.permissionName='dirComITiNtwMarea:create';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwRarea' AND p.permissionName='dirComITiNtwRarea:create';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwMarea' AND p.permissionName='dirComITiNtwMarea:remove';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwRarea' AND p.permissionName='dirComITiNtwRarea:remove';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
-SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwMarea' AND p.permissionName='dirComITiNtwMarea:update';
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwRarea' AND p.permissionName='dirComITiNtwRarea:update';
 
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
 SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwSubnet' AND p.permissionName='dirComITiNtwSubnet:display';
@@ -238,23 +238,23 @@ INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:update' AND r.roleName='ntwadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='ntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:display' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='ntwreviewer';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:display' AND r.roleName='ntwreviewer';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:create' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:create' AND r.roleName='ntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:create' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:remove' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:create' AND r.roleName='ntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:create' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:update' AND r.roleName='Jedi';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:update' AND r.roleName='ntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:update' AND r.roleName='ntwadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:display' AND r.roleName='Jedi';
@@ -409,13 +409,13 @@ INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:update' AND r.roleName='Jedi';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:create' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:remove' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:update' AND r.roleName='Jedi';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:update' AND r.roleName='Jedi';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:display' AND r.roleName='Jedi';
@@ -491,13 +491,13 @@ INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:update' AND r.roleName='ntwadmin';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='ntwadmin';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:display' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:create' AND r.roleName='ntwadmin';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:create' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:remove' AND r.roleName='ntwadmin';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:remove' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:update' AND r.roleName='ntwadmin';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:update' AND r.roleName='ntwadmin';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:display' AND r.roleName='ntwadmin';
@@ -512,7 +512,7 @@ SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirCom
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:display' AND r.roleName='ntwreviewer';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
-SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwMarea:display' AND r.roleName='ntwreviewer';
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwRarea:display' AND r.roleName='ntwreviewer';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:display' AND r.roleName='ntwreviewer';
 

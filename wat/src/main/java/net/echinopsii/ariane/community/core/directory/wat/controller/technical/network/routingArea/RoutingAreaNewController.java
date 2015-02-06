@@ -1,6 +1,6 @@
 /**
  * Directory wat
- * Directories MulticastArea Create Controller
+ * Directories RoutingArea Create Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.multicastArea;
+package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.MulticastArea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,12 +38,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This class provide stuff to create and save a new multicastarea from the UI form
+ * This class provide stuff to create and save a new routing area from the UI form
  */
-public class MulticastAreaNewController implements Serializable {
+public class RoutingAreaNewController implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger log = LoggerFactory.getLogger(MulticastAreaNewController.class);
+    private static final Logger log = LoggerFactory.getLogger(RoutingAreaNewController.class);
 
     private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
@@ -114,7 +114,7 @@ public class MulticastAreaNewController implements Serializable {
     }
 
     /**
-     * save a new multicast area thanks data provided through UI form
+     * save a new routing area thanks data provided through UI form
      */
     public void save() {
         try {
@@ -122,34 +122,34 @@ public class MulticastAreaNewController implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Exception raise while creating multicast area " + name + " !",
+                                                       "Exception raise while creating routing area " + name + " !",
                                                        "Exception message : " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        MulticastArea multicastArea = new MulticastArea();
-        multicastArea.setName(name);
-        multicastArea.setDescription(description);
-        multicastArea.setDatacenters(datacenters);
+        RoutingArea routingArea = new RoutingArea();
+        routingArea.setName(name);
+        routingArea.setDescription(description);
+        routingArea.setDatacenters(datacenters);
 
         try {
             em.getTransaction().begin();
-            em.persist(multicastArea);
-            for (Datacenter dc : multicastArea.getDatacenters()) {
-                dc.getMulticastAreas().add(multicastArea); em.merge(dc);
+            em.persist(routingArea);
+            for (Datacenter dc : routingArea.getDatacenters()) {
+                dc.getRoutingAreas().add(routingArea); em.merge(dc);
             }
             em.flush();
             em.getTransaction().commit();
-            log.debug("Save new MulticastArea {} !", new Object[]{name});
+            log.debug("Save new RoutingArea {} !", new Object[]{name});
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                       "Multicast area created successfully !",
-                                                       "Multicast area name : " + multicastArea.getName());
+                                                       "Routing area created successfully !",
+                                                       "Routing area name : " + routingArea.getName());
             FacesContext.getCurrentInstance().addMessage(null, msg);
         } catch (Throwable t) {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while creating multicast area " + multicastArea.getName() + " !",
+                                                       "Throwable raised while creating routing area " + routingArea.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())

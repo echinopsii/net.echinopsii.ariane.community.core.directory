@@ -19,7 +19,7 @@
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.MulticastArea;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.wat.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.wat.json.ds.technical.network.DatacenterJSON;
@@ -225,7 +225,7 @@ public class DatacenterEndpoint {
                         em.getTransaction().begin();
                         for (Subnet subnet: entity.getSubnets())
                             subnet.getDatacenters().remove(entity);
-                        for (MulticastArea marea :entity.getMulticastAreas())
+                        for (RoutingArea marea :entity.getRoutingAreas())
                             marea.getDatacenters().remove(entity);
                         em.remove(entity);
                         em.getTransaction().commit();
@@ -488,12 +488,12 @@ public class DatacenterEndpoint {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
                 if (entity != null) {
-                    MulticastArea marea = MulticastAreaEndpoint.findMulticastAreaById(em, mareaID);
+                    RoutingArea marea = MulticastAreaEndpoint.findMulticastAreaById(em, mareaID);
                     if (marea!=null) {
                         try {
                             em.getTransaction().begin();
                             marea.getDatacenters().add(entity);
-                            entity.getMulticastAreas().add(marea);
+                            entity.getRoutingAreas().add(marea);
                             em.getTransaction().commit();
                             em.close();
                             return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by adding multicast area " + mareaID).build();
@@ -531,12 +531,12 @@ public class DatacenterEndpoint {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
                 if (entity != null) {
-                    MulticastArea marea = MulticastAreaEndpoint.findMulticastAreaById(em, mareaID);
+                    RoutingArea marea = MulticastAreaEndpoint.findMulticastAreaById(em, mareaID);
                     if (marea!=null) {
                         try {
                             em.getTransaction().begin();
                             marea.getDatacenters().remove(entity);
-                            entity.getMulticastAreas().remove(marea);
+                            entity.getRoutingAreas().remove(marea);
                             em.getTransaction().commit();
                             em.close();
                             return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by deleting multicast area " + mareaID).build();

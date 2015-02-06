@@ -1,6 +1,6 @@
 /**
  * Directory wat
- * Directories MulticastArea PrimeFaces Lazy Model
+ * Directories RoutingArea PrimeFaces Lazy Model
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.multicastArea;
+package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea;
 
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.MulticastArea;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
@@ -38,14 +38,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class provide lazy loading stuff for our multicastarea PrimeFaces datatable implementation
+ * This class provide lazy loading stuff for our routing area PrimeFaces datatable implementation
  */
-public class MulticastAreaLazyModel extends LazyDataModel<MulticastArea> {
+public class RoutingAreaLazyModel extends LazyDataModel<RoutingArea> {
 
-    private static final Logger log = LoggerFactory.getLogger(MulticastAreaLazyModel.class);
+    private static final Logger log = LoggerFactory.getLogger(RoutingAreaLazyModel.class);
 
     private int                 rowCount ;
-    private List<MulticastArea> pageItems ;
+    private List<RoutingArea> pageItems ;
 
     /**
      * Add search predicate to the JPA query
@@ -55,7 +55,7 @@ public class MulticastAreaLazyModel extends LazyDataModel<MulticastArea> {
      * @param filters the provided filters
      * @return the generated JPA predicate
      */
-    private Predicate[] getSearchPredicates(EntityManager entityManager, Root<MulticastArea> root, Map<String,String> filters) {
+    private Predicate[] getSearchPredicates(EntityManager entityManager, Root<RoutingArea> root, Map<String,String> filters) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         List<Predicate> predicatesList = new ArrayList<Predicate>();
 
@@ -73,7 +73,7 @@ public class MulticastAreaLazyModel extends LazyDataModel<MulticastArea> {
     /**
      * Generate a JPA query and push the result into pageItems
      *
-     * @param first first result of the query (the multicastarea id)
+     * @param first first result of the query (the routing area id)
      * @param sortField the sort field of the query
      * @param sortOrder the sort order of the query
      * @param filters the provided filters
@@ -84,17 +84,17 @@ public class MulticastAreaLazyModel extends LazyDataModel<MulticastArea> {
 
         // Populate this.count
         CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
-        Root<MulticastArea> root = countCriteria.from(MulticastArea.class);
+        Root<RoutingArea> root = countCriteria.from(RoutingArea.class);
         countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(entityManager, root,filters));
         this.rowCount = (int) (long) entityManager.createQuery(countCriteria).getSingleResult();
 
         // Populate this.pageItems
-        CriteriaQuery<MulticastArea> criteria = builder.createQuery(MulticastArea.class);
-        root = criteria.from(MulticastArea.class);
+        CriteriaQuery<RoutingArea> criteria = builder.createQuery(RoutingArea.class);
+        root = criteria.from(RoutingArea.class);
         criteria.select(root).where(getSearchPredicates(entityManager, root,filters));
         if (sortOrder!=null && sortField!=null)
             criteria.orderBy(sortOrder.toString().equals("DESCENDING") ? builder.desc(root.get(sortField)) : builder.asc(root.get(sortField)));
-        TypedQuery<MulticastArea> query = entityManager.createQuery(criteria);
+        TypedQuery<RoutingArea> query = entityManager.createQuery(criteria);
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
@@ -102,46 +102,46 @@ public class MulticastAreaLazyModel extends LazyDataModel<MulticastArea> {
     }
 
     /**
-     * Return the multicastarea assigned to a table row
+     * Return the routing area assigned to a table row
      *
-     * @param rowKey the row multicastarea id
+     * @param rowKey the row routing area id
      *
-     * @return multicastarea object according to provided multicastarea id
+     * @return routing area object according to provided routing area id
      */
     @Override
-    public MulticastArea getRowData(String rowKey) {
-        for(MulticastArea multicastArea : pageItems) {
-            if(multicastArea.getId().equals(rowKey))
-                return multicastArea;
+    public RoutingArea getRowData(String rowKey) {
+        for(RoutingArea routingArea : pageItems) {
+            if(routingArea.getId().equals(rowKey))
+                return routingArea;
         }
         return null;
     }
 
     /**
-     * Return the multicastarea id assigned to a table row
+     * Return the routing area id assigned to a table row
      *
-     * @param multicastArea the row multicastarea
+     * @param routingArea the row routing area
      *
-     * @return the multicastarea id
+     * @return the routing area id
      */
     @Override
-    public Object getRowKey(MulticastArea multicastArea) {
-        return multicastArea.getId();
+    public Object getRowKey(RoutingArea routingArea) {
+        return routingArea.getId();
     }
 
     /**
-     * Return the multicastareas list for the PrimeFaces table
+     * Return the routing areas list for the PrimeFaces table
      *
-     * @param first first result of the query (the multicastarea id)
+     * @param first first result of the query (the routing area id)
      * @param pageSize the page size
      * @param sortField the sort field of the query
      * @param sortOrder the sort order of the query
      * @param filters the provided filters
      *
-     * @return queried multicastareas list
+     * @return queried routing areas list
      */
     @Override
-    public List<MulticastArea> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,String> filters) {
+    public List<RoutingArea> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,String> filters) {
         this.setPageSize(pageSize);
         paginate(first,sortField,sortOrder,filters);
         this.setRowCount(rowCount);

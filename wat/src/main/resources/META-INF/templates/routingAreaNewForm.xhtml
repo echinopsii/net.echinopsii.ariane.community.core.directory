@@ -4,23 +4,23 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
-    <h:panelGrid id="mareaNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
+    <h:panelGrid id="rareaNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
         <h:outputText value="Name : " styleClass="inputTitle"/>
-        <p:inputText id="name" label="Name" required="true" value="#{multicastAreaNewController.name}"/>
+        <p:inputText id="name" label="Name" required="true" value="#{routingAreaNewController.name}"/>
 
         <h:outputText value="Datacenters : " styleClass="inputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="dcCreateDialog.show()">
                 <h:outputText value=" create new datacenter"/>
             </p:commandLink><br/>
-            <p:selectManyMenu id="basic" value="#{multicastAreaNewController.datacentersToBind}" style="width:150px;height:100px">
+            <p:selectManyMenu id="basic" value="#{routingAreaNewController.datacentersToBind}" style="width:150px;height:100px">
                 <f:selectItems value="#{datacentersListController.getAll()}"  var="dc"
                                itemLabel="#{dc.name}" itemValue="#{dc.name}"/>
             </p:selectManyMenu>
         </h:panelGroup>
 
         <h:outputText value="Description : " styleClass="inputTitle"/>
-        <p:inputText id="description" label="Description" required="true" value="#{multicastAreaNewController.description}"/>
+        <p:inputText id="description" label="Description" required="true" value="#{routingAreaNewController.description}"/>
 
     </h:panelGrid>
 </ui:composition>

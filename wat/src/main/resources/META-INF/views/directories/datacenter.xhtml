@@ -125,6 +125,35 @@
                             </h:form>
                             <h:outputText value="#{datacenter.gpsLongitude}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
+                            <h:outputText value="Routing Areas : " styleClass="inputTitle"/>
+                            <h:form>
+                                <p:dataTable value="#{directoryViewUtils.asList(datacenter,'routingAreas')}" var="_rarea" styleClass="ui-widget-content grid" rowKey="#{_rarea.id}"
+                                             rows="5" paginator="true" selection="#{datacentersListController.removedRareas[datacenter.id]}" selectionMode="multiple">
+                                    <p:column headerText="Name" sortBy="#{_rarea.name}" filterBy="#{_rarea.name}">
+                                        <h:outputText id="mareaName" value="#{_rarea.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Description" sortBy="#{_rarea.description}" filterBy="#{_rarea.description}">
+                                        <h:outputText id="mareaDescription" value="#{_rarea.description}"/>
+                                    </p:column>
+                                    <c:if test="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
+                                        <f:facet name="footer">
+                                            <p:inplace label="Select routing area to bind" effectSpeed="fast" editor="true">
+                                                <h:selectOneMenu value="#{datacentersListController.addedRArea[datacenter.id]}">
+                                                    <f:selectItems value="#{routingAreasListController.getAll()}" var="rarea_"
+                                                                   itemLabel="#{rarea_.name}" itemValue="#{rarea_.name}"/>
+                                                </h:selectOneMenu>
+                                                <p:ajax event="save" listener="#{datacentersListController.syncAddedRArea(datacenter)}"
+                                                        update="@form,:datacenterTableForm:dcTableMessages"/>
+                                            </p:inplace>
+                                            <p:commandButton value="Unbind selected routing area" icon="ui-icon-closethick"
+                                                             process="@form" actionListener="#{datacentersListController.syncRemovedRAreas(datacenter)}"
+                                                             update="@form,:datacenterTableForm:dcTableMessages"/>
+                                        </f:facet>
+                                    </c:if>
+                                </p:dataTable>
+                            </h:form>
+
+
                             <h:outputText value="Subnets : " styleClass="inputTitle"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(datacenter,'subnets')}" var="_subnet" styleClass="ui-widget-content grid" rowKey="#{_subnet.id}"
@@ -150,34 +179,6 @@
                                             </p:inplace>
                                             <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
                                                              process="@form" actionListener="#{datacentersListController.syncRemovedSubnets(datacenter)}"
-                                                             update="@form,:datacenterTableForm:dcTableMessages"/>
-                                        </f:facet>
-                                    </c:if>
-                                </p:dataTable>
-                            </h:form>
-
-                            <h:outputText value="Multicast Areas : " styleClass="inputTitle"/>
-                            <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(datacenter,'multicastAreas')}" var="_marea" styleClass="ui-widget-content grid" rowKey="#{_marea.id}"
-                                             rows="5" paginator="true" selection="#{datacentersListController.removedMareas[datacenter.id]}" selectionMode="multiple">
-                                    <p:column headerText="Name" sortBy="#{_marea.name}" filterBy="#{_marea.name}">
-                                        <h:outputText id="mareaName" value="#{_marea.name}"/>
-                                    </p:column>
-                                    <p:column headerText="Description" sortBy="#{_marea.description}" filterBy="#{_marea.description}">
-                                        <h:outputText id="mareaDescription" value="#{_marea.description}"/>
-                                    </p:column>
-                                    <c:if test="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
-                                        <f:facet name="footer">
-                                            <p:inplace label="Select multicast area to bind" effectSpeed="fast" editor="true">
-                                                <h:selectOneMenu value="#{datacentersListController.addedMArea[datacenter.id]}">
-                                                    <f:selectItems value="#{multicastAreasListController.getAll()}" var="marea_"
-                                                                   itemLabel="#{marea_.name}" itemValue="#{marea_.name}"/>
-                                                </h:selectOneMenu>
-                                                <p:ajax event="save" listener="#{datacentersListController.syncAddedMArea(datacenter)}"
-                                                        update="@form,:datacenterTableForm:dcTableMessages"/>
-                                            </p:inplace>
-                                            <p:commandButton value="Unbind selected multicast area" icon="ui-icon-closethick"
-                                                             process="@form" actionListener="#{datacentersListController.syncRemovedMAreas(datacenter)}"
                                                              update="@form,:datacenterTableForm:dcTableMessages"/>
                                         </f:facet>
                                     </c:if>
@@ -211,11 +212,11 @@
                             <h:outputText value="Name : " styleClass="inputTitle"/>
                             <h:outputText value="#{selectedDC.name}"/>
 
-                            <h:outputText value="Multicast areas : " styleClass="inputTitle"/>
-                            <p:dataTable  value="#{directoryViewUtils.asList(selectedDC,'multicastAreas')}" var="_item"
+                            <h:outputText value="Routing areas : " styleClass="inputTitle"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedDC,'routingAreas')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
-                                    <h:outputText id="itemName" value="#{_item.name}"/>
+                                    <h:outputText id="rraName" value="#{_item.name}"/>
                                 </p:column>
                                 <p:column headerText="Description">
                                     <h:outputText id="itemDescription" value="#{_item.description}"/>
@@ -226,7 +227,7 @@
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedDC,'subnets')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
-                                    <h:outputText id="itemName" value="#{_item.name}"/>
+                                    <h:outputText id="rsubnetName" value="#{_item.name}"/>
                                 </p:column>
                                 <p:column headerText="Subnet IP">
                                     <h:outputText id="itemSubnetIP" value="#{_item.subnetIP}"/>
@@ -244,7 +245,7 @@
             <p:dialog header="Create a new datacenter" widgetVar="dcCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode">
                 <h:form id="createDCDialogForm">
-                    <ui:insert name="createMulticastArea" >
+                    <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
                     </ui:insert>
                     <p:commandButton value="Save this datacenter" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"

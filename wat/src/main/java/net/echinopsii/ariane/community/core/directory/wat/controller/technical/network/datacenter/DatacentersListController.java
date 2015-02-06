@@ -19,12 +19,12 @@
 
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter;
 
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea.RoutingAreasListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.multicastArea.MulticastAreasListController;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.MulticastArea;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
@@ -55,8 +55,8 @@ public class DatacentersListController implements Serializable {
     private HashMap<Long,String>       addedSubnet    = new HashMap<Long, String>();
     private HashMap<Long,List<Subnet>> removedSubnets = new HashMap<Long, List<Subnet>>();
 
-    private HashMap<Long,String>              addedMArea    = new HashMap<Long, String>();
-    private HashMap<Long,List<MulticastArea>> removedMareas = new HashMap<Long, List<MulticastArea>>();
+    private HashMap<Long,String> addedRArea = new HashMap<Long, String>();
+    private HashMap<Long,List<RoutingArea>> removedRareas = new HashMap<Long, List<RoutingArea>>();
 
     public LazyDataModel<Datacenter> getLazyModel() {
         return lazyModel;
@@ -160,29 +160,29 @@ public class DatacentersListController implements Serializable {
         }
     }
 
-    public HashMap<Long, String> getAddedMArea() {
-        return addedMArea;
+    public HashMap<Long, String> getAddedRArea() {
+        return addedRArea;
     }
 
-    public void setAddedMArea(HashMap<Long, String> addedMArea) {
-        this.addedMArea = addedMArea;
+    public void setAddedRArea(HashMap<Long, String> addedRArea) {
+        this.addedRArea = addedRArea;
     }
 
     /**
-     * Synchronize added multicast area into a datacenter to database
+     * Synchronize added routing area into a datacenter to database
      *
      * @param dc bean UI is working on
      */
-    public void syncAddedMArea(Datacenter dc) {
+    public void syncAddedRArea(Datacenter dc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
-            for (MulticastArea marea: MulticastAreasListController.getAll()) {
-                if (marea.getName().equals(this.addedMArea.get(dc.getId()))) {
+            for (RoutingArea rarea: RoutingAreasListController.getAll()) {
+                if (rarea.getName().equals(this.addedRArea.get(dc.getId()))) {
                     em.getTransaction().begin();
                     dc = em.find(dc.getClass(), dc.getId());
-                    marea = em.find(marea.getClass(), marea.getId());
-                    dc.getMulticastAreas().add(marea);
-                    marea.getDatacenters().add(dc);
+                    rarea = em.find(rarea.getClass(), rarea.getId());
+                    dc.getRoutingAreas().add(rarea);
+                    rarea.getDatacenters().add(dc);
                     em.flush();
                     em.getTransaction().commit();
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -206,29 +206,29 @@ public class DatacentersListController implements Serializable {
         }
     }
 
-    public HashMap<Long, List<MulticastArea>> getRemovedMareas() {
-        return removedMareas;
+    public HashMap<Long, List<RoutingArea>> getRemovedRareas() {
+        return removedRareas;
     }
 
-    public void setRemovedMareas(HashMap<Long, List<MulticastArea>> removedMareas) {
-        this.removedMareas = removedMareas;
+    public void setRemovedRareas(HashMap<Long, List<RoutingArea>> removedRareas) {
+        this.removedRareas = removedRareas;
     }
 
     /**
-     * Synchronize removed multicast area from a datacenter to database
+     * Synchronize removed routing area from a datacenter to database
      *
      * @param dc bean UI is working on
      */
-    public void syncRemovedMAreas(Datacenter dc) {
+    public void syncRemovedRAreas(Datacenter dc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
             dc = em.find(dc.getClass(), dc.getId());
-            List<MulticastArea> mareas2beRM = this.removedMareas.get(dc.getId());
-            for (MulticastArea marea2beRM : mareas2beRM) {
-                marea2beRM = em.find(marea2beRM.getClass(), marea2beRM.getId());
-                dc.getMulticastAreas().remove(marea2beRM);
-                marea2beRM.getDatacenters().remove(dc);
+            List<RoutingArea> rareas2beRM = this.removedRareas.get(dc.getId());
+            for (RoutingArea rarea2beRM : rareas2beRM) {
+                rarea2beRM = em.find(rarea2beRM.getClass(), rarea2beRM.getId());
+                dc.getRoutingAreas().remove(rarea2beRM);
+                rarea2beRM.getDatacenters().remove(dc);
             }
             em.flush();
             em.getTransaction().commit();
@@ -251,9 +251,9 @@ public class DatacentersListController implements Serializable {
     }
 
     /**
-     * When a PrimeFaces data table row is toogled init reference into the addedSubnet, removedSubnets, addedMArea, removedMareas lists
+     * When a PrimeFaces data table row is toogled init reference into the addedSubnet, removedSubnets, addedRArea, removedRareas lists
      * with the correct datacenter id <br/>
-     * When a PrimeFaces data table row is untoogled remove reference from the addedSubnet, removedSubnets, addedMArea, removedMareas lists
+     * When a PrimeFaces data table row is untoogled remove reference from the addedSubnet, removedSubnets, addedRArea, removedRareas lists
      * with the correct datacenter id <br/>
      *
      * @param event provided by the UI through PrimeFaces on a row toggle
@@ -264,13 +264,13 @@ public class DatacentersListController implements Serializable {
         if (event.getVisibility().toString().equals("HIDDEN")) {
             addedSubnet.remove(eventDc.getId());
             removedSubnets.remove(eventDc.getId());
-            addedMArea.remove(eventDc.getId());
-            removedMareas.remove(eventDc.getId());
+            addedRArea.remove(eventDc.getId());
+            removedRareas.remove(eventDc.getId());
         } else {
             addedSubnet.put(eventDc.getId(), "");
             removedSubnets.put(eventDc.getId(), new ArrayList<Subnet>());
-            addedMArea.put(eventDc.getId(), "");
-            removedMareas.put(eventDc.getId(), new ArrayList<MulticastArea>());
+            addedRArea.put(eventDc.getId(), "");
+            removedRareas.put(eventDc.getId(), new ArrayList<RoutingArea>());
         }
     }
 
@@ -317,8 +317,8 @@ public class DatacentersListController implements Serializable {
                 dc2BeRemoved = em.find(dc2BeRemoved.getClass(), dc2BeRemoved.getId());
                 for (Subnet subnet : dc2BeRemoved.getSubnets())
                     subnet.getDatacenters().remove(dc2BeRemoved);
-                for (MulticastArea marea : dc2BeRemoved.getMulticastAreas())
-                    marea.getDatacenters().remove(dc2BeRemoved);
+                for (RoutingArea rarea : dc2BeRemoved.getRoutingAreas())
+                    rarea.getDatacenters().remove(dc2BeRemoved);
                 em.remove(dc2BeRemoved);
                 em.flush();
                 em.getTransaction().commit();

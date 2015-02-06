@@ -18,14 +18,14 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea.RoutingAreasListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.multicastArea.MulticastAreasListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.SubnetType;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.MulticastArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
@@ -56,7 +56,7 @@ public class SubnetsListController implements Serializable {
     private Subnet[] selectedSubnetList;
 
     private HashMap<Long, String> changedSubnetType = new HashMap<Long, String>();
-    private HashMap<Long, String> changedMarea      = new HashMap<Long, String>();
+    private HashMap<Long, String> changedRarea = new HashMap<Long, String>();
 
     private HashMap<Long,String>           addedDC    = new HashMap<Long, String>();
     private HashMap<Long,List<Datacenter>> removedDCs = new HashMap<Long, List<Datacenter>>();
@@ -122,43 +122,43 @@ public class SubnetsListController implements Serializable {
         }
     }
 
-    public HashMap<Long, String> getChangedMarea() {
-        return changedMarea;
+    public HashMap<Long, String> getChangedRarea() {
+        return changedRarea;
     }
 
-    public void setChangedMarea(HashMap<Long, String> changedMarea) {
-        this.changedMarea = changedMarea;
+    public void setChangedRarea(HashMap<Long, String> changedRarea) {
+        this.changedRarea = changedRarea;
     }
 
     /**
-     * Synchronize changed multicast area from a subnet to database
+     * Synchronize changed routing area from a subnet to database
      *
      * @param subnet bean UI is working on
      */
-    public void syncMarea(Subnet subnet) {
+    public void syncRarea(Subnet subnet) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
-            boolean noMarea = true;
+            boolean noRarea = true;
             subnet = em.find(subnet.getClass(), subnet.getId());
-            for (MulticastArea marea : MulticastAreasListController.getAll()) {
-                if (marea.getName().equals(changedMarea.get(subnet.getId()))) {
+            for (RoutingArea rarea : RoutingAreasListController.getAll()) {
+                if (rarea.getName().equals(changedRarea.get(subnet.getId()))) {
                     em.getTransaction().begin();
-                    marea = em.find(marea.getClass(), marea.getId());
-                    subnet.setMarea(marea);
-                    marea.getSubnets().add(subnet);
+                    rarea = em.find(rarea.getClass(), rarea.getId());
+                    subnet.setRarea(rarea);
+                    rarea.getSubnets().add(subnet);
                     em.flush();
                     em.getTransaction().commit();
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                                "Subnet updated successfully !",
                                                                "Subnet name : " + subnet.getName());
                     FacesContext.getCurrentInstance().addMessage(null, msg);
-                    noMarea = false;
+                    noRarea = false;
                     break;
                 }
             }
-            if (noMarea) {
+            if (noRarea) {
                 em.getTransaction().begin();
-                subnet.setMarea(null);
+                subnet.setRarea(null);
                 em.flush();
                 em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -180,10 +180,10 @@ public class SubnetsListController implements Serializable {
         }
     }
 
-    public String getSubnetMareaName(Subnet subnet) {
+    public String getSubnetRareaName(Subnet subnet) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         subnet = em.find(subnet.getClass(), subnet.getId());
-        String mareaName = (subnet.getMarea()!=null) ? subnet.getMarea().getName() : "None";
+        String mareaName = (subnet.getRarea()!=null) ? subnet.getRarea().getName() : "None";
         em.close();
         return mareaName;
     }
@@ -371,9 +371,9 @@ public class SubnetsListController implements Serializable {
     }
 
     /**
-     * When a PrimeFaces data table row is toogled init reference into the changedSubnetType, changedMarea,
+     * When a PrimeFaces data table row is toogled init reference into the changedSubnetType, changedRarea,
      * addedDC, removedDCs, addedOSI, removedOSIs lists with the correct multicastarea id<br/>
-     * When a PrimeFaces data table row is untoogled remove reference from the changedSubnetType, changedMarea,
+     * When a PrimeFaces data table row is untoogled remove reference from the changedSubnetType, changedRarea,
      * addedDC, removedDCs, addedOSI, removedOSIs lists with the correct multicastarea id<br/>
      *
      * @param event provided by the UI through PrimeFaces on a row toggle
@@ -383,14 +383,14 @@ public class SubnetsListController implements Serializable {
         Subnet eventSubnet = ((Subnet) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
             changedSubnetType.remove(eventSubnet.getId());
-            changedMarea.remove(eventSubnet.getId());
+            changedRarea.remove(eventSubnet.getId());
             addedDC.remove(eventSubnet.getId());
             removedDCs.remove(eventSubnet.getId());
             addedOSI.remove(eventSubnet.getId());
             removedOSIs.remove(eventSubnet.getId());
         } else {
             changedSubnetType.put(eventSubnet.getId(), "");
-            changedMarea.put(eventSubnet.getId(), "");
+            changedRarea.put(eventSubnet.getId(), "");
             addedDC.put(eventSubnet.getId(), "");
             removedDCs.put(eventSubnet.getId(), new ArrayList<Datacenter>());
             addedOSI.put(eventSubnet.getId(), "");
@@ -441,8 +441,8 @@ public class SubnetsListController implements Serializable {
                 subnet2BeRemoved = em.find(subnet2BeRemoved.getClass(), subnet2BeRemoved.getId());
                 if (subnet2BeRemoved.getType()!=null)
                     subnet2BeRemoved.getType().getSubnets().remove(subnet2BeRemoved);
-                if (subnet2BeRemoved.getMarea()!=null)
-                    subnet2BeRemoved.getMarea().getSubnets().remove(subnet2BeRemoved);
+                if (subnet2BeRemoved.getRarea()!=null)
+                    subnet2BeRemoved.getRarea().getSubnets().remove(subnet2BeRemoved);
                 for (Datacenter dc : subnet2BeRemoved.getDatacenters())
                     dc.getSubnets().remove(subnet2BeRemoved);
                 em.remove(subnet2BeRemoved);

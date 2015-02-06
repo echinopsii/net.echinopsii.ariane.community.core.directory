@@ -97,13 +97,13 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>multicastAreaNewController</managed-bean-name>
-        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.multicastArea.MulticastAreaNewController</managed-bean-class>
+        <managed-bean-name>routingAreaNewController</managed-bean-name>
+        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea.RoutingAreaNewController</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
     <managed-bean>
-        <managed-bean-name>multicastAreasListController</managed-bean-name>
-        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.multicastArea.MulticastAreasListController</managed-bean-class>
+        <managed-bean-name>routingAreasListController</managed-bean-name>
+        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea.RoutingAreasListController</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 

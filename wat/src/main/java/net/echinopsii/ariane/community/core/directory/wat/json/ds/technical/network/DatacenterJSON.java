@@ -22,7 +22,7 @@ package net.echinopsii.ariane.community.core.directory.wat.json.ds.technical.net
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.MulticastArea;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.wat.DirectoryBootstrap;
 
@@ -68,7 +68,7 @@ public class DatacenterJSON {
             jgenerator.writeNumber(subnet.getId());
         jgenerator.writeEndArray();
         jgenerator.writeArrayFieldStart(DC_MAREAS_ID);
-        for (MulticastArea marea : datacenter.getMulticastAreas())
+        for (RoutingArea marea : datacenter.getRoutingAreas())
             jgenerator.writeNumber(marea.getId());
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
