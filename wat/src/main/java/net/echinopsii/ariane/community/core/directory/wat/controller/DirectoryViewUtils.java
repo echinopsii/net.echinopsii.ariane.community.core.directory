@@ -50,7 +50,11 @@ public class DirectoryViewUtils {
 
         EntityManager entityManager = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         object = entityManager.find(object.getClass(), id.invoke(object));
-        ArrayList<T> ret = new ArrayList<T>((Collection<? extends T>) getter.invoke(object));
+        ArrayList<T> ret ;
+        if (((Collection<? extends T>) getter.invoke(object))!=null)
+            ret = new ArrayList<T>((Collection<? extends T>) getter.invoke(object));
+        else
+            ret = new ArrayList<T>();
         entityManager.close();
         return ret;
     }

@@ -54,6 +54,8 @@ CREATE TABLE IF NOT EXISTS `routingArea` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `description` varchar(255) DEFAULT NULL,
   `rareaName` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `multicast` boolean DEFAULT TRUE,
   `version` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_3m10gbw3td2mlw7exlwmerkvw` (`rareaName`)
@@ -75,20 +77,6 @@ CREATE TABLE IF NOT EXISTS `osType` (
   KEY `FK_28swxpviq8cw0hd8wnnxnt5kq` (`company_id`),
   CONSTRAINT `FK_28swxpviq8cw0hd8wnnxnt5kq` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
-
-
---
--- Table structure for table `subnetType`
---
-
-CREATE TABLE IF NOT EXISTS `subnetType` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `description` varchar(255) DEFAULT NULL,
-  `subnetTypeName` varchar(255) DEFAULT NULL,
-  `version` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_84ap71judjfmyp8bikmchnjuj` (`subnetTypeName`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 
 --
@@ -133,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `osInstance` (
 -- Table structure for table `subnet`
 --
 
-CREATE TABLE IF NOT EXISTS  `subnet` (
+CREATE TABLE IF NOT EXISTS `subnet` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `description` varchar(255) DEFAULT NULL,
   `subnetName` varchar(255) DEFAULT NULL,
@@ -141,12 +129,9 @@ CREATE TABLE IF NOT EXISTS  `subnet` (
   `subnetMask` varchar(255) DEFAULT NULL,
   `version` int(11) DEFAULT NULL,
   `rarea_id` bigint(20) DEFAULT NULL,
-  `type_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_2o6k6apvpj6ruxg8j9pi9s62d` (`subnetName`),
-  KEY `FK_6kwi7i739mnpcpreb2qrhh7s5` (`marea_id`),
-  KEY `FK_n6yhnv2hrp6ydt0kaoh5eqnpb` (`type_id`),
-  CONSTRAINT `FK_n6yhnv2hrp6ydt0kaoh5eqnpb` FOREIGN KEY (`type_id`) REFERENCES `subnetType` (`id`),
+  KEY `FK_6kwi7i739mnpcpreb2qrhh7s5` (`rarea_id`),
   CONSTRAINT `FK_6kwi7i739mnpcpreb2qrhh7s5` FOREIGN KEY (`rarea_id`) REFERENCES `routingArea` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 

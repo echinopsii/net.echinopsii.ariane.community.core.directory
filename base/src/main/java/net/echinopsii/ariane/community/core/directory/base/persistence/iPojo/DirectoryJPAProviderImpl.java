@@ -19,7 +19,6 @@
 
 package net.echinopsii.ariane.community.core.directory.base.persistence.iPojo;
 
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.SubnetType;
 import net.echinopsii.ariane.community.core.directory.base.persistence.DirectoryJPAProvider;
 import org.apache.felix.ipojo.annotations.*;
 import org.hibernate.osgi.HibernateOSGiService;
@@ -31,16 +30,12 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.persistence.spi.PersistenceProvider;
 import java.util.*;
 
 /**
- * The directory JPA provider provide tools to create EntityManager for the ariane-directory persistence unit. It also add a feature to extend the cc-directory persistance unit through Ariane plugins. <br/><br/>
+ * The directory JPA provider provide tools to create EntityManager for the ariane-directory persistence unit. It also add a feature to extend the ariane-directory
+ * persistance unit through Ariane plugins. <br/><br/>
  * To make work this feature you must have the echinopsii hibernate distribution which enables this feature.<br/>
  *
  * @see <a href="https://github.com/echinopsii/net.echinopsii.3rdparty.hibernate-orm">echinopsii hibernate distribution</a>
@@ -67,73 +62,6 @@ public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
     private PersistenceProvider persistenceProvider = null;
     @Requires
     private HibernateOSGiService hibernateOSGiService = null;
-
-    private void initSubnetType() {
-        SubnetType lan = null;
-        SubnetType man = null;
-        SubnetType wan = null;
-
-        EntityManager em = this.createEM();
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-
-        CriteriaQuery<SubnetType> cmpCriteria = builder.createQuery(SubnetType.class);
-        Root<SubnetType> cmpRoot = cmpCriteria.from(SubnetType.class);
-
-        cmpCriteria.select(cmpRoot).where(builder.equal(cmpRoot.<String>get("name"), "LAN"));
-        TypedQuery<SubnetType> cmpQuery = em.createQuery(cmpCriteria);
-        try {
-            lan = cmpQuery.getSingleResult();
-            log.debug("LAN subnet type already defined ...");
-        } catch (NoResultException e) {
-            log.debug("LAN subnet type will be defined ...");
-        } catch (Exception e) {
-            throw e;
-        }
-
-        cmpCriteria.select(cmpRoot).where(builder.equal(cmpRoot.<String>get("name"), "MAN"));
-        cmpQuery = em.createQuery(cmpCriteria);
-        try {
-            man = cmpQuery.getSingleResult();
-            log.debug("MAN subnet type already defined ...");
-        } catch (NoResultException e) {
-            log.debug("LAN subnet type will be defined ...");
-        } catch (Exception e) {
-            throw e;
-        }
-
-        cmpCriteria.select(cmpRoot).where(builder.equal(cmpRoot.<String>get("name"), "WAN"));
-        cmpQuery = em.createQuery(cmpCriteria);
-        try {
-            wan = cmpQuery.getSingleResult();
-            log.debug("WAN subnet type already defined ...");
-        } catch (NoResultException e) {
-            log.debug("WAN subnet type will be defined ...");
-        } catch (Exception e) {
-            throw e;
-        }
-
-        em.getTransaction().begin();
-
-        if (lan==null) {
-            lan = new SubnetType().setNameR("LAN").setDescriptionR("LAN type Subnet");
-            em.persist(lan);
-        }
-
-        if (man==null) {
-            man = new SubnetType().setNameR("MAN").setDescriptionR("MAN type Subnet");
-            em.persist(man);
-        }
-
-        if (wan==null) {
-            wan = new SubnetType().setNameR("WAN").setDescriptionR("WAN type Subnet");
-            em.persist(wan);
-        }
-
-        em.flush();
-        em.getTransaction().commit();
-        log.debug("Close entity manager ...");
-        em.close();
-    }
 
     private static boolean isConfigurationValid() {
         if (hibernateConf.containsKey("hibernate.connection.password"))
@@ -169,7 +97,6 @@ public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
     private void start() {
         log.debug("Create shared entity manager factory from persistence provider {}...", persistenceProvider.toString());
         sharedEMF = persistenceProvider.createEntityManagerFactory(DIRECTORY_TXPERSISTENCE_PERSISTENCE_UNIT_NAME, hibernateConf);
-        initSubnetType();
     }
 
     @Validate

@@ -21,7 +21,6 @@ package net.echinopsii.ariane.community.core.directory.wat.rest.technical.networ
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.SubnetType;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.wat.json.ds.technical.network.SubnetJSON;
@@ -92,10 +91,10 @@ public class SubnetEndpoint {
         return entity;
     }
 
-    public static SubnetType findSubnetTypeByName(EntityManager em, String name) {
-        TypedQuery<SubnetType> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM SubnetType l WHERE l.name = :entityName ORDER BY l.name", SubnetType.class);
+    public static RoutingArea findRoutingAreaByName(EntityManager em, String name) {
+        TypedQuery<RoutingArea> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM RoutingArea l WHERE l.name = :entityName ORDER BY l.name", RoutingArea.class);
         findByNameQuery.setParameter("entityName", name);
-        SubnetType entity;
+        RoutingArea entity;
         try {
             entity = findByNameQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -104,12 +103,12 @@ public class SubnetEndpoint {
         return entity;
     }
 
-    public static String getAvailableSubnetType(EntityManager em) {
-        List<SubnetType> resultList = em.createQuery("SELECT DISTINCT l FROM SubnetType l ORDER BY l.name", SubnetType.class).getResultList();
-        List<String> subnetTypeNames = new ArrayList<>();
-        for (SubnetType type : resultList)
-            subnetTypeNames.add(type.getName());
-        return subnetTypeNames.toString();
+    public static String getAvailableRoutingArea(EntityManager em) {
+        List<RoutingArea> resultList = em.createQuery("SELECT DISTINCT l FROM RoutingArea l ORDER BY l.name", RoutingArea.class).getResultList();
+        List<String> routingAreaNames = new ArrayList<>();
+        for (RoutingArea rarea : resultList)
+            routingAreaNames.add(rarea.getName());
+        return routingAreaNames.toString();
     }
 
     @GET
@@ -197,19 +196,19 @@ public class SubnetEndpoint {
     @GET
     @Path("/create")
     public Response createSubnet(@QueryParam("name")String name, @QueryParam("subnetIP")String subnetIP, @QueryParam("subnetMask")String subnetMask,
-                                 @QueryParam("type")String type, @QueryParam("description")String description) {
-        if (name!=null && subnetIP!=null && subnetMask!=null && type!=null) {
+                                 @QueryParam("routingArea")String routingAreaName, @QueryParam("description")String description) {
+        if (name!=null && subnetIP!=null && subnetMask!=null && routingAreaName!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] create subnet : ({},{},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, subnetIP, subnetMask, type, description});
+            log.debug("[{}-{}] create subnet : ({},{},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, subnetIP, subnetMask, routingAreaName, description});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetByName(em, name);
                 if (entity==null) {
-                    SubnetType subnetType = findSubnetTypeByName(em,type);
-                    if (subnetType!=null) {
-                        entity = new Subnet().setNameR(name).setDescriptionR(description).setSubnetIPR(subnetIP).setSubnetMaskR(subnetMask).setTypeR(subnetType);
+                    RoutingArea routingArea = findRoutingAreaByName(em, routingAreaName);
+                    if (routingArea!=null) {
+                        entity = new Subnet().setNameR(name).setDescriptionR(description).setSubnetIPR(subnetIP).setSubnetMaskR(subnetMask).setRareaR(routingArea);
                         try {
                             em.getTransaction().begin();
                             em.persist(entity);
@@ -222,7 +221,7 @@ public class SubnetEndpoint {
                         }
                     } else {
                         Response ret = Response.status(Status.INTERNAL_SERVER_ERROR).
-                                                entity("Wrong subnet type " + type + ". Available subnet types are : " + getAvailableSubnetType(em)).build();
+                                                entity("Wrong routing area " + routingAreaName + ". Available routing areas are : " + getAvailableRoutingArea(em)).build();
                         em.close();
                         return ret;
                     }
@@ -427,65 +426,18 @@ public class SubnetEndpoint {
     }
 
     @GET
-    @Path("/update/type")
-    public Response updateSubnetType(@QueryParam("id")Long id, @QueryParam("type")String type) {
-        if (id!=0 && type!=null) {
+    @Path("/update/routingarea")
+    public Response updateSubnetMulticastArea(@QueryParam("id")Long id, @QueryParam("routingareaID")Long rareaID) {
+        if (id!=0 && rareaID!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update subnet {} type : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, type});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
-                        subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
-            {
-                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Subnet entity = findSubnetById(em, id);
-                if (entity!=null) {
-                    SubnetType subnetType = findSubnetTypeByName(em,type);
-                    if (subnetType!=null) {
-                        try {
-                            em.getTransaction().begin();
-                            if (entity.getType()!=null)
-                                entity.getType().getSubnets().remove(entity);
-                            subnetType.getSubnets().add(entity);
-                            entity.setType(subnetType);
-                            em.getTransaction().commit();
-                            em.close();
-                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with type " + type).build();
-                        } catch (Throwable t) {
-                            if(em.getTransaction().isActive())
-                                em.getTransaction().rollback();
-                            em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating subnet " + entity.getName() + " : " + t.getMessage()).build();
-                        }
-                    } else {
-                        Response ret = Response.status(Status.INTERNAL_SERVER_ERROR).
-                                                       entity("Wrong subnet type " + type + ". Available subnet types are : " + getAvailableSubnetType(em)).build();
-                        em.close();
-                        return ret;
-                    }
-                } else {
-                    em.close();
-                    return Response.status(Status.NOT_FOUND).build();
-                }
-            } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update subnets. Contact your administrator.").build();
-            }
-        } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
-        }
-    }
-
-    @GET
-    @Path("/update/multicastarea")
-    public Response updateSubnetMulticastArea(@QueryParam("id")Long id, @QueryParam("multicastareaID")Long mareaID) {
-        if (id!=0 && mareaID!=null) {
-            Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update subnet {} multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
+            log.debug("[{}-{}] update subnet {} multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, rareaID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
                 if (entity!=null) {
-                    RoutingArea marea = MulticastAreaEndpoint.findMulticastAreaById(em, mareaID);
+                    RoutingArea marea = MulticastAreaEndpoint.findMulticastAreaById(em, rareaID);
                     if (marea!=null) {
                         try {
                             em.getTransaction().begin();
@@ -495,7 +447,7 @@ public class SubnetEndpoint {
                             entity.setRarea(marea);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with multicast area " + mareaID).build();
+                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with routing area " + rareaID).build();
                         } catch (Throwable t) {
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -503,7 +455,7 @@ public class SubnetEndpoint {
                             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating subnet " + entity.getName() + " : " + t.getMessage()).build();
                         }
                     } else {
-                        if (mareaID==-1) {
+                        if (rareaID==-1) {
                             try {
                                 em.getTransaction().begin();
                                 if (entity.getRarea()!=null)
@@ -511,7 +463,7 @@ public class SubnetEndpoint {
                                 entity.setRarea(null);
                                 em.getTransaction().commit();
                                 em.close();
-                                return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with multicast area " + mareaID).build();
+                                return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with routing area " + rareaID).build();
                             } catch (Throwable t) {
                                 if(em.getTransaction().isActive())
                                     em.getTransaction().rollback();
@@ -520,7 +472,7 @@ public class SubnetEndpoint {
                             }
                         }
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("Multicast area " + mareaID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("Routing area " + rareaID + " not found.").build();
                     }
                 } else {
                     em.close();

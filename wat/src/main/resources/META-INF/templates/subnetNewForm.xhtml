@@ -8,11 +8,11 @@
         <h:outputText value="Name : " styleClass="inputTitle"/>
         <p:inputText id="name" label="Name" required="true" value="#{subnetNewController.name}"/>
 
-        <h:outputText value="Type : " styleClass="inputTitle"/>
-        <h:selectOneMenu label="Select the subnet type" value="#{subnetNewController.subnetType}">
-            <f:selectItems value="#{subnetsListController.getAllSubnetTypesForSelector()}"  var="subnetT"
-                           itemLabel="#{subnetT.name}" itemValue="#{subnetT.name}"/>
-        </h:selectOneMenu>
+        <h:outputText value="Subnet IP : " styleClass="inputTitle"/>
+        <p:inputText id="subnetIP" label="Subnet IP" required="true" value="#{subnetNewController.subnetIP}"/>
+
+        <h:outputText value="Subnet Mask : " styleClass="inputTitle"/>
+        <p:inputText id="subnetMask" label="Subnet Mask" required="true" value="#{subnetNewController.subnetMask}"/>
 
         <h:outputText value="Datacenters : " styleClass="inputTitle"/>
         <h:panelGroup>
@@ -30,17 +30,11 @@
             <p:commandLink onclick="rareaCreateDialog.show()">
                 <h:outputText value=" create new routing area"/>
             </p:commandLink><br/>
-            <h:selectOneMenu label="Select the subnet type" value="#{subnetNewController.rArea}">
+            <h:selectOneMenu label="Select the subnet type" value="#{subnetNewController.rArea}" required="true">
                 <f:selectItems value="#{routingAreasListController.getAllForSelector()}"  var="rarea"
                                itemLabel="#{rarea.name}" itemValue="#{rarea.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>
-
-        <h:outputText value="Subnet IP : " styleClass="inputTitle"/>
-        <p:inputText id="subnetIP" label="Subnet IP" required="true" value="#{subnetNewController.subnetIP}"/>
-
-        <h:outputText value="Subnet Mask : " styleClass="inputTitle"/>
-        <p:inputText id="subnetMask" label="Subnet Mask" required="true" value="#{subnetNewController.subnetMask}"/>
 
         <h:outputText value="Description : " styleClass="inputTitle"/>
         <p:inputText id="description" label="Description" required="true" value="#{subnetNewController.description}"/>

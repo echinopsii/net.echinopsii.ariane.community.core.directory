@@ -33,6 +33,12 @@ import java.util.Set;
 @Table(name="routingArea",uniqueConstraints = @UniqueConstraint(columnNames = {"rareaName"}))
 public class RoutingArea implements Serializable
 {
+    @Transient
+    public static String ROUTING_AREA_LAN_TYPE = "LAN";
+    @Transient
+    public static String ROUTING_AREA_MAN_TYPE = "MAN";
+    @Transient
+    public static String ROUTING_AREA_WAN_TYPE = "WAN";
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -48,6 +54,12 @@ public class RoutingArea implements Serializable
 
     @Column
     private String description;
+
+    @Column
+    private boolean multicast;
+
+    @Column
+    private String type;
 
     @OneToMany(mappedBy = "rarea", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
@@ -135,6 +147,32 @@ public class RoutingArea implements Serializable
         return this;
     }
 
+    public boolean isMulticast() {
+        return multicast;
+    }
+
+    public void setMulticast(boolean multicast) {
+        this.multicast = multicast;
+    }
+
+    public RoutingArea setMulticastR(boolean multicast) {
+        this.multicast = multicast;
+        return this;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public RoutingArea setTypeR(String type) {
+        this.type = type;
+        return this;
+    }
+
     @Override
     public String toString() {
         String result = getClass().getSimpleName() + " ";
@@ -172,7 +210,7 @@ public class RoutingArea implements Serializable
     }
 
     public RoutingArea clone() {
-        return new RoutingArea().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).
-                                   setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setSubnetsR(new HashSet<Subnet>(this.subnets));
+        return new RoutingArea().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setMulticastR(this.multicast).
+                                 setTypeR(this.type).setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setSubnetsR(new HashSet<Subnet>(this.subnets));
     }
 }

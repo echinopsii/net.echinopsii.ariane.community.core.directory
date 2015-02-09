@@ -35,20 +35,16 @@
                         <h:outputText value="#{subnet.description}" />
                     </p:column>
 
-                    <p:column headerText="Type">
-                        <h:outputText value="#{subnet.type.name}" />
-                    </p:column>
-
-                    <p:column headerText="Routing Area">
-                        <h:outputText value="#{subnet.rarea.name}" />
-                    </p:column>
-
                     <p:column headerText="Subnet IP" sortBy="#{subnet.subnetIP}" filterBy="#{subnet.subnetIP}">
                         <h:outputText value="#{subnet.subnetIP}" />
                     </p:column>
 
                     <p:column headerText="Subnet Mask" sortBy="#{subnet.subnetMask}" filterBy="#{subnet.subnetMask}">
                         <h:outputText value="#{subnet.subnetMask}" />
+                    </p:column>
+
+                    <p:column headerText="Routing Area">
+                        <h:outputText value="#{subnet.rarea.name}" />
                     </p:column>
 
                     <p:rowExpansion>
@@ -71,30 +67,6 @@
                             </h:form>
                             <h:outputText value="#{subnet.description}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
-                            <h:outputText value="Type : " styleClass="inputTitle"/>
-                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
-                                <p:inplace label="#{subnet.type.name}" effectSpeed="fast" editor="true">
-                                    <h:selectOneMenu value="#{subnetsListController.changedSubnetType[subnet.id]}">
-                                        <f:selectItems value="#{subnetsListController.getAllSubnetTypes()}"  var="subnetT"
-                                                       itemLabel="#{subnetT.name}" itemValue="#{subnetT.name}"/>
-                                    </h:selectOneMenu>
-                                    <p:ajax event="save" listener="#{subnetsListController.syncSubnetType(subnet)}" update="@form,:subnetTableForm:subnetTableMessages"/>
-                                </p:inplace>
-                            </h:form>
-                            <h:outputText value="#{subnet.type.name}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
-
-                            <h:outputText value="Routing Area : " styleClass="inputTitle"/>
-                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
-                                <p:inplace label="#{subnetsListController.getSubnetRareaName(subnet)}" effectSpeed="fast" editor="true">
-                                    <h:selectOneMenu value="#{subnetsListController.changedRarea[subnet.id]}">
-                                        <f:selectItems value="#{routingAreasListController.getAllForInplace()}"  var="rarea"
-                                                       itemLabel="#{rarea.name}" itemValue="#{rarea.name}"/>
-                                    </h:selectOneMenu>
-                                    <p:ajax event="save" listener="#{subnetsListController.syncRarea(subnet)}" update="@form,:subnetTableForm:subnetTableMessages"/>
-                                </p:inplace>
-                            </h:form>
-                            <h:outputText value="#{subnetsListController.getSubnetRareaName(subnet)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
-
                             <h:outputText value="Subnet IP : " styleClass="inputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">
@@ -112,6 +84,18 @@
                                 </p:inplace>
                             </h:form>
                             <h:outputText value="#{subnet.subnetMask}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
+
+                            <h:outputText value="Routing Area : " styleClass="inputTitle"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
+                                <p:inplace label="#{subnetsListController.getSubnetRareaName(subnet)}" effectSpeed="fast" editor="true">
+                                    <h:selectOneMenu value="#{subnetsListController.changedRarea[subnet.id]}">
+                                        <f:selectItems value="#{routingAreasListController.getAllForInplace()}"  var="rarea"
+                                                       itemLabel="#{rarea.name}" itemValue="#{rarea.name}"/>
+                                    </h:selectOneMenu>
+                                    <p:ajax event="save" listener="#{subnetsListController.syncRarea(subnet)}" update="@form,:subnetTableForm:subnetTableMessages"/>
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{subnetsListController.getSubnetRareaName(subnet)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
                             <h:outputText value="Datacenters : " styleClass="inputTitle"/>
                             <h:form>
@@ -222,7 +206,7 @@
                             </p:dataTable>
 
                             <h:outputText value="Routing areas : " styleClass="inputTitle"/>
-                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'routingAreas')}" var="_item"
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'rarea')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
                                     <h:outputText id="raitemName" value="#{_item.name}"/>

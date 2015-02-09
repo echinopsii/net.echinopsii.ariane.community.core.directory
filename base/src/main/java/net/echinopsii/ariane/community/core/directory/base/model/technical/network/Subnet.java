@@ -71,9 +71,7 @@ public class Subnet implements Serializable
     private Set<Datacenter> datacenters = new HashSet<Datacenter>();
 
     @ManyToOne(fetch = FetchType.EAGER)
-    private SubnetType type;
-
-    @ManyToOne(fetch = FetchType.EAGER)
+    @NotNull
     private RoutingArea rarea;
 
     public Long getId() {
@@ -219,19 +217,6 @@ public class Subnet implements Serializable
         return this;
     }
 
-    public SubnetType getType() {
-        return this.type;
-    }
-
-    public void setType(final SubnetType type) {
-        this.type = type;
-    }
-
-    public Subnet setTypeR(final SubnetType type) {
-        this.type = type;
-        return this;
-    }
-
     public RoutingArea getRarea() {
         return this.rarea;
     }
@@ -240,30 +225,32 @@ public class Subnet implements Serializable
         this.rarea = rarea;
     }
 
-    public Subnet setMareaR(final RoutingArea marea) {
-        this.rarea = marea;
+    public Subnet setRareaR(final RoutingArea rarea) {
+        this.rarea = rarea;
         return this;
     }
 
     public Subnet clone() {
         return new Subnet().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setSubnetIPR(this.subnetIP).
-                       setSubnetMaskR(this.subnetMask).setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setMareaR(this.rarea).setOsInstancesR(new HashSet<OSInstance>(this.osInstances)).setTypeR(this.type);
+                       setSubnetMaskR(this.subnetMask).setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setRareaR(this.rarea).setOsInstancesR(new HashSet<OSInstance>(this.osInstances));
     }
 
     public final static String SUBNET_MAPPING_PROPERTIES = "Network";
+    public final static String SUBNET_RARE_MAPPING_FIELD = "rarea";
+    public final static String SUBNET_MLTC_MAPPING_FIELD = "multicast";
     public final static String SUBNET_TYPE_MAPPING_FIELD = "type";
-    public final static String SUBNET_MARE_MAPPING_FIELD = "rarea";
     public final static String SUBNET_NAME_MAPPING_FIELD = "lan";
     public final static String SUBNET_IPAD_MAPPING_FIELD = "subnetip";
     public final static String SUBNET_MASK_MAPPING_FIELD = "subnetmask";
 
     public HashMap<String,Object> toMappingProperties() {
         HashMap<String,Object> ret = new HashMap<String,Object>();
-        ret.put(SUBNET_TYPE_MAPPING_FIELD,type.getName());
-        if (rarea !=null) ret.put(SUBNET_MARE_MAPPING_FIELD, rarea.getName());
-        ret.put(SUBNET_NAME_MAPPING_FIELD,name);
-        ret.put(SUBNET_IPAD_MAPPING_FIELD,subnetIP);
-        ret.put(SUBNET_MASK_MAPPING_FIELD,subnetMask);
+        ret.put(SUBNET_RARE_MAPPING_FIELD, rarea.getName());
+        ret.put(SUBNET_MLTC_MAPPING_FIELD, rarea.isMulticast());
+        ret.put(SUBNET_TYPE_MAPPING_FIELD, rarea.getType());
+        ret.put(SUBNET_NAME_MAPPING_FIELD, name);
+        ret.put(SUBNET_IPAD_MAPPING_FIELD, subnetIP);
+        ret.put(SUBNET_MASK_MAPPING_FIELD, subnetMask);
         return ret;
     }
 }

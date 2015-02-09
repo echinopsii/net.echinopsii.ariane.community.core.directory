@@ -55,6 +55,8 @@ public class RoutingAreaNewController implements Serializable {
 
     private String name;
     private String description;
+    private boolean multicast;
+    private String type;
 
     private List<String> datacentersToBind = new ArrayList<String>();
     private Set<Datacenter> datacenters    = new HashSet<Datacenter>();
@@ -77,6 +79,22 @@ public class RoutingAreaNewController implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isMulticast() {
+        return multicast;
+    }
+
+    public void setMulticast(boolean multicast) {
+        this.multicast = multicast;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public List<String> getDatacentersToBind() {
@@ -131,6 +149,8 @@ public class RoutingAreaNewController implements Serializable {
         routingArea.setName(name);
         routingArea.setDescription(description);
         routingArea.setDatacenters(datacenters);
+        routingArea.setMulticast(multicast);
+        routingArea.setType(type);
 
         try {
             em.getTransaction().begin();

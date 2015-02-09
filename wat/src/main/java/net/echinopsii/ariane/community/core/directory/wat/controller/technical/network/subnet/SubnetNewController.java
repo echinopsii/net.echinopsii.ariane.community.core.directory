@@ -25,7 +25,6 @@ import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAPro
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.SubnetType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +61,6 @@ public class SubnetNewController implements Serializable {
     private String subnetMask;
 
     private String subnetType;
-    private SubnetType type;
 
     private String rArea = "";
     private RoutingArea rarea;
@@ -106,33 +104,6 @@ public class SubnetNewController implements Serializable {
         this.subnetMask = subnetMask;
     }
 
-    public SubnetType getType() {
-        return type;
-    }
-
-    public void setType(SubnetType type) {
-        this.type = type;
-    }
-
-    public String getSubnetType() {
-        return subnetType;
-    }
-
-    public void setSubnetType(String subnetType) {
-        this.subnetType = subnetType;
-    }
-
-    private void syncSubnetType() throws NotSupportedException, SystemException {
-        for (SubnetType type: SubnetsListController.getAllSubnetTypes()) {
-            if (type.getName().equals(this.subnetType)) {
-                type = em.find(type.getClass(), type.getId());
-                this.type  = type;
-                log.debug("Synced SubnetType : {} {}", new Object[]{this.type.getId(), this.type.getName()});
-                break;
-            }
-        }
-    }
-
     public RoutingArea getRarea() {
         return rarea;
     }
@@ -156,17 +127,17 @@ public class SubnetNewController implements Serializable {
      * @throws SystemException
      */
     private void syncRoutingArea() throws NotSupportedException, SystemException {
-        RoutingArea marea = null;
+        RoutingArea rarea = null;
         for (RoutingArea area: RoutingAreasListController.getAll()) {
             if (area.getName().equals(this.rArea)) {
                 area = em.find(area.getClass(), area.getId());
-                marea = area;
+                rarea = area;
                 break;
             }
         }
 
-        if (marea!=null) {
-            this.rarea = marea;
+        if (rarea!=null) {
+            this.rarea = rarea;
             log.debug("Synced Routing Area : {} {}", new Object[]{this.rarea.getId(), this.rarea.getName()});
         }
     }
@@ -210,7 +181,6 @@ public class SubnetNewController implements Serializable {
      */
     public void save() {
         try {
-            syncSubnetType();
             syncRoutingArea();
             bindSelectedDatacenters();
         } catch (Exception e) {
@@ -227,14 +197,12 @@ public class SubnetNewController implements Serializable {
         newSubnet.setDescription(description);
         newSubnet.setSubnetIP(subnetIP);
         newSubnet.setSubnetMask(subnetMask);
-        newSubnet.setType(type);
         newSubnet.setRarea(rarea);
         newSubnet.setDatacenters(this.datacenters);
 
         try {
             em.getTransaction().begin();
             em.persist(newSubnet);
-            if (type!=null)  {type.getSubnets().add(newSubnet);  em.merge(type);}
             if (this.datacenters.size()!=0)
                 for (Datacenter dc: this.datacenters) {
                     dc.getSubnets().add(newSubnet);

@@ -57,7 +57,7 @@ public class SubnetJSON {
         jgenerator.writeStringField(SUBNET_DESCRIPTION, subnet.getDescription());
         jgenerator.writeStringField(SUBNET_IP, subnet.getSubnetIP());
         jgenerator.writeStringField(SUBNET_MASK, subnet.getSubnetMask());
-        jgenerator.writeStringField(SUBNET_TYPE, subnet.getType().getName());
+        jgenerator.writeStringField(SUBNET_TYPE, subnet.getRarea().getType());
 
         jgenerator.writeArrayFieldStart(SUBNET_OSI_ID);
         for (OSInstance osi : subnet.getOsInstances())

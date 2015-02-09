@@ -19,6 +19,18 @@
             </p:selectManyMenu>
         </h:panelGroup>
 
+        <h:outputText value="Multicast : " styleClass="inputTitle"/>
+        <p:selectOneButton value="#{routingAreaNewController.multicast}">
+            <f:selectItem itemLabel="Disabled" itemValue="false" />
+            <f:selectItem itemLabel="Enabled" itemValue="true" />
+        </p:selectOneButton>
+
+        <h:outputText value="Type : " styleClass="inputTitle"/>
+        <h:selectOneMenu label="Select the routing area type" value="#{routingAreaNewController.type}">
+            <f:selectItems value="#{routingAreasListController.getAllRoutingAreaTypesForSelector()}"  var="raT"
+                           itemLabel="#{raT}" itemValue="#{raT}"/>
+        </h:selectOneMenu>
+
         <h:outputText value="Description : " styleClass="inputTitle"/>
         <p:inputText id="description" label="Description" required="true" value="#{routingAreaNewController.description}"/>
 

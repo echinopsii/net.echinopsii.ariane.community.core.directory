@@ -25,7 +25,6 @@ import net.echinopsii.ariane.community.core.directory.wat.controller.technical.n
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.SubnetType;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
@@ -74,52 +73,6 @@ public class SubnetsListController implements Serializable {
 
     public void setSelectedSubnetList(Subnet[] selectedSubnetList) {
         this.selectedSubnetList = selectedSubnetList;
-    }
-
-    public HashMap<Long, String> getChangedSubnetType() {
-        return changedSubnetType;
-    }
-
-    public void setChangedSubnetType(HashMap<Long, String> changedSubnetType) {
-        this.changedSubnetType = changedSubnetType;
-    }
-
-    /**
-     * Synchronize changed subnet type from a subnet to database
-     *
-     * @param subnet bean UI is working on
-     */
-    public void syncSubnetType(Subnet subnet) {
-        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-        try {
-            for(SubnetType type: getAllSubnetTypes()) {
-                if (type.getName().equals(changedSubnetType.get(subnet.getId()))) {
-                    em.getTransaction().begin();
-                    type = em.find(type.getClass(), type.getId());
-                    subnet = em.find(subnet.getClass(), subnet.getId());
-                    subnet.setType(type);
-                    type.getSubnets().add(subnet);
-                    em.flush();
-                    em.getTransaction().commit();
-                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                               "Subnet updated successfully !",
-                                                               "Subnet name : " + subnet.getName());
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    break;
-                }
-            }
-        } catch (Throwable t) {
-            log.debug("Throwable catched !");
-            t.printStackTrace();
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updating subnet " + subnet.getName() + " !",
-                                                       "Throwable message : " + t.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-        } finally {
-            em.close();
-        }
     }
 
     public HashMap<Long, String> getChangedRarea() {
@@ -439,8 +392,6 @@ public class SubnetsListController implements Serializable {
             try {
                 em.getTransaction().begin();
                 subnet2BeRemoved = em.find(subnet2BeRemoved.getClass(), subnet2BeRemoved.getId());
-                if (subnet2BeRemoved.getType()!=null)
-                    subnet2BeRemoved.getType().getSubnets().remove(subnet2BeRemoved);
                 if (subnet2BeRemoved.getRarea()!=null)
                     subnet2BeRemoved.getRarea().getSubnets().remove(subnet2BeRemoved);
                 for (Datacenter dc : subnet2BeRemoved.getDatacenters())
@@ -464,65 +415,6 @@ public class SubnetsListController implements Serializable {
             }
         }
         selectedSubnetList =null;
-    }
-
-    /**
-     * Get all subnet types from the db
-     *
-     * @return all subnet types from the db
-     * @throws SystemException
-     * @throws NotSupportedException
-     */
-    public static List<SubnetType> getAllSubnetTypes() throws SystemException, NotSupportedException {
-        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-        log.debug("Get all subnets from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
-                         new Object[]{
-                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
-                         });
-        CriteriaBuilder        builder  = em.getCriteriaBuilder();
-        CriteriaQuery<SubnetType> criteria = builder.createQuery(SubnetType.class);
-        Root<SubnetType>       root     = criteria.from(SubnetType.class);
-        criteria.select(root).orderBy(builder.asc(root.get("name")));
-
-        List<SubnetType> ret = em.createQuery(criteria).getResultList();
-        em.close();
-        return ret;
-    }
-
-    /**
-     * Get all subnet types from the db + select string
-     *
-     * @return all subnet types from the db
-     * @throws SystemException
-     * @throws NotSupportedException
-     */
-    public static List<SubnetType> getAllSubnetTypesForSelector() throws SystemException, NotSupportedException {
-        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-        log.debug("Get all subnets from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
-                         new Object[]{
-                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
-                         });
-        CriteriaBuilder        builder  = em.getCriteriaBuilder();
-        CriteriaQuery<SubnetType> criteria = builder.createQuery(SubnetType.class);
-        Root<SubnetType>       root     = criteria.from(SubnetType.class);
-        criteria.select(root).orderBy(builder.asc(root.get("name")));
-
-        List<SubnetType> list = em.createQuery(criteria).getResultList();
-        list.add(0, new SubnetType().setNameR("Select the subnet type"));
-        em.close();
-        return list;
     }
 
     /**

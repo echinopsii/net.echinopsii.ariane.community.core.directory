@@ -292,7 +292,10 @@ public class RoutingAreasListController implements Serializable {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            routingArea = em.find(routingArea.getClass(), routingArea.getId()).setNameR(routingArea.getName()).setDescriptionR(routingArea.getDescription());
+            routingArea = em.find(routingArea.getClass(), routingArea.getId()).
+                             setNameR(routingArea.getName()).
+                             setDescriptionR(routingArea.getDescription()).
+                             setTypeR(routingArea.getType()).setMulticastR(routingArea.isMulticast());
             em.flush();
             em.getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -351,6 +354,22 @@ public class RoutingAreasListController implements Serializable {
     }
 
     /**
+     * Get all routing area types
+     *
+     * @return all routing area types
+     * @throws SystemException
+     * @throws NotSupportedException
+     */
+    public static List<String> getAllRoutingAreaTypesForSelector() {
+        List<String> routingAreaTypes = new ArrayList<>();
+        routingAreaTypes.add(RoutingArea.ROUTING_AREA_LAN_TYPE);
+        routingAreaTypes.add(RoutingArea.ROUTING_AREA_MAN_TYPE);
+        routingAreaTypes.add(RoutingArea.ROUTING_AREA_WAN_TYPE);
+        routingAreaTypes.add(0, "Select Routing Area Type");
+        return routingAreaTypes;
+    }
+
+    /**
      * Get all routing areas from the db
      *
      * @return all routing areas from the db
@@ -400,7 +419,6 @@ public class RoutingAreasListController implements Serializable {
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<RoutingArea> ret =  em.createQuery(criteria).getResultList();
-        ret.add(0, new RoutingArea().setNameR("No routing area"));
         ret.add(0, new RoutingArea().setNameR("Select routing area for this subnet"));
         em.close();
         return ret;
@@ -431,7 +449,6 @@ public class RoutingAreasListController implements Serializable {
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<RoutingArea> ret =  em.createQuery(criteria).getResultList();
-        ret.add(0, new RoutingArea().setNameR("No routing area"));
         em.close();
         return ret;
     }
