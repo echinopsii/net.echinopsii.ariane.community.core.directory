@@ -49,7 +49,7 @@ public class DatacenterJSON {
     public final static String DC_GPSLNG      = "datacenterGPSLng";
     public final static String DC_DESCRIPTION = "datacenterDescription";
     public final static String DC_SUBNETS_ID  = "datacenterSubnetsID";
-    public final static String DC_MAREAS_ID   = "datacenterMulticastAreasID";
+    public final static String DC_MAREAS_ID   = "datacenterRoutingAreasID";
 
     public final static void datacenter2JSON(Datacenter datacenter, JsonGenerator jgenerator) throws IOException {
         jgenerator.writeStartObject();

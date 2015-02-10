@@ -36,46 +36,50 @@ import java.util.Iterator;
  *  - we can have cycle in object graphs
  *  - we still want to have references to linked objects through IDs (and so we don't want @XmlTransient or @JsonIgnore)
  */
-public class MulticastAreaJSON {
+public class RoutingAreaJSON {
 
-    public final static String MAREA_ID          = "multicastAreaID";
-    public final static String MAREA_VERSION     = "multicastAreaVersion";
-    public final static String MAREA_NAME        = "multicastAreaName";
-    public final static String MAREA_DESCRIPTION = "multicastAreaDescription";
-    public final static String MAREA_SUBNETS_ID  = "multicastAreaSubnetsID";
-    public final static String MAREA_DC_ID       = "multicastAreaDatacentersID";
+    public final static String RAREA_ID = "routingAreaID";
+    public final static String RAREA_VERSION = "routingAreaVersion";
+    public final static String RAREA_NAME = "routingAreaName";
+    public final static String RAREA_TYPE = "routingAreaType";
+    public final static String RAREA_MULTICAST = "routingAreaMulticast";
+    public final static String RAREA_DESCRIPTION = "routingAreaDescription";
+    public final static String RAREA_SUBNETS_ID = "routingAreaSubnetsID";
+    public final static String RAREA_DC_ID = "routingAreaDatacentersID";
 
-    public final static void multicastArea2JSON(RoutingArea routingArea, JsonGenerator jgenerator) throws IOException {
+    public final static void routingArea2JSON(RoutingArea routingArea, JsonGenerator jgenerator) throws IOException {
         jgenerator.writeStartObject();
-        jgenerator.writeNumberField(MAREA_ID, routingArea.getId());
-        jgenerator.writeNumberField(MAREA_VERSION, routingArea.getVersion());
-        jgenerator.writeStringField(MAREA_NAME, routingArea.getName());
-        jgenerator.writeStringField(MAREA_DESCRIPTION, routingArea.getDescription());
-        jgenerator.writeArrayFieldStart(MAREA_SUBNETS_ID);
+        jgenerator.writeNumberField(RAREA_ID, routingArea.getId());
+        jgenerator.writeNumberField(RAREA_VERSION, routingArea.getVersion());
+        jgenerator.writeStringField(RAREA_NAME, routingArea.getName());
+        jgenerator.writeStringField(RAREA_TYPE, routingArea.getType());
+        jgenerator.writeBooleanField(RAREA_MULTICAST, routingArea.isMulticast());
+        jgenerator.writeStringField(RAREA_DESCRIPTION, routingArea.getDescription());
+        jgenerator.writeArrayFieldStart(RAREA_SUBNETS_ID);
         for (Subnet subnet : routingArea.getSubnets())
             jgenerator.writeNumber(subnet.getId());
         jgenerator.writeEndArray();
-        jgenerator.writeArrayFieldStart(MAREA_DC_ID);
+        jgenerator.writeArrayFieldStart(RAREA_DC_ID);
         for (Datacenter dc : routingArea.getDatacenters())
             jgenerator.writeNumber(dc.getId());
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
     }
 
-    public final static void oneMulticastArea2JSON(RoutingArea routingArea, ByteArrayOutputStream outStream) throws IOException {
+    public final static void oneRoutingArea2JSON(RoutingArea routingArea, ByteArrayOutputStream outStream) throws IOException {
         JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
-        MulticastAreaJSON.multicastArea2JSON(routingArea, jgenerator);
+        RoutingAreaJSON.routingArea2JSON(routingArea, jgenerator);
         jgenerator.close();
     }
 
-    public final static void manyMulticastAreas2JSON(HashSet<RoutingArea> routingAreas, ByteArrayOutputStream outStream) throws IOException {
+    public final static void manyRoutingAreas2JSON(HashSet<RoutingArea> routingAreas, ByteArrayOutputStream outStream) throws IOException {
         JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
         jgenerator.writeStartObject();
         jgenerator.writeArrayFieldStart("routingAreas");
         Iterator<RoutingArea> iter = routingAreas.iterator();
         while (iter.hasNext()) {
             RoutingArea current = iter.next();
-            MulticastAreaJSON.multicastArea2JSON(current, jgenerator);
+            RoutingAreaJSON.routingArea2JSON(current, jgenerator);
         }
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();

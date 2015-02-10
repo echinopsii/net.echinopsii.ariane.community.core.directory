@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+# !/usr/bin/python3
 
 import getpass
 import requests
@@ -7,13 +7,13 @@ import json
 
 username = input("%-- >> Username : ")
 password = getpass.getpass("%-- >> Password : ")
-srvurl = input("%-- >> Ariane server url (like http://serverFQDN:6969/) : ")
+srv_url = input("%-- >> Ariane server url (like http://serverFQDN:6969/) : ")
 
 # CREATE REQUESTS SESSION
 s = requests.Session()
 s.auth = (username, password)
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications')
 r.status_code
 #200
 #pprint(r.json())
@@ -72,7 +72,22 @@ r.status_code
 #                   'applicationTeamID': 9,
 #                   'applicationVersion': 4}]}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/1');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/1')
+#r.status_code
+#200
+#pprint(r.json())
+#{'applicationColorCode': '6092c4',
+# 'applicationCompanyID': 1,
+# 'applicationDescription': 'Multicast bus for business applications',
+# 'applicationID': 1,
+# 'applicationName': 'Tibco RendezVous',
+# 'applicationOSInstancesID': [2, 3, 4, 5],
+# 'applicationShortName': 'TibcoRV',
+# 'applicationTeamID': 2,
+# 'applicationVersion': 9}
+
+applicationParams = {'id': 1}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get', params=applicationParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -86,28 +101,13 @@ r.status_code
 # 'applicationTeamID': 2,
 # 'applicationVersion': 9}
 
-applicationParams = {'id':1}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get', params=applicationParams);
-r.status_code
-#200
-#pprint(r.json())
-#{'applicationColorCode': '6092c4',
-# 'applicationCompanyID': 1,
-# 'applicationDescription': 'Multicast bus for business applications',
-# 'applicationID': 1,
-# 'applicationName': 'Tibco RendezVous',
-# 'applicationOSInstancesID': [2, 3, 4, 5],
-# 'applicationShortName': 'TibcoRV',
-# 'applicationTeamID': 2,
-# 'applicationVersion': 9}
-
-applicationParams = {'name':"Tibco Rendez Vous"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get', params=applicationParams);
+applicationParams = {'name': "Tibco Rendez Vous"}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get', params=applicationParams)
 r.status_code
 #404
 
-applicationParams = {'name':"Tibco RendezVous"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get', params=applicationParams);
+applicationParams = {'name': "Tibco RendezVous"}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get', params=applicationParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -121,14 +121,14 @@ r.status_code
 # 'applicationTeamID': 2,
 # 'applicationVersion': 9}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get')
 r.status_code
 #500
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
-applicationParams={'name':'DPP','shortName':'DPP','description':'A fake app','colorCode':'ffffff'}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/create', params=applicationParams)
+applicationParams = {'name': 'DPP', 'shortName': 'DPP', 'description': 'A fake app', 'colorCode': 'ffffff'}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/create', params=applicationParams)
 r.status_code
 #200
 # pprint(r.json())
@@ -141,35 +141,35 @@ r.status_code
 # 'applicationShortName': 'DPP',
 # 'applicationTeamID': 0,
 # 'applicationVersion': 0}
-dppID=r.json().get('applicationID')
+dppID = r.json().get('applicationID')
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/update/name', params={'id':dppID, 'name':'dPP'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/update/name', params={'id': dppID, 'name': 'dPP'})
 r.status_code
 #200
 #r.text
 #'Application 11 has been successfully updated with name dPP'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/update/name', params={'id':dppID, 'name':'DPP'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/update/name', params={'id': dppID, 'name': 'DPP'})
 r.status_code
 #200
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/update/shortName', params={'id':dppID, 'shortName':'dPP'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/update/shortName', params={'id': dppID, 'shortName': 'dPP'})
 r.status_code
 #200
 #r.text
 #'Application 11 has been successfully updated with short name dPP'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/update/shortName', params={'id':dppID, 'shortName':'DPP'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/update/shortName', params={'id': dppID, 'shortName': 'DPP'})
 r.status_code
 #200
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/update/description', params={'id':dppID, 'description':'another fake app'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/update/description', params={'id': dppID, 'description': 'another fake app'})
 r.status_code
 #200
 #r.text
 #'Application 11 has been successfully updated with description another fake app'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/update/colorCode', params={'id':dppID, 'colorCode':'ddffddff'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/update/colorCode', params={'id': dppID, 'colorCode': 'ddffddff'})
 r.status_code
 #200
 #r.text
@@ -178,7 +178,7 @@ r.status_code
 
 
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies')
 r.status_code
 #200
 #pprint(r.json())
@@ -207,7 +207,7 @@ r.status_code
 #                'companyOSTypesID': [],
 #                'companyVersion': 0}]}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/1');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/1')
 r.status_code
 #200
 #pprint(r.json())
@@ -218,8 +218,8 @@ r.status_code
 # 'companyOSTypesID': [],
 # 'companyVersion': 0}
 
-companyParams = {'id':"1"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/get', params=companyParams);
+companyParams = {'id': "1"}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/get', params=companyParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -230,8 +230,8 @@ r.status_code
 # 'companyOSTypesID': [],
 # 'companyVersion': 0}
 
-companyParams = {'name':"Tibco"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/get', params=companyParams);
+companyParams = {'name': "Tibco"}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/get', params=companyParams)
 r.status_code
 tibcoCmp = r.json().get('companyID')
 #200
@@ -243,20 +243,20 @@ tibcoCmp = r.json().get('companyID')
 # 'companyOSTypesID': [],
 # 'companyVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/get');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/get')
 r.status_code
 #500
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/update/applications/add', params={'id':tibcoCmp,'applicationID':dppID})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/update/applications/add', params={'id': tibcoCmp, 'applicationID': dppID})
 r.status_code
 #200
 #r.text
 #'Company 1 has been successfully updated by adding application 11'
 
-companyParams = {'name':"Tibco"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/get', params=companyParams);
+companyParams = {'name': "Tibco"}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/get', params=companyParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -266,7 +266,7 @@ r.status_code
 # 'companyName': 'Tibco',
 # 'companyOSTypesID': [],
 # 'companyVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get/', params={'id':dppID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get/', params={'id': dppID})
 r.status_code
 #200
 #pprint(r.json())
@@ -280,14 +280,14 @@ r.status_code
 # 'applicationTeamID': 0,
 # 'applicationVersion': 3}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/update/applications/delete', params={'id':tibcoCmp,'applicationID':dppID})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/update/applications/delete', params={'id': tibcoCmp, 'applicationID': dppID})
 r.status_code
 #200
 #r.text
 #'Company 1 has been successfully updated by deleting application 11'
 
-companyParams = {'name':"Tibco"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/get', params=companyParams);
+companyParams = {'name': "Tibco"}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/get', params=companyParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -297,7 +297,7 @@ r.status_code
 # 'companyName': 'Tibco',
 # 'companyOSTypesID': [],
 # 'companyVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get', params={'id': dppID})
 r.status_code
 #200
 #pprint(r.json())
@@ -311,15 +311,15 @@ r.status_code
 # 'applicationTeamID': 0,
 # 'applicationVersion': 4}
 
-companyParams = {'name':"Spectral"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/get', params=companyParams);
+companyParams = {'name': "Spectral"}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/get', params=companyParams)
 r.status_code
 spectralCmp = r.json().get('companyID')
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/update/company', params={'id':dppID, 'companyID':spectralCmp})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/update/company', params={'id': dppID, 'companyID': spectralCmp})
 r.text
 #'Application 11 has been successfully updated with company 3'
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get', params={'id':dppID})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get', params={'id': dppID})
 r.status_code
 #200
 #pprint(r.json())
@@ -332,7 +332,7 @@ r.status_code
 # 'applicationShortName': 'DPP',
 # 'applicationTeamID': 0,
 # 'applicationVersion': 11}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/get', params={'id':spectralCmp})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/get', params={'id': spectralCmp})
 r.status_code
 #200
 #pprint(r.json())
@@ -343,7 +343,7 @@ r.status_code
 # 'companyOSTypesID': [],
 # 'companyVersion': 1}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/create', params={'name':'Oracle','description':'the devil company'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/create', params={'name': 'Oracle', 'description': 'the devil company'})
 r.status_code
 #200
 #pprint(r.json())
@@ -353,15 +353,15 @@ r.status_code
 # 'companyName': 'Oracle',
 # 'companyOSTypesID': [],
 # 'companyVersion': 0}
-oracleCmp=r.json().get('companyID')
+oracleCmp = r.json().get('companyID')
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/update/name', params={'id':oracleCmp,'name':'Oracle Corp'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/update/name', params={'id': oracleCmp, 'name': 'Oracle Corp'})
 r.status_code
 #200
 r.text
 #'Company 25 has been successfully updated with name Oracle Corp'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/update/description', params={'id':oracleCmp,'description':'The devil company'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/update/description', params={'id': oracleCmp, 'description': 'The devil company'})
 r.status_code
 #200
 r.text
@@ -371,7 +371,7 @@ r.text
 
 
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments')
 r.status_code
 #200
 #pprint(r.json())
@@ -381,7 +381,7 @@ r.status_code
 #                   'environmentOSInstancesID': [1, 2, 3, 4, 5],
 #                   'environmentVersion': 13}]}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/1');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/1')
 r.status_code
 #200
 #pprint(r.json())
@@ -391,8 +391,8 @@ r.status_code
 # 'environmentOSInstancesID': [1, 2, 3, 4, 5],
 # 'environmentVersion': 13}
 
-envParams = {'id':1}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/get', params=envParams);
+envParams = {'id': 1}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/get', params=envParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -402,8 +402,8 @@ r.status_code
 # 'environmentOSInstancesID': [1, 2, 3, 4, 5],
 # 'environmentVersion': 13}
 
-envParams = {'name':"DEV"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/get', params=envParams);
+envParams = {'name': "DEV"}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/get', params=envParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -413,13 +413,13 @@ r.status_code
 # 'environmentOSInstancesID': [1, 2, 3, 4, 5],
 # 'environmentVersion': 13}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/get');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/get')
 r.status_code
 #500
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/create', params={'name':'HOM','description':'Homologation environment'});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/create', params={'name': 'HOM', 'description': 'Homologation environment'})
 r.status_code
 #200
 #pprint(r.json())
@@ -430,13 +430,13 @@ r.status_code
 # 'environmentVersion': 0}
 qaEnv = r.json().get('environmentID')
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/update/name', params={'id':qaEnv,'name':'QA'});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/update/name', params={'id': qaEnv, 'name': 'QA'})
 r.status_code
 #200
 r.text
 #'Environment 2 has been successfully updated with name QA'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/update/description', params={'id':qaEnv,'description':'QA environment'});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/update/description', params={'id': qaEnv, 'description': 'QA environment'})
 r.status_code
 #200
 r.text
@@ -446,7 +446,7 @@ r.text
 
 
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams')
 r.status_code
 #200
 #pprint(r.json())
@@ -493,7 +493,7 @@ r.status_code
 #            'teamOSInstancesID': [],
 #            'teamVersion': 4}]}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/1');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/1')
 r.status_code
 #200
 #>>> pprint(r.json())
@@ -505,8 +505,8 @@ r.status_code
 # 'teamOSInstancesID': [1, 2, 3, 4, 5],
 # 'teamVersion': 7}
 
-teamParams={'id':1}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/get', params=teamParams);
+teamParams = {'id': 1}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/get', params=teamParams)
 r.status_code
 #200
 #>>> pprint(r.json())
@@ -518,8 +518,8 @@ r.status_code
 # 'teamOSInstancesID': [1, 2, 3, 4, 5],
 # 'teamVersion': 7}
 
-teamParams={'name':"SRV UNIX"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/get', params=teamParams);
+teamParams = {'name': "SRV UNIX"}
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/get', params=teamParams)
 r.status_code
 #200
 #>>> pprint(r.json())
@@ -531,13 +531,13 @@ r.status_code
 # 'teamOSInstancesID': [1, 2, 3, 4, 5],
 # 'teamVersion': 7}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/get');
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/get')
 r.status_code
 #500
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
-r  = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/create', params={'name':'DEV DPP','description':'Dev. DPP team','colorCode':'1f45de'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/create', params={'name': 'DEV DPP', 'description': 'Dev. DPP team', 'colorCode': '1f45de'})
 r.status_code
 #200
 #pprint(r.json())
@@ -550,10 +550,10 @@ r.status_code
 # 'teamVersion': 0}
 dppTeamID = r.json().get('teamID')
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/update/name', params={'id':dppTeamID,'name':'DEV dpp'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/update/name', params={'id': dppTeamID, 'name': 'DEV dpp'})
 r.status_code
 #200
-#r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/get', params={'id':dppTeamID})
+#r = s.get(srvurl + 'ariane/rest/directories/common/organisation/teams/get', params={'id':dppTeamID})
 #pprint(r.json())
 #{'teamApplicationsID': [],
 # 'teamColorCode': '1f45de',
@@ -563,14 +563,14 @@ r.status_code
 # 'teamOSInstancesID': [],
 # 'teamVersion': 2}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/update/name', params={'id':dppTeamID,'name':'DEV DPP'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/update/name', params={'id': dppTeamID, 'name': 'DEV DPP'})
 r.status_code
 #200
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/update/description', params={'id':dppTeamID,'description':'Dev. DPP team'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/update/description', params={'id': dppTeamID, 'description': 'Dev. DPP team'})
 r.status_code
 #200
-#r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/get', params={'id':dppTeamID})
+#r = s.get(srvurl + 'ariane/rest/directories/common/organisation/teams/get', params={'id':dppTeamID})
 #pprint(r.json())
 #{'teamApplicationsID': [],
 # 'teamColorCode': '1f45de',
@@ -580,12 +580,12 @@ r.status_code
 # 'teamOSInstancesID': [],
 # 'teamVersion': 3}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/delete', params={'id':dppTeamID})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/delete', params={'id': dppTeamID})
 r.status_code
 #200
 r.text
 #'Team 10 has been successfully removed'
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams')
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams')
 #pprint(r.json())
 #{'teams': [{'teamApplicationsID': [2],
 #            'teamColorCode': '054d31',
@@ -629,7 +629,7 @@ r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams')
 #            'teamName': 'MDW AKKA',
 #            'teamOSInstancesID': [],
 #            'teamVersion': 4}]}
-r  = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/create', params={'name':'DEV DPP','description':'Dev. DPP team','colorCode':'1f45de'})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/create', params={'name': 'DEV DPP', 'description': 'Dev. DPP team', 'colorCode': '1f45de'})
 r.status_code
 #200
 #pprint(r.json())
@@ -642,10 +642,10 @@ r.status_code
 # 'teamVersion': 0}
 dppTeamID = r.json().get('teamID')
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/update/applications/add', params={'id':dppTeamID,'applicationID':dppID})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/update/applications/add', params={'id': dppTeamID, 'applicationID': dppID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/get', params={'id':dppTeamID})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/get', params={'id': dppTeamID})
 r.status_code
 #200
 #pprint(r.json())
@@ -656,7 +656,7 @@ r.status_code
 # 'teamName': 'DEV DPP',
 # 'teamOSInstancesID': [],
 # 'teamVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get', params={'id':dppID})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get', params={'id': dppID})
 r.status_code
 #200
 #pprint(r.json())
@@ -674,7 +674,7 @@ r.status_code
 
 
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters')
 r.status_code
 #200
 #pprint(r.json())
@@ -684,14 +684,14 @@ r.status_code
 #                  'datacenterGPSLat': 48.895308,
 #                  'datacenterGPSLng': 2.246621,
 #                  'datacenterID': 1,
-#                  'datacenterMulticastAreasID': [1],
+#                  'datacenterRoutingAreasID': [1],
 #                  'datacenterName': 'My little paradise',
 #                  'datacenterSubnetsID': [1, 2, 3],
 #                  'datacenterTown': 'Courbevoie',
 #                  'datacenterVersion': 33,
 #                  'datacenterZipCode': 92400}]}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/1');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/1')
 r.status_code
 #pprint(r.json())
 #{'datacenterAddress': '26 rue de Belfort',
@@ -700,33 +700,15 @@ r.status_code
 # 'datacenterGPSLat': 48.895308,
 # 'datacenterGPSLng': 2.246621,
 # 'datacenterID': 1,
-# 'datacenterMulticastAreasID': [1],
+# 'datacenterRoutingAreasID': [1],
 # 'datacenterName': 'My little paradise',
 # 'datacenterSubnetsID': [1, 2, 3],
 # 'datacenterTown': 'Courbevoie',
 # 'datacenterVersion': 33,
 # 'datacenterZipCode': 92400}
 
-dcParams = {'id':1}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/get', params=dcParams);
-r.status_code
-#200
-#pprint(r.json())
-#{'datacenterAddress': '26 rue de Belfort',
-# 'datacenterCountry': 'France',
-# 'datacenterDescription': 'dekatonshIVr lab',
-# 'datacenterGPSLat': 48.895308,
-# 'datacenterGPSLng': 2.246621,
-# 'datacenterID': 1,
-# 'datacenterMulticastAreasID': [1],
-# 'datacenterName': 'My little paradise',
-# 'datacenterSubnetsID': [1, 2, 3],
-# 'datacenterTown': 'Courbevoie',
-# 'datacenterVersion': 33,
-# 'datacenterZipCode': 92400}
-
-dcParams = {'name':'My little paradise'}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/get', params=dcParams);
+dcParams = {'id': 1}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/get', params=dcParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -736,22 +718,40 @@ r.status_code
 # 'datacenterGPSLat': 48.895308,
 # 'datacenterGPSLng': 2.246621,
 # 'datacenterID': 1,
-# 'datacenterMulticastAreasID': [1],
+# 'datacenterRoutingAreasID': [1],
 # 'datacenterName': 'My little paradise',
 # 'datacenterSubnetsID': [1, 2, 3],
 # 'datacenterTown': 'Courbevoie',
 # 'datacenterVersion': 33,
 # 'datacenterZipCode': 92400}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/get');
+dcParams = {'name': 'My little paradise'}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/get', params=dcParams)
+r.status_code
+#200
+#pprint(r.json())
+#{'datacenterAddress': '26 rue de Belfort',
+# 'datacenterCountry': 'France',
+# 'datacenterDescription': 'dekatonshIVr lab',
+# 'datacenterGPSLat': 48.895308,
+# 'datacenterGPSLng': 2.246621,
+# 'datacenterID': 1,
+# 'datacenterRoutingAreasID': [1],
+# 'datacenterName': 'My little paradise',
+# 'datacenterSubnetsID': [1, 2, 3],
+# 'datacenterTown': 'Courbevoie',
+# 'datacenterVersion': 33,
+# 'datacenterZipCode': 92400}
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/get')
 r.status_code
 #500
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/create',
-          params={'name':'Somewhere in hell [DR]', 'address':"Devil's Island", 'zipCode':666, 'town':"Devil's Island", 'country':'France',
-                  'gpsLatitude':5.295366, 'gpsLongitude':-52.582179, 'description':'A fantasy DR DC'})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/create',
+          params={'name': 'Somewhere in hell [DR]', 'address': "Devil's Island", 'zipCode': 666, 'town': "Devil's Island", 'country': 'France',
+                  'gpsLatitude': 5.295366, 'gpsLongitude': -52.582179, 'description': 'A fantasy DR DC'})
 r.status_code
 #200
 #pprint(r.json())
@@ -761,21 +761,21 @@ r.status_code
 # 'datacenterGPSLat': 5.295366,
 # 'datacenterGPSLng': -52.582179,
 # 'datacenterID': 2,
-# 'datacenterMulticastAreasID': [],
+# 'datacenterRoutingAreasID': [],
 # 'datacenterName': 'Somewhere in hell [DR]',
 # 'datacenterSubnetsID': [],
 # 'datacenterTown': "Devil's Island",
 # 'datacenterVersion': 0,
 # 'datacenterZipCode': 666}
-devilDCID=r.json().get('datacenterID')
+devilDCID = r.json().get('datacenterID')
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/update/name', params={'id':devilDCID, 'name':'Hell (DR)'})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/update/name', params={'id': devilDCID, 'name': 'Hell (DR)'})
 r.status_code
 #200
 r.text
 #'Datacenter 2 has been successfully updated with name Hell (DR)'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id': devilDCID})
 r.status_code
 #200
 #pprint(r.json())
@@ -785,17 +785,17 @@ r.status_code
 # 'datacenterGPSLat': 5.295366,
 # 'datacenterGPSLng': -52.582179,
 # 'datacenterID': 2,
-# 'datacenterMulticastAreasID': [],
+# 'datacenterRoutingAreasID': [],
 # 'datacenterName': 'Hell (DR)',
 # 'datacenterSubnetsID': [],
 # 'datacenterTown': "Devil's Island",
 # 'datacenterVersion': 1,
 # 'datacenterZipCode': 666}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/update/description', params={'id':devilDCID, 'description':'A fantasy DC for DR'})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/update/description', params={'id': devilDCID, 'description': 'A fantasy DC for DR'})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id': devilDCID})
 r.status_code
 #200
 #pprint(r.json())
@@ -805,17 +805,17 @@ r.status_code
 # 'datacenterGPSLat': 5.295366,
 # 'datacenterGPSLng': -52.582179,
 # 'datacenterID': 2,
-# 'datacenterMulticastAreasID': [],
+# 'datacenterRoutingAreasID': [],
 # 'datacenterName': 'Hell (DR)',
 # 'datacenterSubnetsID': [],
 # 'datacenterTown': "Devil's Island",
 # 'datacenterVersion': 2,
 # 'datacenterZipCode': 666}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/update/fullAddress', params={'id':devilDCID, 'address':'dreyfus hole', 'zipCode':666666, 'town':'666 Island', 'country':'France'})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/update/fullAddress', params={'id': devilDCID, 'address': 'dreyfus hole', 'zipCode': 666666, 'town': '666 Island', 'country': 'France'})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id': devilDCID})
 r.status_code
 #200
 #pprint(r.json())
@@ -825,17 +825,17 @@ r.status_code
 # 'datacenterGPSLat': 5.295366,
 # 'datacenterGPSLng': -52.582179,
 # 'datacenterID': 2,
-# 'datacenterMulticastAreasID': [],
+# 'datacenterRoutingAreasID': [],
 # 'datacenterName': 'Hell (DR)',
 # 'datacenterSubnetsID': [],
 # 'datacenterTown': '666 Island',
 # 'datacenterVersion': 3,
 # 'datacenterZipCode': 666666}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/update/gpsCoord', params={'id':devilDCID, 'gpsLatitude':5.295666, 'gpsLongitude':-52.582169})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/update/gpsCoord', params={'id': devilDCID, 'gpsLatitude': 5.295666, 'gpsLongitude': -52.582169})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id': devilDCID})
 r.status_code
 #200
 #pprint(r.json())
@@ -845,7 +845,7 @@ r.status_code
 # 'datacenterGPSLat': 5.295666,
 # 'datacenterGPSLng': -52.582169,
 # 'datacenterID': 2,
-# 'datacenterMulticastAreasID': [],
+# 'datacenterRoutingAreasID': [],
 # 'datacenterName': 'Hell (DR)',
 # 'datacenterSubnetsID': [],
 # 'datacenterTown': '666 Island',
@@ -855,103 +855,84 @@ r.status_code
 
 
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas')
 r.status_code
 #200
 #pprint(r.json())
-#{'multicastAreas': [{'multicastAreaDatacentersID': [1],
-#                     'multicastAreaDescription': 'lab01 multicast area',
-#                     'multicastAreaID': 1,
-#                     'multicastAreaName': 'angelsMind',
-#                     'multicastAreaSubnetsID': [1],
-#                     'multicastAreaVersion': 5}]}
+#{'routingAreas': [{'routingAreaDatacentersID': [1],
+#                     'routingAreaDescription': 'lab01 routing area',
+#                     'routingAreaID': 1,
+#                     'routingAreaMulticast': True,
+#                     'routingAreaName': 'angelsMind',
+#                     'routingAreaSubnetsID': [1],
+#                     'routingAreaType': 'LAN',
+#                     'routingAreaVersion': 5}]}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/1');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/1')
 r.status_code
 #200
 #pprint(r.json())
-#{'multicastAreaDatacentersID': [1],
-# 'multicastAreaDescription': 'lab01 multicast area',
-# 'multicastAreaID': 1,
-# 'multicastAreaName': 'angelsMind',
-# 'multicastAreaSubnetsID': [1],
-# 'multicastAreaVersion': 5}
+#{'routingAreaDatacentersID': [1],
+# 'routingAreaDescription': 'lab01 routing area',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': True,
+# 'routingAreaName': 'angelsMind',
+# 'routingAreaSubnetsID': [1],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 5}
 
-mareaParams={'id':1}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params=mareaParams);
+rareaParams = {'id': 1}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params=rareaParams)
 r.status_code
 #200
 #pprint(r.json())
-#{'multicastAreaDatacentersID': [1],
-# 'multicastAreaDescription': 'lab01 multicast area',
-# 'multicastAreaID': 1,
-# 'multicastAreaName': 'angelsMind',
-# 'multicastAreaSubnetsID': [1],
-# 'multicastAreaVersion': 5}
+#{'routingAreaDatacentersID': [1],
+# 'routingAreaDescription': 'lab01 routing area',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': True,
+# 'routingAreaName': 'angelsMind',
+# 'routingAreaSubnetsID': [1],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 5}
 
-mareaParams={'name':"angelsMind"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params=mareaParams);
+rareaParams = {'name': "angelsMind"}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params=rareaParams)
 r.status_code
 #200
 #pprint(r.json())
-#{'multicastAreaDatacentersID': [1],
-# 'multicastAreaDescription': 'lab01 multicast area',
-# 'multicastAreaID': 1,
-# 'multicastAreaName': 'angelsMind',
-# 'multicastAreaSubnetsID': [1],
-# 'multicastAreaVersion': 5}
+#{'routingAreaDatacentersID': [1],
+# 'routingAreaDescription': 'lab01 routing area',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': True,
+# 'routingAreaName': 'angelsMind',
+# 'routingAreaSubnetsID': [1],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 5}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get')
 r.status_code
 #500
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/create', params={'name':"Devil's mind", 'description':"666 mind"})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/create', params={'name': "devilsMindLAN", 'description': "666 mind", 'type': "LAN", 'multicast': "true"})
 r.status_code
 #200
 #pprint(r.json())
-#{'multicastAreaDatacentersID': [],
-# 'multicastAreaDescription': '666 mind',
-# 'multicastAreaID': 2,
-# 'multicastAreaName': "Devil's mind",
-# 'multicastAreaSubnetsID': [],
-# 'multicastAreaVersion': 0}
-devilMareaID = r.json().get("multicastAreaID")
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': '666 mind',
+# 'routingAreaID': 2,
+# 'routingAreaMulticast': True,
+# 'routingAreaName': "Devil's mind",
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+devilRareaID = r.json().get("routingAreaID")
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/update/multicastareas/add', params={'id':devilDCID, 'multicastareaID':devilMareaID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/update/routingareas/add', params={'id': devilDCID, 'routingareaID': devilRareaID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
-r.status_code
-#200
-#pprint(r.json())
-#{'datacenterAddress': 'dreyfus hole',
-# 'datacenterCountry': 'France',
-# 'datacenterDescription': 'A fantasy DC for DR',
-# 'datacenterGPSLat': 5.295666,
-# 'datacenterGPSLng': -52.582169,
-# 'datacenterID': 2,
-# 'datacenterMulticastAreasID': [2],
-# 'datacenterName': 'Hell (DR)',
-# 'datacenterSubnetsID': [],
-# 'datacenterTown': '666 Island',
-# 'datacenterVersion': 6,
-# 'datacenterZipCode': 666666}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
-r.status_code
-#200
-#pprint(r.json())
-#{'multicastAreaDatacentersID': [2],
-# 'multicastAreaDescription': '666 mind',
-# 'multicastAreaID': 2,
-# 'multicastAreaName': "Devil's mind",
-# 'multicastAreaSubnetsID': [],
-# 'multicastAreaVersion': 0}
-
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/update/multicastareas/delete', params={'id':devilDCID, 'multicastareaID':devilMareaID})
-r.status_code
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id': devilDCID})
 r.status_code
 #200
 #pprint(r.json())
@@ -961,94 +942,167 @@ r.status_code
 # 'datacenterGPSLat': 5.295666,
 # 'datacenterGPSLng': -52.582169,
 # 'datacenterID': 2,
-# 'datacenterMulticastAreasID': [],
+# 'datacenterRoutingAreasID': [2],
 # 'datacenterName': 'Hell (DR)',
 # 'datacenterSubnetsID': [],
 # 'datacenterTown': '666 Island',
 # 'datacenterVersion': 6,
 # 'datacenterZipCode': 666666}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
 r.status_code
 #200
 #pprint(r.json())
-#{'multicastAreaDatacentersID': [],
-# 'multicastAreaDescription': '666 mind',
-# 'multicastAreaID': 2,
-# 'multicastAreaName': "Devil's mind",
-# 'multicastAreaSubnetsID': [],
-# 'multicastAreaVersion': 0}
+#{'routingAreaDatacentersID': [2],
+# 'routingAreaDescription': '666 mind',
+# 'routingAreaID': 2,
+# 'routingAreaMulticast': True,
+# 'routingAreaName': "Devil's mind",
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/update/name', params={'id':devilMareaID, 'name':'Mind of devil'})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/update/routingareas/delete', params={'id': devilDCID, 'routingareaID': devilRareaID})
 r.status_code
-#200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
-r.status_code
-#200
-#pprint(r.json())
-#{'multicastAreaDatacentersID': [],
-# 'multicastAreaDescription': '666 mind',
-# 'multicastAreaID': 2,
-# 'multicastAreaName': "Mind of devil",
-# 'multicastAreaSubnetsID': [],
-# 'multicastAreaVersion': 0}
-
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/update/description', params={'id':devilMareaID, 'description':'just a crazy mind'})
-r.status_code
-#200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id': devilDCID})
 r.status_code
 #200
 #pprint(r.json())
-#{'multicastAreaDatacentersID': [],
-# 'multicastAreaDescription': 'just a crazy mind',
-# 'multicastAreaID': 2,
-# 'multicastAreaName': "Mind of devil",
-# 'multicastAreaSubnetsID': [],
-# 'multicastAreaVersion': 0}
-
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/update/datacenters/add', params={'id':devilMareaID, 'datacenterID':devilDCID})
-r.status_code
-#200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
-r.status_code
-#200
-#pprint(r.json())
-#{'multicastAreaDatacentersID': [2],
-# 'multicastAreaDescription': 'just a crazy mind',
-# 'multicastAreaID': 2,
-# 'multicastAreaName': "Mind of devil",
-# 'multicastAreaSubnetsID': [],
-# 'multicastAreaVersion': 0}
-
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/update/datacenters/delete', params={'id':devilMareaID, 'datacenterID':devilDCID})
-r.status_code
-#200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID})
+#{'datacenterAddress': 'dreyfus hole',
+# 'datacenterCountry': 'France',
+# 'datacenterDescription': 'A fantasy DC for DR',
+# 'datacenterGPSLat': 5.295666,
+# 'datacenterGPSLng': -52.582169,
+# 'datacenterID': 2,
+# 'datacenterRoutingAreasID': [],
+# 'datacenterName': 'Hell (DR)',
+# 'datacenterSubnetsID': [],
+# 'datacenterTown': '666 Island',
+# 'datacenterVersion': 6,
+# 'datacenterZipCode': 666666}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
 r.status_code
 #200
 #pprint(r.json())
-#{'multicastAreaDatacentersID': [],
-# 'multicastAreaDescription': 'just a crazy mind',
-# 'multicastAreaID': 2,
-# 'multicastAreaName': "Mind of devil",
-# 'multicastAreaSubnetsID': [],
-# 'multicastAreaVersion': 0}
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': '666 mind',
+# 'routingAreaID': 2,
+# 'routingAreaMulticast': True,
+# 'routingAreaName': "Devil's mind",
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/update/datacenters/add', params={'id':devilMareaID, 'datacenterID':devilDCID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/update/name', params={'id': devilRareaID, 'name': 'Mind of devil'})
+r.status_code
+#200
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
+r.status_code
+#200
+#pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': '666 mind',
+# 'routingAreaID': 2,
+# 'routingAreaMulticast': True,
+# 'routingAreaName': "Mind of devil",
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/update/description', params={'id': devilRareaID, 'description': 'just a crazy mind'})
+r.status_code
+#200
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
+r.status_code
+#200
+#pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'just a crazy mind',
+# 'routingAreaID': 2,
+# 'routingAreaMulticast': True,
+# 'routingAreaName': "Mind of devil",
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/update/datacenters/add', params={'id': devilRareaID, 'datacenterID': devilDCID})
+r.status_code
+#200
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
+r.status_code
+#200
+#pprint(r.json())
+#{'routingAreaDatacentersID': [2],
+# 'routingAreaDescription': 'just a crazy mind',
+# 'routingAreaID': 2,
+# 'routingAreaMulticast': True,
+# 'routingAreaName': "Mind of devil",
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/update/datacenters/delete', params={'id': devilRareaID, 'datacenterID': devilDCID})
+r.status_code
+#200
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
+r.status_code
+#200
+#pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'just a crazy mind',
+# 'routingAreaID': 2,
+# 'routingAreaMulticast': True,
+# 'routingAreaName': "Mind of devil",
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/update/datacenters/add', params={'id': devilRareaID, 'datacenterID': devilDCID})
 r.status_code
 #200
 
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
+r.status_code
+#200
+#pprint(r.json())
+#...
+
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/update/type', params={'id': devilRareaID, 'type': 'MAN'})
+r.status_code
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
+r.status_code
+#200
+#pprint(r.json())
+#...
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/update/type', params={'id': devilRareaID, 'type': 'toto'})
+r.status_code
+#400
+#r.text
+#'Invalid type. Type should be LAN, MAN or WAN'
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
+r.status_code
+#200
+#pprint(r.json())
+#...
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/update/multicast', params={'id': devilRareaID, 'multicast': 'false'})
+r.status_code
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
+r.status_code
+#200
+#pprint(r.json())
+#...
 
 
 
 
 
 
-
-
-
-
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets')
 r.status_code
 #200
 #pprint(r.json())
@@ -1057,7 +1111,7 @@ r.status_code
 #              'subnetID': 1,
 #              'subnetIP': '192.168.33.0',
 #              'subnetMask': '255.255.255.0',
-#              'subnetMulticastAreaID': 1,
+#              'subnetRoutingAreaID': 1,
 #              'subnetName': 'lab01.lan1',
 #              'subnetOSInstancesID': [1, 2, 3],
 #              'subnetType': 'LAN',
@@ -1067,7 +1121,7 @@ r.status_code
 #              'subnetID': 2,
 #              'subnetIP': '192.168.34.0',
 #              'subnetMask': '255.255.255.0',
-#              'subnetMulticastAreaID': -1,
+#              'subnetRoutingAreaID': -1,
 #              'subnetName': 'lab01.man',
 #              'subnetOSInstancesID': [1, 4],
 #              'subnetType': 'MAN',
@@ -1077,13 +1131,13 @@ r.status_code
 #              'subnetID': 3,
 #              'subnetIP': '192.168.35.0',
 #              'subnetMask': '255.255.255.0',
-#              'subnetMulticastAreaID': -1,
+#              'subnetRoutingAreaID': -1,
 #              'subnetName': 'lab01.wan',
 #              'subnetOSInstancesID': [1, 5],
 #              'subnetType': 'WAN',
 #              'subnetVersion': 4}]}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/1');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/1')
 r.status_code
 #200
 #pprint(r.json())
@@ -1092,14 +1146,14 @@ r.status_code
 # 'subnetID': 1,
 # 'subnetIP': '192.168.33.0',
 # 'subnetMask': '255.255.255.0',
-# 'subnetMulticastAreaID': 1,
+# 'subnetRoutingAreaID': 1,
 # 'subnetName': 'lab01.lan1',
 # 'subnetOSInstancesID': [1, 2, 3],
 # 'subnetType': 'LAN',
 # 'subnetVersion': 23}
 
-subnetParams={'id':1}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params=subnetParams);
+subnetParams = {'id': 1}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params=subnetParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -1108,14 +1162,14 @@ r.status_code
 # 'subnetID': 1,
 # 'subnetIP': '192.168.33.0',
 # 'subnetMask': '255.255.255.0',
-# 'subnetMulticastAreaID': 1,
+# 'subnetRoutingAreaID': 1,
 # 'subnetName': 'lab01.lan1',
 # 'subnetOSInstancesID': [1, 2, 3],
 # 'subnetType': 'LAN',
 # 'subnetVersion': 23}
 
-subnetParams={'name':"lab01.lan1"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params=subnetParams);
+subnetParams = {'name': "lab01.lan1"}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params=subnetParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -1124,27 +1178,20 @@ r.status_code
 # 'subnetID': 1,
 # 'subnetIP': '192.168.33.0',
 # 'subnetMask': '255.255.255.0',
-# 'subnetMulticastAreaID': 1,
+# 'subnetRoutingAreaID': 1,
 # 'subnetName': 'lab01.lan1',
 # 'subnetOSInstancesID': [1, 2, 3],
 # 'subnetType': 'LAN',
 # 'subnetVersion': 23}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get')
 r.status_code
 #500
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/create', params={'name':'fake.subnet', 'subnetIP':'192.168.66.0', 'subnetMask':'255.255.255.0',
-                                                                                               'type':'TOTO', 'description':'a fake subnet'})
-r.status_code
-#500
-r.text
-#'Wrong subnet type TOTO. Available subnet types are : [LAN, MAN, WAN]'
-
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/create', params={'name':'fake.subnet', 'subnetIP':'192.168.66.0', 'subnetMask':'255.255.255.0',
-                                                                                               'type':'LAN', 'description':'a fake subnet'})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/create', params={'name': 'fake.subnet', 'subnetIP': '192.168.66.0', 'subnetMask': '255.255.255.0',
+                                                                                                    'routingArea': devilRareaID, 'description': 'a fake subnet'})
 r.status_code
 #200
 #pprint(r.json())
@@ -1153,17 +1200,17 @@ r.status_code
 # 'subnetID': 4,
 # 'subnetIP': '192.168.66.0',
 # 'subnetMask': '255.255.255.0',
-# 'subnetMulticastAreaID': -1,
+# 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.subnet',
 # 'subnetOSInstancesID': [],
 # 'subnetType': 'LAN',
 # 'subnetVersion': 0}
-fakesubnetID = r.json().get('subnetID')
+fake_subnet_ID = r.json().get('subnetID')
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/name', params={'id':fakesubnetID,'name':'fake.lan'});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/update/name', params={'id': fake_subnet_ID, 'name': 'fake.lan'})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id': fake_subnet_ID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1172,16 +1219,16 @@ r.status_code
 # 'subnetID': 4,
 # 'subnetIP': '192.168.66.0',
 # 'subnetMask': '255.255.255.0',
-# 'subnetMulticastAreaID': -1,
+# 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.lan',
 # 'subnetOSInstancesID': [],
 # 'subnetType': 'LAN',
 # 'subnetVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/subnetip', params={'id':fakesubnetID,'subnetIP':'192.168.69.69'});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/update/subnetip', params={'id': fake_subnet_ID, 'subnetIP': '192.168.69.69'})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id': fake_subnet_ID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1190,16 +1237,16 @@ r.status_code
 # 'subnetID': 4,
 # 'subnetIP': '192.168.69.69',
 # 'subnetMask': '255.255.255.0',
-# 'subnetMulticastAreaID': -1,
+# 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.lan',
 # 'subnetOSInstancesID': [],
 # 'subnetType': 'LAN',
 # 'subnetVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/subnetmask', params={'id':fakesubnetID,'subnetMask':'255.255.255.255'});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/update/subnetmask', params={'id': fake_subnet_ID, 'subnetMask': '255.255.255.255'})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id': fake_subnet_ID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1208,16 +1255,16 @@ r.status_code
 # 'subnetID': 4,
 # 'subnetIP': '192.168.69.69',
 # 'subnetMask': '255.255.255.255',
-# 'subnetMulticastAreaID': -1,
+# 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.lan',
 # 'subnetOSInstancesID': [],
 # 'subnetType': 'LAN',
 # 'subnetVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/description', params={'id':fakesubnetID,'description':'A fake subnet'});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/update/description', params={'id': fake_subnet_ID, 'description': 'A fake subnet'})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id': fake_subnet_ID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1226,22 +1273,16 @@ r.status_code
 # 'subnetID': 4,
 # 'subnetIP': '192.168.69.69',
 # 'subnetMask': '255.255.255.255',
-# 'subnetMulticastAreaID': -1,
+# 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.lan',
 # 'subnetOSInstancesID': [],
 # 'subnetType': 'LAN',
 # 'subnetVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/type', params={'id':fakesubnetID,'type':'TOTO'});
-r.status_code
-#500
-r.text
-#'Wrong subnet type TOTO. Available subnet types are : [LAN, MAN, WAN]'
-
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/type', params={'id':fakesubnetID,'type':'MAN'});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/update/routingarea', params={'id': fake_subnet_ID, 'routingareaID': devilRareaID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id': fake_subnet_ID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1250,127 +1291,25 @@ r.status_code
 # 'subnetID': 4,
 # 'subnetIP': '192.168.69.69',
 # 'subnetMask': '255.255.255.255',
-# 'subnetMulticastAreaID': -1,
+# 'subnetRoutingAreaID': 2,
 # 'subnetName': 'fake.lan',
 # 'subnetOSInstancesID': [],
 # 'subnetType': 'MAN',
 # 'subnetVersion': 0}
-
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/multicastarea', params={'id':fakesubnetID,'multicastareaID':devilMareaID});
-r.status_code
-#200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
 r.status_code
 #200
 #pprint(r.json())
-#{'subnetDatacentersID': [],
-# 'subnetDescription': 'A fake subnet',
-# 'subnetID': 4,
-# 'subnetIP': '192.168.69.69',
-# 'subnetMask': '255.255.255.255',
-# 'subnetMulticastAreaID': 2,
-# 'subnetName': 'fake.lan',
-# 'subnetOSInstancesID': [],
-# 'subnetType': 'MAN',
-# 'subnetVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID});
-r.status_code
-#200
-#pprint(r.json())
-#{'multicastAreaDatacentersID': [],
-# 'multicastAreaDescription': 'just a crazy mind',
-# 'multicastAreaID': 2,
-# 'multicastAreaName': "Mind of devil",
-# 'multicastAreaSubnetsID': [4],
-# 'multicastAreaVersion': 0}
+#....
 
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/multicastarea', params={'id':fakesubnetID,'multicastareaID':-1});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/update/routingarea', params={'id': fake_subnet_ID, 'routingareaID': -1})
 r.status_code
-#200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
-r.status_code
-#200
-#pprint(r.json())
-#{'subnetDatacentersID': [],
-# 'subnetDescription': 'A fake subnet',
-# 'subnetID': 4,
-# 'subnetIP': '192.168.69.69',
-# 'subnetMask': '255.255.255.255',
-# 'subnetMulticastAreaID': -1,
-# 'subnetName': 'fake.lan',
-# 'subnetOSInstancesID': [],
-# 'subnetType': 'MAN',
-# 'subnetVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID});
-r.status_code
-#200
-#pprint(r.json())
-#{'multicastAreaDatacentersID': [],
-# 'multicastAreaDescription': 'just a crazy mind',
-# 'multicastAreaID': 2,
-# 'multicastAreaName': "Mind of devil",
-# 'multicastAreaSubnetsID': [],
-# 'multicastAreaVersion': 0}
+#404
+#r.text
+#'Routing Area -1 not found.'
 
-
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/update/subnets/add', params={'id':devilMareaID, 'subnetID':fakesubnetID})
-r.status_code
-#200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
-r.status_code
-#200
-#pprint(r.json())
-#{'subnetDatacentersID': [],
-# 'subnetDescription': 'A fake subnet',
-# 'subnetID': 4,
-# 'subnetIP': '192.168.69.69',
-# 'subnetMask': '255.255.255.255',
-# 'subnetMulticastAreaID': 2,
-# 'subnetName': 'fake.lan',
-# 'subnetOSInstancesID': [],
-# 'subnetType': 'MAN',
-# 'subnetVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID});
-r.status_code
-#200
-#pprint(r.json())
-#{'multicastAreaDatacentersID': [],
-# 'multicastAreaDescription': 'just a crazy mind',
-# 'multicastAreaID': 2,
-# 'multicastAreaName': "Mind of devil",
-# 'multicastAreaSubnetsID': [4],
-# 'multicastAreaVersion': 0}
-
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/update/subnets/delete', params={'id':devilMareaID, 'subnetID':fakesubnetID})
-r.status_code
-#200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
-r.status_code
-#200
-#pprint(r.json())
-#{'subnetDatacentersID': [],
-# 'subnetDescription': 'A fake subnet',
-# 'subnetID': 4,
-# 'subnetIP': '192.168.69.69',
-# 'subnetMask': '255.255.255.255',
-# 'subnetMulticastAreaID': -1,
-# 'subnetName': 'fake.lan',
-# 'subnetOSInstancesID': [],
-# 'subnetType': 'MAN',
-# 'subnetVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID});
-r.status_code
-#200
-#pprint(r.json())
-#{'multicastAreaDatacentersID': [],
-# 'multicastAreaDescription': 'just a crazy mind',
-# 'multicastAreaID': 2,
-# 'multicastAreaName': "Mind of devil",
-# 'multicastAreaSubnetsID': [],
-# 'multicastAreaVersion': 0}
-
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/multicastarea', params={'id':fakesubnetID,'multicastareaID':devilMareaID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/update/routingarea', params={'id': fake_subnet_ID, 'routingareaID': devilRareaID})
 r.status_code
 #200
 
@@ -1380,7 +1319,7 @@ r.status_code
 
 
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes')
 r.status_code
 #200
 #pprint(r.json())
@@ -1391,7 +1330,7 @@ r.status_code
 #              'osTypeOSInstancesID': [1, 2, 3, 4, 5],
 #              'osTypeVersion': 8}]}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/1');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/1')
 r.status_code
 #200
 #pprint(r.json())
@@ -1402,8 +1341,8 @@ r.status_code
 # 'osTypeOSInstancesID': [1, 2, 3, 4, 5],
 # 'osTypeVersion': 8}
 
-ostParams={'id':1}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/get', params=ostParams);
+ostParams = {'id': 1}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/get', params=ostParams)
 #200
 #pprint(r.json())
 #{'osTypeArchitecture': 'x86_64',
@@ -1413,8 +1352,8 @@ r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes
 # 'osTypeOSInstancesID': [1, 2, 3, 4, 5],
 # 'osTypeVersion': 8}
 
-ostParams={'name':"Fedora 18"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/get', params=ostParams);
+ostParams = {'name': "Fedora 18"}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/get', params=ostParams)
 #200
 #pprint(r.json())
 #{'osTypeArchitecture': 'x86_64',
@@ -1424,13 +1363,13 @@ r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes
 # 'osTypeOSInstancesID': [1, 2, 3, 4, 5],
 # 'osTypeVersion': 8}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/get');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/get')
 r.status_code
 #500
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/create', params={'name':'Solaris', 'architecture':'sparc-32'});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/create', params={'name': 'Solaris', 'architecture': 'sparc-32'})
 r.status_code
 #200
 #pprint(r.json())
@@ -1442,10 +1381,10 @@ r.status_code
 # 'osTypeVersion': 0}
 solID = r.json().get('osTypeID')
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/update/name', params={'id':solID, 'name':'Solaris OS'});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/update/name', params={'id': solID, 'name': 'Solaris OS'})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id': solID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1456,10 +1395,10 @@ r.status_code
 # 'osTypeOSInstancesID': [],
 # 'osTypeVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/update/architecture', params={'id':solID, 'architecture':'x86_64'});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/update/architecture', params={'id': solID, 'architecture': 'x86_64'})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id': solID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1470,10 +1409,10 @@ r.status_code
 # 'osTypeOSInstancesID': [],
 # 'osTypeVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/update/company', params={'id':solID, 'companyID':oracleCmp});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/update/company', params={'id': solID, 'companyID': oracleCmp})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id': solID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1483,7 +1422,7 @@ r.status_code
 # 'osTypeName': 'Solaris OS',
 # 'osTypeOSInstancesID': [],
 # 'osTypeVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/get', params={'id':oracleCmp})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/get', params={'id': oracleCmp})
 r.status_code
 #200
 #pprint(r.json())
@@ -1494,10 +1433,10 @@ r.status_code
 # 'companyOSTypesID': [2],
 # 'companyVersion': 2}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/update/ostypes/delete', params={'id':oracleCmp,'ostypeID':solID})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/update/ostypes/delete', params={'id': oracleCmp, 'ostypeID': solID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/get', params={'id':oracleCmp})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/get', params={'id': oracleCmp})
 r.status_code
 #pprint(r.json())
 #{'companyApplicationsID': [],
@@ -1506,7 +1445,7 @@ r.status_code
 # 'companyName': 'Oracle Corp',
 # 'companyOSTypesID': [],
 # 'companyVersion': 2}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id': solID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1517,10 +1456,10 @@ r.status_code
 # 'osTypeOSInstancesID': [],
 # 'osTypeVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/update/ostypes/add', params={'id':oracleCmp,'ostypeID':solID})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/update/ostypes/add', params={'id': oracleCmp, 'ostypeID': solID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/get', params={'id':oracleCmp})
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/get', params={'id': oracleCmp})
 r.status_code
 #200
 #pprint(r.json())
@@ -1530,7 +1469,7 @@ r.status_code
 # 'companyName': 'Oracle Corp',
 # 'companyOSTypesID': [2],
 # 'companyVersion': 2}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id': solID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1548,7 +1487,7 @@ r.status_code
 
 
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances')
 r.status_code
 #200
 #pprint(r.json())
@@ -1613,7 +1552,7 @@ r.status_code
 #                  'osInstanceTeamsID': [1, 2],
 #                  'osInstanceVersion': 2}]}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/1');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/1')
 r.status_code
 #200
 #pprint(r.json())
@@ -1630,8 +1569,8 @@ r.status_code
 # 'osInstanceTeamsID': [1],
 # 'osInstanceVersion': 4}
 
-osiParams = {'id':1}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params=osiParams);
+osiParams = {'id': 1}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params=osiParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -1648,8 +1587,8 @@ r.status_code
 # 'osInstanceTeamsID': [1],
 # 'osInstanceVersion': 4}
 
-osiParams = {'name':"hvirt.dekatonshIVr"}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params=osiParams);
+osiParams = {'name': "hvirt.dekatonshIVr"}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params=osiParams)
 r.status_code
 #200
 #pprint(r.json())
@@ -1666,13 +1605,13 @@ r.status_code
 # 'osInstanceTeamsID': [1],
 # 'osInstanceVersion': 4}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get');
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get')
 r.status_code
 #500
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/create', params={'name':'fakeOs', 'adminGateURI':'ssh://fakeOs.fake.lan', 'description':'a fake os'});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/create', params={'name': 'fakeOs', 'adminGateURI': 'ssh://fakeOs.fake.lan', 'description': 'a fake os'})
 r.status_code
 #200
 #pprint(r.json())
@@ -1688,12 +1627,12 @@ r.status_code
 # 'osInstanceSubnetsID': [],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-fakeOSID=r.json().get("osInstanceID")
+fakeOSID = r.json().get("osInstanceID")
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/name', params={'id':fakeOSID, 'name':'fakeOs1'});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/name', params={'id': fakeOSID, 'name': 'fakeOs1'})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1710,10 +1649,10 @@ r.status_code
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/description', params={'id':fakeOSID, 'description':'A fake OS'});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/description', params={'id': fakeOSID, 'description': 'A fake OS'})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1730,10 +1669,10 @@ r.status_code
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/admingateuri', params={'id':fakeOSID, 'adminGateURI':"ssh://fakeOs1.fake.lan"});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/admingateuri', params={'id': fakeOSID, 'adminGateURI': "ssh://fakeOs1.fake.lan"})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1750,10 +1689,10 @@ r.status_code
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/ostype', params={'id':fakeOSID, 'ostID':solID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/ostype', params={'id': fakeOSID, 'ostID': solID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1770,10 +1709,10 @@ r.status_code
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/embeddingOSInstance', params={'id':fakeOSID, 'osiID':1})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/embeddingOSInstance', params={'id': fakeOSID, 'osiID': 1})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1789,7 +1728,7 @@ r.status_code
 # 'osInstanceSubnetsID': [],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':1});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': 1})
 r.status_code
 #200
 #pprint(r.json())
@@ -1806,10 +1745,10 @@ r.status_code
 # 'osInstanceTeamsID': [1],
 # 'osInstanceVersion': 4}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/embeddedOSInstances/delete', params={'id':1, 'osiID':fakeOSID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/embeddedOSInstances/delete', params={'id': 1, 'osiID': fakeOSID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':1});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': 1})
 r.status_code
 #200
 #pprint(r.json())
@@ -1825,7 +1764,7 @@ r.status_code
 # 'osInstanceSubnetsID': [1, 2, 3],
 # 'osInstanceTeamsID': [1],
 # 'osInstanceVersion': 4}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1842,10 +1781,10 @@ r.status_code
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/embeddedOSInstances/add', params={'id':1, 'osiID':fakeOSID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/embeddedOSInstances/add', params={'id': 1, 'osiID': fakeOSID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':1});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': 1})
 r.status_code
 #200
 #pprint(r.json())
@@ -1861,7 +1800,7 @@ r.status_code
 # 'osInstanceSubnetsID': [1, 2, 3],
 # 'osInstanceTeamsID': [1],
 # 'osInstanceVersion': 4}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1878,10 +1817,10 @@ r.status_code
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/subnets/add', params={'id':fakeOSID, 'subnetID':fakesubnetID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/subnets/add', params={'id': fakeOSID, 'subnetID': fake_subnet_ID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1897,7 +1836,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id': fake_subnet_ID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1906,16 +1845,16 @@ r.status_code
 # 'subnetID': 4,
 # 'subnetIP': '192.168.69.69',
 # 'subnetMask': '255.255.255.255',
-# 'subnetMulticastAreaID': -1,
+# 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.lan',
 # 'subnetOSInstancesID': [7],
 # 'subnetType': 'MAN',
 # 'subnetVersion': 12}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/subnets/delete', params={'id':fakeOSID, 'subnetID':fakesubnetID})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/subnets/delete', params={'id': fakeOSID, 'subnetID': fake_subnet_ID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1931,7 +1870,7 @@ r.status_code
 # 'osInstanceSubnetsID': [],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id': fake_subnet_ID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1940,16 +1879,16 @@ r.status_code
 # 'subnetID': 4,
 # 'subnetIP': '192.168.69.69',
 # 'subnetMask': '255.255.255.255',
-# 'subnetMulticastAreaID': -1,
+# 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.lan',
 # 'subnetOSInstancesID': [],
 # 'subnetType': 'MAN',
 # 'subnetVersion': 12}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/osinstances/add', params={'id':fakesubnetID,'osiID':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/update/osinstances/add', params={'id': fake_subnet_ID, 'osiID': fakeOSID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id': fake_subnet_ID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1958,12 +1897,12 @@ r.status_code
 # 'subnetID': 4,
 # 'subnetIP': '192.168.69.69',
 # 'subnetMask': '255.255.255.255',
-# 'subnetMulticastAreaID': -1,
+# 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.lan',
 # 'subnetOSInstancesID': [7],
 # 'subnetType': 'MAN',
 # 'subnetVersion': 12}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1980,10 +1919,10 @@ r.status_code
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/osinstances/delete', params={'id':fakesubnetID,'osiID':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/update/osinstances/delete', params={'id': fake_subnet_ID, 'osiID': fakeOSID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id': fake_subnet_ID})
 r.status_code
 #200
 #pprint(r.json())
@@ -1992,12 +1931,12 @@ r.status_code
 # 'subnetID': 4,
 # 'subnetIP': '192.168.69.69',
 # 'subnetMask': '255.255.255.255',
-# 'subnetMulticastAreaID': -1,
+# 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.lan',
 # 'subnetOSInstancesID': [],
 # 'subnetType': 'MAN',
 # 'subnetVersion': 12}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2013,14 +1952,14 @@ r.status_code
 # 'osInstanceSubnetsID': [],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/update/osinstances/add', params={'id':fakeOSID,'osiID':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/update/osinstances/add', params={'id': fakeOSID, 'osiID': fakeOSID})
 r.status_code
 #200
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/applications/add', params={'id':fakeOSID,'applicationID':dppID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/applications/add', params={'id': fakeOSID, 'applicationID': dppID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2036,7 +1975,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get', params={'id': dppID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2050,10 +1989,10 @@ r.status_code
 # 'applicationTeamID': 11,
 # 'applicationVersion': 14}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/applications/delete', params={'id':fakeOSID,'applicationID':dppID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/applications/delete', params={'id': fakeOSID, 'applicationID': dppID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2069,7 +2008,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get', params={'id': dppID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2083,10 +2022,10 @@ r.status_code
 # 'applicationTeamID': 11,
 # 'applicationVersion': 14}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/update/osinstances/add', params={'id':dppID, 'osiID':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/update/osinstances/add', params={'id': dppID, 'osiID': fakeOSID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2102,7 +2041,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get', params={'id': dppID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2116,10 +2055,10 @@ r.status_code
 # 'applicationTeamID': 11,
 # 'applicationVersion': 14}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/update/osinstances/delete', params={'id':dppID, 'osiID':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/update/osinstances/delete', params={'id': dppID, 'osiID': fakeOSID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2135,7 +2074,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get', params={'id': dppID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2149,14 +2088,14 @@ r.status_code
 # 'applicationTeamID': 11,
 # 'applicationVersion': 14}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/update/osinstances/add', params={'id':dppID, 'osiID':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/update/osinstances/add', params={'id': dppID, 'osiID': fakeOSID})
 r.status_code
 #200
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/environments/add', params={'id':fakeOSID,'environmentID':qaEnv});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/environments/add', params={'id': fakeOSID, 'environmentID': qaEnv})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2172,7 +2111,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/get', params={'id':qaEnv});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/get', params={'id': qaEnv})
 r.status_code
 #200
 #pprint(r.json())
@@ -2182,10 +2121,10 @@ r.status_code
 # 'environmentOSInstancesID': [7],
 # 'environmentVersion': 3}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/environments/delete', params={'id':fakeOSID,'environmentID':qaEnv});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/environments/delete', params={'id': fakeOSID, 'environmentID': qaEnv})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2201,7 +2140,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/get', params={'id':qaEnv});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/get', params={'id': qaEnv})
 r.status_code
 #200
 #pprint(r.json())
@@ -2211,10 +2150,10 @@ r.status_code
 # 'environmentOSInstancesID': [],
 # 'environmentVersion': 3}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/update/osinstances/add', params={'id':qaEnv, 'osiID':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/update/osinstances/add', params={'id': qaEnv, 'osiID': fakeOSID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2230,7 +2169,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/get', params={'id':qaEnv});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/get', params={'id': qaEnv})
 r.status_code
 #200
 #pprint(r.json())
@@ -2240,10 +2179,10 @@ r.status_code
 # 'environmentOSInstancesID': [7],
 # 'environmentVersion': 3}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/update/osinstances/delete', params={'id':qaEnv, 'osiID':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/update/osinstances/delete', params={'id': qaEnv, 'osiID': fakeOSID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2259,7 +2198,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/get', params={'id':qaEnv});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/get', params={'id': qaEnv})
 r.status_code
 #200
 #pprint(r.json())
@@ -2268,15 +2207,15 @@ r.status_code
 # 'environmentName': 'QA',
 # 'environmentOSInstancesID': [],
 # 'environmentVersion': 3}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/update/osinstances/add', params={'id':qaEnv, 'osiID':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/update/osinstances/add', params={'id': qaEnv, 'osiID': fakeOSID})
 r.status_code
 #200
 
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/teams/add', params={'id':fakeOSID,'teamID':dppTeamID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/teams/add', params={'id': fakeOSID, 'teamID': dppTeamID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2292,7 +2231,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [11],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/get', params={'id':dppTeamID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/get', params={'id': dppTeamID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2304,10 +2243,10 @@ r.status_code
 # 'teamOSInstancesID': [7],
 # 'teamVersion': 1}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/update/teams/delete', params={'id':fakeOSID,'teamID':dppTeamID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/teams/delete', params={'id': fakeOSID, 'teamID': dppTeamID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2323,7 +2262,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/get', params={'id':dppTeamID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/get', params={'id': dppTeamID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2335,10 +2274,10 @@ r.status_code
 # 'teamOSInstancesID': [],
 # 'teamVersion': 1}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/update/osinstances/add', params={'id':dppTeamID,'osiID':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/update/osinstances/add', params={'id': dppTeamID, 'osiID': fakeOSID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2354,7 +2293,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [11],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/get', params={'id':dppTeamID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/get', params={'id': dppTeamID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2366,10 +2305,10 @@ r.status_code
 # 'teamOSInstancesID': [7],
 # 'teamVersion': 1}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/update/osinstances/delete', params={'id':dppTeamID,'osiID':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/update/osinstances/delete', params={'id': dppTeamID, 'osiID': fakeOSID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2385,7 +2324,7 @@ r.status_code
 # 'osInstanceSubnetsID': [4],
 # 'osInstanceTeamsID': [],
 # 'osInstanceVersion': 0}
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/get', params={'id':dppTeamID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/get', params={'id': dppTeamID})
 r.status_code
 #200
 #pprint(r.json())
@@ -2397,63 +2336,63 @@ r.status_code
 # 'teamOSInstancesID': [],
 # 'teamVersion': 1}
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/delete', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/delete', params={'id': fakeOSID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id':fakeOSID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
 r.status_code
 #404
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/delete', params={'id':solID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/delete', params={'id': solID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id':solID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id': solID})
 r.status_code
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/delete', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/delete', params={'id': fake_subnet_ID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id':fakesubnetID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id': fake_subnet_ID})
 r.status_code
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/delete', params={'id':devilMareaID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/delete', params={'id': devilRareaID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/multicastareas/get', params={'id':devilMareaID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
 r.status_code
 #404
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/delete', params={'id':devilDCID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/delete', params={'id': devilDCID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id':devilDCID});
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id': devilDCID})
 r.status_code
 #404
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/delete', params={'id':dppID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/delete', params={'id': dppID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/applications/get', params={'id':dppID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications/get', params={'id': dppID})
 r.status_code
 #404
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/delete', params={'id':dppTeamID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/delete', params={'id': dppTeamID})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/teams/get', params={'id':dppTeamID});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/get', params={'id': dppTeamID})
 r.status_code
 #404
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/delete', params={'id':qaEnv});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/delete', params={'id': qaEnv})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/environments/get', params={'id':qaEnv});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/get', params={'id': qaEnv})
 r.status_code
 #404
 
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/delete', params={'id':oracleCmp});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/delete', params={'id': oracleCmp})
 r.status_code
 #200
-r = s.get(srvurl + 'Ariane/rest/directories/common/organisation/companies/get', params={'id':oracleCmp});
+r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/get', params={'id': oracleCmp})
 r.status_code
 #404

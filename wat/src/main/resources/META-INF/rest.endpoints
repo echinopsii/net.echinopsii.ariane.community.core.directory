@@ -2,7 +2,7 @@ net.echinopsii.ariane.community.core.directory.wat.rest.organisational.Applicati
 net.echinopsii.ariane.community.core.directory.wat.rest.organisational.CompanyEndpoint
 net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.DatacenterEndpoint
 net.echinopsii.ariane.community.core.directory.wat.rest.organisational.EnvironmentEndpoint
-net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.MulticastAreaEndpoint
+net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.RoutingAreaEndpoint
 net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint
 net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSTypeEndpoint
 net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.SubnetEndpoint

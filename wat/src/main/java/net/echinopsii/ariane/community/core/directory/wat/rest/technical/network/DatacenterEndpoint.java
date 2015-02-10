@@ -64,7 +64,7 @@ public class DatacenterEndpoint {
     }
 
     public static Datacenter findDatacenterById(EntityManager em, long id) {
-        TypedQuery<Datacenter> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.multicastAreas WHERE d.id = :entityId ORDER BY d.id", Datacenter.class);
+        TypedQuery<Datacenter> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas WHERE d.id = :entityId ORDER BY d.id", Datacenter.class);
         findByIdQuery.setParameter("entityId", id);
         Datacenter entity;
         try {
@@ -76,7 +76,7 @@ public class DatacenterEndpoint {
     }
 
     public static Datacenter findDatacenterByName(EntityManager em, String name) {
-        TypedQuery<Datacenter> findByNameQuery = em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.multicastAreas WHERE d.name = :entityName ORDER BY d.name", Datacenter.class);
+        TypedQuery<Datacenter> findByNameQuery = em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas WHERE d.name = :entityName ORDER BY d.name", Datacenter.class);
         findByNameQuery.setParameter("entityName", name);
         Datacenter entity;
         try {
@@ -118,7 +118,7 @@ public class DatacenterEndpoint {
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            final HashSet<Datacenter> results = new HashSet(em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.multicastAreas ORDER BY d.id", Datacenter.class).getResultList());
+            final HashSet<Datacenter> results = new HashSet(em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas ORDER BY d.id", Datacenter.class).getResultList());
 
             Response ret = null;
             String result;
@@ -477,18 +477,18 @@ public class DatacenterEndpoint {
     }
 
     @GET
-    @Path("/update/multicastareas/add")
-    public Response updateDatacenterAddMulticastAreas(@QueryParam("id")Long id, @QueryParam("multicastareaID")Long mareaID) {
+    @Path("/update/routingareas/add")
+    public Response updateDatacenterAddMulticastAreas(@QueryParam("id")Long id, @QueryParam("routingareaID")Long mareaID) {
         if (id!=0 && mareaID!=0) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update datacenter {} by adding multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
+            log.debug("[{}-{}] update datacenter {} by adding routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
                 if (entity != null) {
-                    RoutingArea marea = MulticastAreaEndpoint.findMulticastAreaById(em, mareaID);
+                    RoutingArea marea = RoutingAreaEndpoint.findRoutingAreaById(em, mareaID);
                     if (marea!=null) {
                         try {
                             em.getTransaction().begin();
@@ -496,7 +496,7 @@ public class DatacenterEndpoint {
                             entity.getRoutingAreas().add(marea);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by adding multicast area " + mareaID).build();
+                            return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by adding routing area " + mareaID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -515,23 +515,23 @@ public class DatacenterEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or multicastareaID are not defined. You must define these parameters.").build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or routingareaID are not defined. You must define these parameters.").build();
         }
     }
 
     @GET
-    @Path("/update/multicastareas/delete")
-    public Response updateDatacenterDeleteMulticastAreas(@QueryParam("id")Long id, @QueryParam("multicastareaID")Long mareaID) {
+    @Path("/update/routingareas/delete")
+    public Response updateDatacenterDeleteMulticastAreas(@QueryParam("id")Long id, @QueryParam("routingareaID")Long mareaID) {
         if (id!=0 && mareaID!=0) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update datacenter {} by deleting multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
+            log.debug("[{}-{}] update datacenter {} by deleting routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
                 if (entity != null) {
-                    RoutingArea marea = MulticastAreaEndpoint.findMulticastAreaById(em, mareaID);
+                    RoutingArea marea = RoutingAreaEndpoint.findRoutingAreaById(em, mareaID);
                     if (marea!=null) {
                         try {
                             em.getTransaction().begin();
@@ -539,7 +539,7 @@ public class DatacenterEndpoint {
                             entity.getRoutingAreas().remove(marea);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by deleting multicast area " + mareaID).build();
+                            return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by deleting routing area " + mareaID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -558,7 +558,7 @@ public class DatacenterEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or multicastareaID are not defined. You must define these parameters.").build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or routingareaID are not defined. You must define these parameters.").build();
         }
     }
 }

@@ -47,7 +47,7 @@ public class SubnetJSON {
     public final static String SUBNET_TYPE           = "subnetType";
     public final static String SUBNET_OSI_ID         = "subnetOSInstancesID";
     public final static String SUBNET_DATACENTERS_ID = "subnetDatacentersID";
-    public final static String SUBNET_MAREA_ID       = "subnetMulticastAreaID";
+    public final static String SUBNET_MAREA_ID       = "subnetRoutingAreaID";
 
     public final static void subnet2JSON(Subnet subnet, JsonGenerator jgenerator) throws IOException {
         jgenerator.writeStartObject();

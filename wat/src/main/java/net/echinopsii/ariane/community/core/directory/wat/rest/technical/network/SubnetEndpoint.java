@@ -47,7 +47,7 @@ import java.util.List;
  */
 @Path("/directories/common/infrastructure/network/subnets")
 public class SubnetEndpoint {
-    private static final Logger log = LoggerFactory.getLogger(MulticastAreaEndpoint.class);
+    private static final Logger log = LoggerFactory.getLogger(RoutingAreaEndpoint.class);
     private EntityManager em;
 
     public static Response subnetToJSON(Subnet entity) {
@@ -68,7 +68,7 @@ public class SubnetEndpoint {
     }
 
     public static Subnet findSubnetById(EntityManager em, long id) {
-        TypedQuery<Subnet> findByIdQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.type LEFT JOIN FETCH l.marea WHERE l.id = :entityId ORDER BY l.id", Subnet.class);
+        TypedQuery<Subnet> findByIdQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.rarea WHERE l.id = :entityId ORDER BY l.id", Subnet.class);
         findByIdQuery.setParameter("entityId", id);
         Subnet entity;
         try {
@@ -80,7 +80,7 @@ public class SubnetEndpoint {
     }
 
     public static Subnet findSubnetByName(EntityManager em, String name) {
-        TypedQuery<Subnet> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.type LEFT JOIN FETCH l.marea WHERE l.name = :entityName ORDER BY l.name", Subnet.class);
+        TypedQuery<Subnet> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.rarea WHERE l.name = :entityName ORDER BY l.name", Subnet.class);
         findByNameQuery.setParameter("entityName", name);
         Subnet entity;
         try {
@@ -91,9 +91,9 @@ public class SubnetEndpoint {
         return entity;
     }
 
-    public static RoutingArea findRoutingAreaByName(EntityManager em, String name) {
-        TypedQuery<RoutingArea> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM RoutingArea l WHERE l.name = :entityName ORDER BY l.name", RoutingArea.class);
-        findByNameQuery.setParameter("entityName", name);
+    public static RoutingArea findRoutingAreaByID(EntityManager em, long id) {
+        TypedQuery<RoutingArea> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM RoutingArea l WHERE l.id = :entityID ORDER BY l.name", RoutingArea.class);
+        findByNameQuery.setParameter("entityID", id);
         RoutingArea entity;
         try {
             entity = findByNameQuery.getSingleResult();
@@ -105,9 +105,9 @@ public class SubnetEndpoint {
 
     public static String getAvailableRoutingArea(EntityManager em) {
         List<RoutingArea> resultList = em.createQuery("SELECT DISTINCT l FROM RoutingArea l ORDER BY l.name", RoutingArea.class).getResultList();
-        List<String> routingAreaNames = new ArrayList<>();
+        List<Long> routingAreaNames = new ArrayList<>();
         for (RoutingArea rarea : resultList)
-            routingAreaNames.add(rarea.getName());
+            routingAreaNames.add(rarea.getId());
         return routingAreaNames.toString();
     }
 
@@ -141,7 +141,7 @@ public class SubnetEndpoint {
         if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwSubnet:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            final HashSet<Subnet> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.type LEFT JOIN FETCH l.marea ORDER BY l.id", Subnet.class).getResultList());
+            final HashSet<Subnet> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.rarea ORDER BY l.id", Subnet.class).getResultList());
 
             Response ret = null;
             String result;
@@ -196,17 +196,17 @@ public class SubnetEndpoint {
     @GET
     @Path("/create")
     public Response createSubnet(@QueryParam("name")String name, @QueryParam("subnetIP")String subnetIP, @QueryParam("subnetMask")String subnetMask,
-                                 @QueryParam("routingArea")String routingAreaName, @QueryParam("description")String description) {
-        if (name!=null && subnetIP!=null && subnetMask!=null && routingAreaName!=null) {
+                                 @QueryParam("routingArea")int routingAreaID, @QueryParam("description")String description) {
+        if (name!=null && subnetIP!=null && subnetMask!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] create subnet : ({},{},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, subnetIP, subnetMask, routingAreaName, description});
+            log.debug("[{}-{}] create subnet : ({},{},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, subnetIP, subnetMask, routingAreaID, description});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetByName(em, name);
                 if (entity==null) {
-                    RoutingArea routingArea = findRoutingAreaByName(em, routingAreaName);
+                    RoutingArea routingArea = findRoutingAreaByID(em, routingAreaID);
                     if (routingArea!=null) {
                         entity = new Subnet().setNameR(name).setDescriptionR(description).setSubnetIPR(subnetIP).setSubnetMaskR(subnetMask).setRareaR(routingArea);
                         try {
@@ -221,7 +221,7 @@ public class SubnetEndpoint {
                         }
                     } else {
                         Response ret = Response.status(Status.INTERNAL_SERVER_ERROR).
-                                                entity("Wrong routing area " + routingAreaName + ". Available routing areas are : " + getAvailableRoutingArea(em)).build();
+                                                entity("Wrong routing area " + routingAreaID + ". Available routing areas are : " + getAvailableRoutingArea(em)).build();
                         em.close();
                         return ret;
                     }
@@ -427,24 +427,24 @@ public class SubnetEndpoint {
 
     @GET
     @Path("/update/routingarea")
-    public Response updateSubnetMulticastArea(@QueryParam("id")Long id, @QueryParam("routingareaID")Long rareaID) {
+    public Response updateSubnetRoutingArea(@QueryParam("id") Long id, @QueryParam("routingareaID") Long rareaID) {
         if (id!=0 && rareaID!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update subnet {} multicast area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, rareaID});
+            log.debug("[{}-{}] update subnet {} routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, rareaID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
                 if (entity!=null) {
-                    RoutingArea marea = MulticastAreaEndpoint.findMulticastAreaById(em, rareaID);
-                    if (marea!=null) {
+                    RoutingArea rarea = RoutingAreaEndpoint.findRoutingAreaById(em, rareaID);
+                    if (rarea!=null) {
                         try {
                             em.getTransaction().begin();
                             if (entity.getRarea()!=null)
                                 entity.getRarea().getSubnets().remove(entity);
-                            marea.getSubnets().add(entity);
-                            entity.setRarea(marea);
+                            rarea.getSubnets().add(entity);
+                            entity.setRarea(rarea);
                             em.getTransaction().commit();
                             em.close();
                             return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with routing area " + rareaID).build();
@@ -455,24 +455,8 @@ public class SubnetEndpoint {
                             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating subnet " + entity.getName() + " : " + t.getMessage()).build();
                         }
                     } else {
-                        if (rareaID==-1) {
-                            try {
-                                em.getTransaction().begin();
-                                if (entity.getRarea()!=null)
-                                    entity.getRarea().getSubnets().remove(entity);
-                                entity.setRarea(null);
-                                em.getTransaction().commit();
-                                em.close();
-                                return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with routing area " + rareaID).build();
-                            } catch (Throwable t) {
-                                if(em.getTransaction().isActive())
-                                    em.getTransaction().rollback();
-                                em.close();
-                                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating subnet " + entity.getName() + " : " + t.getMessage()).build();
-                            }
-                        }
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("Routing area " + rareaID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("Routing Area " + rareaID + " not found.").build();
                     }
                 } else {
                     em.close();
