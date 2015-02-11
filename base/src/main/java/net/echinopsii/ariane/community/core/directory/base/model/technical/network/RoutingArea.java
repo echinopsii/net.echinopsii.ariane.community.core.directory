@@ -76,22 +76,25 @@ public class RoutingArea implements Serializable
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
+    @NotNull
     private Long id = null;
     @Version
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="rareaName",unique=true)
+    @Column(name="rareaName",unique=true,nullable=false)
     @NotNull
     private String name;
 
     @Column
     private String description;
 
-    @Column
+    @Column(nullable=false)
+    @NotNull
     private String multicast;
 
-    @Column
+    @Column(nullable=false)
+    @NotNull
     private String type;
 
     @OneToMany(mappedBy = "rarea", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -185,11 +188,11 @@ public class RoutingArea implements Serializable
     }
 
     public void setMulticast(String multicast) {
-        this.multicast = multicast;
+        this.multicast = new String(multicast);
     }
 
     public RoutingArea setMulticastR(String multicast) {
-        this.multicast = multicast;
+        this.multicast = new String(multicast);
         return this;
     }
 

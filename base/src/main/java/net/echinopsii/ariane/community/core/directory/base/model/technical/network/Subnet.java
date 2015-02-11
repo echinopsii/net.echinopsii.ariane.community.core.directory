@@ -47,18 +47,18 @@ public class Subnet implements Serializable
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="subnetName", unique=true)
+    @Column(name="subnetName", unique=true, nullable=false)
     @NotNull
     private String name;
 
     @Column
     private String description;
 
-    @Column
+    @Column(nullable=false)
     @NotNull
     private String subnetIP;
 
-    @Column
+    @Column(nullable=false)
     @NotNull
     private String subnetMask;
 
@@ -71,6 +71,7 @@ public class Subnet implements Serializable
     private Set<Datacenter> datacenters = new HashSet<Datacenter>();
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false)
     @NotNull
     private RoutingArea rarea;
 

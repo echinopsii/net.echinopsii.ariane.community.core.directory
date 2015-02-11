@@ -43,15 +43,15 @@ public class Application implements Serializable {
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="applicationName",unique=true)
+    @Column(name="applicationName",unique=true,nullable=false)
     @NotNull
     private String name;
 
-    @Column
+    @Column(nullable=false)
     @NotNull
     private String shortName;
 
-    @Column(name="applicationCC",unique=true)
+    @Column(name="applicationCC",unique=true,nullable=false)
     @NotNull
     private String colorCode;
 

@@ -47,14 +47,14 @@ public class Team implements Serializable {
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="teamName",unique=true)
+    @Column(name="teamName",unique=true,nullable=false)
     @NotNull
     private String name;
 
     @Column
     private String description;
 
-    @Column(name="teamCC",unique=true)
+    @Column(name="teamCC",unique=true,nullable=false)
     @NotNull
     private String colorCode;
 

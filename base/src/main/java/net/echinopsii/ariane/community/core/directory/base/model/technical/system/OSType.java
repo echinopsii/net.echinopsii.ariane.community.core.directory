@@ -43,11 +43,11 @@ public class OSType implements Serializable
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="osTypeName",unique=true)
+    @Column(name="osTypeName",unique=true,nullable=false)
     @NotNull
     private String name;
 
-    @Column
+    @Column(nullable=false)
     @NotNull
     private String architecture;
 

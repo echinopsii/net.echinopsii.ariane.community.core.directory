@@ -42,36 +42,37 @@ public class Datacenter implements Serializable
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
+    @NotNull
     private Long id = null;
     @Version
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="dcName",unique=true)
+    @Column(name="dcName",unique=true,nullable=false)
     @NotNull
     private String name;
 
-    @Column
+    @Column(nullable=false)
     @NotNull
     private String address;
 
-    @Column
+    @Column(nullable=false)
     @NotNull
     private String town;
 
-    @Column
+    @Column(nullable=false)
     @NotNull
     private Long   zipCode;
 
-    @Column
+    @Column(nullable=false)
     @NotNull
     private String country;
 
-    @Column
+    @Column(nullable=false)
     @NotNull
     private double gpsLatitude;
 
-    @Column
+    @Column(nullable=false)
     @NotNull
     private double gpsLongitude;
 

@@ -20,7 +20,7 @@
         </h:panelGroup>
 
         <h:outputText value="Multicast : " styleClass="inputTitle"/>
-        <h:selectOneMenu label="Select the routing area multicast flag" value="#{routingAreaNewController.type}">
+        <h:selectOneMenu label="Select the routing area multicast flag" value="#{routingAreaNewController.multicast}">
             <f:selectItems value="#{routingAreasListController.getAllRoutingAreaMulticastFlagsForSelector()}"  var="raM"
                            itemLabel="#{raM}" itemValue="#{raM}"/>
         </h:selectOneMenu>

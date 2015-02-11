@@ -43,7 +43,7 @@ public class Company implements Serializable {
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="companyName",unique=true)
+    @Column(name="companyName",unique=true,nullable=false)
     @NotNull
     private String name;
 

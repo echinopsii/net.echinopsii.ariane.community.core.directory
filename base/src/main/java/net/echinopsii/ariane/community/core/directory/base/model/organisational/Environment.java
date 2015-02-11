@@ -43,7 +43,7 @@ public class Environment implements Serializable
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="environmentName",unique=true)
+    @Column(name="environmentName",unique=true,nullable=false)
     @NotNull
     private String name;
 

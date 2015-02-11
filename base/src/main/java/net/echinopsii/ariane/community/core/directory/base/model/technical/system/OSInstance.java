@@ -46,11 +46,11 @@ public class OSInstance implements Serializable {
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="osName",unique=true)
+    @Column(name="osName",unique=true,nullable=false)
     @NotNull
     private String name;
 
-    @Column
+    @Column(nullable=false)
     @NotNull
     private String adminGateURI;
 
