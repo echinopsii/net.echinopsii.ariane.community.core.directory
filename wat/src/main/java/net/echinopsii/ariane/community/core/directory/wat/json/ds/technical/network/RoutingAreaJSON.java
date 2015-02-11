@@ -53,7 +53,7 @@ public class RoutingAreaJSON {
         jgenerator.writeNumberField(RAREA_VERSION, routingArea.getVersion());
         jgenerator.writeStringField(RAREA_NAME, routingArea.getName());
         jgenerator.writeStringField(RAREA_TYPE, routingArea.getType());
-        jgenerator.writeBooleanField(RAREA_MULTICAST, routingArea.isMulticast());
+        jgenerator.writeStringField(RAREA_MULTICAST, routingArea.getMulticast());
         jgenerator.writeStringField(RAREA_DESCRIPTION, routingArea.getDescription());
         jgenerator.writeArrayFieldStart(RAREA_SUBNETS_ID);
         for (Subnet subnet : routingArea.getSubnets())

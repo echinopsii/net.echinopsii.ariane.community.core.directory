@@ -246,7 +246,7 @@ public class Subnet implements Serializable
     public HashMap<String,Object> toMappingProperties() {
         HashMap<String,Object> ret = new HashMap<String,Object>();
         ret.put(SUBNET_RARE_MAPPING_FIELD, rarea.getName());
-        ret.put(SUBNET_MLTC_MAPPING_FIELD, rarea.isMulticast());
+        ret.put(SUBNET_MLTC_MAPPING_FIELD, rarea.getMulticast());
         ret.put(SUBNET_TYPE_MAPPING_FIELD, rarea.getType());
         ret.put(SUBNET_NAME_MAPPING_FIELD, name);
         ret.put(SUBNET_IPAD_MAPPING_FIELD, subnetIP);

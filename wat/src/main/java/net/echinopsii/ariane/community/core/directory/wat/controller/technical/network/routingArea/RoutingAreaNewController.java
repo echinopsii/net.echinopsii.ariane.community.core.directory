@@ -55,7 +55,7 @@ public class RoutingAreaNewController implements Serializable {
 
     private String name;
     private String description;
-    private boolean multicast;
+    private String multicast;
     private String type;
 
     private List<String> datacentersToBind = new ArrayList<String>();
@@ -81,11 +81,11 @@ public class RoutingAreaNewController implements Serializable {
         this.description = description;
     }
 
-    public boolean isMulticast() {
+    public String getMulticast() {
         return multicast;
     }
 
-    public void setMulticast(boolean multicast) {
+    public void setMulticast(String multicast) {
         this.multicast = multicast;
     }
 

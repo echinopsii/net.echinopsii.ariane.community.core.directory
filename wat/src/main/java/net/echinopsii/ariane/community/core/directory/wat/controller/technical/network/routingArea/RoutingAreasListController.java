@@ -295,7 +295,7 @@ public class RoutingAreasListController implements Serializable {
             routingArea = em.find(routingArea.getClass(), routingArea.getId()).
                              setNameR(routingArea.getName()).
                              setDescriptionR(routingArea.getDescription()).
-                             setTypeR(routingArea.getType()).setMulticastR(routingArea.isMulticast());
+                             setTypeR(routingArea.getType()).setMulticastR(routingArea.getMulticast());
             em.flush();
             em.getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -361,11 +361,21 @@ public class RoutingAreasListController implements Serializable {
      * @throws NotSupportedException
      */
     public static List<String> getAllRoutingAreaTypesForSelector() {
-        List<String> routingAreaTypes = new ArrayList<>();
-        routingAreaTypes.add(RoutingArea.ROUTING_AREA_LAN_TYPE);
-        routingAreaTypes.add(RoutingArea.ROUTING_AREA_MAN_TYPE);
-        routingAreaTypes.add(RoutingArea.ROUTING_AREA_WAN_TYPE);
+        List<String> routingAreaTypes = RoutingArea.getTypeList();
         routingAreaTypes.add(0, "Select Routing Area Type");
+        return routingAreaTypes;
+    }
+
+    /**
+     * Get all routing area types
+     *
+     * @return all routing area types
+     * @throws SystemException
+     * @throws NotSupportedException
+     */
+    public static List<String> getAllRoutingAreaMulticastFlagsForSelector() {
+        List<String> routingAreaTypes = RoutingArea.getMulticastFlagList();
+        routingAreaTypes.add(0, "Select Routing Area Multicast Flag");
         return routingAreaTypes;
     }
 

@@ -104,9 +104,8 @@ public class RoutingAreaEndpoint {
             Response ret = routingAreaToJSON(entity);
             em.close();
             return ret;
-        } else {
+        } else
             return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display routing areas. Contact your administrator.").build();
-        }
     }
 
     @GET
@@ -134,9 +133,8 @@ public class RoutingAreaEndpoint {
                 em.close();
                 return ret;
             }
-        } else {
+        } else
             return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display routing areas. Contact your administrator.").build();
-        }
     }
 
     @GET
@@ -159,52 +157,49 @@ public class RoutingAreaEndpoint {
                 Response ret = routingAreaToJSON(entity);
                 em.close();
                 return ret;
-            } else {
+            } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display routing areas. Contact your administrator.").build();
-            }
-        } else {
+        } else
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
-        }
     }
 
     @GET
     @Path("/create")
     public Response createRoutingArea(@QueryParam("name") String name, @QueryParam("description") String description,
-                                      @QueryParam("type") String type, @QueryParam("multicast") boolean multicast) {
+                                      @QueryParam("type") String type, @QueryParam("multicast") String multicast) {
         if (name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwRarea:create") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
-                if (type != null && (type.equals(RoutingArea.ROUTING_AREA_LAN_TYPE) || type.equals(RoutingArea.ROUTING_AREA_MAN_TYPE) || type.equals(RoutingArea.ROUTING_AREA_WAN_TYPE))) {
-                    em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                    RoutingArea entity = findRoutingAreaByName(em, name);
-                    if (entity == null) {
-                        entity = new RoutingArea().setNameR(name).setDescriptionR(description).setTypeR(type).setMulticastR(multicast);
-                        try {
-                            em.getTransaction().begin();
-                            em.persist(entity);
-                            em.getTransaction().commit();
-                        } catch (Throwable t) {
-                            if (em.getTransaction().isActive())
-                                em.getTransaction().rollback();
-                            em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating routing area " + entity.getName() + " : " + t.getMessage()).build();
+                if (RoutingArea.isValidType(type)) {
+                    if (RoutingArea.isValidMulticastFlag(multicast)) {
+                        em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                        RoutingArea entity = findRoutingAreaByName(em, name);
+                        if (entity == null) {
+                            entity = new RoutingArea().setNameR(name).setDescriptionR(description).setTypeR(type).setMulticastR(multicast);
+                            try {
+                                em.getTransaction().begin();
+                                em.persist(entity);
+                                em.getTransaction().commit();
+                            } catch (Throwable t) {
+                                if (em.getTransaction().isActive())
+                                    em.getTransaction().rollback();
+                                em.close();
+                                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating routing area " + entity.getName() + " : " + t.getMessage()).build();
+                            }
                         }
-                    }
-                    Response ret = routingAreaToJSON(entity);
-                    em.close();
-                    return ret;
-                } else {
-                    return Response.status(Status.BAD_REQUEST).entity("Invalid type. Type should be LAN, MAN or WAN").build();
-                }
-
-            } else {
+                        Response ret = routingAreaToJSON(entity);
+                        em.close();
+                        return ret;
+                    } else
+                        return Response.status(Status.BAD_REQUEST).entity("Invalid multicast flag. Correct multicast flags values are : " + RoutingArea.getMulticastFlagList().toString()).build();
+                } else
+                    return Response.status(Status.BAD_REQUEST).entity("Invalid type. Correct type values are : " + RoutingArea.getTypeList().toString()).build();
+            } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create routing areas. Contact your administrator.").build();
-            }
-        } else {
+        } else
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name is not defined. You must define this parameter.").build();
-        }
     }
 
     @GET
@@ -237,12 +232,10 @@ public class RoutingAreaEndpoint {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
                 }
-            } else {
+            } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete routing areas. Contact your administrator.").build();
-            }
-        } else {
+        } else
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define this parameter.").build();
-        }
     }
 
     @GET
@@ -271,12 +264,10 @@ public class RoutingAreaEndpoint {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
                 }
-            } else {
+            } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
-            }
-        } else {
+        } else
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
-        }
     }
 
     @GET
@@ -305,12 +296,10 @@ public class RoutingAreaEndpoint {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
                 }
-            } else {
+            } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
-            }
-        } else {
+        } else
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
-        }
     }
 
     @GET
@@ -321,7 +310,7 @@ public class RoutingAreaEndpoint {
             log.debug("[{}-{}] update routing area {} type : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, type});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwRarea:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
-                if (type.equals(RoutingArea.ROUTING_AREA_LAN_TYPE) || type.equals(RoutingArea.ROUTING_AREA_MAN_TYPE) || type.equals(RoutingArea.ROUTING_AREA_WAN_TYPE)) {
+                if (RoutingArea.isValidType(type)) {
                     em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                     RoutingArea entity = findRoutingAreaById(em, id);
                     if (entity != null) {
@@ -340,49 +329,47 @@ public class RoutingAreaEndpoint {
                         em.close();
                         return Response.status(Status.NOT_FOUND).build();
                     }
-                } else {
-                    return Response.status(Status.BAD_REQUEST).entity("Invalid type. Type should be LAN, MAN or WAN").build();
-                }
-            } else {
+                } else
+                    return Response.status(Status.BAD_REQUEST).entity("Invalid type. Correct type values are: " + RoutingArea.getTypeList().toString()).build();
+            } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
-            }
-        } else {
+        } else
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or type are not defined. You must define these parameters.").build();
-        }
     }
 
     @GET
     @Path("/update/multicast")
-    public Response updateRoutingAreaMulticast(@QueryParam("id") Long id, @QueryParam("multicast") boolean multicast) {
+    public Response updateRoutingAreaMulticast(@QueryParam("id") Long id, @QueryParam("multicast") String multicast) {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update routing area {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, multicast});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwRarea:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
-                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                RoutingArea entity = findRoutingAreaById(em, id);
-                if (entity != null) {
-                    try {
-                        em.getTransaction().begin();
-                        entity.setMulticast(multicast);
-                        em.getTransaction().commit();
-                        return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated with multicast " + multicast).build();
-                    } catch (Throwable t) {
-                        if (em.getTransaction().isActive())
-                            em.getTransaction().rollback();
+                if (RoutingArea.isValidMulticastFlag(multicast)) {
+                    em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                    RoutingArea entity = findRoutingAreaById(em, id);
+                    if (entity != null) {
+                        try {
+                            em.getTransaction().begin();
+                            entity.setMulticast(multicast);
+                            em.getTransaction().commit();
+                            return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated with multicast " + multicast).build();
+                        } catch (Throwable t) {
+                            if (em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                        }
+                    } else {
                         em.close();
-                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                        return Response.status(Status.NOT_FOUND).build();
                     }
-                } else {
-                    em.close();
-                    return Response.status(Status.NOT_FOUND).build();
-                }
-            } else {
+                } else
+                    return Response.status(Status.BAD_REQUEST).entity("Invalid multicast flag. Correct multicast flags values are : " + RoutingArea.getMulticastFlagList().toString()).build();
+            } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
-            }
-        } else {
+        } else
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or boolean are not defined. You must define these parameters.").build();
-        }
     }
 
     @GET
@@ -418,12 +405,10 @@ public class RoutingAreaEndpoint {
                     em.close();
                     return Response.status(Status.NOT_FOUND).entity("Routing area " + id + " not found.").build();
                 }
-            } else {
+            } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
-            }
-        } else {
+        } else
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or dcID are not defined. You must define these parameters.").build();
-        }
     }
 
     @GET
@@ -459,11 +444,9 @@ public class RoutingAreaEndpoint {
                     em.close();
                     return Response.status(Status.NOT_FOUND).entity("Routing area " + id + " not found.").build();
                 }
-            } else {
+            } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
-            }
-        } else {
+        } else
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or dcID are not defined. You must define these parameters.").build();
-        }
     }
 }

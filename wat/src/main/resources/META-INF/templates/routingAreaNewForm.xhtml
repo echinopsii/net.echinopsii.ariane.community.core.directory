@@ -20,10 +20,10 @@
         </h:panelGroup>
 
         <h:outputText value="Multicast : " styleClass="inputTitle"/>
-        <p:selectOneButton value="#{routingAreaNewController.multicast}">
-            <f:selectItem itemLabel="Disabled" itemValue="false" />
-            <f:selectItem itemLabel="Enabled" itemValue="true" />
-        </p:selectOneButton>
+        <h:selectOneMenu label="Select the routing area multicast flag" value="#{routingAreaNewController.type}">
+            <f:selectItems value="#{routingAreasListController.getAllRoutingAreaMulticastFlagsForSelector()}"  var="raM"
+                           itemLabel="#{raM}" itemValue="#{raM}"/>
+        </h:selectOneMenu>
 
         <h:outputText value="Type : " styleClass="inputTitle"/>
         <h:selectOneMenu label="Select the routing area type" value="#{routingAreaNewController.type}">

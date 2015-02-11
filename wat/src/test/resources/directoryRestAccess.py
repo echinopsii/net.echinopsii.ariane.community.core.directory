@@ -1,4 +1,4 @@
-# !/usr/bin/python3
+#!/usr/bin/python3
 
 import getpass
 import requests
@@ -862,7 +862,7 @@ r.status_code
 #{'routingAreas': [{'routingAreaDatacentersID': [1],
 #                     'routingAreaDescription': 'lab01 routing area',
 #                     'routingAreaID': 1,
-#                     'routingAreaMulticast': True,
+#                     'routingAreaMulticast': 'NOLIMIT',
 #                     'routingAreaName': 'angelsMind',
 #                     'routingAreaSubnetsID': [1],
 #                     'routingAreaType': 'LAN',
@@ -875,7 +875,7 @@ r.status_code
 #{'routingAreaDatacentersID': [1],
 # 'routingAreaDescription': 'lab01 routing area',
 # 'routingAreaID': 1,
-# 'routingAreaMulticast': True,
+# 'routingAreaMulticast': 'NOLIMIT',
 # 'routingAreaName': 'angelsMind',
 # 'routingAreaSubnetsID': [1],
 # 'routingAreaType': 'LAN',
@@ -889,7 +889,7 @@ r.status_code
 #{'routingAreaDatacentersID': [1],
 # 'routingAreaDescription': 'lab01 routing area',
 # 'routingAreaID': 1,
-# 'routingAreaMulticast': True,
+# 'routingAreaMulticast': 'NOLIMIT',
 # 'routingAreaName': 'angelsMind',
 # 'routingAreaSubnetsID': [1],
 # 'routingAreaType': 'LAN',
@@ -903,7 +903,7 @@ r.status_code
 #{'routingAreaDatacentersID': [1],
 # 'routingAreaDescription': 'lab01 routing area',
 # 'routingAreaID': 1,
-# 'routingAreaMulticast': True,
+# 'routingAreaMulticast': NOLIMIT,
 # 'routingAreaName': 'angelsMind',
 # 'routingAreaSubnetsID': [1],
 # 'routingAreaType': 'LAN',
@@ -915,19 +915,31 @@ r.status_code
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
-r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/create', params={'name': "devilsMindLAN", 'description': "666 mind", 'type': "LAN", 'multicast': "true"})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/create', params={'name': "devilsMindLAN", 'description': "666 mind", 'type': "LAN", 'multicast': "NOLIMIT"})
 r.status_code
 #200
 #pprint(r.json())
 #{'routingAreaDatacentersID': [],
 # 'routingAreaDescription': '666 mind',
 # 'routingAreaID': 2,
-# 'routingAreaMulticast': True,
+# 'routingAreaMulticast': 'NOLIMIT',
 # 'routingAreaName': "Devil's mind",
 # 'routingAreaSubnetsID': [],
 # 'routingAreaType': 'LAN',
 # 'routingAreaVersion': 0}
 devilRareaID = r.json().get("routingAreaID")
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/create', params={'name': "devilsMindMAN", 'description': "666 mind", 'type': "MAN", 'multicast': "TOTO"})
+r.status_code
+#400
+#r.text
+#'Invalid multicast flag. Correct multicast flags values are : [NONE, FILTERED, NOLIMIT]'
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/create', params={'name': "devilsMindMAN", 'description': "666 mind", 'type': "MAN", 'multicast': "TOTO"})
+r.status_code
+#400
+#r.text
+#'Invalid type. Correct type values are : [LAN, MAN, WAN]'
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/update/routingareas/add', params={'id': devilDCID, 'routingareaID': devilRareaID})
 r.status_code
@@ -955,7 +967,7 @@ r.status_code
 #{'routingAreaDatacentersID': [2],
 # 'routingAreaDescription': '666 mind',
 # 'routingAreaID': 2,
-# 'routingAreaMulticast': True,
+# 'routingAreaMulticast': 'NOLIMIT',
 # 'routingAreaName': "Devil's mind",
 # 'routingAreaSubnetsID': [],
 # 'routingAreaType': 'LAN',
@@ -986,7 +998,7 @@ r.status_code
 #{'routingAreaDatacentersID': [],
 # 'routingAreaDescription': '666 mind',
 # 'routingAreaID': 2,
-# 'routingAreaMulticast': True,
+# 'routingAreaMulticast': 'NOLIMIT',
 # 'routingAreaName': "Devil's mind",
 # 'routingAreaSubnetsID': [],
 # 'routingAreaType': 'LAN',
@@ -1002,7 +1014,7 @@ r.status_code
 #{'routingAreaDatacentersID': [],
 # 'routingAreaDescription': '666 mind',
 # 'routingAreaID': 2,
-# 'routingAreaMulticast': True,
+# 'routingAreaMulticast': 'NOLIMIT',
 # 'routingAreaName': "Mind of devil",
 # 'routingAreaSubnetsID': [],
 # 'routingAreaType': 'LAN',
@@ -1018,7 +1030,7 @@ r.status_code
 #{'routingAreaDatacentersID': [],
 # 'routingAreaDescription': 'just a crazy mind',
 # 'routingAreaID': 2,
-# 'routingAreaMulticast': True,
+# 'routingAreaMulticast': 'NOLIMIT',
 # 'routingAreaName': "Mind of devil",
 # 'routingAreaSubnetsID': [],
 # 'routingAreaType': 'LAN',
@@ -1034,7 +1046,7 @@ r.status_code
 #{'routingAreaDatacentersID': [2],
 # 'routingAreaDescription': 'just a crazy mind',
 # 'routingAreaID': 2,
-# 'routingAreaMulticast': True,
+# 'routingAreaMulticast': 'NOLIMIT',
 # 'routingAreaName': "Mind of devil",
 # 'routingAreaSubnetsID': [],
 # 'routingAreaType': 'LAN',
@@ -1050,7 +1062,7 @@ r.status_code
 #{'routingAreaDatacentersID': [],
 # 'routingAreaDescription': 'just a crazy mind',
 # 'routingAreaID': 2,
-# 'routingAreaMulticast': True,
+# 'routingAreaMulticast': 'NOLIMIT',
 # 'routingAreaName': "Mind of devil",
 # 'routingAreaSubnetsID': [],
 # 'routingAreaType': 'LAN',
@@ -1080,7 +1092,7 @@ r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routi
 r.status_code
 #400
 #r.text
-#'Invalid type. Type should be LAN, MAN or WAN'
+#'Invalid type. Correct type values are : [LAN, MAN, WAN]'
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
 r.status_code
@@ -1088,7 +1100,7 @@ r.status_code
 #pprint(r.json())
 #...
 
-r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/update/multicast', params={'id': devilRareaID, 'multicast': 'false'})
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/update/multicast', params={'id': devilRareaID, 'multicast': 'FILTERED'})
 r.status_code
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/get', params={'id': devilRareaID})
@@ -1097,8 +1109,11 @@ r.status_code
 #pprint(r.json())
 #...
 
-
-
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/update/multicast', params={'id': devilRareaID, 'multicast': 'TOTO'})
+r.status_code
+#400
+#r.text
+#'Invalid multicast flag. Correct multicast flags values are : [NONE, FILTERED, NOLIMIT]'
 
 
 

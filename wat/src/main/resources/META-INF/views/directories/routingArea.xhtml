@@ -31,8 +31,7 @@
                     </p:column>
 
                     <p:column headerText="Multicast" sortBy="#{rarea.multicast}" filterBy="#{rarea.multicat}">
-                        <h:outputText value="Disabled" rendered="#{!rarea.multicast}"/>
-                        <h:outputText value="Enabled" rendered="#{rarea.multicast}"/>
+                        <h:outputText value="#{rarea.multicast}"/>
                     </p:column>
 
                     <p:column headerText="Type" sortBy="#{rarea.type}" filterBy="#{rarea.type}">
@@ -65,14 +64,14 @@
 
                             <h:outputText value="Multicast : " styleClass="inputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwRarea:update')}">
-                                <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="0" cellspacing="0" styleClass="ui-widget-content grid" style="border-color: transparent">
-                                    <p:selectOneButton value="#{rarea.multicast}">
-                                        <f:selectItem itemLabel="Disabled" itemValue="false" />
-                                        <f:selectItem itemLabel="Enabled" itemValue="true" />
-                                    </p:selectOneButton>
-                                    <p:commandButton value="save" process="@form" actionListener="#{routingAreasListController.update(rarea)}"
-                                                     update="@form,:rareaTableForm:rareaTableMessages" icon="ui-icon-check" />
-                                </h:panelGrid>
+                                <p:inplace label="#{rarea.multicast}" effectSpeed="fast" editor="true">
+                                    <h:selectOneMenu value="#{rarea.multicast}">
+                                        <f:selectItems value="#{routingAreasListController.getAllRoutingAreaMulticastFlagsForSelector()}"  var="raM"
+                                                       itemLabel="#{raM}" itemValue="#{raM}"/>
+                                    </h:selectOneMenu>
+                                    <p:ajax event="save" listener="#{routingAreasListController.update(rarea)}"
+                                            update="@form,:rareaTableForm:rareaTableMessages"/>
+                                </p:inplace>
                             </h:form>
                             <h:outputText value="#{rarea.multicast}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwRarea:update'))}"/>
 

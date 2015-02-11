@@ -25,7 +25,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,6 +41,37 @@ public class RoutingArea implements Serializable
     public static String ROUTING_AREA_MAN_TYPE = "MAN";
     @Transient
     public static String ROUTING_AREA_WAN_TYPE = "WAN";
+
+    public static boolean isValidType(String type) {
+        return (type!=null && (type.equals(ROUTING_AREA_LAN_TYPE) || type.equals(ROUTING_AREA_MAN_TYPE) || type.equals(ROUTING_AREA_WAN_TYPE)));
+    }
+
+    public static List<String> getTypeList() {
+        ArrayList<String> ret = new ArrayList<>();
+        ret.add(ROUTING_AREA_LAN_TYPE);
+        ret.add(ROUTING_AREA_MAN_TYPE);
+        ret.add(ROUTING_AREA_WAN_TYPE);
+        return ret;
+    }
+
+    @Transient
+    public static String ROUTING_AREA_MULTICAST_NONE = "NONE";
+    @Transient
+    public static String ROUTING_AREA_MULTICAST_FILTERED = "FILTERED";
+    @Transient
+    public static String ROUTING_AREA_MULTICAST_NOLIMIT = "NOLIMIT";
+
+    public static boolean isValidMulticastFlag(String multicastFlag) {
+        return (multicastFlag!=null && (multicastFlag.equals(ROUTING_AREA_MULTICAST_FILTERED) || multicastFlag.equals(ROUTING_AREA_MULTICAST_NOLIMIT) || multicastFlag.equals(ROUTING_AREA_MULTICAST_NONE)));
+    }
+
+    public static List<String> getMulticastFlagList() {
+        ArrayList<String> ret = new ArrayList<>();
+        ret.add(ROUTING_AREA_MULTICAST_NONE);
+        ret.add(ROUTING_AREA_MULTICAST_FILTERED);
+        ret.add(ROUTING_AREA_MULTICAST_NOLIMIT);
+        return ret;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -56,7 +89,7 @@ public class RoutingArea implements Serializable
     private String description;
 
     @Column
-    private boolean multicast;
+    private String multicast;
 
     @Column
     private String type;
@@ -147,15 +180,15 @@ public class RoutingArea implements Serializable
         return this;
     }
 
-    public boolean isMulticast() {
+    public String getMulticast() {
         return multicast;
     }
 
-    public void setMulticast(boolean multicast) {
+    public void setMulticast(String multicast) {
         this.multicast = multicast;
     }
 
-    public RoutingArea setMulticastR(boolean multicast) {
+    public RoutingArea setMulticastR(String multicast) {
         this.multicast = multicast;
         return this;
     }
