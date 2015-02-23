@@ -121,7 +121,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
         MAIN_MENU_DIRECTORY_CONTEXT = portalPluginFacesMBeanRegistry.getRegisteredServletContext().getContextPath()+"/";
 
         try {
-            MainMenuEntity mainMenuEntity = new MainMenuEntity("directoriesMItem", "Directories", MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/main.jsf", MenuEntityType.TYPE_MENU_ITEM, MAIN_MENU_DIR_RANK, "icon-book icon-large");
+            MainMenuEntity mainMenuEntity = new MainMenuEntity("directoriesMItem", "Directories", MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/main.jsf", MenuEntityType.TYPE_MENU_ITEM, MAIN_MENU_DIR_RANK, "icon-directories-ariane");
             mainMenuEntity.getDisplayRoles().add("ntwadmin");
             mainMenuEntity.getDisplayRoles().add("sysadmin");
             mainMenuEntity.getDisplayRoles().add("orgadmin");
@@ -168,7 +168,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
             commonRootTreeMenuEntity.addChildTreeMenuEntity(organisationalTreeMenuEntity);
 
 
-            organisationalTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("applicationTreeID").setValue("Application").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("icon-cogs").
+            organisationalTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("applicationTreeID").setValue("Application").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("arianeico-appplications-ariane").
                                                                                      setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/application.jsf").
                                                                                      setDescription("Your IT applications definitions").
                                                                                      addDisplayRole("orgadmin").addDisplayRole("orgreviewer").addDisplayPermission("dirComOrgApp:display")).
@@ -176,7 +176,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                                      setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/team.jsf").
                                                                                      setDescription("Your teams (ops, devs, ...) definitions").
                                                                                      addDisplayRole("orgreviewer").addDisplayRole("orgadmin").addDisplayPermission("dirComOrgTeam:display")).
-                                         addChildTreeMenuEntity(new TreeMenuEntity().setId("companyTreeID").setValue("Company").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("icon-building").
+                                         addChildTreeMenuEntity(new TreeMenuEntity().setId("companyTreeID").setValue("Company").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("arianeico-datacenter-ariane").
                                                                                      setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/company.jsf").
                                                                                      setDescription("Definition of companies involved in your IT system (yours included)").
                                                                                      addDisplayRole("orgreviewer").addDisplayRole("orgadmin").addDisplayPermission("dirComOrgCompany:display")).
@@ -206,11 +206,11 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/datacenter.jsf").
                                                                               setDescription("Your datacenters definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                               addDisplayPermission("dirComITiNtwDC:display")).
-                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("subnetTreeID").setValue("Subnet").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-road").
+                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("subnetTreeID").setValue("Subnet").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("arianeico-subnet-ariane").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/subnet.jsf").
                                                                               setDescription("Your subnets definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                               addDisplayPermission("dirComITiNtwSubnet:display")).
-                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("multicastAreaTreeID").setValue("Routing Area").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-asterisk").
+                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("multicastAreaTreeID").setValue("Routing Area").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("arianeico-routingarea-ariane").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/routingArea.jsf").
                                                                               setDescription("Your routing areas definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                               addDisplayPermission("dirComITiNtwRarea:display"));
@@ -222,7 +222,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                        addDisplayRole("sysreviewer").addDisplayRole("sysadmin").addDisplayPermission("dirComITiSysOsi:display").
                                                                        addDisplayPermission("dirComITiSysOst:display");
             technicalTreeMenuEntity.addChildTreeMenuEntity(systemTreeMenuEntity);
-            systemTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("OSInstanceTreeID").setValue("OS Instance").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-cogs").
+            systemTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("OSInstanceTreeID").setValue("OS Instance").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("arianeico-os-instances-ariane").
                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/OSInstance.jsf").
                                                                              setDescription("Your OS instances definitions").addDisplayRole("sysreviewer").addDisplayRole("sysadmin").
                                                                              addDisplayPermission("dirComITiSysOsi:display")).
