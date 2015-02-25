@@ -176,7 +176,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                                      setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/team.jsf").
                                                                                      setDescription("Your teams (ops, devs, ...) definitions").
                                                                                      addDisplayRole("orgreviewer").addDisplayRole("orgadmin").addDisplayPermission("dirComOrgTeam:display")).
-                                         addChildTreeMenuEntity(new TreeMenuEntity().setId("companyTreeID").setValue("Company").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("arianeico-datacenter-ariane").
+                                         addChildTreeMenuEntity(new TreeMenuEntity().setId("companyTreeID").setValue("Company").setParentTreeMenuEntity(organisationalTreeMenuEntity).setIcon("icon-building").
                                                                                      setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/company.jsf").
                                                                                      setDescription("Definition of companies involved in your IT system (yours included)").
                                                                                      addDisplayRole("orgreviewer").addDisplayRole("orgadmin").addDisplayPermission("dirComOrgCompany:display")).
@@ -202,7 +202,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                         addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                         addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwRarea:display");
             technicalTreeMenuEntity.addChildTreeMenuEntity(networkTreeMenuEntity);
-            networkTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("datacenterTreeID").setValue("Datacenter").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-building").
+            networkTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("datacenterTreeID").setValue("Datacenter").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("arianeico-datacenter-ariane").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/datacenter.jsf").
                                                                               setDescription("Your datacenters definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                               addDisplayPermission("dirComITiNtwDC:display")).
