@@ -139,7 +139,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
             mainMenuEntity.getDisplayPermissions().add("dirComOrgTeam:display");
 
             directoryMainMenuEntityList.add(mainMenuEntity);
-            mainMenuEntityRegistry.registerMainMenuEntity(mainMenuEntity);
+            mainMenuEntityRegistry.registerMainLeftMenuEntity(mainMenuEntity);
             treeMenuRootsRegistry.setLinkedMainMenuEntity(mainMenuEntity);
             log.debug("{} has registered its main menu items", new Object[]{DIRECTORY_COMPONENT});
         } catch (Exception e) {
@@ -244,7 +244,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
     public void invalidate() throws Exception {
         if (mainMenuEntityRegistry!=null) {
             for(MainMenuEntity entity : directoryMainMenuEntityList) {
-                mainMenuEntityRegistry.unregisterMainMenuEntity(entity);
+                mainMenuEntityRegistry.unregisterMainLeftMenuEntity(entity);
             }
         }
         directoryMainMenuEntityList.clear();
