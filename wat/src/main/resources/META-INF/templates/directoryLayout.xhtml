@@ -4,20 +4,42 @@
       xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/templates/mainLayout.xhtml">
     <ui:define name="moduleContent">
-        <p:layout id="directoriesLayout" widgetVar="directoriesLW">
-            <p:ajax event="toggle" listener="#{directoryLayoutController.onToggle}" />
-            <p:layoutUnit id="directoriesMenu" position="west" size="320" header="Directories menu" resizable="true"
-                          collapsible="true" effect="fade" collapsed="#{directoriesLayoutController.collapsed}">
-                <h:form id="dirMenuForm">
-                    <p:panelMenu model="#{directoryMenuController.model}" style="border:0;margin:0;padding:0"/>
-                </h:form>
-            </p:layoutUnit>
-            <p:layoutUnit position="center" resizable="false">
-                <p:breadCrumb model="#{directoryBreadCrumController.model}" style="border:0;margin:0;padding:0"/>
-                <br/><br/>
-                <ui:insert name="directoryContent"></ui:insert>
-            </p:layoutUnit>
-        </p:layout>
+        <div id="directoryBg" class="backgroundDirectory">
+            <p:layout id="directoriesLayout" widgetVar="directoriesLW">
+                <p:ajax event="toggle" listener="#{directoryLayoutController.onToggle}" />
+                <p:layoutUnit id="directoriesMenu" position="west" size="320" header="Directories menu" resizable="true"
+                              collapsible="true" effect="fade" collapsed="#{directoriesLayoutController.collapsed}">
+                    <h:form id="dirMenuForm">
+                        <p:panelMenu model="#{directoryMenuController.model}" styleClass="dirPanelMenu"/>
+                    </h:form>
+                </p:layoutUnit>
+                <p:layoutUnit id="directoryContent" position="center" resizable="false">
+                    <p:breadCrumb model="#{directoryBreadCrumController.model}" styleClass="dirBreadCrumb"/>
+                    <br/><br/>
+                    <ui:insert name="directoryContent"></ui:insert>
+                </p:layoutUnit>
+            </p:layout>
+        </div>
+        <script type="application/javascript">
+            var readyStateCheckIntervalDir = setInterval(function(){
+                if (document.readyState === "complete") {
+                    clearInterval(readyStateCheckIntervalDir);
+                    var bg = $("#directoryBg").css("background");
+                    if (bg.indexOf("bg-ariane-directory.jpg") > -1)
+                        $("#directoryBg").css({height: $(document).height() - 42});
+                    else
+                        $("#directoryBg").css({height: $(document).height() - 48});
+                }
+            }, 100);
+
+            window.onresize = function(event) {
+                var bg = $("#directoryBg").css("background");
+                if (bg.indexOf("bg-ariane-directory.jpg") > -1)
+                    $("#directoryBg").css({height: $(document).height() - 42});
+                else
+                    $("#directoryBg").css({height: $(document).height() - 48});
+            };
+        </script>
     </ui:define>
 </ui:composition>
 </html>

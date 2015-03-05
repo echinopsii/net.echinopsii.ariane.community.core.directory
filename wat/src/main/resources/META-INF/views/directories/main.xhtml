@@ -6,8 +6,8 @@
 <ui:composition template="/templates/mainLayout.xhtml">
 	    <ui:define name="moduleContent">
 	        <!--TODO : parameters columns on userProfile preference -->
-	        <div class="backgroundDirectory">
-		        <div align="center" style="vertical-align: middle">
+	        <div id="directoryBg" class="backgroundDirectory">
+		        <div align="center" style="vertical-align: middle" class="sectionMenu">
 		            <ui:repeat value="#{directoryDashboardController.dashboardColumn}" var="column">
 		                <br/><br/><br/>
 		                <p:carousel id="basicCarousel" value="#{directoryDashboardController.getColumnWidgets(column)}" var="widget" itemStyle="width:350px" numVisible="3">
@@ -26,8 +26,28 @@
 		                </p:carousel>
 		            </ui:repeat>
 				</div>
-			</div><!-- end .backgroundDirectory -->	   
-	        <br/><br/>
+                <br/><br/>
+            </div><!-- end .backgroundDirectory -->
+            <script type="application/javascript">
+                var readyStateCheckIntervalDir = setInterval(function(){
+                    if (document.readyState === "complete") {
+                        clearInterval(readyStateCheckIntervalDir);
+                        var bg = $("#directoryBg").css("background");
+                        if (bg.indexOf("bg-ariane-directory.jpg") > -1)
+                            $("#directoryBg").css({height: $(document).height() - 42});
+                        else
+                            $("#directoryBg").css({height: $(document).height() - 48});
+                    }
+                }, 100);
+
+                window.onresize = function(event) {
+                    var bg = $("#directoryBg").css("background");
+                    if (bg.indexOf("bg-ariane-directory.jpg") > -1)
+                        $("#directoryBg").css({height: $(document).height() - 42});
+                    else
+                        $("#directoryBg").css({height: $(document).height() - 48});
+                };
+            </script>
 	    </ui:define>
 </ui:composition>
 </html>
