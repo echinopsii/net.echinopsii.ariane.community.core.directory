@@ -34,7 +34,7 @@
                         clearInterval(readyStateCheckIntervalDir);
                         var bg = $("#directoryBg").css("background");
                         if (bg.indexOf("bg-ariane-directory.jpg") > -1)
-                            $("#directoryBg").css({height: $(document).height() - 42});
+                            $("#directoryBg").css({height: $(document).height() - 43});
                         else
                             $("#directoryBg").css({height: $(document).height() - 48});
                     }
@@ -43,7 +43,7 @@
                 window.onresize = function(event) {
                     var bg = $("#directoryBg").css("background");
                     if (bg.indexOf("bg-ariane-directory.jpg") > -1)
-                        $("#directoryBg").css({height: $(document).height() - 42});
+                        $("#directoryBg").css({height: $(document).height() - 43});
                     else
                         $("#directoryBg").css({height: $(document).height() - 48});
                 };
