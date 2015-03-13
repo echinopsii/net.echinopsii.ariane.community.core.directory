@@ -11,7 +11,7 @@
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiNtwSubnet:display')}">
 
-            <h:form id="subnetTableForm">
+            <h:form id="subnetTableForm" styleClass="arianeTransparentBg0-uiwc">
                 <p:growl id="subnetTableMessages" showDetail="true" />
                 <p:dataTable id="subnetTable" var="subnet" value="#{subnetsListController.lazyModel}"
                              selectionMode="multiple" selection="#{subnetsListController.selectedSubnetList}" rowKey="#{subnet.id}"

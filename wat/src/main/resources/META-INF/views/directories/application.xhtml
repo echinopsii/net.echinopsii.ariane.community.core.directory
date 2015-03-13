@@ -11,7 +11,7 @@
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComOrgApp:display')}">
 
-            <h:form id="applicationTableForm">
+            <h:form id="applicationTableForm" styleClass="arianeTransparentBg0-uiwc">
                 <p:growl id="applicationTableMessages" showDetail="true" />
                 <p:dataTable id="applicationTable" var="app" value="#{applicationsListController.lazyModel}"
                              selectionMode="multiple" selection="#{applicationsListController.selectedApplicationList}" rowKey="#{app.id}"

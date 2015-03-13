@@ -10,7 +10,7 @@
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiSysOsi:display')}">
-            <h:form id="osInstanceTableForm">
+            <h:form id="osInstanceTableForm" styleClass="arianeTransparentBg0-uiwc">
             <p:growl id="osInstanceTableMessages" showDetail="true" />
             <p:dataTable id="osInstanceTable" var="osi" value="#{OSInstancesListController.lazyModel}"
                          selectionMode="multiple" selection="#{OSInstancesListController.selectedOSInstanceList}" rowKey="#{osi.id}"

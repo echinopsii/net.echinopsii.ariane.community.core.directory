@@ -10,7 +10,7 @@
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComOrgTeam:display')}">
-            <h:form id="teamTableForm">
+            <h:form id="teamTableForm" styleClass="arianeTransparentBg0-uiwc">
                 <p:growl id="teamTableMessages" showDetail="true" />
                 <p:dataTable id="teamTable" var="team" value="#{teamsListController.lazyModel}"
                              selectionMode="multiple" selection="#{teamsListController.selectedTeamList}" rowKey="#{team.id}"

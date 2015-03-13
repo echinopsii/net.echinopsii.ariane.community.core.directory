@@ -11,7 +11,7 @@
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiSysOst:display')}">
 
-            <h:form id="osTypeTableForm">
+            <h:form id="osTypeTableForm" styleClass="arianeTransparentBg0-uiwc">
                 <p:growl id="osTypeTableMessages" showDetail="true" />
                 <p:dataTable id="osTypeTable" var="ost" value="#{OSTypesListController.lazyModel}"
                              selectionMode="multiple" selection="#{OSTypesListController.selectedOSTypeList}" rowKey="#{ost.id}"

@@ -10,7 +10,7 @@
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiNtwRarea:display')}">
-            <h:form id="rareaTableForm">
+            <h:form id="rareaTableForm" styleClass="arianeTransparentBg0-uiwc">
                 <p:growl id="rareaTableMessages" showDetail="true" />
                 <p:dataTable id="rareaTable" var="rarea" value="#{routingAreasListController.lazyModel}"
                              selectionMode="multiple" selection="#{routingAreasListController.selectedRareaList}" rowKey="#{rarea.id}"

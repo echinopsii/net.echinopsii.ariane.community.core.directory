@@ -10,7 +10,7 @@
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComOrgEnvironment:display')}">
-            <h:form id="environmentTableForm">
+            <h:form id="environmentTableForm" styleClass="arianeTransparentBg0-uiwc">
                 <p:growl id="environmentTableMessages" showDetail="true" />
                 <p:dataTable id="environmentTable" var="env" value="#{environmentsListController.lazyModel}"
                              selectionMode="multiple" selection="#{environmentsListController.selectedEnvironmentList}" rowKey="#{env.id}"
