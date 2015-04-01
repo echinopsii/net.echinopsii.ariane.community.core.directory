@@ -64,7 +64,7 @@ public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
     private HibernateOSGiService hibernateOSGiService = null;
 
     private static boolean isConfigurationValid() {
-        if (hibernateConf.containsKey("hibernate.connection.password"))
+        if (hibernateConf.containsKey("hibernate.connection.password") && hibernateConf.containsKey(org.hibernate.jpa.AvailableSettings.SCANNER))
             return true;
         else
             return false;
