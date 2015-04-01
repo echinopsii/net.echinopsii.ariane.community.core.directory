@@ -101,7 +101,7 @@ public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
 
     @Validate
     public void validate() throws InterruptedException {
-        while (persistenceProvider==null && isConfigurationValid()) {
+        while (persistenceProvider==null && !isConfigurationValid()) {
             log.debug("Persistence provider or valid config is missing for {}. Sleep some times...", DIRECTORY_TXPERSISTENCE_PERSISTENCE_UNIT_NAME);
             Thread.sleep(10);
         }
