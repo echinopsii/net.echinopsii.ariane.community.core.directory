@@ -11,9 +11,9 @@
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiNtwDC:display')}">
 
-            <h:form id="datacenterTableForm" styleClass="arianeTransparentBg0-uiwc">
+            <h:form id="datacenterTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="dcTableMessages" showDetail="true" />
-                <p:dataTable id="datacenterTable" var="datacenter" value="#{datacentersListController.lazyModel}"
+                <p:dataTable id="datacenterTable" styleClass="arianeTableRow" var="datacenter" value="#{datacentersListController.lazyModel}"
                              selectionMode="multiple" selection="#{datacentersListController.selectedDCList}" rowKey="#{datacenter.id}"
                              paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                              rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
