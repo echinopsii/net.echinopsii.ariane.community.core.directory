@@ -196,7 +196,7 @@
                 </p:dataTable>
             </h:form>
 
-            <p:dialog header="Confirm your remove order !" widgetVar="dcRemoveDialog"
+            <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="dcRemoveDialog"
                       width="450" showEffect="fade" hideEffect="explode">
                 <h:form id="removeDCDialogForm">
                     <h:outputText value="Are you sure you want delete following datacenter ?" styleClass="inputTitle"/><br/>
@@ -242,7 +242,7 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Create a new datacenter" widgetVar="dcCreateDialog"
+            <p:dialog styleClass="arianeDialog" header="Create a new datacenter" widgetVar="dcCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode">
                 <h:form id="createDCDialogForm">
                     <ui:insert name="createDatacenter" >
