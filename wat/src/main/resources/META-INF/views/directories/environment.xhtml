@@ -98,7 +98,7 @@
 
 
             <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="environmentRemoveDialog"
-                      width="500" showEffect="fade" hideEffect="explode">
+                      width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeEnvironmentDialogForm">
                     <h:outputText value="Are you sure you want delete following environment ?" styleClass="inputTitle"/><br/>
                     <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
@@ -130,7 +130,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new environment" widgetVar="environmentCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createEnvironmentDialogForm">
                     <ui:insert name="createEnvironment" >
                         <ui:include src="/templates/environmentNewForm.xhtml" />

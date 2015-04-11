@@ -169,7 +169,7 @@
             </h:form>
 
             <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="rareaRemoveDialog"
-                      width="500" showEffect="fade" hideEffect="explode">
+                      width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeRareaDialogForm">
                     <h:outputText value="Are you sure you want delete following multicast area ?" styleClass="inputTitle"/><br/>
                     <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
@@ -224,7 +224,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new multicast area" widgetVar="rareaCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createRareaDialogForm">
                     <ui:insert name="createMulticastArea" >
                         <ui:include src="/templates/routingAreaNewForm.xhtml" />
@@ -236,7 +236,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new datacenter" widgetVar="dcCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="creatDCDialogForm">
                     <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
