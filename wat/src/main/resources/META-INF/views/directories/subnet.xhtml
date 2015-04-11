@@ -11,9 +11,9 @@
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiNtwSubnet:display')}">
 
-            <h:form id="subnetTableForm" styleClass="arianeTransparentBg0-uiwc">
+            <h:form id="subnetTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="subnetTableMessages" showDetail="true" />
-                <p:dataTable id="subnetTable" var="subnet" value="#{subnetsListController.lazyModel}"
+                <p:dataTable id="subnetTable" styleClass="arianeTableRow" var="subnet" value="#{subnetsListController.lazyModel}"
                              selectionMode="multiple" selection="#{subnetsListController.selectedSubnetList}" rowKey="#{subnet.id}"
                              paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                              rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
@@ -48,7 +48,7 @@
                     </p:column>
 
                     <p:rowExpansion>
-                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
                             <h:outputText value="Name : " styleClass="inputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">

@@ -10,9 +10,9 @@
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComOrgEnvironment:display')}">
-            <h:form id="environmentTableForm" styleClass="arianeTransparentBg0-uiwc">
+            <h:form id="environmentTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="environmentTableMessages" showDetail="true" />
-                <p:dataTable id="environmentTable" var="env" value="#{environmentsListController.lazyModel}"
+                <p:dataTable id="environmentTable" styleClass="arianeTableRow" var="env" value="#{environmentsListController.lazyModel}"
                              selectionMode="multiple" selection="#{environmentsListController.selectedEnvironmentList}" rowKey="#{env.id}"
                              paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                              rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
@@ -35,7 +35,7 @@
                     </p:column>
 
                     <p:rowExpansion>
-                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
                             <h:outputText value="Name : " styleClass="inputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgEnvironment:update')}">
                                 <p:inplace editor="true">

@@ -10,9 +10,9 @@
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComOrgTeam:display')}">
-            <h:form id="teamTableForm" styleClass="arianeTransparentBg0-uiwc">
+            <h:form id="teamTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="teamTableMessages" showDetail="true" />
-                <p:dataTable id="teamTable" var="team" value="#{teamsListController.lazyModel}"
+                <p:dataTable id="teamTable" styleClass="arianeTableRow" var="team" value="#{teamsListController.lazyModel}"
                              selectionMode="multiple" selection="#{teamsListController.selectedTeamList}" rowKey="#{team.id}"
                              paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                              rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
@@ -39,7 +39,7 @@
                     </p:column>
 
                     <p:rowExpansion>
-                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
                             <h:outputText value="Name : " styleClass="inputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgTeam:update')}">
                                 <p:inplace editor="true">

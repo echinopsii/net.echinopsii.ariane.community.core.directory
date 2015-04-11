@@ -11,9 +11,9 @@
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiSysOst:display')}">
 
-            <h:form id="osTypeTableForm" styleClass="arianeTransparentBg0-uiwc">
+            <h:form id="osTypeTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="osTypeTableMessages" showDetail="true" />
-                <p:dataTable id="osTypeTable" var="ost" value="#{OSTypesListController.lazyModel}"
+                <p:dataTable id="osTypeTable" styleClass="arianeTableRow" var="ost" value="#{OSTypesListController.lazyModel}"
                              selectionMode="multiple" selection="#{OSTypesListController.selectedOSTypeList}" rowKey="#{ost.id}"
                              paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                              rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
@@ -40,7 +40,7 @@
                     </p:column>
 
                     <p:rowExpansion>
-                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
                             <h:outputText value="Name : " styleClass="inputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOst:update')}">
                                 <p:inplace editor="true">

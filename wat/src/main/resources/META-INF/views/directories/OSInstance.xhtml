@@ -10,9 +10,9 @@
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiSysOsi:display')}">
-            <h:form id="osInstanceTableForm" styleClass="arianeTransparentBg0-uiwc">
+            <h:form id="osInstanceTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
             <p:growl id="osInstanceTableMessages" showDetail="true" />
-            <p:dataTable id="osInstanceTable" var="osi" value="#{OSInstancesListController.lazyModel}"
+            <p:dataTable id="osInstanceTable" styleClass="arianeTableRow" var="osi" value="#{OSInstancesListController.lazyModel}"
                          selectionMode="multiple" selection="#{OSInstancesListController.selectedOSInstanceList}" rowKey="#{osi.id}"
                          paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                          rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
@@ -39,7 +39,7 @@
             </p:column>
 
             <p:rowExpansion>
-                <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="ui-widget-content grid">
+                <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
                     <h:outputText value="Name : " styleClass="inputTitle"/>
                     <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace editor="true">
