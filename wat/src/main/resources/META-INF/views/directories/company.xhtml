@@ -127,7 +127,7 @@
 
 
             <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="companyRemoveDialog"
-                      width="500" showEffect="fade" hideEffect="explode">
+                      width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeCompanyDialogForm">
                     <h:outputText value="Are you sure you want delete following company ?" styleClass="inputTitle"/><br/>
                     <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
@@ -159,7 +159,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new company" widgetVar="companyCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createCompanyDialogForm">
                     <ui:insert name="createCompany" >
                         <ui:include src="/templates/companyNewForm.xhtml" />

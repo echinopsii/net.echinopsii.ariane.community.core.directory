@@ -197,7 +197,7 @@
             </h:form>
 
             <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="dcRemoveDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeDCDialogForm">
                     <h:outputText value="Are you sure you want delete following datacenter ?" styleClass="inputTitle"/><br/>
                     <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
@@ -243,7 +243,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new datacenter" widgetVar="dcCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createDCDialogForm">
                     <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />

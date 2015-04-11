@@ -115,7 +115,7 @@
 
 
             <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="osTypeRemoveDialog"
-                      width="500" showEffect="fade" hideEffect="explode">
+                      width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeOSTypeDialogForm">
                     <h:outputText value="Are you sure you want delete following OS type ?" styleClass="inputTitle"/><br/>
                     <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
@@ -147,7 +147,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new OS type" widgetVar="osTypeCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createOSTypeDialogForm">
                     <ui:insert name="createOSType" >
                         <ui:include src="/templates/osTypeNewForm.xhtml" />
@@ -159,7 +159,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new company" widgetVar="companyCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createCompanyDialogForm">
                     <ui:insert name="createCompany" >
                         <ui:include src="/templates/companyNewForm.xhtml" />

@@ -190,7 +190,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new application" widgetVar="applicationCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createApplicationDialogForm">
                     <ui:insert name="createApplication" >
                         <ui:include src="/templates/applicationNewForm.xhtml" />
@@ -202,7 +202,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new company" widgetVar="companyCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createCompanyDialogForm">
                     <ui:insert name="createCompany" >
                         <ui:include src="/templates/companyNewForm.xhtml" />
@@ -214,7 +214,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new team" widgetVar="teamCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createTeamDialogForm">
                     <ui:insert name="createTeam" >
                         <ui:include src="/templates/teamNewForm.xhtml" />

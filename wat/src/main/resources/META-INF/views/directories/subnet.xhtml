@@ -173,7 +173,7 @@
             </h:form>
 
             <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="subnetRemoveDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeSubnetDialogForm">
                     <h:outputText value="Are you sure you want delete following subnet ?" styleClass="inputTitle"/><br/>
                     <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
@@ -233,7 +233,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new subnet" widgetVar="subnetCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createSubnetDialogForm">
                     <ui:insert name="createSubnet" >
                         <ui:include src="/templates/subnetNewForm.xhtml" />
@@ -245,7 +245,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new routing area" widgetVar="rareaCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createMareaDialogForm">
                     <ui:insert name="createRoutingArea" >
                         <ui:include src="/templates/routingAreaNewForm.xhtml" />
@@ -257,7 +257,7 @@
             </p:dialog>
 
             <p:dialog styleClass="arianeDialog" header="Create a new datacenter" widgetVar="dcCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode">
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="creatDCDialogForm">
                     <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
