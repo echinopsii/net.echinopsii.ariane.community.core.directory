@@ -5,10 +5,10 @@
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
     <h:panelGrid id="rareaNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
-        <h:outputText value="Name : " styleClass="inputTitle"/>
+        <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="name" label="Name" required="true" value="#{routingAreaNewController.name}"/>
 
-        <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+        <h:outputText value="Datacenters : " styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="dcCreateDialog.show()">
                 <h:outputText value=" create new datacenter"/>
@@ -19,19 +19,19 @@
             </p:selectManyMenu>
         </h:panelGroup>
 
-        <h:outputText value="Multicast : " styleClass="inputTitle"/>
+        <h:outputText value="Multicast : " styleClass="arianeDialogInputTitle"/>
         <h:selectOneMenu label="Select the routing area multicast flag" value="#{routingAreaNewController.multicast}">
             <f:selectItems value="#{routingAreasListController.getAllRoutingAreaMulticastFlagsForSelector()}"  var="raM"
                            itemLabel="#{raM}" itemValue="#{raM}"/>
         </h:selectOneMenu>
 
-        <h:outputText value="Type : " styleClass="inputTitle"/>
+        <h:outputText value="Type : " styleClass="arianeDialogInputTitle"/>
         <h:selectOneMenu label="Select the routing area type" value="#{routingAreaNewController.type}">
             <f:selectItems value="#{routingAreasListController.getAllRoutingAreaTypesForSelector()}"  var="raT"
                            itemLabel="#{raT}" itemValue="#{raT}"/>
         </h:selectOneMenu>
 
-        <h:outputText value="Description : " styleClass="inputTitle"/>
+        <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="description" label="Description" required="true" value="#{routingAreaNewController.description}"/>
 
     </h:panelGrid>

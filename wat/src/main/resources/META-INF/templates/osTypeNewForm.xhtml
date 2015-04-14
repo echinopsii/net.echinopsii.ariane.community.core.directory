@@ -5,10 +5,10 @@
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
     <h:panelGrid id="osTypeNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
-        <h:outputText value="Name : " styleClass="inputTitle"/>
+        <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="name" label="Name" required="true" value="#{OSTypeNewController.name}"/>
 
-        <h:outputText value="Supporting company : " styleClass="inputTitle"/>
+        <h:outputText value="Supporting company : " styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="companyCreateDialog.show()">
                 <h:outputText value=" create new company"/>
@@ -19,7 +19,7 @@
             </h:selectOneMenu>
         </h:panelGroup>
 
-        <h:outputText value="Architecture : " styleClass="inputTitle"/>
+        <h:outputText value="Architecture : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="architecture" label="Architecture" required="true" value="#{OSTypeNewController.architecture}"/>
 
     </h:panelGrid>

@@ -97,14 +97,14 @@
 
 
 
-            <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="environmentRemoveDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="environmentRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeEnvironmentDialogForm">
                     <h:outputText value="Are you sure you want delete following environment ?" styleClass="inputTitle"/><br/>
-                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{environmentsListController.delete}" oncomplete="environmentRemoveDialog.hide();"
                                      update=":environmentTableForm:environmentTable,:environmentTableForm:environmentTableMessages"/>
-                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="environmentRemoveDialog.hide();"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtons" icon="ui-icon-close" onclick="environmentRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
                                 value="#{environmentsListController.selectedEnvironmentList}"
@@ -129,13 +129,13 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new environment" widgetVar="environmentCreateDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Create a new environment" widgetVar="environmentCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createEnvironmentDialogForm">
                     <ui:insert name="createEnvironment" >
                         <ui:include src="/templates/environmentNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this environment" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this environment" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{environmentNewController.save}" oncomplete="environmentCreateDialog.hide();"
                                      update=":environmentTableForm:environmentTable,:environmentTableForm:environmentTableMessages"/>
                 </h:form>

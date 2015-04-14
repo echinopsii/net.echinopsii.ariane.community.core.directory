@@ -157,14 +157,14 @@
 
 
 
-            <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="applicationRemoveDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="applicationRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode">
                 <h:form id="removeApplicationDialogForm">
                     <h:outputText value="Are you sure you want delete following Application ?" styleClass="inputTitle"/><br/>
-                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{applicationsListController.delete}" oncomplete="applicationRemoveDialog.hide();"
                                      update=":applicationTableForm:applicationTable,:applicationTableForm:applicationTableMessages"/>
-                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="applicationRemoveDialog.hide();"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtons" icon="ui-icon-close" onclick="applicationRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
                                 value="#{applicationsListController.selectedApplicationList}"
@@ -189,37 +189,37 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new application" widgetVar="applicationCreateDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Create a new application" widgetVar="applicationCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createApplicationDialogForm">
                     <ui:insert name="createApplication" >
                         <ui:include src="/templates/applicationNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this application" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this application" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{applicationNewController.save}" oncomplete="applicationCreateDialog.hide();"
                                      update=":applicationTableForm:applicationTable,:applicationTableForm:applicationTableMessages"/>
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new company" widgetVar="companyCreateDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Create a new company" widgetVar="companyCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createCompanyDialogForm">
                     <ui:insert name="createCompany" >
                         <ui:include src="/templates/companyNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this company" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this company" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{companyNewController.save}" oncomplete="companyCreateDialog.hide();"
                                      update=":createApplicationDialogForm:applicationNewGrid,:applicationTableForm:applicationTableMessages"/>
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new team" widgetVar="teamCreateDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Create a new team" widgetVar="teamCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createTeamDialogForm">
                     <ui:insert name="createTeam" >
                         <ui:include src="/templates/teamNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this team" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this team" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{teamNewController.save}" oncomplete="teamCreateDialog.hide();"
                                      update=":createApplicationDialogForm:applicationNewGrid,:applicationTableForm:applicationTableMessages"/>
                 </h:form>

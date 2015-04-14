@@ -168,14 +168,14 @@
                 </p:dataTable>
             </h:form>
 
-            <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="rareaRemoveDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="rareaRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeRareaDialogForm">
                     <h:outputText value="Are you sure you want delete following multicast area ?" styleClass="inputTitle"/><br/>
-                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{routingAreasListController.delete}" oncomplete="rareaRemoveDialog.hide();"
                                      update=":rareaTableForm:rareaTable,:rareaTableForm:rareaTableMessages"/>
-                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="rareaRemoveDialog.hide();"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtons" icon="ui-icon-close" onclick="rareaRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
                                 value="#{routingAreasListController.selectedRareaList}"
@@ -223,25 +223,25 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new multicast area" widgetVar="rareaCreateDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Create a new multicast area" widgetVar="rareaCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createRareaDialogForm">
                     <ui:insert name="createMulticastArea" >
                         <ui:include src="/templates/routingAreaNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this routing area" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this routing area" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{routingAreaNewController.save}" oncomplete="rareaCreateDialog.hide();"
                                      update=":rareaTableForm:rareaTable,:rareaTableForm:rareaTableMessages"/>
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new datacenter" widgetVar="dcCreateDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Create a new datacenter" widgetVar="dcCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="creatDCDialogForm">
                     <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this datacenter" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
                                      update=":createRareaDialogForm:rareaNewGrid,:rareaTableForm:rareaTableMessages"/>
                 </h:form>

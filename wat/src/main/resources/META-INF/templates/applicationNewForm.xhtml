@@ -6,16 +6,16 @@
 <ui:composition>
     <h:panelGrid id="applicationNewGrid" columns="2" columnClasses="colStyle30,colStyle70" cellpadding="5" styleClass="ui-widget-content grid">
 
-        <h:outputText value="Name : " styleClass="inputTitle"/>
+        <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="name" label="Name" required="true" value="#{applicationNewController.name}"/>
 
-        <h:outputText value="Short name : " styleClass="inputTitle"/>
+        <h:outputText value="Short name : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="shortName" label="shortName" required="true" value="#{applicationNewController.shortName}"/>
 
-        <h:outputText value="Color code : " styleClass="inputTitle" />
+        <h:outputText value="Color code : " styleClass="arianeDialogInputTitle" />
         <p:colorPicker id="popupCP" value="#{applicationNewController.colorCode}"/>
 
-        <h:outputText value="Supporting company : " styleClass="inputTitle"/>
+        <h:outputText value="Supporting company : " styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="companyCreateDialog.show()">
                 <h:outputText value=" create new company"/>
@@ -26,7 +26,7 @@
             </h:selectOneMenu>
         </h:panelGroup>
 
-        <h:outputText value="Supporting team : " styleClass="inputTitle"/>
+        <h:outputText value="Supporting team : " styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="teamCreateDialog.show()">
                 <h:outputText value=" create new team"/>
@@ -37,7 +37,7 @@
             </h:selectOneMenu>
         </h:panelGroup>
 
-        <h:outputText value="Description : " styleClass="inputTitle"/>
+        <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="description" label="Description" required="true" value="#{applicationNewController.description}"/>
 
     </h:panelGrid>

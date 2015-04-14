@@ -5,16 +5,16 @@
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
     <h:panelGrid id="subnetNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
-        <h:outputText value="Name : " styleClass="inputTitle"/>
+        <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="name" label="Name" required="true" value="#{subnetNewController.name}"/>
 
-        <h:outputText value="Subnet IP : " styleClass="inputTitle"/>
+        <h:outputText value="Subnet IP : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="subnetIP" label="Subnet IP" required="true" value="#{subnetNewController.subnetIP}"/>
 
-        <h:outputText value="Subnet Mask : " styleClass="inputTitle"/>
+        <h:outputText value="Subnet Mask : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="subnetMask" label="Subnet Mask" required="true" value="#{subnetNewController.subnetMask}"/>
 
-        <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+        <h:outputText value="Datacenters : " styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="dcCreateDialog.show()">
                 <h:outputText value=" create new datacenter"/>
@@ -25,7 +25,7 @@
             </p:selectManyMenu>
         </h:panelGroup>
 
-        <h:outputText value="Routing Area : " styleClass="inputTitle"/>
+        <h:outputText value="Routing Area : " styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="rareaCreateDialog.show()">
                 <h:outputText value=" create new routing area"/>
@@ -36,7 +36,7 @@
             </h:selectOneMenu>
         </h:panelGroup>
 
-        <h:outputText value="Description : " styleClass="inputTitle"/>
+        <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="description" label="Description" required="true" value="#{subnetNewController.description}"/>
     </h:panelGrid>
 

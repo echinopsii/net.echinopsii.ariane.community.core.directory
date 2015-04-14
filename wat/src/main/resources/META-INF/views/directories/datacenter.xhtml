@@ -196,14 +196,14 @@
                 </p:dataTable>
             </h:form>
 
-            <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="dcRemoveDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="dcRemoveDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeDCDialogForm">
                     <h:outputText value="Are you sure you want delete following datacenter ?" styleClass="inputTitle"/><br/>
-                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{datacentersListController.delete}" oncomplete="dcRemoveDialog.hide();"
                                      update=":datacenterTableForm:datacenterTable,:datacenterTableForm:dcTableMessages"/>
-                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="dcRemoveDialog.hide();"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtons" icon="ui-icon-close" onclick="dcRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
                                 value="#{datacentersListController.selectedDCList}"
@@ -248,7 +248,7 @@
                     <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogConfirmButton" icon="ui-icon-check"
+                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
                                      update=":datacenterTableForm:datacenterTable,:datacenterTableForm:dcTableMessages"/>
                 </h:form>

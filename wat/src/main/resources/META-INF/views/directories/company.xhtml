@@ -126,14 +126,14 @@
 
 
 
-            <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="companyRemoveDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="companyRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeCompanyDialogForm">
                     <h:outputText value="Are you sure you want delete following company ?" styleClass="inputTitle"/><br/>
-                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{companysListController.delete}" oncomplete="companyRemoveDialog.hide();"
                                      update=":companyTableForm:companyTable,:companyTableForm:companyTableMessages"/>
-                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="companyRemoveDialog.hide();"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtons" icon="ui-icon-close" onclick="companyRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
                                 value="#{companysListController.selectedCompanyList}"
@@ -158,13 +158,13 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new company" widgetVar="companyCreateDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Create a new company" widgetVar="companyCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createCompanyDialogForm">
                     <ui:insert name="createCompany" >
                         <ui:include src="/templates/companyNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this company" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this company" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{companyNewController.save}" oncomplete="companyCreateDialog.hide();"
                                      update=":companyTableForm:companyTable,:companyTableForm:companyTableMessages"/>
                 </h:form>

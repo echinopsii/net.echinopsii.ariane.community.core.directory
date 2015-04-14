@@ -114,14 +114,14 @@
 
 
 
-            <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="osTypeRemoveDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="osTypeRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeOSTypeDialogForm">
                     <h:outputText value="Are you sure you want delete following OS type ?" styleClass="inputTitle"/><br/>
-                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{OSTypesListController.delete}" oncomplete="osTypeRemoveDialog.hide();"
                                      update=":osTypeTableForm:osTypeTable,:osTypeTableForm:osTypeTableMessages"/>
-                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="osTypeRemoveDialog.hide();"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtons" icon="ui-icon-close" onclick="osTypeRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
                                 value="#{OSTypesListController.selectedOSTypeList}"
@@ -146,25 +146,25 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new OS type" widgetVar="osTypeCreateDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Create a new OS type" widgetVar="osTypeCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createOSTypeDialogForm">
                     <ui:insert name="createOSType" >
                         <ui:include src="/templates/osTypeNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this OS type" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this OS type" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{OSTypeNewController.save}" oncomplete="osTypeCreateDialog.hide();"
                                      update=":osTypeTableForm:osTypeTable,:osTypeTableForm:osTypeTableMessages"/>
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new company" widgetVar="companyCreateDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Create a new company" widgetVar="companyCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createCompanyDialogForm">
                     <ui:insert name="createCompany" >
                         <ui:include src="/templates/companyNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this company" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this company" styleClass="arianeDialogButtons" icon="ui-icon-check"
                                      actionListener="#{companyNewController.save}" oncomplete="companyCreateDialog.hide();"
                                      update=":createOSTypeDialogForm:osTypeNewGrid,:osTypeTableForm:osTypeTableMessages"/>
                 </h:form>
