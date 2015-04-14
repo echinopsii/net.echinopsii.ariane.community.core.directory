@@ -7,19 +7,19 @@
         <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="name" label="Name" required="true" value="#{datacenterNewController.name}"/>
         <h:outputText value="Address : " styleClass="arianeDialogInputTitle"/>
-        <p:inputText id="address" label="Description" required="true" value="#{datacenterNewController.address}"/>
+        <p:inputTextarea id="address" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.address}"/>
         <h:outputText value="Zip Code : " styleClass="arianeDialogInputTitle"/>
-        <p:inputText id="zipCode" label="ZipCode" required="true" value="#{datacenterNewController.zipCode}"/>
+        <p:inputMask id="zipCode" label="ZipCode" required="true" mask="9?999999999" maxlength="10" placeHolder=" " value="#{datacenterNewController.zipCode}"/>
         <h:outputText value="Town : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="town" label="Town" required="true" value="#{datacenterNewController.town}"/>
         <h:outputText value="Country : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="country" label="Country" required="true" value="#{datacenterNewController.country}"/>
         <h:outputText value="GPS latitude : " styleClass="arianeDialogInputTitle"/>
-        <p:inputText id="gpsLatitude"  label="GpsLatitude" required="true" value="#{datacenterNewController.gpsLatitude}"/>
+        <p:inputText id="gpsLatitude" label="GpsLatitude" required="true" value="#{datacenterNewController.gpsLatitude}"/>
         <h:outputText value="GPS longitude : " styleClass="arianeDialogInputTitle"/>
         <p:inputText id="gpsLongitude" label="GpsLongitude" required="true" value="#{datacenterNewController.gpsLongitude}"/>
         <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
-        <p:inputText id="description" label="Description" required="true" value="#{datacenterNewController.description}"/>
+        <p:inputTextarea id="description" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.description}"/>
     </h:panelGrid>
 </ui:composition>
 </html>
