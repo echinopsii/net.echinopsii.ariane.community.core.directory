@@ -37,7 +37,7 @@
 
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
-                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgCompany:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{cmp.name}"/>
@@ -46,7 +46,7 @@
                             </h:form>
                             <h:outputText value="#{cmp.name}" rendered="#{!arianeidm:hasPermission('dirComOrgCompany:update')}"/>
 
-                            <h:outputText value="Description : " styleClass="inputTitle"/>
+                            <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgCompany:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{cmp.description}"/>
@@ -55,7 +55,7 @@
                             </h:form>
                             <h:outputText value="#{cmp.description}" rendered="#{!arianeidm:hasPermission('dirComOrgCompany:update')}"/>
 
-                            <h:outputText value="OS Types : " styleClass="inputTitle"/>
+                            <h:outputText value="OS Types : " styleClass="arianeDialogInputTitle"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(cmp,'osTypes')}" var="ost" styleClass="ui-widget-content grid" rowKey="#{ost.id}"
                                              rows="5" paginator="true" selection="#{companysListController.removedOSTypes[cmp.id]}" selectionMode="multiple">
@@ -83,7 +83,7 @@
                                 </p:dataTable>
                             </h:form>
 
-                            <h:outputText value="Applications : " styleClass="inputTitle"/>
+                            <h:outputText value="Applications : " styleClass="arianeDialogInputTitle"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(cmp,'applications')}" var="app" styleClass="ui-widget-content grid" rowKey="#{app.id}"
                                              rows="5" paginator="true" selection="#{companysListController.removedApplications[cmp.id]}" selectionMode="multiple">
@@ -129,20 +129,20 @@
             <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="companyRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeCompanyDialogForm">
-                    <h:outputText value="Are you sure you want delete following company ?" styleClass="inputTitle"/><br/>
-                    <p:commandButton value="Yes" styleClass="arianeDialogButtons" icon="ui-icon-check"
+                    <h:outputText value="Are you sure you want delete following company ?" styleClass="arianeDialogInputTitle text-marginForMessage"/><br/>
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{companysListController.delete}" oncomplete="companyRemoveDialog.hide();"
                                      update=":companyTableForm:companyTable,:companyTableForm:companyTableMessages"/>
-                    <p:commandButton value="No" styleClass="arianeDialogButtons" icon="ui-icon-close" onclick="companyRemoveDialog.hide();"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtonNo" icon="ui-icon-close" onclick="companyRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
                                 value="#{companysListController.selectedCompanyList}"
                                 var="selectedCompany" type="definition">
                         <h:panelGrid columns="2" cellpadding="5">
-                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
                             <h:outputText value="#{selectedCompany.name}"/>
 
-                            <h:outputText value="OS Instances : " styleClass="inputTitle"/>
+                            <h:outputText value="OS Instances : " styleClass="arianeDialogInputTitle"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedCompany,'osTypes')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
@@ -164,7 +164,7 @@
                     <ui:insert name="createCompany" >
                         <ui:include src="/templates/companyNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this company" styleClass="arianeDialogButtons" icon="ui-icon-check"
+                    <p:commandButton value="Save this company" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{companyNewController.save}" oncomplete="companyCreateDialog.hide();"
                                      update=":companyTableForm:companyTable,:companyTableForm:companyTableMessages"/>
                 </h:form>

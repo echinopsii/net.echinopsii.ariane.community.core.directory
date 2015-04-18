@@ -4,15 +4,15 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
-    <h:panelGrid id="osInstanceNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
+    <h:panelGrid id="osInstanceNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
 
-        <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Name" styleClass="arianeDialogInputTitle"/>
         <p:inputText id="name" label="Name" required="true" value="#{OSInstanceNewController.name}"/>
 
-        <h:outputText value="Admin Gate URI : " styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Admin Gate URI" styleClass="arianeDialogInputTitle"/>
         <p:inputText id="AdminGateURI" label="AdminGateURI" required="true" value="#{OSInstanceNewController.adminGateURI}"/>
 
-        <h:outputText value="Type : " styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Type" styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="osTypeCreateDialog.show()">
                 <h:outputText value=" create new OS Type"/>
@@ -23,13 +23,13 @@
             </h:selectOneMenu>
         </h:panelGroup>
 
-        <h:outputText value="Embedding OS Instance : " styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Embedding OS Instance" styleClass="arianeDialogInputTitle"/>
         <h:selectOneMenu label="Select the OS instance" value="#{OSInstanceNewController.embeddingOSI}">
             <f:selectItems value="#{OSInstancesListController.getAllForSelector()}"  var="osI"
                            itemLabel="#{osI.name}" itemValue="#{osI.name}"/>
         </h:selectOneMenu>
 
-        <h:outputText value="Supporting teams : " styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Supporting teams" styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="teamCreateDialog.show()">
                 <h:outputText value=" create new team"/>
@@ -40,7 +40,7 @@
             </p:selectManyMenu>
         </h:panelGroup>
 
-        <h:outputText value="Environments : " styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Environments" styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="environmentCreateDialog.show()">
                 <h:outputText value=" create new environment"/>
@@ -51,7 +51,7 @@
             </p:selectManyMenu>
         </h:panelGroup>
 
-        <h:outputText value="Applications : " styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Applications" styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="appCreateDialog.show()">
                 <h:outputText value=" create new application"/>
@@ -62,7 +62,7 @@
             </p:selectManyMenu>
         </h:panelGroup>
 
-        <h:outputText value="Subnets : " styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Subnets" styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="subnetCreateDialog.show()">
                 <h:outputText value=" create new subnet"/>
@@ -73,7 +73,7 @@
             </p:selectManyMenu>
         </h:panelGroup>
 
-        <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Description" styleClass="arianeDialogInputTitle"/>
         <p:inputText id="description" label="description" required="true" value="#{OSInstanceNewController.description}"/>
 
     </h:panelGrid>

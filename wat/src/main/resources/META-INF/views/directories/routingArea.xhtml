@@ -44,7 +44,7 @@
 
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
-                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwRarea:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{rarea.name}"/>
@@ -53,7 +53,7 @@
                             </h:form>
                             <h:outputText value="#{rarea.name}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwRarea:update'))}"/>
 
-                            <h:outputText value="Description : " styleClass="inputTitle"/>
+                            <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwRarea:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{rarea.description}"/>
@@ -62,7 +62,7 @@
                             </h:form>
                             <h:outputText value="#{rarea.description}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwRarea:update'))}"/>
 
-                            <h:outputText value="Multicast : " styleClass="inputTitle"/>
+                            <h:outputText value="Multicast : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwRarea:update')}">
                                 <p:inplace label="#{rarea.multicast}" effectSpeed="fast" editor="true">
                                     <h:selectOneMenu value="#{rarea.multicast}">
@@ -75,7 +75,7 @@
                             </h:form>
                             <h:outputText value="#{rarea.multicast}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwRarea:update'))}"/>
 
-                            <h:outputText value="Type : " styleClass="inputTitle"/>
+                            <h:outputText value="Type : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwRarea:update')}">
                                 <p:inplace label="#{rarea.type}" effectSpeed="fast" editor="true">
                                     <h:selectOneMenu value="#{rarea.type}">
@@ -88,7 +88,7 @@
                             </h:form>
                             <h:outputText value="#{rarea.type}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwRarea:update'))}"/>
 
-                            <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+                            <h:outputText value="Datacenters : " styleClass="arianeDialogInputTitle"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(rarea,'datacenters')}" var="dc" styleClass="ui-widget-content grid" rowKey="#{dc.id}"
                                              rows="5" paginator="true" selection="#{routingAreasListController.removedDCs[rarea.id]}" selectionMode="multiple">
@@ -122,7 +122,7 @@
                                 </p:dataTable>
                             </h:form>
 
-                            <h:outputText value="Subnets : " styleClass="inputTitle"/>
+                            <h:outputText value="Subnets : " styleClass="arianeDialogInputTitle"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(rarea,'subnets')}" var="subnet" styleClass="ui-widget-content grid" rowKey="#{subnet.id}"
                                              rows="5" paginator="true" selection="#{routingAreasListController.removedSubnets[rarea.id]}" selectionMode="multiple">
@@ -171,20 +171,20 @@
             <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="rareaRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeRareaDialogForm">
-                    <h:outputText value="Are you sure you want delete following multicast area ?" styleClass="inputTitle"/><br/>
-                    <p:commandButton value="Yes" styleClass="arianeDialogButtons" icon="ui-icon-check"
+                    <h:outputText value="Are you sure you want delete following multicast area ?" styleClass="arianeDialogInputTitle text-marginForMessage"/><br/>
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{routingAreasListController.delete}" oncomplete="rareaRemoveDialog.hide();"
                                      update=":rareaTableForm:rareaTable,:rareaTableForm:rareaTableMessages"/>
-                    <p:commandButton value="No" styleClass="arianeDialogButtons" icon="ui-icon-close" onclick="rareaRemoveDialog.hide();"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtonNo" icon="ui-icon-close" onclick="rareaRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
                                 value="#{routingAreasListController.selectedRareaList}"
                                 var="selectedRarea" type="definition">
                         <h:panelGrid columns="2" cellpadding="5">
-                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
                             <h:outputText value="#{selectedRarea.name}"/>
 
-                            <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+                            <h:outputText value="Datacenters : " styleClass="arianeDialogInputTitle"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedRarea,'datacenters')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
@@ -201,7 +201,7 @@
                                 </p:column>
                             </p:dataTable>
 
-                            <h:outputText value="Subnets : " styleClass="inputTitle"/>
+                            <h:outputText value="Subnets : " styleClass="arianeDialogInputTitle"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedRarea,'subnets')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
@@ -229,7 +229,7 @@
                     <ui:insert name="createMulticastArea" >
                         <ui:include src="/templates/routingAreaNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this routing area" styleClass="arianeDialogButtons" icon="ui-icon-check"
+                    <p:commandButton value="Save this routing area" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{routingAreaNewController.save}" oncomplete="rareaCreateDialog.hide();"
                                      update=":rareaTableForm:rareaTable,:rareaTableForm:rareaTableMessages"/>
                 </h:form>
@@ -241,7 +241,7 @@
                     <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogButtons" icon="ui-icon-check"
+                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
                                      update=":createRareaDialogForm:rareaNewGrid,:rareaTableForm:rareaTableMessages"/>
                 </h:form>

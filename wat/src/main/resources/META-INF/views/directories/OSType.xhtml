@@ -41,7 +41,7 @@
 
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
-                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOst:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{ost.name}"/>
@@ -50,7 +50,7 @@
                             </h:form>
                             <h:outputText value="#{ost.name}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOst:update'))}"/>
 
-                            <h:outputText value="Architecture : " styleClass="inputTitle"/>
+                            <h:outputText value="Architecture : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOst:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{ost.architecture}"/>
@@ -59,7 +59,7 @@
                             </h:form>
                             <h:outputText value="#{ost.architecture}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOst:update'))}"/>
 
-                            <h:outputText value="Supporting company : " styleClass="inputTitle"/>
+                            <h:outputText value="Supporting company : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOst:update')}">
                                 <p:inplace label="#{OSTypesListController.getOSTypeCompanyName(ost)}" effectSpeed="fast" editor="true">
                                     <h:selectOneMenu value="#{OSTypesListController.changedCompany[ost.id]}">
@@ -71,7 +71,7 @@
                             </h:form>
                             <h:outputText value="#{OSTypesListController.getOSTypeCompanyName(ost)}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOst:update'))}"/>
 
-                            <h:outputText value="OS instances : " styleClass="inputTitle"/>
+                            <h:outputText value="OS instances : " styleClass="arianeDialogInputTitle"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(ost,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
                                              rows="5" paginator="true" selection="#{OSTypesListController.removedOSInstances[ost.id]}" selectionMode="multiple">
@@ -117,20 +117,20 @@
             <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="osTypeRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeOSTypeDialogForm">
-                    <h:outputText value="Are you sure you want delete following OS type ?" styleClass="inputTitle"/><br/>
-                    <p:commandButton value="Yes" styleClass="arianeDialogButtons" icon="ui-icon-check"
+                    <h:outputText value="Are you sure you want delete following OS type ?" styleClass="arianeDialogInputTitle text-marginForMessage"/><br/>
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{OSTypesListController.delete}" oncomplete="osTypeRemoveDialog.hide();"
                                      update=":osTypeTableForm:osTypeTable,:osTypeTableForm:osTypeTableMessages"/>
-                    <p:commandButton value="No" styleClass="arianeDialogButtons" icon="ui-icon-close" onclick="osTypeRemoveDialog.hide();"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtonNo" icon="ui-icon-close" onclick="osTypeRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
                                 value="#{OSTypesListController.selectedOSTypeList}"
                                 var="selectedOSType" type="definition">
                         <h:panelGrid columns="2" cellpadding="5">
-                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
                             <h:outputText value="#{selectedOSType.name}"/>
 
-                            <h:outputText value="OS Instances : " styleClass="inputTitle"/>
+                            <h:outputText value="OS Instances : " styleClass="arianeDialogInputTitle"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedOSType,'osInstances')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
@@ -152,7 +152,7 @@
                     <ui:insert name="createOSType" >
                         <ui:include src="/templates/osTypeNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this OS type" styleClass="arianeDialogButtons" icon="ui-icon-check"
+                    <p:commandButton value="Save this OS type" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{OSTypeNewController.save}" oncomplete="osTypeCreateDialog.hide();"
                                      update=":osTypeTableForm:osTypeTable,:osTypeTableForm:osTypeTableMessages"/>
                 </h:form>
@@ -164,7 +164,7 @@
                     <ui:insert name="createCompany" >
                         <ui:include src="/templates/companyNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this company" styleClass="arianeDialogButtons" icon="ui-icon-check"
+                    <p:commandButton value="Save this company" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{companyNewController.save}" oncomplete="companyCreateDialog.hide();"
                                      update=":createOSTypeDialogForm:osTypeNewGrid,:osTypeTableForm:osTypeTableMessages"/>
                 </h:form>

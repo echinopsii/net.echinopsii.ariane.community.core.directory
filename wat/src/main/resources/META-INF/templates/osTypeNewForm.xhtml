@@ -4,11 +4,11 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
-    <h:panelGrid id="osTypeNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
-        <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
+    <h:panelGrid id="osTypeNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
+        <h:outputText value="Name" styleClass="arianeDialogInputTitle"/>
         <p:inputText id="name" label="Name" required="true" value="#{OSTypeNewController.name}"/>
 
-        <h:outputText value="Supporting company : " styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Supporting company" styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="companyCreateDialog.show()">
                 <h:outputText value=" create new company"/>
@@ -19,7 +19,7 @@
             </h:selectOneMenu>
         </h:panelGroup>
 
-        <h:outputText value="Architecture : " styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Architecture" styleClass="arianeDialogInputTitle"/>
         <p:inputText id="architecture" label="Architecture" required="true" value="#{OSTypeNewController.architecture}"/>
 
     </h:panelGrid>
