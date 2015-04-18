@@ -13,7 +13,7 @@
             <p:commandLink onclick="companyCreateDialog.show()">
                 <h:outputText value=" create new company"/>
             </p:commandLink><br/>
-            <h:selectOneMenu label="Select the company" value="#{OSTypeNewController.osiCompany}">
+            <h:selectOneMenu label="Select the company" value="#{OSTypeNewController.osiCompany}" style="width:68.5%">
                 <f:selectItems value="#{companysListController.getAllForSelector()}"  var="cmp"
                                itemLabel="#{cmp.name}" itemValue="#{cmp.name}"/>
             </h:selectOneMenu>

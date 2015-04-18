@@ -19,7 +19,7 @@
             <p:commandLink onclick="dcCreateDialog.show()">
                 <h:outputText value=" create new datacenter"/>
             </p:commandLink><br/>
-            <p:selectManyMenu id="basic" value="#{subnetNewController.datacentersToBind}" style="width:150px;height:100px">
+            <p:selectManyMenu id="basic" value="#{subnetNewController.datacentersToBind}" style="width:66%;height:100px">
                 <f:selectItems value="#{datacentersListController.getAll()}"  var="dc"
                                itemLabel="#{dc.name}" itemValue="#{dc.name}"/>
             </p:selectManyMenu>
@@ -30,7 +30,7 @@
             <p:commandLink onclick="rareaCreateDialog.show()">
                 <h:outputText value=" create new routing area"/>
             </p:commandLink><br/>
-            <h:selectOneMenu label="Select the subnet type" value="#{subnetNewController.rArea}" required="true">
+            <h:selectOneMenu label="Select the subnet type" value="#{subnetNewController.rArea}" required="true" style="width:68.5%">
                 <f:selectItems value="#{routingAreasListController.getAllForSelector()}"  var="rarea"
                                itemLabel="#{rarea.name}" itemValue="#{rarea.name}"/>
             </h:selectOneMenu>

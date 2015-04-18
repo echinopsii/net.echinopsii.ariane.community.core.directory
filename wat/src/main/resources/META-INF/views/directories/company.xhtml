@@ -129,7 +129,7 @@
             <p:dialog styleClass="arianeDialog arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="companyRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeCompanyDialogForm">
-                    <h:outputText value="Are you sure you want delete following company ?" styleClass="arianeDialogInputTitle text-marginForMessage"/><br/>
+                    <h:outputText value="Are you sure you want delete following company ?" styleClass="arianeDialogInputTitle text-marginForMessage "/><br/>
                     <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{companysListController.delete}" oncomplete="companyRemoveDialog.hide();"
                                      update=":companyTableForm:companyTable,:companyTableForm:companyTableMessages"/>

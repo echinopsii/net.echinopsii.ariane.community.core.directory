@@ -13,20 +13,20 @@
             <p:commandLink onclick="dcCreateDialog.show()">
                 <h:outputText value=" create new datacenter"/>
             </p:commandLink><br/>
-            <p:selectManyMenu id="basic" value="#{routingAreaNewController.datacentersToBind}" style="width:150px;height:100px">
+            <p:selectManyMenu id="basic" value="#{routingAreaNewController.datacentersToBind}" style="width:66%;height:100px">
                 <f:selectItems value="#{datacentersListController.getAll()}"  var="dc"
                                itemLabel="#{dc.name}" itemValue="#{dc.name}"/>
             </p:selectManyMenu>
         </h:panelGroup>
 
         <h:outputText value="Multicast" styleClass="arianeDialogInputTitle"/>
-        <h:selectOneMenu label="Select the routing area multicast flag" value="#{routingAreaNewController.multicast}">
+        <h:selectOneMenu label="Select the routing area multicast flag" value="#{routingAreaNewController.multicast}" style="width:68.5%">
             <f:selectItems value="#{routingAreasListController.getAllRoutingAreaMulticastFlagsForSelector()}"  var="raM"
                            itemLabel="#{raM}" itemValue="#{raM}"/>
         </h:selectOneMenu>
 
         <h:outputText value="Type" styleClass="arianeDialogInputTitle"/>
-        <h:selectOneMenu label="Select the routing area type" value="#{routingAreaNewController.type}">
+        <h:selectOneMenu label="Select the routing area type" value="#{routingAreaNewController.type}" style="width:68.5%">
             <f:selectItems value="#{routingAreasListController.getAllRoutingAreaTypesForSelector()}"  var="raT"
                            itemLabel="#{raT}" itemValue="#{raT}"/>
         </h:selectOneMenu>

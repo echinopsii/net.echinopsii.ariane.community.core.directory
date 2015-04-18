@@ -20,7 +20,7 @@
             <p:commandLink onclick="companyCreateDialog.show()">
                 <h:outputText value=" create new company"/>
             </p:commandLink><br/>
-            <h:selectOneMenu label="Select the company" value="#{applicationNewController.appCompany}">
+            <h:selectOneMenu label="Select the company" value="#{applicationNewController.appCompany}" style="width:68.5%">
                 <f:selectItems value="#{companysListController.getAllForSelector()}"  var="cmp"
                                itemLabel="#{cmp.name}" itemValue="#{cmp.name}"/>
             </h:selectOneMenu>
@@ -31,7 +31,7 @@
             <p:commandLink onclick="teamCreateDialog.show()">
                 <h:outputText value=" create new team"/>
             </p:commandLink><br/>
-            <h:selectOneMenu label="Select the team" value="#{applicationNewController.appTeam}">
+            <h:selectOneMenu label="Select the team" value="#{applicationNewController.appTeam}" style="width:68.5%">
                 <f:selectItems value="#{teamsListController.getAllForSelector()}"  var="team"
                                itemLabel="#{team.name}" itemValue="#{team.name}"/>
             </h:selectOneMenu>
