@@ -9,7 +9,7 @@
         <h:outputText value="Address" styleClass="arianeDialogInputTitle"/>
         <p:inputTextarea id="address" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.address}"/>
         <h:outputText value="Zip Code" styleClass="arianeDialogInputTitle"/>
-        <p:inputMask id="zipCode" label="ZipCode" required="true" mask="9?999999999" maxlength="10" placeHolder=" " value="#{datacenterNewController.zipCode}"/>
+        <p:inputText id="zipCode" label="ZipCode" required="true" value="#{datacenterNewController.zipCode}"/>
         <h:outputText value="Town" styleClass="arianeDialogInputTitle"/>
         <p:inputText id="town" label="Town" required="true" value="#{datacenterNewController.town}"/>
         <h:outputText value="Country" styleClass="arianeDialogInputTitle"/>
