@@ -3,10 +3,10 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
-    <h:panelGrid id="companyNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
-        <h:outputText value="Name : " styleClass="inputTitle"/>
+    <h:panelGrid id="companyNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
+        <h:outputText value="Name" styleClass="arianeDialogInputTitle"/>
         <p:inputText id="cmpName" label="cmpName" required="true" value="#{companyNewController.name}"/>
-        <h:outputText value="Description : " styleClass="inputTitle"/>
+        <h:outputText value="Description" styleClass="arianeDialogInputTitle"/>
         <p:inputText id="cmpDescription" label="cmpDescription" required="true" value="#{companyNewController.description}"/>
     </h:panelGrid>
 </ui:composition>

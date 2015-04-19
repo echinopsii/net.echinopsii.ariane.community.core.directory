@@ -49,7 +49,7 @@
 
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
-                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="name" value="#{subnet.name}"/>
@@ -58,7 +58,7 @@
                             </h:form>
                             <h:outputText value="#{subnet.name}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
-                            <h:outputText value="Description : " styleClass="inputTitle"/>
+                            <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="description" value="#{subnet.description}"/>
@@ -67,7 +67,7 @@
                             </h:form>
                             <h:outputText value="#{subnet.description}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
-                            <h:outputText value="Subnet IP : " styleClass="inputTitle"/>
+                            <h:outputText value="Subnet IP : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="subnetIP" value="#{subnet.subnetIP}"/>
@@ -76,7 +76,7 @@
                             </h:form>
                             <h:outputText value="#{subnet.subnetIP}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
-                            <h:outputText value="Subnet Mask : " styleClass="inputTitle"/>
+                            <h:outputText value="Subnet Mask : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="subnetMask" value="#{subnet.subnetMask}"/>
@@ -85,7 +85,7 @@
                             </h:form>
                             <h:outputText value="#{subnet.subnetMask}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
-                            <h:outputText value="Routing Area : " styleClass="inputTitle"/>
+                            <h:outputText value="Routing Area : " styleClass="arianeDialogInputTitle"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace label="#{subnetsListController.getSubnetRareaName(subnet)}" effectSpeed="fast" editor="true">
                                     <h:selectOneMenu value="#{subnetsListController.changedRarea[subnet.id]}">
@@ -97,7 +97,7 @@
                             </h:form>
                             <h:outputText value="#{subnetsListController.getSubnetRareaName(subnet)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
-                            <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+                            <h:outputText value="Datacenters : " styleClass="arianeDialogInputTitle"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(subnet,'datacenters')}" var="dc" styleClass="ui-widget-content grid" rowKey="#{dc.id}"
                                              rows="5" paginator="true" selection="#{subnetsListController.removedDCs[subnet.id]}" selectionMode="multiple">
@@ -132,7 +132,7 @@
                             </h:form>
 
 
-                            <h:outputText value="OS Instances : " styleClass="inputTitle"/>
+                            <h:outputText value="OS Instances : " styleClass="arianeDialogInputTitle"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(subnet,'osInstances')}" var="os" styleClass="ui-widget-content grid" rowKey="#{os.id}"
                                              rows="5" paginator="true" selection="#{subnetsListController.removedOSIs[subnet.id]}" selectionMode="multiple">
@@ -172,23 +172,23 @@
                 </p:dataTable>
             </h:form>
 
-            <p:dialog styleClass="arianeDialog" header="Confirm your remove order !" widgetVar="subnetRemoveDialog"
+            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="subnetRemoveDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeSubnetDialogForm">
-                    <h:outputText value="Are you sure you want delete following subnet ?" styleClass="inputTitle"/><br/>
-                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <h:outputText value="Are you sure you want delete following subnet ?" styleClass="arianeDialogInputTitle text-marginForMessage"/><br/>
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{subnetsListController.delete}" oncomplete="subnetRemoveDialog.hide();"
                                      update=":subnetTableForm:subnetTable,:subnetTableForm:subnetTableMessages"/>
-                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="subnetRemoveDialog.hide();"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtonNo" icon="ui-icon-close" onclick="subnetRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
                                 value="#{subnetsListController.selectedSubnetList}"
                                 var="selectedSubnet" type="definition">
                         <h:panelGrid columns="2" cellpadding="5">
-                            <h:outputText value="Name : " styleClass="inputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
                             <h:outputText value="#{selectedSubnet.name}"/>
 
-                            <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+                            <h:outputText value="Datacenters : " styleClass="arianeDialogInputTitle"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'datacenters')}" var="dcR"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
@@ -205,7 +205,7 @@
                                 </p:column>
                             </p:dataTable>
 
-                            <h:outputText value="Routing areas : " styleClass="inputTitle"/>
+                            <h:outputText value="Routing areas : " styleClass="arianeDialogInputTitle"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'rarea')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
@@ -216,7 +216,7 @@
                                 </p:column>
                             </p:dataTable>
 
-                            <h:outputText value="OS Instances : " styleClass="inputTitle"/>
+                            <h:outputText value="OS Instances : " styleClass="arianeDialogInputTitle"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'osInstances')}" var="osR"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
@@ -232,37 +232,37 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new subnet" widgetVar="subnetCreateDialog"
+            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new subnet" widgetVar="subnetCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createSubnetDialogForm">
                     <ui:insert name="createSubnet" >
                         <ui:include src="/templates/subnetNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this subnet" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this subnet" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{subnetNewController.save}" oncomplete="subnetCreateDialog.hide();"
                                      update=":subnetTableForm:subnetTable,:subnetTableForm:subnetTableMessages"/>
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new routing area" widgetVar="rareaCreateDialog"
+            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new routing area" widgetVar="rareaCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createMareaDialogForm">
                     <ui:insert name="createRoutingArea" >
                         <ui:include src="/templates/routingAreaNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this routing area" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this routing area" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{routingAreaNewController.save}" oncomplete="rareaCreateDialog.hide();"
                                      update=":createSubnetDialogForm:subnetNewGrid,:subnetTableForm:subnetTableMessages"/>
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog" header="Create a new datacenter" widgetVar="dcCreateDialog"
+            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new datacenter" widgetVar="dcCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="creatDCDialogForm">
                     <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this datacenter" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
                                      update=":createSubnetDialogForm:subnetNewGrid,:subnetTableForm:subnetTableMessages"/>
                 </h:form>

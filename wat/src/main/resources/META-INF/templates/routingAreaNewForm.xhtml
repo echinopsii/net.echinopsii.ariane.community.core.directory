@@ -4,34 +4,34 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
-    <h:panelGrid id="rareaNewGrid" columns="2" columnClasses="colStyle25,colStyle75" cellpadding="5" styleClass="ui-widget-content grid">
-        <h:outputText value="Name : " styleClass="inputTitle"/>
+    <h:panelGrid id="rareaNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
+        <h:outputText value="Name" styleClass="arianeDialogInputTitle"/>
         <p:inputText id="name" label="Name" required="true" value="#{routingAreaNewController.name}"/>
 
-        <h:outputText value="Datacenters : " styleClass="inputTitle"/>
+        <h:outputText value="Datacenters" styleClass="arianeDialogInputTitle"/>
         <h:panelGroup>
             <p:commandLink onclick="dcCreateDialog.show()">
                 <h:outputText value=" create new datacenter"/>
             </p:commandLink><br/>
-            <p:selectManyMenu id="basic" value="#{routingAreaNewController.datacentersToBind}" style="width:150px;height:100px">
+            <p:selectManyMenu id="basic" value="#{routingAreaNewController.datacentersToBind}" style="width:66%;height:100px">
                 <f:selectItems value="#{datacentersListController.getAll()}"  var="dc"
                                itemLabel="#{dc.name}" itemValue="#{dc.name}"/>
             </p:selectManyMenu>
         </h:panelGroup>
 
-        <h:outputText value="Multicast : " styleClass="inputTitle"/>
-        <h:selectOneMenu label="Select the routing area multicast flag" value="#{routingAreaNewController.multicast}">
+        <h:outputText value="Multicast" styleClass="arianeDialogInputTitle"/>
+        <h:selectOneMenu label="Select the routing area multicast flag" value="#{routingAreaNewController.multicast}" style="width:68.5%">
             <f:selectItems value="#{routingAreasListController.getAllRoutingAreaMulticastFlagsForSelector()}"  var="raM"
                            itemLabel="#{raM}" itemValue="#{raM}"/>
         </h:selectOneMenu>
 
-        <h:outputText value="Type : " styleClass="inputTitle"/>
-        <h:selectOneMenu label="Select the routing area type" value="#{routingAreaNewController.type}">
+        <h:outputText value="Type" styleClass="arianeDialogInputTitle"/>
+        <h:selectOneMenu label="Select the routing area type" value="#{routingAreaNewController.type}" style="width:68.5%">
             <f:selectItems value="#{routingAreasListController.getAllRoutingAreaTypesForSelector()}"  var="raT"
                            itemLabel="#{raT}" itemValue="#{raT}"/>
         </h:selectOneMenu>
 
-        <h:outputText value="Description : " styleClass="inputTitle"/>
+        <h:outputText value="Description" styleClass="arianeDialogInputTitle"/>
         <p:inputText id="description" label="Description" required="true" value="#{routingAreaNewController.description}"/>
 
     </h:panelGrid>
