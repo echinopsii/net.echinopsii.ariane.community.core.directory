@@ -53,7 +53,7 @@
 
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5"  styleClass="arianeEmbeddedGrid">
-                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.name}"/>
@@ -62,7 +62,7 @@
                             </h:form>
                             <h:outputText value="#{datacenter.name}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
-                            <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.description}"/>
@@ -71,7 +71,7 @@
                             </h:form>
                             <h:outputText value="#{datacenter.description}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
-                            <h:outputText value="Address : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Address : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.address}"/>
@@ -80,7 +80,7 @@
                             </h:form>
                             <h:outputText value="#{datacenter.address}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
-                            <h:outputText value="Zip Code : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Zip Code : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.zipCode}"/>
@@ -89,7 +89,7 @@
                             </h:form>
                             <h:outputText value="#{datacenter.zipCode}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
-                            <h:outputText value="Town : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Town : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.town}"/>
@@ -98,7 +98,7 @@
                             </h:form>
                             <h:outputText value="#{datacenter.town}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
-                            <h:outputText value="Country : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Country : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.country}"/>
@@ -107,7 +107,7 @@
                             </h:form>
                             <h:outputText value="#{datacenter.country}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
-                            <h:outputText value="GPS latitude : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="GPS latitude : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.gpsLatitude}"/>
@@ -116,7 +116,7 @@
                             </h:form>
                             <h:outputText value="#{datacenter.gpsLatitude}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
-                            <h:outputText value="GPS longitude : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="GPS longitude : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{datacenter.gpsLongitude}"/>
@@ -125,7 +125,7 @@
                             </h:form>
                             <h:outputText value="#{datacenter.gpsLongitude}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
-                            <h:outputText value="Routing Areas : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Routing Areas : " styleClass="arianeDialogLabel"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(datacenter,'routingAreas')}" var="_rarea" styleClass="ui-widget-content grid" rowKey="#{_rarea.id}"
                                              rows="5" paginator="true" selection="#{datacentersListController.removedRareas[datacenter.id]}" selectionMode="multiple">
@@ -154,7 +154,7 @@
                             </h:form>
 
 
-                            <h:outputText value="Subnets : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Subnets : " styleClass="arianeDialogLabel"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(datacenter,'subnets')}" var="_subnet" styleClass="ui-widget-content grid" rowKey="#{_subnet.id}"
                                              rows="5" paginator="true" selection="#{datacentersListController.removedSubnets[datacenter.id]}" selectionMode="multiple">
@@ -199,7 +199,7 @@
             <p:dialog styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="dcRemoveDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeDCDialogForm">
-                    <h:outputText value="Are you sure you want delete following datacenter ?" styleClass="arianeDialogInputTitle text-marginForMessage"/><br/>
+                    <h:outputText value="Are you sure you want delete following datacenter ?" styleClass="arianeDialogLabel text-marginForMessage"/><br/>
                     <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{datacentersListController.delete}" oncomplete="dcRemoveDialog.hide();"
                                      update=":datacenterTableForm:datacenterTable,:datacenterTableForm:dcTableMessages"/>
@@ -209,10 +209,10 @@
                                 value="#{datacentersListController.selectedDCList}"
                                 var="selectedDC" type="definition">
                         <h:panelGrid columns="2" cellpadding="5">
-                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                             <h:outputText value="#{selectedDC.name}"/>
 
-                            <h:outputText value="Routing areas : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Routing areas : " styleClass="arianeDialogLabel"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedDC,'routingAreas')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
@@ -223,7 +223,7 @@
                                 </p:column>
                             </p:dataTable>
 
-                            <h:outputText value="Subnets : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Subnets : " styleClass="arianeDialogLabel"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedDC,'subnets')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">

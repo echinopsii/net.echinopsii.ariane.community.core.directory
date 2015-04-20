@@ -40,7 +40,7 @@
 
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
-                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgTeam:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{team.name}"/>
@@ -49,7 +49,7 @@
                             </h:form>
                             <h:outputText value="#{team.name}" rendered="#{!arianeidm:hasPermission('dirComOrgTeam:update')}"/>
 
-                            <h:outputText value="Color code : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Color code : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgTeam:update')}">
                                 <p:colorPicker id="popupCP" value="#{team.colorCode}"/>
                                 <p:commandButton value="Save new color" update="@form,:teamTableForm:teamTableMessages" id="teamColorSave" icon="ui-icon-disk"
@@ -57,7 +57,7 @@
                             </h:form>
                             <h:outputText value="#{team.colorCode}" style="background-color:\##{team.colorCode};font-weight:bold" rendered="#{!arianeidm:hasPermission('dirComOrgTeam:update')}"/>
 
-                            <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgTeam:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{team.description}"/>
@@ -66,7 +66,7 @@
                             </h:form>
                             <h:outputText value="#{team.description}" rendered="#{!arianeidm:hasPermission('dirComOrgTeam:update')}"/>
 
-                            <h:outputText value="OS instances : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="OS instances : " styleClass="arianeDialogLabel"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(team,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
                                              rows="5" paginator="true" selection="#{teamsListController.removedOSInstances[team.id]}" selectionMode="multiple">
@@ -94,7 +94,7 @@
                                 </p:dataTable>
                             </h:form>
 
-                            <h:outputText value="Applications : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Applications : " styleClass="arianeDialogLabel"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(team,'applications')}" var="app" styleClass="ui-widget-content grid" rowKey="#{app.id}"
                                              rows="5" paginator="true" selection="#{teamsListController.removedApplications[team.id]}" selectionMode="multiple">
@@ -140,7 +140,7 @@
             <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="teamRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeTeamDialogForm">
-                    <h:outputText value="Are you sure you want delete following team ?" styleClass="arianeDialogInputTitle text-marginForMessage"/><br/>
+                    <h:outputText value="Are you sure you want delete following team ?" styleClass="arianeDialogLabel text-marginForMessage"/><br/>
                     <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{teamsListController.delete}" oncomplete="teamRemoveDialog.hide();"
                                      update=":teamTableForm:teamTable,:teamTableForm:teamTableMessages"/>
@@ -150,10 +150,10 @@
                                 value="#{teamsListController.selectedTeamList}"
                                 var="selectedTeam" type="definition">
                         <h:panelGrid columns="2" cellpadding="5">
-                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                             <h:outputText value="#{selectedTeam.name}"/>
 
-                            <h:outputText value="OS Instances : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="OS Instances : " styleClass="arianeDialogLabel"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedTeam, 'osInstances')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
