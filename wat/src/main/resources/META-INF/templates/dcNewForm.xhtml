@@ -13,7 +13,7 @@
         <h:outputText value="Town" styleClass="arianeDialogLabel"/>
         <p:inputText id="town" label="Town" required="true" value="#{datacenterNewController.town}"/>
         <h:outputText value="Country" styleClass="arianeDialogLabel"/>
-        <p:inputText id="country" label="Country" required="true" value="#{datacenterNewController.country}"/>
+        <p:inputText id="country" label="Country" required="true" value="#{datacenterNewController.country}"  onblur="GetLocation()"/>
         <h:outputText value="GPS latitude" styleClass="arianeDialogLabel"/>
         <p:inputText id="gpsLatitude" label="GpsLatitude" required="true" value="#{datacenterNewController.gpsLatitude}"/>
         <h:outputText value="GPS longitude" styleClass="arianeDialogLabel"/>
@@ -21,5 +21,31 @@
         <h:outputText value="Description" styleClass="arianeDialogLabel"/>
         <p:inputTextarea id="description" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.description}"/>
     </h:panelGrid>
+
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script type="application/javascript">
+
+        function GetLocation() {
+            var geocoder = new google.maps.Geocoder();
+            var addresstxtarea = document.getElementById("createDCDialogForm:address").value;
+            var town = document.getElementById("createDCDialogForm:town").value;
+            var country = document.getElementById("createDCDialogForm:country").value;
+            var zipCode = document.getElementById("createDCDialogForm:zipCode").value;
+            var address = addresstxtarea +" "+ town +" "+ country +" "+ zipCode;
+            var gpsLatitude = document.getElementById("createDCDialogForm:gpsLatitude");
+            var gpsLongitude = document.getElementById("createDCDialogForm:gpsLongitude");
+
+            geocoder.geocode({ 'address': address }, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    gpsLatitude.value = results[0].geometry.location.lat();
+                    gpsLongitude.value = results[0].geometry.location.lng();
+                } else {
+                    gpsLatitude.value = null;
+                    gpsLongitude.value = null;
+                }
+            });
+        };
+    </script>
+
 </ui:composition>
 </html>
