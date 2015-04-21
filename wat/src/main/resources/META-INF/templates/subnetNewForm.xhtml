@@ -5,16 +5,16 @@
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
     <h:panelGrid id="subnetNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
-        <h:outputText value="Name" styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Name" styleClass="arianeDialogLabel"/>
         <p:inputText id="name" label="Name" required="true" value="#{subnetNewController.name}"/>
 
-        <h:outputText value="Subnet IP" styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Subnet IP" styleClass="arianeDialogLabel"/>
         <p:inputText id="subnetIP" label="Subnet IP" required="true" value="#{subnetNewController.subnetIP}"/>
 
-        <h:outputText value="Subnet Mask" styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Subnet Mask" styleClass="arianeDialogLabel"/>
         <p:inputText id="subnetMask" label="Subnet Mask" required="true" value="#{subnetNewController.subnetMask}"/>
 
-        <h:outputText value="Datacenters" styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Datacenters" styleClass="arianeDialogLabel"/>
         <h:panelGroup>
             <p:commandLink onclick="dcCreateDialog.show()">
                 <h:outputText value=" create new datacenter"/>
@@ -25,7 +25,7 @@
             </p:selectManyMenu>
         </h:panelGroup>
 
-        <h:outputText value="Routing Area" styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Routing Area" styleClass="arianeDialogLabel"/>
         <h:panelGroup>
             <p:commandLink onclick="rareaCreateDialog.show()">
                 <h:outputText value=" create new routing area"/>
@@ -36,7 +36,7 @@
             </h:selectOneMenu>
         </h:panelGroup>
 
-        <h:outputText value="Description" styleClass="arianeDialogInputTitle"/>
+        <h:outputText value="Description" styleClass="arianeDialogLabel"/>
         <p:inputText id="description" label="Description" required="true" value="#{subnetNewController.description}"/>
     </h:panelGrid>
 

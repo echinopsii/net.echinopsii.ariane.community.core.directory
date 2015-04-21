@@ -40,7 +40,7 @@
 
             <p:rowExpansion>
                 <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
-                    <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
+                    <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                     <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace editor="true">
                             <p:inputText required="true" label="text" value="#{osi.name}"/>
@@ -49,7 +49,7 @@
                     </h:form>
                     <h:outputText value="#{osi.name}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOsi:update'))}"/>
 
-                    <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
+                    <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                     <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace editor="true">
                             <p:inputText required="true" label="text" value="#{osi.description}"/>
@@ -58,7 +58,7 @@
                     </h:form>
                     <h:outputText value="#{osi.description}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOsi:update'))}"/>
 
-                    <h:outputText value="Admin gate URI : " styleClass="arianeDialogInputTitle"/>
+                    <h:outputText value="Admin gate URI : " styleClass="arianeDialogLabel"/>
                     <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace editor="true">
                             <p:inputText required="true" label="text" value="#{osi.adminGateURI}"/>
@@ -67,7 +67,7 @@
                     </h:form>
                     <h:outputText value="#{osi.adminGateURI}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOsi:update'))}"/>
 
-                    <h:outputText value="Type : " styleClass="arianeDialogInputTitle"/>
+                    <h:outputText value="Type : " styleClass="arianeDialogLabel"/>
                     <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace label="#{osi.osType.name} - #{osi.osType.architecture}" effectSpeed="fast" editor="true">
                             <h:selectOneMenu value="#{OSInstancesListController.changedOSType[osi.id]}">
@@ -79,7 +79,7 @@
                     </h:form>
                     <h:outputText value="#{osi.osType.name} - #{osi.osType.architecture}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOsi:update'))}"/>
 
-                    <h:outputText value="Environments : " styleClass="arianeDialogInputTitle"/>
+                    <h:outputText value="Environments : " styleClass="arianeDialogLabel"/>
                     <h:form>
                         <p:dataTable value="#{directoryViewUtils.asList(osi,'environments')}" var="env" styleClass="ui-widget-content grid" rowKey="#{env.id}"
                                      rows="5" paginator="true" selection="#{OSInstancesListController.removedEnvs[osi.id]}" selectionMode="multiple">
@@ -107,7 +107,7 @@
                         </p:dataTable>
                     </h:form>
 
-                    <h:outputText value="Applications : " styleClass="arianeDialogInputTitle"/>
+                    <h:outputText value="Applications : " styleClass="arianeDialogLabel"/>
                     <h:form>
                         <p:dataTable value="#{directoryViewUtils.asList(osi,'applications')}" var="_app" styleClass="ui-widget-content grid" rowKey="#{_app.id}"
                                      rows="5" paginator="true" selection="#{OSInstancesListController.removedApplication[osi.id]}" selectionMode="multiple">
@@ -135,7 +135,7 @@
                         </p:dataTable>
                     </h:form>
 
-                    <h:outputText value="Teams : " styleClass="arianeDialogInputTitle"/>
+                    <h:outputText value="Teams : " styleClass="arianeDialogLabel"/>
                     <h:form>
                         <p:dataTable value="#{directoryViewUtils.asList(osi,'teams')}" var="team" styleClass="ui-widget-content grid" rowKey="#{team.id}"
                                      rows="5" paginator="true" selection="#{OSInstancesListController.removedTeam[osi.id]}" selectionMode="multiple">
@@ -163,7 +163,7 @@
                         </p:dataTable>
                     </h:form>
 
-                    <h:outputText value="Subnets : "  styleClass="arianeDialogInputTitle"/>
+                    <h:outputText value="Subnets : "  styleClass="arianeDialogLabel"/>
                     <h:form>
                         <p:dataTable value="#{directoryViewUtils.asList(osi,'networkSubnets')}" var="ntw" styleClass="ui-widget-content grid" rowKey="#{ntw.id}"
                                      rows="5" paginator="true" selection="#{OSInstancesListController.removedSubnets[osi.id]}" selectionMode="multiple">
@@ -191,7 +191,7 @@
                         </p:dataTable>
                     </h:form>
 
-                    <h:outputText value="Embedding OS Instance : " styleClass="arianeDialogInputTitle"/>
+                    <h:outputText value="Embedding OS Instance : " styleClass="arianeDialogLabel"/>
                     <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace label="#{OSInstancesListController.getOSInstanceEmbeddingOSI(osi)}" effectSpeed="fast" editor="true">
                             <h:selectOneMenu value="#{OSInstancesListController.changedEmbeddingOSI[osi.id]}">
@@ -203,7 +203,7 @@
                     </h:form>
                     <h:outputText value="#{OSInstancesListController.getOSInstanceEmbeddingOSI(osi)}" rendered="#{!(arianeidm:hasPermission('dirComITiSysOsi:update'))}"/>
 
-                    <h:outputText value="Embedded OS Instances : " styleClass="arianeDialogInputTitle"/>
+                    <h:outputText value="Embedded OS Instances : " styleClass="arianeDialogLabel"/>
                     <h:form>
                         <p:dataTable value="#{directoryViewUtils.asList(osi,'embeddedOSInstances')}" var="_osi" styleClass="ui-widget-content grid" rowKey="#{_osi.id}"
                                      rows="5" paginator="true" selection="#{OSInstancesListController.removedEmbeddedOSI[osi.id]}" selectionMode="multiple">
@@ -247,20 +247,20 @@
             <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="osInstanceRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeOSInstanceDialogForm">
-                    <h:outputText value="Are you sure you want delete following OS instance ?" styleClass="arianeDialogInputTitle text-marginForMessage"/><br/>
+                    <h:outputText value="Are you sure you want delete following OS instance ?" styleClass="arianeDialogLabel text-marginForMessage"/><br/>
                     <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{OSInstancesListController.delete}" oncomplete="osInstanceRemoveDialog.hide();"
-                                     update=":createOSInstanceDialogForm:osInstanceNewGrid,:osInstanceTableForm:osInstanceTable,:osInstanceTableForm:osInstanceTableMessages"/>
+                                     update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTable,:osInstanceTableForm:osInstanceTableMessages"/>
                     <p:commandButton value="No" styleClass="arianeDialogButtonNo" icon="ui-icon-close" onclick="osInstanceRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
                                 value="#{OSInstancesListController.selectedOSInstanceList}"
                                 var="selectedOSInstance" type="definition">
                         <h:panelGrid columns="2" cellpadding="5">
-                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                             <h:outputText value="#{selectedOSInstance.name}"/>
 
-                            <h:outputText value="Subnets : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Subnets : " styleClass="arianeDialogLabel"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedOSInstance,'networkSubnets')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
@@ -284,7 +284,7 @@
                     </ui:insert>
                     <p:commandButton value="Save this OS instance" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{OSInstanceNewController.save}" oncomplete="osInstanceCreateDialog.hide();"
-                                     update=":createOSInstanceDialogForm:osInstanceNewGrid,:osInstanceTableForm:osInstanceTable,:osInstanceTableForm:osInstanceTableMessages"/>
+                                     update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTable,:osInstanceTableForm:osInstanceTableMessages"/>
                 </h:form>
             </p:dialog>
 
@@ -296,7 +296,7 @@
                     </ui:insert>
                     <p:commandButton value="Save this OS Type" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{OSTypeNewController.save}" oncomplete="osTypeCreateDialog.hide();"
-                                     update=":createOSInstanceDialogForm:osInstanceNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+                                     update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTableMessages"/>
                 </h:form>
             </p:dialog>
 
@@ -308,7 +308,7 @@
                     </ui:insert>
                     <p:commandButton value="Save this environment" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{environmentNewController.save}" oncomplete="environmentCreateDialog.hide();"
-                                     update=":createOSInstanceDialogForm:osInstanceNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+                                     update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTableMessages"/>
                 </h:form>
             </p:dialog>
 
@@ -320,7 +320,7 @@
                     </ui:insert>
                     <p:commandButton value="Save this application" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{applicationNewController.save}" oncomplete="appCreateDialog.hide();"
-                                     update=":createOSInstanceDialogForm:osInstanceNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+                                     update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTableMessages"/>
                 </h:form>
             </p:dialog>
 
@@ -332,7 +332,7 @@
                     </ui:insert>
                     <p:commandButton value="Save this team" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{teamNewController.save}" oncomplete="teamCreateDialog.hide();"
-                                     update=":createOSInstanceDialogForm:osInstanceNewGrid,:createApplicationDialogForm:applicationNewGrid,
+                                     update=":createOSInstanceDialogForm:osInstanceNewTabView,:createApplicationDialogForm:applicationNewGrid,
                                              :osInstanceTableForm:osInstanceTableMessages"/>
                 </h:form>
             </p:dialog>
@@ -358,7 +358,7 @@
                     </ui:insert>
                     <p:commandButton value="Save this subnet" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{subnetNewController.save}" oncomplete="subnetCreateDialog.hide();"
-                                     update=":createOSInstanceDialogForm:osInstanceNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
+                                     update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTableMessages"/>
                 </h:form>
             </p:dialog>
 

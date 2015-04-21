@@ -4,78 +4,88 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
-    <h:panelGrid id="osInstanceNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
+    <p:tabView id="osInstanceNewTabView" styleClass="arianeDialogGridOSInstance arianeDialogTabs">
+        <p:tab title="Primary Definitions">
+            <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGridOSInstance">
+                <h:outputText value="Name" styleClass="arianeDialogLabel"/>
+                <p:inputText id="name" label="Name" required="true" value="#{OSInstanceNewController.name}"/>
 
-        <h:outputText value="Name" styleClass="arianeDialogInputTitle"/>
-        <p:inputText id="name" label="Name" required="true" value="#{OSInstanceNewController.name}"/>
+                <h:outputText value="Admin Gate URI" styleClass="arianeDialogLabel"/>
+                <p:inputText id="AdminGateURI" label="AdminGateURI" required="true" value="#{OSInstanceNewController.adminGateURI}"/>
 
-        <h:outputText value="Admin Gate URI" styleClass="arianeDialogInputTitle"/>
-        <p:inputText id="AdminGateURI" label="AdminGateURI" required="true" value="#{OSInstanceNewController.adminGateURI}"/>
+                <h:outputText value="Type" styleClass="arianeDialogLabel"/>
+                <h:panelGroup>
+                    <p:commandLink onclick="osTypeCreateDialog.show()">
+                        <h:outputText value=" create new OS Type"/>
+                    </p:commandLink><br/>
+                    <h:selectOneMenu label="Select the OS instance type" value="#{OSInstanceNewController.osType}" style="width:68.5%">
+                        <f:selectItems value="#{OSTypesListController.getAllForSelector()}"  var="osT"
+                                       itemLabel="#{osT.name} - #{osT.architecture}" itemValue="#{osT.name} - #{osT.architecture}"/>
+                    </h:selectOneMenu>
+                </h:panelGroup>
 
-        <h:outputText value="Type" styleClass="arianeDialogInputTitle"/>
-        <h:panelGroup>
-            <p:commandLink onclick="osTypeCreateDialog.show()">
-                <h:outputText value=" create new OS Type"/>
-            </p:commandLink><br/>
-            <h:selectOneMenu label="Select the OS instance type" value="#{OSInstanceNewController.osType}" style="width:68.5%">
-                <f:selectItems value="#{OSTypesListController.getAllForSelector()}"  var="osT"
-                               itemLabel="#{osT.name} - #{osT.architecture}" itemValue="#{osT.name} - #{osT.architecture}"/>
-            </h:selectOneMenu>
-        </h:panelGroup>
+                <h:outputText value="Embedding OS Instance" styleClass="arianeDialogLabel"/>
+                <h:selectOneMenu label="Select the OS instance" value="#{OSInstanceNewController.embeddingOSI}" style="width:68.5%">
+                    <f:selectItems value="#{OSInstancesListController.getAllForSelector()}"  var="osI"
+                                   itemLabel="#{osI.name}" itemValue="#{osI.name}"/>
+                </h:selectOneMenu>
 
-        <h:outputText value="Embedding OS Instance" styleClass="arianeDialogInputTitle"/>
-        <h:selectOneMenu label="Select the OS instance" value="#{OSInstanceNewController.embeddingOSI}" style="width:68.5%">
-            <f:selectItems value="#{OSInstancesListController.getAllForSelector()}"  var="osI"
-                           itemLabel="#{osI.name}" itemValue="#{osI.name}"/>
-        </h:selectOneMenu>
+                <h:outputText value="Description" styleClass="arianeDialogLabel"/>
+                <p:inputTextarea id="description" styleClass="arianeDialogInputTitle" autoResize="false" style="resize:none" label="description" required="true" value="#{OSInstanceNewController.description}"/>
+            </h:panelGrid>
+        </p:tab>
 
-        <h:outputText value="Supporting teams" styleClass="arianeDialogInputTitle"/>
-        <h:panelGroup>
-            <p:commandLink onclick="teamCreateDialog.show()">
-                <h:outputText value=" create new team"/>
-            </p:commandLink><br/>
-            <p:selectManyMenu id="team" value="#{OSInstanceNewController.teamsToBind}" style="width:66%;height:100px">
-                <f:selectItems value="#{teamsListController.getAll()}"  var="team"
-                               itemLabel="#{team.name}" itemValue="#{team.name}"/>
-            </p:selectManyMenu>
-        </h:panelGroup>
+        <p:tab title="Context Links">
+            <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGridOSInstance">
+                <h:panelGroup>
+                    <h:outputText value="Supporting teams" styleClass="arianeDialogLabel"/><br/>
+                    <h:panelGroup>
+                        <p:commandLink onclick="teamCreateDialog.show()">
+                            <h:outputText value=" create new team"/>
+                        </p:commandLink><br/>
+                        <p:selectManyMenu id="team" value="#{OSInstanceNewController.teamsToBind}" style="width:100%;height:100px">
+                            <f:selectItems value="#{teamsListController.getAll()}"  var="team"
+                                           itemLabel="#{team.name}" itemValue="#{team.name}"/>
+                        </p:selectManyMenu><br/>
+                    </h:panelGroup>
 
-        <h:outputText value="Environments" styleClass="arianeDialogInputTitle"/>
-        <h:panelGroup>
-            <p:commandLink onclick="environmentCreateDialog.show()">
-                <h:outputText value=" create new environment"/>
-            </p:commandLink><br/>
-            <p:selectManyMenu id="envs" value="#{OSInstanceNewController.envsToBind}" style="width:66%;height:100px">
-                <f:selectItems value="#{environmentsListController.getAll()}"  var="env"
-                               itemLabel="#{env.name}" itemValue="#{env.name}"/>
-            </p:selectManyMenu>
-        </h:panelGroup>
+                    <h:outputText value="Environments" styleClass="arianeDialogLabel"/><br/>
+                    <h:panelGroup>
+                        <p:commandLink onclick="environmentCreateDialog.show()">
+                            <h:outputText value=" create new environment"/>
+                        </p:commandLink><br/>
+                        <p:selectManyMenu id="envs" value="#{OSInstanceNewController.envsToBind}" style="width:100%;height:100px">
+                            <f:selectItems value="#{environmentsListController.getAll()}"  var="env"
+                                           itemLabel="#{env.name}" itemValue="#{env.name}"/>
+                        </p:selectManyMenu>
+                    </h:panelGroup>
+                </h:panelGroup>
 
-        <h:outputText value="Applications" styleClass="arianeDialogInputTitle"/>
-        <h:panelGroup>
-            <p:commandLink onclick="appCreateDialog.show()">
-                <h:outputText value=" create new application"/>
-            </p:commandLink><br/>
-            <p:selectManyMenu id="app" value="#{OSInstanceNewController.appsToBind}" style="width:66%;height:100px">
-                <f:selectItems value="#{applicationsListController.getAll()}"  var="app"
-                               itemLabel="#{app.name}" itemValue="#{app.name}"/>
-            </p:selectManyMenu>
-        </h:panelGroup>
+                <h:panelGroup>
+                    <h:outputText value="Applications" styleClass="arianeDialogLabel"/><br/>
+                    <h:panelGroup>
+                        <p:commandLink onclick="appCreateDialog.show()">
+                            <h:outputText value=" create new application"/>
+                        </p:commandLink><br/>
+                        <p:selectManyMenu id="app" value="#{OSInstanceNewController.appsToBind}" style="width:100%;height:100px">
+                            <f:selectItems value="#{applicationsListController.getAll()}"  var="app"
+                                           itemLabel="#{app.name}" itemValue="#{app.name}"/>
+                        </p:selectManyMenu><br/>
+                    </h:panelGroup>
 
-        <h:outputText value="Subnets" styleClass="arianeDialogInputTitle"/>
-        <h:panelGroup>
-            <p:commandLink onclick="subnetCreateDialog.show()">
-                <h:outputText value=" create new subnet"/>
-            </p:commandLink><br/>
-            <p:selectManyMenu id="subnets" value="#{OSInstanceNewController.subnetsToBind}" style="width:66%;height:100px">
-                <f:selectItems value="#{subnetsListController.getAll()}"  var="subnet"
-                               itemLabel="#{subnet.name}" itemValue="#{subnet.name}"/>
-            </p:selectManyMenu>
-        </h:panelGroup>
-
-        <h:outputText value="Description" styleClass="arianeDialogInputTitle"/>
-        <p:inputText id="description" label="description" required="true" value="#{OSInstanceNewController.description}"/>
-
-    </h:panelGrid>
+                    <h:outputText value="Subnets" styleClass="arianeDialogLabel"/><br/>
+                    <h:panelGroup>
+                        <p:commandLink onclick="subnetCreateDialog.show()">
+                            <h:outputText value=" create new subnet"/>
+                        </p:commandLink><br/>
+                        <p:selectManyMenu id="subnets" value="#{OSInstanceNewController.subnetsToBind}" style="width:100%;height:100px">
+                            <f:selectItems value="#{subnetsListController.getAll()}"  var="subnet"
+                                           itemLabel="#{subnet.name}" itemValue="#{subnet.name}"/>
+                        </p:selectManyMenu>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGrid>
+        </p:tab>
+    </p:tabView>
 </ui:composition>
 </html>

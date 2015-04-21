@@ -35,7 +35,7 @@
 
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
-                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgEnvironment:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{env.name}"/>
@@ -44,7 +44,7 @@
                             </h:form>
                             <h:outputText value="#{env.name}" rendered="#{!arianeidm:hasPermission('dirComOrgEnvironment:update')}"/>
 
-                            <h:outputText value="Description : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgEnvironment:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="text" value="#{env.description}"/>
@@ -53,7 +53,7 @@
                             </h:form>
                             <h:outputText value="#{env.description}" rendered="#{!arianeidm:hasPermission('dirComOrgEnvironment:update')}"/>
 
-                            <h:outputText value="OS Instances : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="OS Instances : " styleClass="arianeDialogLabel"/>
                             <h:form>
                                 <p:dataTable value="#{directoryViewUtils.asList(env,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
                                              rows="5" paginator="true" selection="#{environmentsListController.removedOSInstances[env.id]}" selectionMode="multiple">
@@ -99,7 +99,7 @@
             <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="environmentRemoveDialog"
                       width="500" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeEnvironmentDialogForm">
-                    <h:outputText value="Are you sure you want delete following environment ?" styleClass="arianeDialogInputTitle text-marginForMessage"/><br/>
+                    <h:outputText value="Are you sure you want delete following environment ?" styleClass="arianeDialogLabel text-marginForMessage"/><br/>
                     <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{environmentsListController.delete}" oncomplete="environmentRemoveDialog.hide();"
                                      update=":environmentTableForm:environmentTable,:environmentTableForm:environmentTableMessages"/>
@@ -109,10 +109,10 @@
                                 value="#{environmentsListController.selectedEnvironmentList}"
                                 var="selectedEnvironment" type="definition">
                         <h:panelGrid columns="2" cellpadding="5">
-                            <h:outputText value="Name : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                             <h:outputText value="#{selectedEnvironment.name}"/>
 
-                            <h:outputText value="OS Instances : " styleClass="arianeDialogInputTitle"/>
+                            <h:outputText value="OS Instances : " styleClass="arianeDialogLabel"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedEnvironment,'osInstances')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
