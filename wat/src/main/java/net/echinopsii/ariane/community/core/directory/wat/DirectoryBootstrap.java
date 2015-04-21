@@ -90,7 +90,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
         mainMenuEntityRegistry = null;
     }
 
-    @Bind
+    @Bind(from="ArianePortalFacesMBeanRegistry")
     public void bindPortalPluginFacesMBeanRegistry(FacesMBeanRegistry r) {
         log.debug("Bound to portal plugin faces managed bean registry...");
         portalPluginFacesMBeanRegistry = r;
@@ -102,7 +102,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
         portalPluginFacesMBeanRegistry = null;
     }
 
-    @Bind
+    @Bind(from="DirectoryMenuRootsTreeRegistryImpl")
     public void bindTreeMenuRootsRegistry(TreeMenuRootsRegistry r) {
         log.debug("Bound to directory tree menu roots registry...");
         treeMenuRootsRegistry = r;
