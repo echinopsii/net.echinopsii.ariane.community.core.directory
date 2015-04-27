@@ -26,7 +26,7 @@
     <script src="https://maps.googleapis.com/maps/api/js"></script>
     <script type="application/javascript">
         var geocoder;
-        var map;
+        var map, marker;
         var addresstxtarea = document.getElementById("createDCDialogForm:address");
         var town = document.getElementById("createDCDialogForm:town");
         var country = document.getElementById("createDCDialogForm:country");
@@ -35,7 +35,6 @@
         var gpsLongitude = document.getElementById("createDCDialogForm:gpsLongitude");
 
         function initialize() {
-            var marker;
             geocoder = new google.maps.Geocoder();
             var latLng = new google.maps.LatLng(40.730885,-73.997383);
 
@@ -61,15 +60,12 @@
                 marker.setPosition(event.latLng);
                 geocoder.geocode({'latLng':event.latLng}, function (items, status) {
                     if (status == google.maps.GeocoderStatus.OK) {
-                        console.log(items);
                         items.forEach(function(item){
                             var type = item.types[0];
-                            console.log(type);
-                            console.log(item.formatted_address);
                             setComponentValues(type, item);
                         });
-                        gpsLatitude.value = event.latLng[0];
-                        gpsLongitude.value = event.latLng[1];
+                        gpsLatitude.value = event.latLng['k'];
+                        gpsLongitude.value = event.latLng['d'];
                     }
                 });
             });
@@ -77,18 +73,14 @@
 
         function setComponentValues(type, itemObj){
             if( type == "postal_code"){
-                zipCode.value = itemObj.formatted_address;
+                zipCode.value = itemObj.formatted_address.match(/\d+/)[0];
             }else if(type == "country"){
                 country.value = itemObj.formatted_address;
             }else if (type == "route"){
                 addresstxtarea.value = itemObj.formatted_address;
-            }else if (type == "locality"){
-                addresstxtarea.value = itemObj.formatted_address;
             }else if(type == "street_address"){
                 addresstxtarea.value = itemObj.formatted_address;
-            }else if (type == "administrative_area_level_1"){
-                town.value = itemObj.formatted_address;
-            }else if(type == "administrative_area_level_2"){
+            }else if(type == "locality"){
                 town.value = itemObj.formatted_address;
             }
         }
@@ -101,7 +93,7 @@
                     gpsLatitude.value = results[0].geometry.location.lat();
                     gpsLongitude.value = results[0].geometry.location.lng();
                     map.setCenter(results[0].geometry.location);
-                    var marker = new google.maps.Marker({
+                    marker = new google.maps.Marker({
                         position: results[0].geometry.location,
                         map: map
                     });
@@ -111,6 +103,7 @@
                 }
             });
         }
+
         window.onload = function(){
             initialize();
         }
