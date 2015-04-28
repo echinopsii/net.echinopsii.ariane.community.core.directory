@@ -6,7 +6,7 @@
 <ui:composition>
     <h:panelGrid id="osTypeNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
         <h:outputText value="Name" styleClass="arianeDialogLabel"/>
-        <p:inputText id="name" label="Name" required="true" value="#{OSTypeNewController.name}"/>
+        <p:inputText id="osTypeName" label="Name" required="true" value="#{OSTypeNewController.name}"/>
 
         <h:outputText value="Supporting company" styleClass="arianeDialogLabel"/>
         <h:panelGroup>
@@ -20,7 +20,7 @@
         </h:panelGroup>
 
         <h:outputText value="Architecture" styleClass="arianeDialogLabel"/>
-        <p:inputText id="architecture" label="Architecture" required="true" value="#{OSTypeNewController.architecture}"/>
+        <p:inputText id="osTypeArchitecture" label="Architecture" required="true" value="#{OSTypeNewController.architecture}"/>
 
     </h:panelGrid>
 </ui:composition>

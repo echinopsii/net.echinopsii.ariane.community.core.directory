@@ -5,13 +5,13 @@
 <ui:composition>
     <h:panelGrid id="teamNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
         <h:outputText value="Name" styleClass="arianeDialogLabel"/>
-        <p:inputText id="name" label="Name" required="true" value="#{teamNewController.name}"/>
+        <p:inputText id="teamName" label="Name" required="true" value="#{teamNewController.name}"/>
 
         <h:outputText value="Color code" styleClass="arianeDialogLabel" />
-        <p:colorPicker id="popupCP" value="#{teamNewController.colorCode}"/>
+        <p:colorPicker id="teamPopupCP" value="#{teamNewController.colorCode}"/>
 
         <h:outputText value="Description" styleClass="arianeDialogLabel"/>
-        <p:inputText id="description" label="Description" required="true" value="#{teamNewController.description}"/>
+        <p:inputText label="Description" required="true" value="#{teamNewController.description}"/>
     </h:panelGrid>
 </ui:composition>
 </html>
