@@ -7,7 +7,7 @@
         <h:outputText value="Name" styleClass="arianeDialogLabel"/>
         <p:inputText id="cmpName" label="cmpName" required="true" value="#{companyNewController.name}"/>
         <h:outputText value="Description" styleClass="arianeDialogLabel"/>
-        <p:inputText id="cmpDescription" label="cmpDescription" required="true" value="#{companyNewController.description}"/>
+        <p:inputTextarea id="cmpDescription" label="cmpDescription" styleClass="arianeDialogInputTitle" autoResize="false" style="resize:none" required="true" value="#{companyNewController.description}"/>
     </h:panelGrid>
 </ui:composition>
 </html>

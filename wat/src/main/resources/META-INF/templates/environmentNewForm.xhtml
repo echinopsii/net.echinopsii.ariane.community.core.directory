@@ -7,7 +7,7 @@
         <h:outputText value="Name" styleClass="arianeDialogLabel"/>
         <p:inputText id="envName" label="Name" required="true" value="#{environmentNewController.name}"/>
         <h:outputText value="Description" styleClass="arianeDialogLabel"/>
-        <p:inputText label="Description" required="true" value="#{environmentNewController.description}"/>
+        <p:inputTextarea label="Description" styleClass="arianeDialogInputTitle" autoResize="false" style="resize:none" required="true" value="#{environmentNewController.description}"/>
     </h:panelGrid>
 </ui:composition>
 </html>
