@@ -29,11 +29,11 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import java.io.Serializable;
-
 /**
  * This class provide stuff to create and save a new datacenter from the UI form
  */
 public class DatacenterNewController implements Serializable {
+
 
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(DatacentersListController.class);
@@ -52,8 +52,9 @@ public class DatacenterNewController implements Serializable {
     private long zipCode;
     private String town;
     private String country;
-    private long gpsLatitude;
-    private long gpsLongitude;
+    private double gpsLatitude;
+    private double gpsLongitude;
+
 
     public String getName() {
         return name;
@@ -103,22 +104,21 @@ public class DatacenterNewController implements Serializable {
         this.country = country;
     }
 
-    public long getGpsLatitude() {
+    public double getGpsLatitude() {
         return gpsLatitude;
     }
 
-    public void setGpsLatitude(long gpsLatitude) {
+    public void setGpsLatitude(double gpsLatitude) {
         this.gpsLatitude = gpsLatitude;
     }
 
-    public long getGpsLongitude() {
+    public double getGpsLongitude() {
         return gpsLongitude;
     }
 
-    public void setGpsLongitude(long gpsLongitude) {
+    public void setGpsLongitude(double gpsLongitude) {
         this.gpsLongitude = gpsLongitude;
     }
-
     /**
      * save a new datacenter thanks data provided through UI form
      */

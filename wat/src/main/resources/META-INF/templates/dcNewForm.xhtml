@@ -3,23 +3,111 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
-    <h:panelGrid id="dcNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
-        <h:outputText value="Name" styleClass="arianeDialogLabel"/>
-        <p:inputText id="name" label="Name" required="true" value="#{datacenterNewController.name}"/>
-        <h:outputText value="Address" styleClass="arianeDialogLabel"/>
-        <p:inputTextarea id="address" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.address}"/>
-        <h:outputText value="Zip Code" styleClass="arianeDialogLabel"/>
-        <p:inputText id="zipCode" label="ZipCode" required="true" value="#{datacenterNewController.zipCode}"/>
-        <h:outputText value="Town" styleClass="arianeDialogLabel"/>
-        <p:inputText id="town" label="Town" required="true" value="#{datacenterNewController.town}"/>
-        <h:outputText value="Country" styleClass="arianeDialogLabel"/>
-        <p:inputText id="country" label="Country" required="true" value="#{datacenterNewController.country}"/>
-        <h:outputText value="GPS latitude" styleClass="arianeDialogLabel"/>
-        <p:inputText id="gpsLatitude" label="GpsLatitude" required="true" value="#{datacenterNewController.gpsLatitude}"/>
-        <h:outputText value="GPS longitude" styleClass="arianeDialogLabel"/>
-        <p:inputText id="gpsLongitude" label="GpsLongitude" required="true" value="#{datacenterNewController.gpsLongitude}"/>
-        <h:outputText value="Description" styleClass="arianeDialogLabel"/>
-        <p:inputTextarea id="description" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.description}"/>
+    <h:panelGrid id="dcNewView" columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
+        <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa arianeDialogPanelGrid-td">
+            <h:outputText value="Name" styleClass="arianeDialogLabel"/>
+            <p:inputText id="name" label="Name" required="true" value="#{datacenterNewController.name}"/>
+            <h:outputText value="Address" styleClass="arianeDialogLabel"/>
+            <p:inputTextarea id="address" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.address}"/>
+            <h:outputText value="Zip Code" styleClass="arianeDialogLabel"/>
+            <p:inputText id="zipCode" label="ZipCode" required="true" value="#{datacenterNewController.zipCode}"/>
+            <h:outputText value="Town" styleClass="arianeDialogLabel"/>
+            <p:inputText id="town" label="Town" required="true" value="#{datacenterNewController.town}"/>
+            <h:outputText value="Country" styleClass="arianeDialogLabel"/>
+            <p:inputText id="country" label="Country" required="true" value="#{datacenterNewController.country}" onblur="GetLocation()"/>
+            <h:outputText value="Description" styleClass="arianeDialogLabel"/>
+            <p:inputTextarea id="description" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.description}"/>
+            <h:inputHidden id="gpsLatitude" value="#{datacenterNewController.gpsLatitude}" />
+            <h:inputHidden id="gpsLongitude" value="#{datacenterNewController.gpsLongitude}" />
+        </h:panelGrid>
+        <h:panelGrid id="geoGmap" style="width:300px;height:300px"/>
     </h:panelGrid>
+
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script type="application/javascript">
+        var geocoder;
+        var map, marker;
+        var addresstxtarea = document.getElementById("createDCDialogForm:address");
+        var town = document.getElementById("createDCDialogForm:town");
+        var country = document.getElementById("createDCDialogForm:country");
+        var zipCode = document.getElementById("createDCDialogForm:zipCode");
+        var gpsLatitude = document.getElementById("createDCDialogForm:gpsLatitude");
+        var gpsLongitude = document.getElementById("createDCDialogForm:gpsLongitude");
+
+        function initialize() {
+            geocoder = new google.maps.Geocoder();
+            var latLng = new google.maps.LatLng(40.730885,-73.997383);
+
+            var mapOptions = {
+                    zoom: 8,
+                    center: latLng,
+                };
+
+            map = new google.maps.Map(document.getElementById('createDCDialogForm:geoGmap'),
+                mapOptions);
+
+            marker = new google.maps.Marker({
+                position: map.getCenter(),
+                map: map,
+                scaleControl: true
+            });
+
+            map.setCenter(latLng);
+
+            google.maps.event.addListener(map, 'click', function(event) {
+                zipCode.value=null; country.value=null;
+                town.value=null; addresstxtarea.value=null;
+                marker.setPosition(event.latLng);
+                geocoder.geocode({'latLng':event.latLng}, function (items, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        items.forEach(function(item){
+                            var type = item.types[0];
+                            setComponentValues(type, item);
+                        });
+                        gpsLatitude.value = event.latLng['k'];
+                        gpsLongitude.value = event.latLng['d'];
+                    }
+                });
+            });
+        }
+
+        function setComponentValues(type, itemObj){
+            if( type == "postal_code"){
+                zipCode.value = itemObj.formatted_address.match(/\d+/)[0];
+            }else if(type == "country"){
+                country.value = itemObj.formatted_address;
+            }else if (type == "route"){
+                addresstxtarea.value = itemObj.formatted_address;
+            }else if(type == "street_address"){
+                addresstxtarea.value = itemObj.formatted_address;
+            }else if(type == "locality"){
+                town.value = itemObj.formatted_address;
+            }
+        }
+
+        function GetLocation() {
+            var address = addresstxtarea.value +" "+ town.value +" "+ country.value +" "+ zipCode.value;
+
+            geocoder.geocode({ 'address': address }, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    gpsLatitude.value = results[0].geometry.location.lat();
+                    gpsLongitude.value = results[0].geometry.location.lng();
+                    map.setCenter(results[0].geometry.location);
+                    marker = new google.maps.Marker({
+                        position: results[0].geometry.location,
+                        map: map
+                    });
+                } else {
+                    gpsLatitude.value = null;
+                    gpsLongitude.value = null;
+                }
+            });
+        }
+
+        window.onload = function(){
+            initialize();
+        }
+    </script>
+
 </ui:composition>
 </html>
