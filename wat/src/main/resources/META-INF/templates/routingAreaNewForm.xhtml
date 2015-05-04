@@ -6,14 +6,14 @@
 <ui:composition>
     <h:panelGrid id="rareaNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
         <h:outputText value="Name" styleClass="arianeDialogLabel"/>
-        <p:inputText id="name" label="Name" required="true" value="#{routingAreaNewController.name}"/>
+        <p:inputText id="rAreaName" label="Name" required="true" value="#{routingAreaNewController.name}"/>
 
         <h:outputText value="Datacenters" styleClass="arianeDialogLabel"/>
         <h:panelGroup>
             <p:commandLink onclick="dcCreateDialog.show()">
                 <h:outputText value=" create new datacenter"/>
             </p:commandLink><br/>
-            <p:selectManyMenu id="basic" value="#{routingAreaNewController.datacentersToBind}" style="width:66%;height:100px">
+            <p:selectManyMenu id="rAreaBasic" value="#{routingAreaNewController.datacentersToBind}" style="width:66%;height:100px">
                 <f:selectItems value="#{datacentersListController.getAll()}"  var="dc"
                                itemLabel="#{dc.name}" itemValue="#{dc.name}"/>
             </p:selectManyMenu>
@@ -32,7 +32,7 @@
         </h:selectOneMenu>
 
         <h:outputText value="Description" styleClass="arianeDialogLabel"/>
-        <p:inputTextarea id="description" label="Description" styleClass="arianeDialogInputTitle" autoResize="false" style="resize:none" required="true" value="#{routingAreaNewController.description}"/>
+        <p:inputTextarea label="Description" styleClass="arianeDialogInputTitle" autoResize="false" style="resize:none" required="true" value="#{routingAreaNewController.description}"/>
 
     </h:panelGrid>
 </ui:composition>

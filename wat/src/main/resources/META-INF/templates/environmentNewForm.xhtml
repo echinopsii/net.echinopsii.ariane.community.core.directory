@@ -5,9 +5,9 @@
 <ui:composition>
     <h:panelGrid id="envNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
         <h:outputText value="Name" styleClass="arianeDialogLabel"/>
-        <p:inputText id="name" label="Name" required="true" value="#{environmentNewController.name}"/>
+        <p:inputText id="envName" label="Name" required="true" value="#{environmentNewController.name}"/>
         <h:outputText value="Description" styleClass="arianeDialogLabel"/>
-        <p:inputTextarea id="description" label="Description" styleClass="arianeDialogInputTitle" autoResize="false" style="resize:none" required="true" value="#{environmentNewController.description}"/>
+        <p:inputTextarea label="Description" styleClass="arianeDialogInputTitle" autoResize="false" style="resize:none" required="true" value="#{environmentNewController.description}"/>
     </h:panelGrid>
 </ui:composition>
 </html>

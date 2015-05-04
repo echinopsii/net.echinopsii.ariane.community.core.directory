@@ -6,33 +6,33 @@
     <h:panelGrid id="dcNewView" columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
         <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa arianeDialogPanelGrid-td">
             <h:outputText value="Name" styleClass="arianeDialogLabel"/>
-            <p:inputText id="name" label="Name" required="true" value="#{datacenterNewController.name}"/>
+            <p:inputText id="newDCname" label="Name" required="true" value="#{datacenterNewController.name}"/>
             <h:outputText value="Address" styleClass="arianeDialogLabel"/>
-            <p:inputTextarea id="address" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.address}"/>
+            <p:inputTextarea id="newDCaddress" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.address}"/>
             <h:outputText value="Zip Code" styleClass="arianeDialogLabel"/>
-            <p:inputText id="zipCode" label="ZipCode" required="true" value="#{datacenterNewController.zipCode}"/>
+            <p:inputText id="newDCzipCode" label="ZipCode" required="true" value="#{datacenterNewController.zipCode}"/>
             <h:outputText value="Town" styleClass="arianeDialogLabel"/>
-            <p:inputText id="town" label="Town" required="true" value="#{datacenterNewController.town}"/>
+            <p:inputText id="newDCtown" label="Town" required="true" value="#{datacenterNewController.town}"/>
             <h:outputText value="Country" styleClass="arianeDialogLabel"/>
-            <p:inputText id="country" label="Country" required="true" value="#{datacenterNewController.country}" onblur="GetLocation()"/>
+            <p:inputText id="newDCcountry" label="Country" required="true" value="#{datacenterNewController.country}" onblur="GetLocation()"/>
             <h:outputText value="Description" styleClass="arianeDialogLabel"/>
-            <p:inputTextarea id="description" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.description}"/>
-            <h:inputHidden id="gpsLatitude" value="#{datacenterNewController.gpsLatitude}" />
-            <h:inputHidden id="gpsLongitude" value="#{datacenterNewController.gpsLongitude}" />
+            <p:inputTextarea styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.description}"/>
+            <h:inputHidden id="newDCgpsLatitude" value="#{datacenterNewController.gpsLatitude}" />
+            <h:inputHidden id="newDCgpsLongitude" value="#{datacenterNewController.gpsLongitude}" />
         </h:panelGrid>
-        <h:panelGrid id="geoGmap" style="width:300px;height:300px"/>
+        <h:panelGrid id="newDCgeoGmap" style="width:300px;height:300px"/>
     </h:panelGrid>
 
     <script src="https://maps.googleapis.com/maps/api/js"></script>
     <script type="application/javascript">
         var geocoder;
         var map, marker;
-        var addresstxtarea = document.getElementById("createDCDialogForm:address");
-        var town = document.getElementById("createDCDialogForm:town");
-        var country = document.getElementById("createDCDialogForm:country");
-        var zipCode = document.getElementById("createDCDialogForm:zipCode");
-        var gpsLatitude = document.getElementById("createDCDialogForm:gpsLatitude");
-        var gpsLongitude = document.getElementById("createDCDialogForm:gpsLongitude");
+        var addresstxtarea = document.getElementById("createDCDialogForm:newDCaddress");
+        var town = document.getElementById("createDCDialogForm:newDCtown");
+        var country = document.getElementById("createDCDialogForm:newDCcountry");
+        var zipCode = document.getElementById("createDCDialogForm:newDCzipCode");
+        var gpsLatitude = document.getElementById("createDCDialogForm:newDCgpsLatitude");
+        var gpsLongitude = document.getElementById("createDCDialogForm:newDCgpsLongitude");
 
         function initialize() {
             geocoder = new google.maps.Geocoder();
@@ -43,7 +43,7 @@
                     center: latLng,
                 };
 
-            map = new google.maps.Map(document.getElementById('createDCDialogForm:geoGmap'),
+            map = new google.maps.Map(document.getElementById('createDCDialogForm:newDCgeoGmap'),
                 mapOptions);
 
             marker = new google.maps.Marker({
