@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `datacenter` (
 
 CREATE TABLE IF NOT EXISTS `environment` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `environmentCC` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `environmentName` varchar(255) DEFAULT NULL,
   `version` int(11) DEFAULT NULL,

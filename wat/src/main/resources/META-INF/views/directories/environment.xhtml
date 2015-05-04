@@ -48,6 +48,14 @@
                             </h:form>
                             <h:outputText value="#{env.name}" rendered="#{!arianeidm:hasPermission('dirComOrgEnvironment:update')}"/>
 
+                            <h:outputText value="Color code : " styleClass="arianeDialogLabel"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComOrgEnvironment:update')}">
+                                <p:colorPicker id="popupCP" value="#{env.colorCode}"/>
+                                <p:commandButton value="Save new color" update="@form,:environmentTableForm:environmentTableMessages" id="envColorSave" icon="ui-icon-disk"
+                                                 process="@form" actionListener="#{environmentsListController.update(env)}" styleClass="ui-priority-primary icon-large"/>
+                            </h:form>
+                            <h:outputText value="#{env.colorCode}" style="background-color:\##{env.colorCode};font-weight:bold" rendered="#{!arianeidm:hasPermission('dirComOrgEnvironment:update')}"/>
+
                             <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgEnvironment:update')}">
                                 <p:inplace editor="true">
