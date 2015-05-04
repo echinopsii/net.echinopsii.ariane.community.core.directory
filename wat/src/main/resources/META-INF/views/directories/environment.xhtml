@@ -29,6 +29,10 @@
                         <h:outputText value="#{env.name}" />
                     </p:column>
 
+                    <p:column headerText="Color code" sortBy="#{env.colorCode}" filterBy="#{env.colorCode}">
+                        <h:outputText value="#{env.colorCode}" style="background-color:\##{env.colorCode};font-weight:bold" />
+                    </p:column>
+
                     <p:column headerText="Description" sortBy="#{env.description}" filterBy="#{env.description}">
                         <h:outputText value="#{env.description}" />
                     </p:column>

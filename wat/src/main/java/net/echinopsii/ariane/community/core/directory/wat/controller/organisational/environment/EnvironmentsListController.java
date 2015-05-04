@@ -181,7 +181,9 @@ public class EnvironmentsListController implements Serializable {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            environment = em.find(environment.getClass(), environment.getId()).setNameR(environment.getName()).setDescriptionR(environment.getDescription());
+            environment = em.find(environment.getClass(), environment.getId()).setNameR(environment.getName()).
+                                                                               setDescriptionR(environment.getDescription()).
+                                                                               setColorCodeR(environment.getColorCode());
             em.flush();
             em.getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
