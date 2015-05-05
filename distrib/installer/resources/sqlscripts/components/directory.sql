@@ -48,6 +48,14 @@ CREATE TABLE IF NOT EXISTS `environment` (
 
 
 --
+-- Alter Table structure for table `environment`
+--
+
+ALTER TABLE `environment` (
+  ADD `environmentCC` varchar(255) DEFAULT NULL;
+)
+
+--
 -- Table structure for table `routingArea`
 --
 
