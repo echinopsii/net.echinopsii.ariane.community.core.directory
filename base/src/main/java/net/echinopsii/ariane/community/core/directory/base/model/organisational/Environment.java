@@ -47,6 +47,10 @@ public class Environment implements Serializable
     @NotNull
     private String name;
 
+    @Column(name="environmentCC",unique=true,nullable=false)
+    @NotNull
+    private String colorCode;
+
     @Column
     private String description;
 
@@ -118,6 +122,19 @@ public class Environment implements Serializable
         return this;
     }
 
+    public String getColorCode() {
+        return this.colorCode;
+    }
+
+    public void setColorCode(final String colorCode) {
+        this.colorCode = colorCode;
+    }
+
+    public Environment setColorCodeR(final String colorCode) {
+        this.colorCode = colorCode;
+        return this;
+    }
+
     public String getDescription() {
         return this.description;
     }
@@ -136,6 +153,8 @@ public class Environment implements Serializable
         String result = getClass().getSimpleName() + " ";
         if (name != null && !name.trim().isEmpty())
             result += "name: " + name;
+        if (colorCode != null && !colorCode.trim().isEmpty())
+            result += ", colorCode: " + colorCode;
         if (description != null && !description.trim().isEmpty())
             result += ", description: " + description;
         return result;
@@ -156,6 +175,6 @@ public class Environment implements Serializable
 
     public Environment clone() {
         return new Environment().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).
-                                 setOSInstancesR(new HashSet<OSInstance>(this.osInstances));
+                                 setColorCodeR(colorCode).setOSInstancesR(new HashSet<OSInstance>(this.osInstances));
     }
 }

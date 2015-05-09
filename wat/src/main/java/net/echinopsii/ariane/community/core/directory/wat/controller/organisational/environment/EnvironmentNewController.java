@@ -46,6 +46,7 @@ public class EnvironmentNewController implements Serializable {
     }
 
     private String name;
+    private String colorCode;
     private String description;
 
     public String getName() {
@@ -64,6 +65,14 @@ public class EnvironmentNewController implements Serializable {
         this.description = description;
     }
 
+    public String getColorCode() {
+        return colorCode;
+    }
+
+    public void setColorCode(String colorCode) {
+        this.colorCode = colorCode;
+    }
+
     /**
      * save a new environmnent thanks data provided through UI form
      */
@@ -71,6 +80,7 @@ public class EnvironmentNewController implements Serializable {
         Environment environment = new Environment();
         environment.setName(name);
         environment.setDescription(description);
+        environment.setColorCode(colorCode);
         try {
             em.getTransaction().begin();
             em.persist(environment);
