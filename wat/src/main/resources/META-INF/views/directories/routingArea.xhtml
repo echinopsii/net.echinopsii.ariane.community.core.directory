@@ -235,9 +235,9 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new datacenter" widgetVar="dcCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
-                <h:form id="creatDCDialogForm">
+            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new datacenter" widgetVar="dcCreateDialog"
+                      width="700" showEffect="fade" hideEffect="explode" closeOnEscape="true">
+                <h:form id="createDCDialogForm">
                     <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
                     </ui:insert>
