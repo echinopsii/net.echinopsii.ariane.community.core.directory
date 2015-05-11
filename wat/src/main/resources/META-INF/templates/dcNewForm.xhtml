@@ -23,7 +23,6 @@
         <h:panelGrid id="newDCgeoGmap" style="width:300px;height:300px"/>
     </h:panelGrid>
 
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
     <script type="application/javascript">
         var geocoder;
         var map, marker;
@@ -102,10 +101,6 @@
                     gpsLongitude.value = null;
                 }
             });
-        }
-
-        window.onload = function(){
-            initialize();
         }
     </script>
 
