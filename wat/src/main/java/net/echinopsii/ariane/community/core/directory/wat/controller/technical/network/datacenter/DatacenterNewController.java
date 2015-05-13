@@ -29,12 +29,17 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import java.io.Serializable;
+import javax.faces.component.UIComponent;
 /**
  * This class provide stuff to create and save a new datacenter from the UI form
  */
 public class DatacenterNewController implements Serializable {
 
 
+    private UIComponent warningMsg;
+    public DatacenterNewController(){
+        FacesContext.getCurrentInstance().addMessage("warningMsg", new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning! Unable to reach google maps services", ""));
+    }
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(DatacentersListController.class);
 
@@ -54,7 +59,6 @@ public class DatacenterNewController implements Serializable {
     private String country;
     private double gpsLatitude;
     private double gpsLongitude;
-
 
     public String getName() {
         return name;

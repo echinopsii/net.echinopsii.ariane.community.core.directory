@@ -17,10 +17,17 @@
             <p:inputText id="newDCcountry" label="Country" required="true" value="#{datacenterNewController.country}" onblur="GetLocation()"/>
             <h:outputText value="Description" styleClass="arianeDialogLabel"/>
             <p:inputTextarea styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.description}"/>
-            <h:inputHidden id="newDCgpsLatitude" value="#{datacenterNewController.gpsLatitude}" />
-            <h:inputHidden id="newDCgpsLongitude" value="#{datacenterNewController.gpsLongitude}" />
         </h:panelGrid>
-        <h:panelGrid id="newDCgeoGmap" style="width:300px;height:300px"/>
+        <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
+            <h:panelGrid id="newDCgeoGmap" style="float:right;width:300px;height:300px"/>
+            <p:messages for="warningMsg" id="warningMsg" /><br/>
+            <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
+                <h:outputText id="outLat" value="Latitude" style="display: block" styleClass="arianeDialogLabel"/>
+                <p:inputText type="hidden" id="newDCgpsLatitude" value="#{datacenterNewController.gpsLatitude}" />
+                <h:outputText id="outLang" value="Longitude" style="display: block" styleClass="arianeDialogLabel"/>
+                <p:inputText type="hidden" id="newDCgpsLongitude" value="#{datacenterNewController.gpsLongitude}" />
+            </h:panelGrid>
+        </h:panelGrid>
     </h:panelGrid>
 
     <script type="application/javascript">
@@ -34,7 +41,25 @@
         var gpsLongitude = document.getElementById("createDCDialogForm:newDCgpsLongitude");
 
         function initialize() {
-            geocoder = new google.maps.Geocoder();
+            try {
+                var geoGmap = document.getElementById('createDCDialogForm:newDCgeoGmap');
+                geocoder = new google.maps.Geocoder();
+                var outLat = document.getElementById('createDCDialogForm:outLat');
+                var outLang = document.getElementById('createDCDialogForm:outLang');
+                var warningMsg = document.getElementById('createDCDialogForm:warningMsg');
+                outLat.style.display = "none";
+                outLang.style.display = "none";
+                if (warningMsg) {
+                    warningMsg.parentNode.removeChild(warningMsg);
+                }
+            }catch(error){
+                if(geoGmap) {
+                    geoGmap.parentNode.removeChild(geoGmap);
+                }
+                gpsLatitude.type = "text";
+                gpsLongitude.type = "text";
+                return;
+            }
             var latLng = new google.maps.LatLng(40.730885,-73.997383);
 
             var mapOptions = {
@@ -42,7 +67,7 @@
                     center: latLng,
                 };
 
-            map = new google.maps.Map(document.getElementById('createDCDialogForm:newDCgeoGmap'),
+            map = new google.maps.Map(geoGmap,
                 mapOptions);
 
             marker = new google.maps.Marker({
