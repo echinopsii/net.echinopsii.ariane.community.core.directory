@@ -18,6 +18,7 @@
  */
 package net.echinopsii.ariane.community.core.directory.base.iPojo;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import net.echinopsii.ariane.community.core.portal.base.model.MainMenuEntity;
 import net.echinopsii.ariane.community.core.portal.base.model.TreeMenuEntity;
 import net.echinopsii.ariane.community.core.portal.base.plugin.TreeMenuRootsRegistry;
@@ -44,6 +45,8 @@ public class DirectoryTreeMenuRootsRegistryImpl implements TreeMenuRootsRegistry
 
     private TreeSet<TreeMenuEntity> registry = new TreeSet<TreeMenuEntity>();
     private MainMenuEntity linkedMainMenuEntity = null;
+
+    private static JsonFactory jFactory = new JsonFactory();
 
     @Validate
     public void validate() throws Exception {
@@ -114,5 +117,9 @@ public class DirectoryTreeMenuRootsRegistryImpl implements TreeMenuRootsRegistry
     @Override
     public void setLinkedMainMenuEntity(MainMenuEntity mainMenuEntity) {
         linkedMainMenuEntity = mainMenuEntity;
+    }
+
+    public static JsonFactory getJFactory() {
+        return jFactory;
     }
 }

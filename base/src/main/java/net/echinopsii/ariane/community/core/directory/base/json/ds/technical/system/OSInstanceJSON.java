@@ -17,16 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.json.ds.technical.system;
+package net.echinopsii.ariane.community.core.directory.base.json.ds.technical.system;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Team;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
-import net.echinopsii.ariane.community.core.directory.wat.DirectoryBootstrap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -87,13 +87,13 @@ public class OSInstanceJSON {
     }
 
     public final static void oneOSInstance2JSON(OSInstance osInstance, ByteArrayOutputStream outStream) throws IOException {
-        JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
+        JsonGenerator jgenerator = DirectoryTreeMenuRootsRegistryImpl.getJFactory().createGenerator(outStream, JsonEncoding.UTF8);
         OSInstanceJSON.osInstance2JSON(osInstance, jgenerator);
         jgenerator.close();
     }
 
     public final static void manyOSInstances2JSON(HashSet<OSInstance> osInstances, ByteArrayOutputStream outStream) throws IOException {
-        JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
+        JsonGenerator jgenerator = DirectoryTreeMenuRootsRegistryImpl.getJFactory().createGenerator(outStream, JsonEncoding.UTF8);
         jgenerator.writeStartObject();
         jgenerator.writeArrayFieldStart("osInstances");
         Iterator<OSInstance> iter = osInstances.iterator();

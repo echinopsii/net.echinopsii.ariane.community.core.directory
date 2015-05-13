@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.json.ds.organisational;
+package net.echinopsii.ariane.community.core.directory.base.json.ds.organisational;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Company;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSType;
-import net.echinopsii.ariane.community.core.directory.wat.DirectoryBootstrap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -63,13 +63,13 @@ public class CompanyJSON {
     }
 
     public final static void oneCompany2JSON(Company company, ByteArrayOutputStream outStream) throws IOException {
-        JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
+        JsonGenerator jgenerator = DirectoryTreeMenuRootsRegistryImpl.getJFactory().createGenerator(outStream, JsonEncoding.UTF8);
         CompanyJSON.company2JSON(company, jgenerator);
         jgenerator.close();
     }
 
     public final static void manyCompanies2JSON(HashSet<Company> companies, ByteArrayOutputStream outStream) throws IOException {
-        JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
+        JsonGenerator jgenerator = DirectoryTreeMenuRootsRegistryImpl.getJFactory().createGenerator(outStream, JsonEncoding.UTF8);
         jgenerator.writeStartObject();
         jgenerator.writeArrayFieldStart("companies");
         Iterator<Company> iter = companies.iterator();

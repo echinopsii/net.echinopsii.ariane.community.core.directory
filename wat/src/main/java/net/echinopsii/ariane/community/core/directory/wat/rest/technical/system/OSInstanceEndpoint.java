@@ -24,8 +24,8 @@ import net.echinopsii.ariane.community.core.directory.base.model.organisational.
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSType;
-import net.echinopsii.ariane.community.core.directory.wat.json.ToolBox;
-import net.echinopsii.ariane.community.core.directory.wat.json.ds.technical.system.OSInstanceJSON;
+import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
+import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.system.OSInstanceJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.ApplicationEndpoint;
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.EnvironmentEndpoint;

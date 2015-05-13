@@ -20,8 +20,8 @@ package net.echinopsii.ariane.community.core.directory.wat.rest.organisational;
 
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
-import net.echinopsii.ariane.community.core.directory.wat.json.ToolBox;
-import net.echinopsii.ariane.community.core.directory.wat.json.ds.organisational.EnvironmentJSON;
+import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
+import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.EnvironmentJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint;
 import org.apache.shiro.SecurityUtils;

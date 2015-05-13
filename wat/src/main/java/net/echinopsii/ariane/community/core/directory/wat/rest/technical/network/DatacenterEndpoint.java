@@ -21,8 +21,8 @@ package net.echinopsii.ariane.community.core.directory.wat.rest.technical.networ
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
-import net.echinopsii.ariane.community.core.directory.wat.json.ToolBox;
-import net.echinopsii.ariane.community.core.directory.wat.json.ds.technical.network.DatacenterJSON;
+import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
+import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.DatacenterJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;

@@ -21,8 +21,8 @@ package net.echinopsii.ariane.community.core.directory.wat.rest.technical.system
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Company;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSType;
-import net.echinopsii.ariane.community.core.directory.wat.json.ToolBox;
-import net.echinopsii.ariane.community.core.directory.wat.json.ds.technical.system.OSTypeJSON;
+import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
+import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.system.OSTypeJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.CompanyEndpoint;
 import org.apache.shiro.SecurityUtils;

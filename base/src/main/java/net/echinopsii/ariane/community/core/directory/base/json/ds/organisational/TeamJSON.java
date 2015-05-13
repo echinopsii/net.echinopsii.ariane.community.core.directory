@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.json.ds.organisational;
+package net.echinopsii.ariane.community.core.directory.base.json.ds.organisational;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Team;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
-import net.echinopsii.ariane.community.core.directory.wat.DirectoryBootstrap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -65,13 +65,13 @@ public class TeamJSON {
     }
 
     public final static void oneTeam2JSON(Team team, ByteArrayOutputStream outStream) throws IOException {
-        JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
+        JsonGenerator jgenerator = DirectoryTreeMenuRootsRegistryImpl.getJFactory().createGenerator(outStream, JsonEncoding.UTF8);
         TeamJSON.team2JSON(team, jgenerator);
         jgenerator.close();
     }
 
     public final static void manyTeams2JSON(HashSet<Team> teams, ByteArrayOutputStream outStream) throws IOException {
-        JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
+        JsonGenerator jgenerator = DirectoryTreeMenuRootsRegistryImpl.getJFactory().createGenerator(outStream, JsonEncoding.UTF8);
         jgenerator.writeStartObject();
         jgenerator.writeArrayFieldStart("teams");
         Iterator<Team> iter = teams.iterator();

@@ -17,13 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.json.ds.organisational;
+package net.echinopsii.ariane.community.core.directory.base.json.ds.organisational;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
-import net.echinopsii.ariane.community.core.directory.wat.DirectoryBootstrap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,12 +42,14 @@ public class EnvironmentJSON {
     public final static String ENV_NAME        = "environmentName";
     public final static String ENV_DESCRIPTION = "environmentDescription";
     public final static String ENV_OSI_ID      = "environmentOSInstancesID";
+    public final static String ENV_COLOR_CODE  = "environmentColorCode";
 
     public final static void environment2JSON(Environment environment, JsonGenerator jgenerator) throws IOException {
         jgenerator.writeStartObject();
         jgenerator.writeNumberField(ENV_ID, environment.getId());
         jgenerator.writeNumberField(ENV_VERSION, environment.getVersion());
         jgenerator.writeStringField(ENV_NAME, environment.getName());
+        jgenerator.writeStringField(ENV_COLOR_CODE, environment.getColorCode());
         jgenerator.writeStringField(ENV_DESCRIPTION, environment.getDescription());
         jgenerator.writeArrayFieldStart(ENV_OSI_ID);
         for (OSInstance osi : environment.getOsInstances())
@@ -57,13 +59,13 @@ public class EnvironmentJSON {
     }
 
     public final static void oneEnvironment2JSON(Environment environment, ByteArrayOutputStream outStream) throws IOException {
-        JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
+        JsonGenerator jgenerator = DirectoryTreeMenuRootsRegistryImpl.getJFactory().createGenerator(outStream, JsonEncoding.UTF8);
         EnvironmentJSON.environment2JSON(environment, jgenerator);
         jgenerator.close();
     }
 
     public final static void manyEnvironments2JSON(HashSet<Environment> environments, ByteArrayOutputStream outStream) throws IOException {
-        JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
+        JsonGenerator jgenerator = DirectoryTreeMenuRootsRegistryImpl.getJFactory().createGenerator(outStream, JsonEncoding.UTF8);
         jgenerator.writeStartObject();
         jgenerator.writeArrayFieldStart("environments");
         Iterator<Environment> iter = environments.iterator();

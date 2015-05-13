@@ -19,7 +19,6 @@
 
 package net.echinopsii.ariane.community.core.directory.wat;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import net.echinopsii.ariane.community.core.portal.base.plugin.FaceletsResourceResolverService;
 import net.echinopsii.ariane.community.core.portal.base.plugin.FacesMBeanRegistry;
 import net.echinopsii.ariane.community.core.portal.base.model.MainMenuEntity;
@@ -63,8 +62,6 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
 
     @Requires
     private RestResourceRegistry restResourceRegistry = null;
-
-    private static JsonFactory jFactory = new JsonFactory();
 
     @Bind
     public void bindRestResourceRegistry(RestResourceRegistry r) {
@@ -258,10 +255,6 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
         restResourceRegistry.unregisterPluginRestEndpoints(DirectoryBootstrap.class.getResource(REST_EP_FILE_PATH));
 
         log.info("{} is stopped", new Object[]{DIRECTORY_COMPONENT});
-    }
-
-    public static JsonFactory getjFactory() {
-        return jFactory;
     }
 
     @Override

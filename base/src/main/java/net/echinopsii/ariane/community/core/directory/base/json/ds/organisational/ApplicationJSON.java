@@ -17,13 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.json.ds.organisational;
+package net.echinopsii.ariane.community.core.directory.base.json.ds.organisational;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
-import net.echinopsii.ariane.community.core.directory.wat.DirectoryBootstrap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -65,13 +65,13 @@ public class ApplicationJSON {
     }
 
     public final static void oneApplication2JSON(Application application, ByteArrayOutputStream outStream) throws IOException {
-        JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
+        JsonGenerator jgenerator = DirectoryTreeMenuRootsRegistryImpl.getJFactory().createGenerator(outStream, JsonEncoding.UTF8);
         ApplicationJSON.application2JSON(application, jgenerator);
         jgenerator.close();
     }
 
     public final static void manyApplications2JSON(HashSet<Application> applications, ByteArrayOutputStream outStream) throws IOException {
-        JsonGenerator jgenerator = DirectoryBootstrap.getjFactory().createGenerator(outStream, JsonEncoding.UTF8);
+        JsonGenerator jgenerator = DirectoryTreeMenuRootsRegistryImpl.getJFactory().createGenerator(outStream, JsonEncoding.UTF8);
         jgenerator.writeStartObject();
         jgenerator.writeArrayFieldStart("applications");
         Iterator<Application> iterC = applications.iterator();
