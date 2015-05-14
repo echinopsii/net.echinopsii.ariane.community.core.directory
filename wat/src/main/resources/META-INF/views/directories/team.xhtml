@@ -60,7 +60,7 @@
                             <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgTeam:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{team.description}"/>
+                                    <p:inputTextarea required="true" label="text" value="#{team.description}"/>
                                     <p:ajax event="save" listener="#{teamsListController.update(team)}" update="@form,:teamTableForm:teamTableMessages" />
                                 </p:inplace>
                             </h:form>

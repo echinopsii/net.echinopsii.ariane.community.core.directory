@@ -65,7 +65,7 @@
                             <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{datacenter.description}"/>
+                                    <p:inputTextarea required="true" label="text" value="#{datacenter.description}"/>
                                     <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
@@ -74,7 +74,7 @@
                             <h:outputText value="Address : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{datacenter.address}"/>
+                                    <p:inputTextarea required="true" label="text" value="#{datacenter.address}"/>
                                     <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>

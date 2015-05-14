@@ -56,7 +56,7 @@
                             <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwRarea:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{rarea.description}"/>
+                                    <p:inputTextarea required="true" label="text" value="#{rarea.description}"/>
                                     <p:ajax event="save" listener="#{routingAreasListController.update(rarea)}" update="@form,:rareaTableForm:rareaTableMessages" />
                                 </p:inplace>
                             </h:form>

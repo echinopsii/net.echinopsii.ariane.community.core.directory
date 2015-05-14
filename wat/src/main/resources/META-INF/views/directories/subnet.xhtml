@@ -61,7 +61,7 @@
                             <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="description" value="#{subnet.description}"/>
+                                    <p:inputTextarea required="true" label="description" value="#{subnet.description}"/>
                                     <p:ajax event="save" listener="#{subnetsListController.update(subnet)}" update="@form,:subnetTableForm:subnetTableMessages" />
                                 </p:inplace>
                             </h:form>

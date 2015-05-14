@@ -49,7 +49,7 @@
                             <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgCompany:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{cmp.description}"/>
+                                    <p:inputTextarea required="true" label="text" value="#{cmp.description}"/>
                                     <p:ajax event="save" listener="#{companysListController.update(cmp)}" update="@form,:companyTableForm:companyTableMessages" />
                                 </p:inplace>
                             </h:form>
