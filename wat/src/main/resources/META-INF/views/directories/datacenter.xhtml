@@ -127,7 +127,7 @@
 
                             <h:outputText value="Routing Areas : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(datacenter,'routingAreas')}" var="_rarea" styleClass="ui-widget-content grid" rowKey="#{_rarea.id}"
+                                <p:dataTable value="#{directoryViewUtils.asList(datacenter,'routingAreas')}" var="_rarea" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{_rarea.id}"
                                              rows="5" paginator="true" selection="#{datacentersListController.removedRareas[datacenter.id]}" selectionMode="multiple">
                                     <p:column headerText="Name" sortBy="#{_rarea.name}" filterBy="#{_rarea.name}">
                                         <h:outputText id="mareaName" value="#{_rarea.name}"/>

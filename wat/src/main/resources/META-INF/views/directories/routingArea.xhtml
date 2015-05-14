@@ -90,7 +90,7 @@
 
                             <h:outputText value="Datacenters : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(rarea,'datacenters')}" var="dc" styleClass="ui-widget-content grid" rowKey="#{dc.id}"
+                                <p:dataTable value="#{directoryViewUtils.asList(rarea,'datacenters')}" var="dc" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{dc.id}"
                                              rows="5" paginator="true" selection="#{routingAreasListController.removedDCs[rarea.id]}" selectionMode="multiple">
                                     <p:column headerText="Name" sortBy="#{dc.name}" filterBy="#{dc.name}">
                                         <h:outputText id="dcName" value="#{dc.name}"/>

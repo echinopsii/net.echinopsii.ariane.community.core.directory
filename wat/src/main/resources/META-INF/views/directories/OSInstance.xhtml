@@ -81,7 +81,7 @@
 
                     <h:outputText value="Environments : " styleClass="arianeDialogLabel"/>
                     <h:form>
-                        <p:dataTable value="#{directoryViewUtils.asList(osi,'environments')}" var="env" styleClass="ui-widget-content grid" rowKey="#{env.id}"
+                        <p:dataTable value="#{directoryViewUtils.asList(osi,'environments')}" var="env" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{env.id}"
                                      rows="5" paginator="true" selection="#{OSInstancesListController.removedEnvs[osi.id]}" selectionMode="multiple">
                             <p:column headerText="Name" sortBy="#{env.name}" filterBy="#{env.name}">
                                 <h:outputText id="networkName" value="#{env.name}"/>
