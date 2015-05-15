@@ -61,7 +61,7 @@
                             <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="description" value="#{subnet.description}"/>
+                                    <p:inputTextarea required="true" label="description" value="#{subnet.description}"/>
                                     <p:ajax event="save" listener="#{subnetsListController.update(subnet)}" update="@form,:subnetTableForm:subnetTableMessages" />
                                 </p:inplace>
                             </h:form>
@@ -99,7 +99,7 @@
 
                             <h:outputText value="Datacenters : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(subnet,'datacenters')}" var="dc" styleClass="ui-widget-content grid" rowKey="#{dc.id}"
+                                <p:dataTable value="#{directoryViewUtils.asList(subnet,'datacenters')}" var="dc" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{dc.id}"
                                              rows="5" paginator="true" selection="#{subnetsListController.removedDCs[subnet.id]}" selectionMode="multiple">
                                     <p:column headerText="Name" sortBy="#{dc.name}" filterBy="#{dc.name}">
                                         <h:outputText id="dcitemName" value="#{dc.name}"/>

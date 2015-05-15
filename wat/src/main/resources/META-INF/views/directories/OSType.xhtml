@@ -73,7 +73,7 @@
 
                             <h:outputText value="OS instances : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(ost,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
+                                <p:dataTable value="#{directoryViewUtils.asList(ost,'osInstances')}" var="osi" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{osi.id}"
                                              rows="5" paginator="true" selection="#{OSTypesListController.removedOSInstances[ost.id]}" selectionMode="multiple">
                                     <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
                                         <h:outputText id="osiName" value="#{osi.name}"/>

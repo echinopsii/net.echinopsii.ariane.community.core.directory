@@ -59,7 +59,7 @@
                             <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgEnvironment:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{env.description}"/>
+                                    <p:inputTextarea required="true" label="text" value="#{env.description}"/>
                                     <p:ajax event="save" listener="#{environmentsListController.update(env)}" update="@form,:environmentTableForm:environmentTableMessages" />
                                 </p:inplace>
                             </h:form>
@@ -67,7 +67,7 @@
 
                             <h:outputText value="OS Instances : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(env,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
+                                <p:dataTable value="#{directoryViewUtils.asList(env,'osInstances')}" var="osi" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{osi.id}"
                                              rows="5" paginator="true" selection="#{environmentsListController.removedOSInstances[env.id]}" selectionMode="multiple">
                                     <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
                                         <h:outputText id="osiName" value="#{osi.name}"/>

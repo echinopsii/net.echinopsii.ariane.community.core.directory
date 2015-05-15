@@ -83,7 +83,7 @@
                             <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComOrgApp:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{app.description}"/>
+                                    <p:inputTextarea required="true" label="text" value="#{app.description}"/>
                                     <p:ajax event="save" listener="#{applicationsListController.update(app)}" update="@form,:applicationTableForm:applicationTableMessages" />
                                 </p:inplace>
                             </h:form>
@@ -115,7 +115,7 @@
 
                             <h:outputText value="OS Instances : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(app,'osInstances')}" var="osi" styleClass="ui-widget-content grid" rowKey="#{osi.id}"
+                                <p:dataTable value="#{directoryViewUtils.asList(app,'osInstances')}" var="osi" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{osi.id}"
                                              rows="5" paginator="true" selection="#{applicationsListController.removedOSInstances[app.id]}" selectionMode="multiple">
                                     <p:column headerText="Name" sortBy="#{osi.name}" filterBy="#{osi.name}">
                                         <h:outputText id="osiName" value="#{osi.name}"/>
