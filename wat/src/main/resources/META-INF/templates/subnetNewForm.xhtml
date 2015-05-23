@@ -55,8 +55,6 @@
             var subnetIP = document.getElementById("createSubnetDialogForm:subnetIP");
             var subnetMask = document.getElementById("createSubnetDialogForm:subnetMask");
             if ((IPnumber(subnetIP.value) & IPnumber(subnetMask.value)) != IPnumber(subnetIP.value)){
-                subnetIP.value = null;
-                subnetMask.value = null;
                 subnetIP.style.borderColor = "red";
                 subnetMask.style.borderColor = "red";
             }else{
