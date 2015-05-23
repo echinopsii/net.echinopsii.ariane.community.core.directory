@@ -12,7 +12,7 @@
         <p:inputText id="subnetIP" label="Subnet IP" required="true" value="#{subnetNewController.subnetIP}"/>
 
         <h:outputText value="Subnet Mask" styleClass="arianeDialogLabel"/>
-        <p:inputText id="subnetMask" label="Subnet Mask" required="true" value="#{subnetNewController.subnetMask}"/>
+        <p:inputText id="subnetMask" label="Subnet Mask" required="true" value="#{subnetNewController.subnetMask}" onblur="validateSubnet()"/>
 
         <h:outputText value="Datacenters" styleClass="arianeDialogLabel"/>
         <h:panelGroup>
@@ -40,5 +40,29 @@
         <p:inputTextarea label="Description" styleClass="arianeDialogInputTitle" autoResize="false" style="resize:none" required="true" value="#{subnetNewController.description}"/>
     </h:panelGrid>
 
+    <script type="application/javascript">
+        //<![CDATA[
+        function IPnumber(IPaddress) {
+            var ipFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            var ip = IPaddress.match(ipFormat);
+            if(ip) {
+                return (+ip[1]<<24) + (+ip[2]<<16) + (+ip[3]<<8) + (+ip[4]);
+            }
+            return null;
+        }
+
+        function validateSubnet(){
+            var subnetIP = document.getElementById("createSubnetDialogForm:subnetIP");
+            var subnetMask = document.getElementById("createSubnetDialogForm:subnetMask");
+            if ((IPnumber(subnetIP.value) & IPnumber(subnetMask.value)) != IPnumber(subnetIP.value)){
+                subnetIP.style.borderColor = "red";
+                subnetMask.style.borderColor = "red";
+            }else{
+                subnetIP.style.borderColor = "black";
+                subnetMask.style.borderColor = "black";
+            }
+        }
+        //]]>
+    </script>
 </ui:composition>
 </html>
