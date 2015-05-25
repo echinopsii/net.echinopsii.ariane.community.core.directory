@@ -9,7 +9,7 @@
       xmlns:arianeidm="http://echinopsii.net/ariane/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiNtwDC:display')}">
+        <ui:fragment rendered="#{arianeidm:hasPermission('dirComITiNtwDC:display')}">
 
             <h:form id="datacenterTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="dcTableMessages" showDetail="true" />

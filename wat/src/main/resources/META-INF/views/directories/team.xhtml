@@ -9,7 +9,7 @@
       xmlns:arianeidm="http://echinopsii.net/ariane/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComOrgTeam:display')}">
+        <ui:fragment rendered="#{arianeidm:hasPermission('dirComOrgTeam:display')}">
             <h:form id="teamTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="teamTableMessages" showDetail="true" />
                 <p:dataTable id="teamTable" styleClass="arianeTableRow" var="team" value="#{teamsListController.lazyModel}"

@@ -9,7 +9,7 @@
       xmlns:arianeidm="http://echinopsii.net/ariane/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiNtwSubnet:display')}">
+        <ui:fragment rendered="#{arianeidm:hasPermission('dirComITiNtwSubnet:display')}">
 
             <h:form id="subnetTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="subnetTableMessages" showDetail="true" />

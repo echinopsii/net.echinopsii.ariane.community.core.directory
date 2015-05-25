@@ -9,7 +9,7 @@
       xmlns:arianeidm="http://echinopsii.net/ariane/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComITiNtwRarea:display')}">
+        <ui:fragment rendered="#{arianeidm:hasPermission('dirComITiNtwRarea:display')}">
             <h:form id="rareaTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="rareaTableMessages" showDetail="true" />
                 <p:dataTable id="rareaTable" styleClass="arianeTableRow" var="rarea" value="#{routingAreasListController.lazyModel}"

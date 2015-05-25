@@ -8,7 +8,7 @@
       xmlns:arianeidm="http://echinopsii.net/ariane/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryContent">
-        <ui:fragment rendered="#{arianeidm:isAuthenticated() and arianeidm:hasPermission('dirComOrgEnvironment:display')}">
+        <ui:fragment rendered="#{arianeidm:hasPermission('dirComOrgEnvironment:display')}">
             <h:form id="environmentTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="environmentTableMessages" showDetail="true" />
                 <p:dataTable id="environmentTable" styleClass="arianeTableRow" var="env" value="#{environmentsListController.lazyModel}"
