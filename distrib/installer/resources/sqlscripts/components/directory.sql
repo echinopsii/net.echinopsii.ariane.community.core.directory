@@ -38,7 +38,6 @@ CREATE TABLE IF NOT EXISTS `datacenter` (
 
 CREATE TABLE IF NOT EXISTS `environment` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `environmentCC` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `environmentName` varchar(255) DEFAULT NULL,
   `version` int(11) DEFAULT NULL,
@@ -46,14 +45,11 @@ CREATE TABLE IF NOT EXISTS `environment` (
   UNIQUE KEY `UK_j9w5yy2xvayt691yivqxisw5v` (`environmentName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
-
 --
 -- Alter Table structure for table `environment`
 --
 
-ALTER TABLE `environment` (
-  ADD `environmentCC` varchar(255) DEFAULT NULL;
-)
+ALTER TABLE `environment` ADD `environmentCC` varchar(255) DEFAULT NULL;
 
 --
 -- Table structure for table `routingArea`
