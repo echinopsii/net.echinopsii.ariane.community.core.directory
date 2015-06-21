@@ -121,6 +121,19 @@ CREATE TABLE IF NOT EXISTS `osInstance` (
   CONSTRAINT `FK_atplleu6rvhpn7d5em808p6wk` FOREIGN KEY (`embeddingOSInstance_id`) REFERENCES `osInstance` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
+--
+--  Table structure for table `ipAddress`
+--
+
+CREATE TABLE `ipaddress` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ipAddress` varchar(255) NOT NULL,
+  `version` int(11) DEFAULT NULL,
+  `networkSubnet_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_3n0207eaccxw6baxbsonaqtl6` (`networkSubnet_id`),
+  CONSTRAINT `FK_3n0207eaccxw6baxbsonaqtl6` FOREIGN KEY (`networkSubnet_id`) REFERENCES `subnet` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `subnet`

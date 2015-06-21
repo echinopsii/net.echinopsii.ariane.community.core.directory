@@ -122,6 +122,7 @@ public class IPAddressNewController implements Serializable {
         try {
             em.getTransaction().begin();
             em.persist(newIPAddress);
+            newIPAddress.checkIP(this.rsubnet.getSubnetIP(), this.rsubnet.getSubnetMask());
             em.flush();
             em.getTransaction().commit();
             log.debug("Save new IPAddress {} !", new Object[]{ipAddress});

@@ -26,6 +26,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 
 
@@ -148,5 +151,26 @@ public class IPAddress implements Serializable {
         HashMap<String, Object> ret = new HashMap<String, Object>();
         ret.put(SUBNET_SUBNET_MAPPING_FIELD, networkSubnet.getName());
         return ret;
+    }
+
+
+    public int convertIPToInt(String IP) throws UnknownHostException {
+        Inet4Address inet4Address = (Inet4Address) InetAddress.getByName(IP);
+        byte[] inetByte = inet4Address.getAddress();
+        int intIP = ((inetByte[0] & 0xFF) << 24) |
+                ((inetByte[1] & 0xFF) << 16) |
+                ((inetByte[2] & 0xFF) << 8)  |
+                ((inetByte[3] & 0xFF) << 0);
+        return intIP;
+    }
+
+    public void checkIP(String subnetIP, String subnetMask) throws UnknownHostException {
+        int intIP = this.convertIPToInt(this.getIpAddress());
+        int intSubnetIP = this.convertIPToInt(subnetIP);
+        int intSubnetMask = this.convertIPToInt(subnetMask);
+
+        if((intSubnetIP & intSubnetMask) != (intIP & intSubnetMask)){
+            throw new UnknownHostException();
+        }
     }
 }
