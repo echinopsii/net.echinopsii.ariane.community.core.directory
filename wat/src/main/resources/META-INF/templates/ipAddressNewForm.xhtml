@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<ui:composition>
+    <h:panelGrid id="ipAddressNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
+        <h:outputText value="IPAddress" styleClass="arianeDialogLabel"/>
+        <p:inputText id="ipAddress" label="IPAddress" required="true" value="#{ipAddressNewController.ipAddress}" onblur="validateIP()"/>
+
+        <h:outputText value="Subnets" styleClass="arianeDialogLabel"/>
+        <h:panelGroup>
+            <p:commandLink onclick="subnetCreateDialog.show()">
+                <h:outputText value=" create new subnet"/>
+            </p:commandLink><br/>
+            <h:selectOneMenu label="Select the subnet type" value="#{ipAddressNewController.rSubnet}" required="true" style="width:68.5%">
+                <f:selectItems value="#{subnetsListController.getAll()}"  var="rsubnet"
+                               itemLabel="#{rsubnet.name}" itemValue="#{rsubnet.name}"/>
+            </h:selectOneMenu>
+        </h:panelGroup>
+    </h:panelGrid>
+    <script type="application/javascript">
+        //<![CDATA[
+        function validateIP() {
+            var IP = document.getElementById("createIPAddressDialogForm:ipAddress");
+            var ipFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            var ip = IP.value.match(ipFormat);
+            if(ip) {
+                IP.style.borderColor = "black";
+            }else{
+                IP.style.borderColor = "red";
+            }
+        }
+        //]]>
+    </script>
+</ui:composition>
+</html>

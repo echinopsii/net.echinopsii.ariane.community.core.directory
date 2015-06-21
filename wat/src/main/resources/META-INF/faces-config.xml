@@ -96,6 +96,18 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
+
+    <managed-bean>
+        <managed-bean-name>ipAddressNewController</managed-bean-name>
+        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressNewController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>ipAddressListController</managed-bean-name>
+        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressListController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
     <managed-bean>
         <managed-bean-name>routingAreaNewController</managed-bean-name>
         <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea.RoutingAreaNewController</managed-bean-class>
