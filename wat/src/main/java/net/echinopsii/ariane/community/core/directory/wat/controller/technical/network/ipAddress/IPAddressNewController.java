@@ -1,6 +1,6 @@
 /**
  * Directory wat
- * Directories Subnet Create Controller
+ * Directories IPAddress Create Controller
  * Copyright (C) 2015 Echinopsii
  * Author : Sagar Ghuge
  *

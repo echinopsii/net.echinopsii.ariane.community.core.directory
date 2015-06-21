@@ -1,7 +1,7 @@
 
 /**
  * Directory wat
- * Directories Subnet RUD Controller
+ * Directories IPAddress RUD Controller
  * Copyright (C) 2015 Echinopsii
  * Author : Sagar Ghuge
  *

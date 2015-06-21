@@ -1,6 +1,6 @@
 /**
  * Directory base
- * Model technical/network/subnet
+ * Model technical/network/IPAddress
  * Copyright (C) 2015 Echinopsii
  * Author : Sagar Ghuge
  *
