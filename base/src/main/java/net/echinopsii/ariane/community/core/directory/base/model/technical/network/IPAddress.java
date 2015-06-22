@@ -19,6 +19,9 @@
  */
 package net.echinopsii.ariane.community.core.directory.base.model.technical.network;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +33,8 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -55,6 +60,10 @@ public class IPAddress implements Serializable {
     @JoinColumn(nullable = false)
     @NotNull
     private Subnet networkSubnet;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<OSInstance> osInstances = new HashSet<OSInstance>();
 
     public Long getId() {
         return this.id;
@@ -138,6 +147,19 @@ public class IPAddress implements Serializable {
 
     public IPAddress setNetworkSubnetR(final Subnet networkSubnet) {
         this.networkSubnet = networkSubnet;
+        return this;
+    }
+
+    public Set<OSInstance> getOsInstances() {
+        return this.osInstances;
+    }
+
+    public void setOsInstances(final Set<OSInstance> osInstances) {
+        this.osInstances = osInstances;
+    }
+
+    public IPAddress setOsInstancesR(final Set<OSInstance> osInstances) {
+        this.osInstances = osInstances;
         return this;
     }
 

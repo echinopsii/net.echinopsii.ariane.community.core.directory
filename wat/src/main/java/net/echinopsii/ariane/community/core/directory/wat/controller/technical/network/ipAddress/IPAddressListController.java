@@ -223,7 +223,7 @@ public class IPAddressListController implements Serializable {
         CriteriaBuilder        builder  = em.getCriteriaBuilder();
         CriteriaQuery<IPAddress> criteria = builder.createQuery(IPAddress.class);
         Root<IPAddress>       root     = criteria.from(IPAddress.class);
-        criteria.select(root).orderBy(builder.asc(root.get("name")));
+        criteria.select(root).orderBy(builder.asc(root.get("ipAddress")));
 
         List<IPAddress> ret = em.createQuery(criteria).getResultList();
         em.close();
