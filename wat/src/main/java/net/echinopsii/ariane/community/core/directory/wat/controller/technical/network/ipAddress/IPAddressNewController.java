@@ -100,6 +100,19 @@ public class IPAddressNewController implements Serializable {
         }
     }
 
+    private void isExist() throws NotSupportedException, SystemException, Exception{
+        Boolean rIPAddress = false;
+        for (IPAddress ipAddress: IPAddressListController.getAll()) {
+            if (ipAddress.getIpAddress().equals(this.ipAddress) && ipAddress.getNetworkSubnet().equals(this.rsubnet)) {
+                rIPAddress = true;
+                break;
+            }
+        }
+        if(rIPAddress){
+           log.debug("Entry already exist for : {}", new Object[]{this.getIpAddress()});
+           throw new Exception("Entry already exist");
+        }
+    }
     /**
      * save a new subnet thanks data provided through UI form
      */
@@ -122,6 +135,7 @@ public class IPAddressNewController implements Serializable {
         try {
             em.getTransaction().begin();
             em.persist(newIPAddress);
+            isExist();
             newIPAddress.checkIP(this.rsubnet.getSubnetIP(), this.rsubnet.getSubnetMask());
             em.flush();
             em.getTransaction().commit();
