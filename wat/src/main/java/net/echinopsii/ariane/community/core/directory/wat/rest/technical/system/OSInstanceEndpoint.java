@@ -21,6 +21,7 @@ package net.echinopsii.ariane.community.core.directory.wat.rest.technical.system
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Team;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSType;
@@ -30,6 +31,7 @@ import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAPro
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.ApplicationEndpoint;
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.EnvironmentEndpoint;
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.TeamEndpoint;
+import net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.IPAddressEndpoint;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.SubnetEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -906,6 +908,94 @@ public class OSInstanceEndpoint {
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or environmentID are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/ipAddresses/add")
+    public Response updateOSInstanceAddIPAddress(@QueryParam("id")Long id, @QueryParam("ipAddressID")Long ipAddressID) {
+        if (id!=0 && ipAddressID!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update os instance {} by adding ipAddress : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, ipAddressID});
+            if (subject.hasRole("sysadmin") || subject.isPermitted("dirComITiSysOsi:update") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                OSInstance entity = findOSInstanceById(em, id);
+                if (entity!=null) {
+                    IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, ipAddressID);
+                    if (ipAddress!=null) {
+                        try {
+                            em.getTransaction().begin();
+                            ipAddress.setOsInstances(entity);
+                            entity.getIpAddress().add(ipAddress);
+                            em.flush();
+                            em.getTransaction().commit();
+                            em.close();
+                            return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated by adding ipAddress " + ipAddressID).build();
+                        } catch (Throwable t) {
+                            if (em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating IPAddress " + entity.getName() + " : " + t.getMessage()).build();
+                        }
+                    } else {
+                        em.close();
+                        return Response.status(Status.NOT_FOUND).entity("IPAddress " + ipAddressID + " not found.").build();
+                    }
+                } else {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).entity("IPAddress " + id + " not found.").build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update IPAddress. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ipAddressID are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/ipAddresses/delete")
+    public Response updateOSInstanceDeleteIPAddress(@QueryParam("id")Long id, @QueryParam("ipAddressID")Long ipAddressID) {
+        if (id!=0 && ipAddressID!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update os instance {} by deleting ipAddress : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, ipAddressID});
+            if (subject.hasRole("sysadmin") || subject.isPermitted("dirComITiSysOsi:update") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                OSInstance entity = findOSInstanceById(em, id);
+                if (entity!=null) {
+                    IPAddress ipAddress= IPAddressEndpoint.findIPAddressById(em, ipAddressID);
+                    if (ipAddress!=null) {
+                        try {
+                            em.getTransaction().begin();
+                            ipAddress.setOsInstances(null);
+                            entity.getIpAddress().remove(ipAddress);
+                            em.flush();
+                            em.getTransaction().commit();
+                            em.close();
+                            return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting ipAddress " + ipAddressID).build();
+                        } catch (Throwable t) {
+                            if (em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating OS instance " + entity.getName() + " : " + t.getMessage()).build();
+                        }
+                    } else {
+                        em.close();
+                        return Response.status(Status.NOT_FOUND).entity("IPAddress " + ipAddressID + " not found.").build();
+                    }
+                } else {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).entity("IPAddress " + id + " not found.").build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update IPAddresses. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ipAddressID are not defined. You must define these parameters.").build();
         }
     }
 }

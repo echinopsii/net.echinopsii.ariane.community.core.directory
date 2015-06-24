@@ -21,7 +21,9 @@
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import org.slf4j.Logger;
@@ -50,9 +52,13 @@ public class IPAddressNewController implements Serializable {
     }
 
     private String ipAddress;
+    private String fqdn;
 
     private String rSubnet = "";
     private Subnet rsubnet;
+
+    private String rOsInstance = "";
+    private OSInstance rosinstance;
 
     public String getIpAddress() {
         return ipAddress;
@@ -78,6 +84,30 @@ public class IPAddressNewController implements Serializable {
         this.rSubnet = rSubnet;
     }
 
+    public String getrOsInstance() {
+        return rOsInstance;
+    }
+
+    public void setrOsInstance(String rOsInstance) {
+        this.rOsInstance = rOsInstance;
+    }
+
+    public OSInstance getRosinstance() {
+        return rosinstance;
+    }
+
+    public void setRosinstance(OSInstance rosinstance) {
+        this.rosinstance = rosinstance;
+    }
+
+    public String getFqdn() {
+        return fqdn;
+    }
+
+    public void setFqdn(String fqdn) {
+        this.fqdn = fqdn;
+    }
+
     /**
      * synchronize this.rsubnet from DB
      *
@@ -100,19 +130,6 @@ public class IPAddressNewController implements Serializable {
         }
     }
 
-    private void isExist() throws NotSupportedException, SystemException, Exception{
-        Boolean rIPAddress = false;
-        for (IPAddress ipAddress: IPAddressListController.getAll()) {
-            if (ipAddress.getIpAddress().equals(this.ipAddress) && ipAddress.getNetworkSubnet().equals(this.rsubnet)) {
-                rIPAddress = true;
-                break;
-            }
-        }
-        if(rIPAddress){
-           log.debug("Entry already exist for : {}", new Object[]{this.getIpAddress()});
-           throw new Exception("Entry already exist");
-        }
-    }
     /**
      * save a new subnet thanks data provided through UI form
      */
@@ -129,14 +146,22 @@ public class IPAddressNewController implements Serializable {
         }
 
         IPAddress newIPAddress = new IPAddress();
-        newIPAddress.setIpAddress(ipAddress);
-        newIPAddress.setNetworkSubnet(this.rsubnet);
 
         try {
+            newIPAddress.setIpAddress(ipAddress);
+            newIPAddress.isExist(this.rsubnet);
+            newIPAddress.setFqdn(this.fqdn);
+            newIPAddress.setNetworkSubnet(this.rsubnet);
+            newIPAddress.setOsInstances(this.rosinstance);
+
             em.getTransaction().begin();
             em.persist(newIPAddress);
-            isExist();
             newIPAddress.checkIP(this.rsubnet.getSubnetIP(), this.rsubnet.getSubnetMask());
+            if (rsubnet!=null) {
+                rsubnet.getIpAddress().add(newIPAddress); em.merge(rsubnet);}
+            if (rosinstance!=null) {
+                rosinstance.getIpAddress().add(newIPAddress); em.merge(rosinstance);}
+
             em.flush();
             em.getTransaction().commit();
             log.debug("Save new IPAddress {} !", new Object[]{ipAddress});

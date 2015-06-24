@@ -1205,6 +1205,24 @@ r.status_code
 #r.text
 #'Request error: id and name are not defined. You must define one of these parameters'
 
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/create', params={'name': 'dummy.subnet', 'subnetIP': '123.123.48.0', 'subnetMask': '255.255.240.0',
+                                                                                                    'routingArea': devilRareaID, 'description': 'a fake subnet'})
+r.status_code
+dummy_subnetID = r.json().get('subnetID')
+
+#200
+#pprint(r.json())
+#{'subnetDatacentersID': [],
+# 'subnetDescription': 'dummy subnet',
+# 'subnetID': 5,
+# 'subnetIP': '123.123.48.0',
+# 'subnetMask': '255.255.240.0',
+# 'subnetRoutingAreaID': -1,
+# 'subnetName': 'fake.subnet',
+# 'subnetOSInstancesID': [],
+# 'subnetType': 'LAN',
+# 'subnetVersion': 0}
+
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/create', params={'name': 'fake.subnet', 'subnetIP': '192.168.66.0', 'subnetMask': '255.255.255.0',
                                                                                                     'routingArea': devilRareaID, 'description': 'a fake subnet'})
 r.status_code
@@ -1329,9 +1347,139 @@ r.status_code
 #200
 
 
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress')
+r.status_code
+#200
+#pprint(r.json())
+#["ipAddresses": {
+#     "ipAddressID": 1,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.123",
+#     "ipAddressFQDN": "Fake FQDN"
+#     "ipAddressOSInstancesID": -1,
+#     "ipAddressSubnetID": 5
+# },{
+#     "ipAddressID": 2,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.122",
+#     "ipAddressFQDN": "Fake FQDN2"
+#     "ipAddressOSInstancesID": -1,
+#     "ipAddressSubnetID": 5
+# }]
 
+ipAddressParams = {'ipAddress': '123.123.48.123', 'fqdn':'Fake FQDN', 'networkSubnet': dummy_subnetID, 'osInstances':-1}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/create', params=ipAddressParams)
+r.status_code
 
+fake_ipAddressID = r.json().get('ipAddressID')
+#200
+#pprint(r.json())
+#{
+#     "ipAddressID": 1,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.123",
+#     "ipAddressFQDN": "Fake FQDN"
+#     "ipAddressOSInstancesID": -1,
+#     "ipAddressSubnetID": 5
+# }
 
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/1')
+r.status_code
+#200
+#pprint(r.json())
+#{
+#     "ipAddressID": 1,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.123",
+#     "ipAddressFQDN": "Fake FQDN"
+#     "ipAddressOSInstancesID": -1,
+#     "ipAddressSubnetID": 5
+#}
+
+ipAddressParams = {'id': 1}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/get', params=ipAddressParams)
+r.status_code
+#200
+#pprint(r.json())
+#{
+#     "ipAddressID": 1,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.123",
+#     "ipAddressFQDN": "Fake FQDN"
+#     "ipAddressOSInstancesID": -1,
+#     "ipAddressSubnetID": 1
+#}
+
+ipAddressParams = {'ipAddress': '123.123.48.123'}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/get', params=ipAddressParams)
+r.status_code
+#200
+#pprint(r.json())
+#{
+#     "ipAddressID": 1,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.123",
+#     "ipAddressFQDN": "Fake FQDN"
+#     "ipAddressOSInstancesID": -1,
+#     "ipAddressSubnetID": 5
+#}
+
+ipAddressParams = {'id': fake_ipAddressID, 'ipAddress': '123.123.48.119'}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/update/ipAddress', params=ipAddressParams)
+r.status_code
+#200
+
+ipAddressParams = {'id': fake_ipAddressID}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/get', params=ipAddressParams)
+r.status_code
+#200
+#pprint(r.json())
+#{
+#     "ipAddressID": 1,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.119",
+#     "ipAddressFQDN": "Fake FQDN"
+#     "ipAddressOSInstancesID": -1,
+#     "ipAddressSubnetID": 1
+#}
+
+ipAddressParams = {'id': fake_ipAddressID, 'fqdn': 'Fake FQDN3'}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/update/fqdn', params=ipAddressParams)
+r.status_code
+#200
+
+ipAddressParams = {'id': fake_ipAddressID}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/get', params=ipAddressParams)
+r.status_code
+#200
+#pprint(r.json())
+#{
+#     "ipAddressID": 1,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.119",
+#     "ipAddressFQDN": "Fake FQDN3"
+#     "ipAddressOSInstancesID": -1,
+#     "ipAddressSubnetID": 1
+#}
+
+ipAddressParams = {'id': fake_ipAddressID, 'subnetID': fake_subnet_ID}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/update/subnet', params=ipAddressParams)
+r.status_code
+#200
+
+ipAddressParams = {'id': fake_ipAddressID}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/get', params=ipAddressParams)
+r.status_code
+#200
+#pprint(r.json())
+#{
+#     "ipAddressID": 1,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.119",
+#     "ipAddressFQDN": "Fake FQDN3"
+#     "ipAddressOSInstancesID": -1,
+#     "ipAddressSubnetID": 2
+#}
 
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes')
@@ -2165,6 +2313,59 @@ r.status_code
 # 'environmentOSInstancesID': [],
 # 'environmentVersion': 3}
 
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/ipAddresses/add', params={'id': fakeOSID, 'ipAddressID': fake_ipAddressID)
+r.status_code
+#200
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [2],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/get', params={'id': fake_ipAddressID})
+r.status_code
+#200
+#pprint(r.json())
+#{
+#     "ipAddressID": 1,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.123",
+#     "ipAddressFQDN": "Fake FQDN"
+#     "ipAddressOSInstancesID": 1,
+#     "ipAddressSubnetID": 5
+# }
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/ipAddresses/delete', params={'id': fakeOSID, 'ipAddressID': fake_ipAddressID})
+r.status_code
+#200
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})
+r.status_code
+#200
+#pprint(r.json())
+#{'osInstanceAdminGateURI': 'ssh://fakeOs1.fake.lan',
+# 'osInstanceApplicationsID': [11],
+# 'osInstanceDescription': 'A fake OS',
+# 'osInstanceEmbeddedOSInstancesID': [],
+# 'osInstanceEmbeddingOSInstanceID': 1,
+# 'osInstanceEnvironmentsID': [],
+# 'osInstanceID': 7,
+# 'osInstanceName': 'fakeOs1',
+# 'osInstanceOSTypeID': 2,
+# 'osInstanceSubnetsID': [4],
+# 'osInstanceTeamsID': [],
+# 'osInstanceVersion': 0}
+
+
 r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments/update/osinstances/add', params={'id': qaEnv, 'osiID': fakeOSID})
 r.status_code
 #200
@@ -2351,6 +2552,26 @@ r.status_code
 # 'teamOSInstancesID': [],
 # 'teamVersion': 1}
 
+
+ipAddressParams = {'id': fake_ipAddressID, 'osInstanceID': fakeOSID}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/update/osInstances', params=ipAddressParams)
+r.status_code
+#200
+
+ipAddressParams = {'id': fake_ipAddressID}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/get', params=ipAddressParams)
+r.status_code
+#200
+#pprint(r.json())
+#{
+#     "ipAddressID": 1,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.119",
+#     "ipAddressFQDN": "Fake FQDN3"
+#     "ipAddressOSInstancesID": 1,
+#     "ipAddressSubnetID": 2
+#}
+
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/delete', params={'id': fakeOSID})
 r.status_code
 #200
@@ -2368,6 +2589,12 @@ r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subne
 r.status_code
 #200
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/subnets/get', params={'id': fake_subnet_ID})
+r.status_code
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/delete', params={'id': fake_ipAddressID})
+r.status_code
+#200
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/get', params={'id': fake_ipAddressID})
 r.status_code
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/delete', params={'id': devilRareaID})

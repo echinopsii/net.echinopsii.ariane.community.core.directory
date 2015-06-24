@@ -27,8 +27,12 @@
                         <p:rowToggler/>
                     </p:column>
 
-                    <p:column headerText="IP" sortBy="#{ipa.ipAddress}" filterBy="#{ipa.ipAddress}">
+                    <p:column headerText="IP Address" sortBy="#{ipa.ipAddress}" filterBy="#{ipa.ipAddress}">
                         <h:outputText value="#{ipa.ipAddress}" />
+                    </p:column>
+
+                    <p:column headerText="FQDN" sortBy="#{ipa.fqdn}" filterBy="#{ipa.fqdn}">
+                        <h:outputText value="#{ipa.fqdn}" />
                     </p:column>
 
                     <p:column headerText="Subnets">
@@ -37,7 +41,7 @@
 
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
-                        <h:outputText value="IP : " styleClass="arianeDialogLabel"/>
+                        <h:outputText value="IP Address: " styleClass="arianeDialogLabel"/>
                         <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
                             <p:inplace editor="true">
                                 <p:inputText required="true" label="IPA" value="#{ipa.ipAddress}"/>
@@ -46,7 +50,16 @@
                         </h:form>
                         <h:outputText value="#{ipa.ipAddress}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
 
-                        <h:outputText value="Subnet: " styleClass="arianeDialogLabel"/>
+                        <h:outputText value="FQDN : " styleClass="arianeDialogLabel"/>
+                        <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="IPA" value="#{ipa.fqdn}"/>
+                                <p:ajax event="save" listener="#{ipAddressListController.update(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages" />
+                            </p:inplace>
+                        </h:form>
+                        <h:outputText value="#{ipa.fqdn}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
+
+                            <h:outputText value="Subnet: " styleClass="arianeDialogLabel"/>
                         <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
                             <p:inplace label="#{ipAddressListController.getIPAddressSubnetName(ipa)}" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{ipAddressListController.changedSubnet[ipa.id]}">

@@ -5,8 +5,11 @@
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
     <h:panelGrid id="ipAddressNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
-        <h:outputText value="IPAddress" styleClass="arianeDialogLabel"/>
+        <h:outputText value="IP Address" styleClass="arianeDialogLabel"/>
         <p:inputText id="ipAddress" label="IPAddress" required="true" value="#{ipAddressNewController.ipAddress}" onblur="validateIP()"/>
+
+        <h:outputText value="FQDN" styleClass="arianeDialogLabel"/>
+        <p:inputText id="fqdn" label="FQDN" value="#{ipAddressNewController.fqdn}"/>
 
         <h:outputText value="Subnets" styleClass="arianeDialogLabel"/>
         <h:panelGroup>

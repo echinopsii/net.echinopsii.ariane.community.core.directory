@@ -125,13 +125,18 @@ CREATE TABLE IF NOT EXISTS `osInstance` (
 --  Table structure for table `ipAddress`
 --
 
-CREATE TABLE `ipaddress` (
+CREATE TABLE IF NOT EXISTS `ipaddress` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `fqdn` varchar(255) DEFAULT NULL,
   `ipAddress` varchar(255) NOT NULL,
   `version` int(11) DEFAULT NULL,
   `networkSubnet_id` bigint(20) NOT NULL,
+  `osInstances_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_2b6m0akrc8lfui9ed2v9s32va` (`fqdn`),
   KEY `FK_3n0207eaccxw6baxbsonaqtl6` (`networkSubnet_id`),
+  KEY `FK_2rykbmwp9s1qxwtkr223n3xr7` (`osInstances_id`),
+  CONSTRAINT `FK_2rykbmwp9s1qxwtkr223n3xr7` FOREIGN KEY (`osInstances_id`) REFERENCES `osInstance` (`id`),
   CONSTRAINT `FK_3n0207eaccxw6baxbsonaqtl6` FOREIGN KEY (`networkSubnet_id`) REFERENCES `subnet` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

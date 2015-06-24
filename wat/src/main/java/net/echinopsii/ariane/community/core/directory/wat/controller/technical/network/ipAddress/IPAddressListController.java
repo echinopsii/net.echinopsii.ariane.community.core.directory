@@ -20,7 +20,9 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
@@ -149,7 +151,8 @@ public class IPAddressListController implements Serializable {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            ipAddress = em.find(ipAddress.getClass(), ipAddress.getId()).setIpAddressR(ipAddress.getIpAddress()).setNetworkSubnetR(ipAddress.getNetworkSubnet());
+            ipAddress = em.find(ipAddress.getClass(), ipAddress.getId()).setIpAddressR(ipAddress.getIpAddress()).
+                                                                setFqdnR(ipAddress.getFqdn()).setNetworkSubnetR(ipAddress.getNetworkSubnet());
             em.flush();
             em.getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -223,7 +226,7 @@ public class IPAddressListController implements Serializable {
         CriteriaBuilder        builder  = em.getCriteriaBuilder();
         CriteriaQuery<IPAddress> criteria = builder.createQuery(IPAddress.class);
         Root<IPAddress>       root     = criteria.from(IPAddress.class);
-        criteria.select(root).orderBy(builder.asc(root.get("ipAddress")));
+        criteria.select(root).where(builder.isNull(root.get("osInstances"))).orderBy(builder.asc(root.get("ipAddress")));
 
         List<IPAddress> ret = em.createQuery(criteria).getResultList();
         em.close();

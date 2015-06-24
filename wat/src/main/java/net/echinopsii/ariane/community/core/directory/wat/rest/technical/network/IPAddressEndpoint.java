@@ -1,0 +1,458 @@
+/**
+ * Directory wat
+ * Subnet REST endpoint
+ * Copyright (C) 2015 Echinopsii
+ * Author : Sagar Ghuge
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
+
+import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
+import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.IPAddressJSON;
+import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.SubnetJSON;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
+import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
+import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.ws.rs.GET;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+@Path("/directories/common/infrastructure/network/ipAddress")
+public class IPAddressEndpoint {
+    private static final Logger log = LoggerFactory.getLogger(RoutingAreaEndpoint.class);
+    private EntityManager em;
+
+    public static Response ipAddresstToJSON(IPAddress entity) {
+        Response ret = null;
+        String result;
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        try {
+            IPAddressJSON.oneIPAddress2JSON(entity, outStream);
+            result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
+            ret = Response.status(Status.OK).entity(result).build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+            result = e.getMessage();
+            ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity(result).build();
+        }
+        return ret;
+    }
+
+    public static IPAddress findIPAddressById(EntityManager em, long id) {
+        TypedQuery<IPAddress> findByIdQuery = em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.networkSubnet WHERE l.id = :entityId ORDER BY l.id", IPAddress.class);
+        findByIdQuery.setParameter("entityId", id);
+        IPAddress entity;
+        try {
+            entity = findByIdQuery.getSingleResult();
+        } catch (NoResultException nre) {
+            entity = null;
+        }
+        return entity;
+    }
+
+    public static IPAddress findIPAddressByIPA(EntityManager em, String ipAddress) {
+        TypedQuery<IPAddress> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.networkSubnet WHERE l.ipAddress = :entityName ORDER BY l.ipAddress", IPAddress.class);
+        findByNameQuery.setParameter("entityName", ipAddress);
+        IPAddress entity;
+        try {
+            entity = findByNameQuery.getSingleResult();
+        } catch (NoResultException nre) {
+            entity = null;
+        }
+        return entity;
+    }
+
+    public static Subnet findSubnetByID(EntityManager em, long id) {
+        TypedQuery<Subnet> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l WHERE l.id = :entityID ORDER BY l.name", Subnet.class);
+        findByNameQuery.setParameter("entityID", id);
+        Subnet entity;
+        try {
+            entity = findByNameQuery.getSingleResult();
+        } catch (NoResultException nre) {
+            entity = null;
+        }
+        return entity;
+    }
+
+    public static String getAvailableSubnet(EntityManager em) {
+        List<Subnet> resultList = em.createQuery("SELECT DISTINCT l FROM Subnet l ORDER BY l.name", Subnet.class).getResultList();
+        List<Long> subnetNames = new ArrayList<>();
+        for (Subnet rsubnet : resultList)
+            subnetNames.add(rsubnet.getId());
+        return subnetNames.toString();
+    }
+
+    public static OSInstance findOSInstanceByID(EntityManager em, long id) {
+        TypedQuery<OSInstance> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM OSInstance l WHERE l.id = :entityID ORDER BY l.name", OSInstance.class);
+        findByNameQuery.setParameter("entityID", id);
+        OSInstance entity;
+        try {
+            entity = findByNameQuery.getSingleResult();
+        } catch (NoResultException nre) {
+            entity = null;
+        }
+        return entity;
+    }
+
+    @GET
+    @Path("/{id:[0-9][0-9]*}")
+    public Response displayIPAddress(@PathParam("id") Long id) {
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] get ipAddress : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwIPAddress:display") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+        {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            IPAddress entity = findIPAddressById(em, id);
+            if (entity == null) {
+                em.close();
+                return Response.status(Status.NOT_FOUND).build();
+            }
+
+            Response ret = ipAddresstToJSON(entity);
+            em.close();
+            return ret;
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display ipAddress. Contact your administrator.").build();
+        }
+    }
+
+    @GET
+    public Response displayAllIPAddress() {
+        Subject subject = SecurityUtils.getSubject();
+        System.out.print("in display");
+        log.debug("[{}-{}] get ipAddresses", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwIPAddress:display") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            final HashSet<IPAddress> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.networkSubnet ORDER BY l.id", IPAddress.class).getResultList());
+
+            Response ret = null;
+            String result;
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            try {
+                IPAddressJSON.manyIPAddresses2JSON(results, outStream);
+                result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
+                ret = Response.status(Status.OK).entity(result).build();
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                e.printStackTrace();
+                result = e.getMessage();
+                ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity(result).build();
+            } finally {
+                em.close();
+                return ret;
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display ipAddress. Contact your administrator.").build();
+        }
+    }
+
+    @GET
+    @Path("/get")
+    public Response getIPAddress(@QueryParam("ipAddress")String ipAddress, @QueryParam("id")long id) {
+        if (id!=0) {
+            return displayIPAddress(id);
+        } else if (ipAddress != null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] get subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), ipAddress});
+            if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwIPAddress:display") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                IPAddress entity = findIPAddressByIPA(em, ipAddress);
+                if (entity == null) {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+
+                Response ret = ipAddresstToJSON(entity);
+                em.close();
+                return ret;
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display ipAddress. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/create")
+    public Response createIPAddress(@QueryParam("ipAddress")String ipAddress, @QueryParam("fqdn")String fqdn,
+                                 @QueryParam("networkSubnet")int subnetID, @QueryParam("osInstances")int osInstanceID) {
+        if (ipAddress!=null && fqdn!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] create ipAddress : ({},{},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), ipAddress, fqdn, subnetID});
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwIPAddress:create") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                IPAddress entity = findIPAddressByIPA(em, ipAddress);
+                if (entity==null) {
+                    Subnet subnet = findSubnetByID(em, subnetID);
+                    OSInstance osInstance = findOSInstanceByID(em, osInstanceID);
+                    if (subnet!=null) {
+                        entity = new IPAddress().setIpAddressR(ipAddress).setFqdnR(fqdn).setNetworkSubnetR(subnet).setOsInstancesR(osInstance);
+                        try {
+                            em.getTransaction().begin();
+                            em.persist(entity);
+                            em.getTransaction().commit();
+                        } catch (Throwable t) {
+                            if(em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating IPAddress " + entity.getIpAddress() + " : " + t.getMessage()).build();
+                        }
+                    } else {
+                        Response ret = Response.status(Status.INTERNAL_SERVER_ERROR).
+                                entity("Wrong subnet " + subnetID + ". Available subnets are : " + getAvailableSubnet(em)).build();
+                        em.close();
+                        return ret;
+                    }
+                }
+
+                Response ret = ipAddresstToJSON(entity);
+                em.close();
+                return ret;
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create IPAddress. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: ipAddress and/or FQDN are not defined. " +
+                    "You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/delete")
+    public Response deleteIPAddress(@QueryParam("id")Long id) {
+        if (id!=0) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] delete ipAddress : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwIPAddress:delete") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                IPAddress entity = findIPAddressById(em, id);
+                if (entity != null) {
+                    try {
+                        em.getTransaction().begin();
+                        if (entity.getNetworkSubnet()!=null)
+                            entity.getNetworkSubnet().getIpAddress().remove(entity);
+                        em.remove(entity);
+                        em.getTransaction().commit();
+                        em.close();
+                        return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully deleted").build();
+                    } catch (Throwable t) {
+                        if(em.getTransaction().isActive())
+                            em.getTransaction().rollback();
+                        em.close();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating ipAddress " + entity.getIpAddress() + " : " + t.getMessage()).build();
+                    }
+                } else {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete ipAddress. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is no defined. You must define this parameter.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/ipAddress")
+    public Response updateIPAddressIPA(@QueryParam("id")Long id, @QueryParam("ipAddress")String ipAddress) {
+        if (id!=0 && ipAddress!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update IPAddress {} ipAddress : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, ipAddress});
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwIPAddress:update") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                IPAddress entity = findIPAddressById(em, id);
+                if (entity!=null) {
+                    try {
+                        em.getTransaction().begin();
+                        entity.setIpAddress(ipAddress);
+                        em.getTransaction().commit();
+                        em.close();
+                        return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with ipAddress " + ipAddress).build();
+                    } catch (Throwable t) {
+                        if(em.getTransaction().isActive())
+                            em.getTransaction().rollback();
+                        em.close();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating ipAddress " + entity.getIpAddress() + " : " + t.getMessage()).build();
+                    }
+                } else {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update ipAddress. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ipAddress are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/fqdn")
+    public Response updateIPAddressFQDN(@QueryParam("id")Long id, @QueryParam("fqdn")String fqdn) {
+        if (id!=0) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update IPAddress {} fqdn : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, fqdn});
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwIPAddress:update") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                IPAddress entity = findIPAddressById(em, id);
+                if (entity!=null) {
+                    try {
+                        em.getTransaction().begin();
+                        entity.setFqdn(fqdn);
+                        em.getTransaction().commit();
+                        em.close();
+                        return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with FQDN " + fqdn).build();
+                    } catch (Throwable t) {
+                        if(em.getTransaction().isActive())
+                            em.getTransaction().rollback();
+                        em.close();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating FQDN " + entity.getFqdn() + " : " + t.getMessage()).build();
+                    }
+                } else {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update FQDN. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/subnet")
+    public Response updateIPAddressSubnet(@QueryParam("id") Long id, @QueryParam("subnetID") Long subnetID) {
+        if (id!=0 && subnetID!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update ipAddress {} subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetID});
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwIPAddress:update") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                IPAddress entity = findIPAddressById(em, id);
+                if (entity!=null) {
+                    Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetID);
+                    if (subnet!=null) {
+                        try {
+                            em.getTransaction().begin();
+                            if (entity.getNetworkSubnet()!=null)
+                                entity.getNetworkSubnet().getIpAddress().remove(entity);
+                            subnet.getIpAddress().add(entity);
+                            entity.setNetworkSubnet(subnet);
+                            em.getTransaction().commit();
+                            em.close();
+                            return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with subnet " + subnetID).build();
+                        } catch (Throwable t) {
+                            if(em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating IPAddress " + entity.getIpAddress() + " : " + t.getMessage()).build();
+                        }
+                    } else {
+                        em.close();
+                        return Response.status(Status.NOT_FOUND).entity("Subnet " + subnetID + " not found.").build();
+                    }
+                } else {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).entity("IPAddress " + id + " not found.").build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update ipAddress. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or subnet are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/osInstances")
+    public Response updateIPAddressOSInstance(@QueryParam("id") Long id, @QueryParam("osInstanceID") Long osInstanceID) {
+        if (id!=0) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update ipAddress {} osInstance : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osInstanceID});
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwIPAddress:update") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                IPAddress entity = findIPAddressById(em, id);
+                if (entity!=null) {
+                    OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osInstanceID);
+                    if (osInstance!=null) {
+                        try {
+                            em.getTransaction().begin();
+                            if (entity.getOsInstances()!=null)
+                                entity.getOsInstances().getIpAddress().remove(entity);
+                            osInstance.getIpAddress().add(entity);
+                            entity.setOsInstances(osInstance);
+                            em.getTransaction().commit();
+                            em.close();
+                            return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with osInstnace " + osInstanceID).build();
+                        } catch (Throwable t) {
+                            if(em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating IPAddress " + entity.getIpAddress() + " : " + t.getMessage()).build();
+                        }
+                    } else {
+                        em.close();
+                        return Response.status(Status.NOT_FOUND).entity("OS Istance " + osInstanceID + " not found.").build();
+                    }
+                } else {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).entity("IPAddress " + id + " not found.").build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update ipAddress. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define these parameters.").build();
+        }
+    }
+
+}

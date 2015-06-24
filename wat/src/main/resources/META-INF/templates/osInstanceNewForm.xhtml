@@ -57,15 +57,15 @@
                         <p:selectManyMenu id="osInstEnvs" value="#{OSInstanceNewController.envsToBind}" style="width:100%;height:100px">
                             <f:selectItems value="#{environmentsListController.getAll()}"  var="env"
                                            itemLabel="#{env.name}" itemValue="#{env.name}"/>
-                        </p:selectManyMenu>
-                    </h:panelGroup><br/>
+                        </p:selectManyMenu><br/>
+                    </h:panelGroup>
 
-                    <h:outputText value="IPAddresses" styleClass="arianeDialogLabel"/><br/>
+                    <h:outputText value="IP Addresses" styleClass="arianeDialogLabel"/><br/>
                     <h:panelGroup>
                         <p:commandLink onclick="ipAddressCreateDialog.show()">
                             <h:outputText value=" create new ipAddress"/>
                         </p:commandLink><br/>
-                        <p:selectManyMenu id="osInstIPAddress" value="#{OSInstanceNewController.ipAddressesToBind}" style="width:100%;height:100px">
+                        <p:selectManyMenu id="osInstIPA" value="#{OSInstanceNewController.ipaddressesToBind}" style="width:100%;height:100px">
                             <f:selectItems value="#{ipAddressListController.getAll()}"  var="ipa"
                                            itemLabel="#{ipa.ipAddress}" itemValue="#{ipa.ipAddress}"/>
                         </p:selectManyMenu>

@@ -6,4 +6,5 @@ net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.Routin
 net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint
 net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSTypeEndpoint
 net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.SubnetEndpoint
+net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.IPAddressEndpoint
 net.echinopsii.ariane.community.core.directory.wat.rest.organisational.TeamEndpoint

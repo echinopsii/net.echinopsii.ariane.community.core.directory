@@ -61,8 +61,9 @@ public class OSInstance implements Serializable {
     @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
     private Set<Subnet> networkSubnets;
 
-    @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
-    private Set<IPAddress> ipAddress;
+    @OneToMany(mappedBy = "osInstances", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<IPAddress> ipAddress = new HashSet<IPAddress>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     private OSInstance embeddingOSInstance;

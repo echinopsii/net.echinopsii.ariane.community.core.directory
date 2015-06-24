@@ -206,11 +206,11 @@
                                                            itemLabel="#{ipa_.ipAddress}" itemValue="#{ipa_.ipAddress}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSInstancesListController.syncAddedIPAddress(osi)}"
-                                                update="@form,:osInstanceTableForm:osInstanceTableMessages"/>
+                                                update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected ipAddress" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{OSInstancesListController.syncRemovedIPAddress(osi)}"
-                                                     update="@form,:osInstanceTableForm:osInstanceTableMessages"/>
+                                                     update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
                                 </f:facet>
                             </c:if>
                         </p:dataTable>
@@ -295,6 +295,16 @@
                                     <h:outputText id="itemDescription" value="#{_item.description}"/>
                                 </p:column>
                             </p:dataTable>
+
+
+                            <h:outputText value="IPAddress : " styleClass="arianeDialogLabel"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedOSInstance,'ipAddress')}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="IPAddress">
+                                    <h:outputText id="rIPAddressName" value="#{_item.ipAddress}"/>
+                                </p:column>
+                            </p:dataTable>
+
                         </h:panelGrid>
                         <p:separator/>
                     </p:dataList>
