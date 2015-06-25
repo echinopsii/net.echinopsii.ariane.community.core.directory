@@ -130,8 +130,11 @@ CREATE TABLE `ipaddress` (
   `ipAddress` varchar(255) NOT NULL,
   `version` int(11) DEFAULT NULL,
   `networkSubnet_id` bigint(20) NOT NULL,
+  `osInstances_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_3n0207eaccxw6baxbsonaqtl6` (`networkSubnet_id`),
+  KEY `FK_2rykbmwp9s1qxwtkr223n3xr7` (`osInstances_id`),
+  CONSTRAINT `FK_2rykbmwp9s1qxwtkr223n3xr7` FOREIGN KEY (`osInstances_id`) REFERENCES `osInstance` (`id`),
   CONSTRAINT `FK_3n0207eaccxw6baxbsonaqtl6` FOREIGN KEY (`networkSubnet_id`) REFERENCES `subnet` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
