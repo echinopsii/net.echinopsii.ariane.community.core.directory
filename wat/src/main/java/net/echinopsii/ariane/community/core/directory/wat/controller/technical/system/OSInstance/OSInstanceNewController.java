@@ -75,9 +75,6 @@ public class OSInstanceNewController implements Serializable{
     private List<String> subnetsToBind = new ArrayList<String>();
     private Set<Subnet>  subnets       = new HashSet<Subnet>();
 
-    private List<String> ipAddressesToBind = new ArrayList<String>();
-    private Set<IPAddress>  ipAddresses       = new HashSet<IPAddress>();
-
     private List<String>     envsToBind = new ArrayList<String>();
     private Set<Environment> envs       = new HashSet<Environment>();
 
@@ -225,40 +222,6 @@ public class OSInstanceNewController implements Serializable{
         }
     }
 
-    public Set<IPAddress> getIpAddresses() {
-        return ipAddresses;
-    }
-
-    public void setIpAddresses(Set<IPAddress> ipAddresses) {
-        this.ipAddresses = ipAddresses;
-    }
-
-    public List<String> getIpAddressesToBind() {
-        return ipAddressesToBind;
-    }
-
-    public void setIpAddressesToBind(List<String> ipAddressesToBind) {
-        this.ipAddressesToBind = ipAddressesToBind;
-    }
-
-    /**
-     * populate ipAddresses list through ipAddressesToBind list provided through UI form
-     *
-     * @throws NotSupportedException
-     * @throws SystemException
-     */
-    private void bindSelectedIPAddresses() throws NotSupportedException, SystemException {
-        for (IPAddress ipAddress : IPAddressListController.getAll()) {
-            for (String ipAddressToBind : ipAddressesToBind)
-                if (ipAddress.getIpAddress().equals(ipAddressToBind)) {
-                    ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
-                    this.ipAddresses.add(ipAddress);
-                    log.debug("Synced IPAddress : {} {}", new Object[]{ipAddress.getId(), ipAddress.getIpAddress()});
-                    break;
-                }
-        }
-    }
-
     public List<String> getEnvsToBind() {
         return envsToBind;
     }
@@ -369,7 +332,6 @@ public class OSInstanceNewController implements Serializable{
             bindSelectedEnvs();
             bindSelectedTeams();
             bindSelectedApps();
-            bindSelectedIPAddresses();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -386,7 +348,6 @@ public class OSInstanceNewController implements Serializable{
         osInstance.setAdminGateURIR(adminGateURI);
         osInstance.setEmbeddingOSInstance(embingOSI);
         osInstance.setNetworkSubnets(subnets);
-        osInstance.setIpAddress(ipAddresses);
         osInstance.setEnvironments(envs);
         osInstance.setTeams(teams);
         osInstance.setApplications(apps);
@@ -410,10 +371,6 @@ public class OSInstanceNewController implements Serializable{
             for (Subnet subnet : this.subnets) {
                 subnet.getOsInstances().add(osInstance);
                 em.merge(subnet);
-            }
-            for (IPAddress ipAddress : this.ipAddresses) {
-                ipAddress.getOsInstances().add(osInstance);
-                em.merge(ipAddress);
             }
 
             if (embingOSI!=null) {embingOSI.getEmbeddedOSInstances().add(osInstance); em.merge(embingOSI);}

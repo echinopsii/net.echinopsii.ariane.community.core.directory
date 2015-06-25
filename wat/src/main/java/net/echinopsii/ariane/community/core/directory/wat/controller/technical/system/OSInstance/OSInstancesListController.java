@@ -306,7 +306,10 @@ public class OSInstancesListController implements Serializable{
                     osInstance = em.find(osInstance.getClass(), osInstance.getId());
                     ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
                     osInstance.getIpAddress().add(ipAddress);
-                    ipAddress.getOsInstances().add(osInstance);
+                    ipAddress.setOsInstances(osInstance);
+                    if (ipAddress.getOsInstances()!=null)
+                        ipAddress.getOsInstances().getIpAddress().remove(ipAddress);
+                    ipAddress.setOsInstances(osInstance);
                     em.flush();
                     em.getTransaction().commit();
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -351,7 +354,7 @@ public class OSInstancesListController implements Serializable{
             for (IPAddress ipAddress : ipAddresses) {
                 ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
                 osInstance.getIpAddress().remove(ipAddress);
-                ipAddress.getOsInstances().remove(osInstance);
+                ipAddress.setOsInstances(null);
             }
             em.flush();
             em.getTransaction().commit();
@@ -826,7 +829,7 @@ public class OSInstancesListController implements Serializable{
                 for (Subnet subnet : osInstance.getNetworkSubnets())
                     subnet.getOsInstances().remove(osInstance);
                 for (IPAddress ipAddress : osInstance.getIpAddress())
-                    ipAddress.getOsInstances().remove(osInstance);
+                    ipAddress.setOsInstances(null);
                 if (osInstance.getEmbeddingOSInstance()!=null)
                     osInstance.getEmbeddingOSInstance().getEmbeddedOSInstances().remove(osInstance);
                 for (OSInstance osi: osInstance.getEmbeddedOSInstances())
@@ -913,7 +916,7 @@ public class OSInstancesListController implements Serializable{
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<OSInstance> list =  em.createQuery(criteria).getResultList();
-        list.add(0, new OSInstance().setNameR("None"));
+        list.add(0, new OSInstance().setNameR("Select routing area for this subnet"));
         em.close();
         return list;
     }

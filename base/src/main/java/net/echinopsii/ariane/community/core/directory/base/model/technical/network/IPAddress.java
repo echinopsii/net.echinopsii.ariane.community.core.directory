@@ -61,9 +61,10 @@ public class IPAddress implements Serializable {
     @NotNull
     private Subnet networkSubnet;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @Fetch(FetchMode.SUBSELECT)
-    private Set<OSInstance> osInstances = new HashSet<OSInstance>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false)
+    @NotNull
+    private OSInstance osInstances;
 
     public Long getId() {
         return this.id;
@@ -150,21 +151,22 @@ public class IPAddress implements Serializable {
         return this;
     }
 
-    public Set<OSInstance> getOsInstances() {
+    public OSInstance getOsInstances() {
         return this.osInstances;
     }
 
-    public void setOsInstances(final Set<OSInstance> osInstances) {
+    public void setOsInstances(final OSInstance osInstances) {
         this.osInstances = osInstances;
     }
 
-    public IPAddress setOsInstancesR(final Set<OSInstance> osInstances) {
+    public IPAddress setOsInstancesR(final OSInstance osInstances) {
         this.osInstances = osInstances;
         return this;
     }
 
     public IPAddress clone() {
-        return new IPAddress().setIdR(this.id).setVersionR(this.version).setIpAddressR(this.ipAddress).setNetworkSubnetR(this.networkSubnet);
+        return new IPAddress().setIdR(this.id).setVersionR(this.version).setIpAddressR(this.ipAddress).
+                               setNetworkSubnetR(this.networkSubnet).setOsInstancesR(this.osInstances);
     }
 
     public final static String SUBNET_SUBNET_MAPPING_FIELD = "networkSubnet";

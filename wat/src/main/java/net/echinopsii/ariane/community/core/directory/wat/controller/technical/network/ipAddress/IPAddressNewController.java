@@ -21,7 +21,9 @@
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import org.slf4j.Logger;
@@ -54,6 +56,9 @@ public class IPAddressNewController implements Serializable {
     private String rSubnet = "";
     private Subnet rsubnet;
 
+    private String rOsInstance = "";
+    private OSInstance rosinstance;
+
     public String getIpAddress() {
         return ipAddress;
     }
@@ -78,6 +83,22 @@ public class IPAddressNewController implements Serializable {
         this.rSubnet = rSubnet;
     }
 
+    public String getrOsInstance() {
+        return rOsInstance;
+    }
+
+    public void setrOsInstance(String rOsInstance) {
+        this.rOsInstance = rOsInstance;
+    }
+
+    public OSInstance getRosinstance() {
+        return rosinstance;
+    }
+
+    public void setRosinstance(OSInstance rosinstance) {
+        this.rosinstance = rosinstance;
+    }
+
     /**
      * synchronize this.rsubnet from DB
      *
@@ -100,25 +121,59 @@ public class IPAddressNewController implements Serializable {
         }
     }
 
-    private void isExist() throws NotSupportedException, SystemException, Exception{
-        Boolean rIPAddress = false;
-        for (IPAddress ipAddress: IPAddressListController.getAll()) {
-            if (ipAddress.getIpAddress().equals(this.ipAddress) && ipAddress.getNetworkSubnet().equals(this.rsubnet)) {
-                rIPAddress = true;
+    /**
+     * synchronize this.osInstance from DB
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
+    private void syncOSInstance() throws NotSupportedException, SystemException {
+        OSInstance rosInstance = null;
+        for (OSInstance osInstance: OSInstancesListController.getAll()) {
+            if (osInstance.getName().equals(this.rOsInstance)) {
+                osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                rosInstance = osInstance;
                 break;
             }
         }
-        if(rIPAddress){
-           log.debug("Entry already exist for : {}", new Object[]{this.getIpAddress()});
-           throw new Exception("Entry already exist");
+
+        if (rosInstance!=null) {
+            this.rosinstance = rosInstance;
+            log.debug("Synced Subnet : {} {}", new Object[]{this.rosinstance.getId(), this.rosinstance.getName()});
         }
     }
+
+    /**
+     * Check if IpAddress is already bind to subnet
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     * @throws Exception
+     */
+
+    public void isExist() throws NotSupportedException, SystemException, Exception{
+        Boolean rsubnet = false;
+        for (IPAddress ipa: this.rsubnet.getIpAddress()){
+            if(ipa.getIpAddress().equals(this.ipAddress)){
+                rsubnet = true;
+                break;
+            }
+        }
+
+        if(rsubnet){
+            log.debug("IP address already bind to selected Subnet : {} {}", new Object[]{this.ipAddress, this.rsubnet.getName()});
+            throw new Exception("IP address already bind");
+        }
+    }
+
     /**
      * save a new subnet thanks data provided through UI form
      */
     public void save() {
         try {
             syncSubnet();
+            syncOSInstance();
+            isExist();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -131,12 +186,17 @@ public class IPAddressNewController implements Serializable {
         IPAddress newIPAddress = new IPAddress();
         newIPAddress.setIpAddress(ipAddress);
         newIPAddress.setNetworkSubnet(this.rsubnet);
+        newIPAddress.setOsInstances(this.rosinstance);
 
         try {
             em.getTransaction().begin();
             em.persist(newIPAddress);
-            isExist();
             newIPAddress.checkIP(this.rsubnet.getSubnetIP(), this.rsubnet.getSubnetMask());
+            if (rsubnet!=null) {
+                rsubnet.getIpAddress().add(newIPAddress); em.merge(rsubnet);}
+            if (rosinstance!=null) {
+                rosinstance.getIpAddress().add(newIPAddress); em.merge(rosinstance);}
+
             em.flush();
             em.getTransaction().commit();
             log.debug("Save new IPAddress {} !", new Object[]{ipAddress});

@@ -35,6 +35,10 @@
                         <h:outputText value="#{ipa.networkSubnet.name}" />
                     </p:column>
 
+                    <p:column headerText="osInstances">
+                        <h:outputText value="#{ipa.osInstances.name}" />
+                    </p:column>
+
                     <p:rowExpansion>
                         <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
                         <h:outputText value="IP : " styleClass="arianeDialogLabel"/>
@@ -57,7 +61,20 @@
                             </p:inplace>
                         </h:form>
                         <h:outputText value="#{ipAddressListController.getIPAddressSubnetName(ipa)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
-                        </h:panelGrid>
+
+                        <h:outputText value="OSInstance: " styleClass="arianeDialogLabel"/>
+                        <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
+                            <p:inplace label="#{ipAddressListController.getIPAddressOsInstanceName(ipa)}" effectSpeed="fast" editor="true">
+                                <h:selectOneMenu value="#{ipAddressListController.changedOsInstance[ipa.id]}">
+                                    <f:selectItems value="#{OSInstancesListController.getAll()}"  var="osi"
+                                                   itemLabel="#{osi.name}" itemValue="#{osi.name}"/>
+                                </h:selectOneMenu>
+                                <p:ajax event="save" listener="#{ipAddressListController.syncROSInstance(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages"/>
+                            </p:inplace>
+                        </h:form>
+                        <h:outputText value="#{ipAddressListController.getIPAddressOsInstanceName(ipa)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
+                    </h:panelGrid>
+
                     </p:rowExpansion>
                     <f:facet name="footer">
                         <p:commandButton value="Create ipAddress" icon="ui-icon-disk" onclick="ipAddressCreateDialog.show()" rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:create')}"/>
@@ -95,6 +112,17 @@
                                     <h:outputText id="subnetitemDescription" value="#{_item.description}"/>
                                 </p:column>
                             </p:dataTable>
+
+                            <h:outputText value="OSInstnace: " styleClass="arianeDialogLabel"/>
+                            <p:dataTable  value="#{selectedIPAddress.osInstances}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="Name">
+                                    <h:outputText id="ositemName" value="#{_item.name}"/>
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText id="ositemDescription" value="#{_item.description}"/>
+                                </p:column>
+                            </p:dataTable>
                         </h:panelGrid>
                         <p:separator/>
                     </p:dataList>
@@ -109,6 +137,18 @@
                     </ui:insert>
                     <p:commandButton value="Save this subnet" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{subnetNewController.save}" oncomplete="subnetCreateDialog.hide();"
+                                     update=":createIPAddressDialogForm:ipAddressNewGrid,:ipAddressTableForm:ipAddressTable,:ipAddressTableForm:ipAddressTableMessages"/>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new OS Instance" widgetVar="osInstanceCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
+                <h:form id="createOSInstanceDialogForm">
+                    <ui:insert name="createOSInstance" >
+                        <ui:include src="/templates/osInstanceNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this osInstance" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                                     actionListener="#{OSInstanceNewController.save}" oncomplete="subnetCreateDialog.hide();"
                                      update=":createIPAddressDialogForm:ipAddressNewGrid,:ipAddressTableForm:ipAddressTable,:ipAddressTableForm:ipAddressTableMessages"/>
                 </h:form>
             </p:dialog>
