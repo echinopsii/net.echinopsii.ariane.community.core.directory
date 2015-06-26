@@ -58,7 +58,7 @@ public class IPAddress implements Serializable {
     @NotNull
     private String ipAddress;
 
-    @Column(name = "fqdn")
+    @Column(name = "fqdn", unique = true)
     private String fqdn;
 
     @ManyToOne(fetch = FetchType.EAGER)

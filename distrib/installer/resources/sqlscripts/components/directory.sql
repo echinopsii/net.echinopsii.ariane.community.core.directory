@@ -133,6 +133,7 @@ CREATE TABLE IF NOT EXISTS `ipaddress` (
   `networkSubnet_id` bigint(20) NOT NULL,
   `osInstances_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_2b6m0akrc8lfui9ed2v9s32va` (`fqdn`),
   KEY `FK_3n0207eaccxw6baxbsonaqtl6` (`networkSubnet_id`),
   KEY `FK_2rykbmwp9s1qxwtkr223n3xr7` (`osInstances_id`),
   CONSTRAINT `FK_2rykbmwp9s1qxwtkr223n3xr7` FOREIGN KEY (`osInstances_id`) REFERENCES `osInstance` (`id`),
