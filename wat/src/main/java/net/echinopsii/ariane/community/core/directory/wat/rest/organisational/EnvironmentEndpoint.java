@@ -171,10 +171,10 @@ public class EnvironmentEndpoint {
 
     @GET
     @Path("/create")
-    public Response createEnvironment(@QueryParam("name")String name, @QueryParam("description")String description) {
+    public Response createEnvironment(@QueryParam("name")String name, @QueryParam("description")String description, @QueryParam("colorCode")String colorCode) {
         if (name != null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] create environment : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, description});
+            log.debug("[{}-{}] create environment : ({},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, description, colorCode});
             if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgEnvironment:create") ||
                 subject.hasRole("jedi") || subject.isPermitted("universe:zeone"))
             {
@@ -184,6 +184,7 @@ public class EnvironmentEndpoint {
                     environment = new Environment();
                     environment.setName(name);
                     environment.setDescription(description);
+                    environment.setColorCode(colorCode);
                     try {
                         em.getTransaction().begin();
                         em.persist(environment);
@@ -318,6 +319,43 @@ public class EnvironmentEndpoint {
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/colorCode")
+    public Response updateEnvironmentColorCode(@QueryParam("id")Long id, @QueryParam("colorCode")String colorCode) {
+        if (id != 0 && colorCode != null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update environment color code : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, colorCode});
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgEnvironment:update") ||
+                    subject.hasRole("jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Environment environment = findEnvironmentByID(em, id);
+                if (environment == null) {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).build();
+                } else {
+                    try {
+                        em.getTransaction().begin();
+                        environment.setColorCode(colorCode);
+                        em.flush();
+                        em.getTransaction().commit();
+                        em.close();
+                        return Response.status(Status.OK).entity("Environment " + id + " has been successfully updated with color code " + colorCode).build();
+                    } catch (Throwable t) {
+                        if(em.getTransaction().isActive())
+                            em.getTransaction().rollback();
+                        em.close();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating environment " + environment.getName() + " : " + t.getMessage()).build();
+                    }
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update environments. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or colorCode are not defined. You must define these parameters.").build();
         }
     }
 
