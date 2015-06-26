@@ -5,8 +5,11 @@
       xmlns:p="http://primefaces.org/ui">
 <ui:composition>
     <h:panelGrid id="ipAddressNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
-        <h:outputText value="IPAddress" styleClass="arianeDialogLabel"/>
+        <h:outputText value="IP Address" styleClass="arianeDialogLabel"/>
         <p:inputText id="ipAddress" label="IPAddress" required="true" value="#{ipAddressNewController.ipAddress}" onblur="validateIP()"/>
+
+        <h:outputText value="FQDN" styleClass="arianeDialogLabel"/>
+        <p:inputText id="fqdn" label="FQDN" required="true" value="#{ipAddressNewController.fqdn}"/>
 
         <h:outputText value="Subnets" styleClass="arianeDialogLabel"/>
         <h:panelGroup>
@@ -16,17 +19,6 @@
             <h:selectOneMenu label="Select the subnet type" value="#{ipAddressNewController.rSubnet}" required="true" style="width:68.5%">
                 <f:selectItems value="#{subnetsListController.getAll()}"  var="rsubnet"
                                itemLabel="#{rsubnet.name}" itemValue="#{rsubnet.name}"/>
-            </h:selectOneMenu>
-        </h:panelGroup>
-
-        <h:outputText value="Os Instance" styleClass="arianeDialogLabel"/>
-        <h:panelGroup>
-            <p:commandLink onclick="osInstanceCreateDialog.show()">
-                <h:outputText value=" create new os Instance"/>
-            </p:commandLink><br/>
-            <h:selectOneMenu label="Select the os Instance" value="#{ipAddressNewController.rOsInstance}" required="true" style="width:68.5%">
-                <f:selectItems value="#{OSInstancesListController.getAllForSelector()}"  var="osi"
-                               itemLabel="#{osi.name}" itemValue="#{osi.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>
     </h:panelGrid>

@@ -206,11 +206,11 @@
                                                            itemLabel="#{ipa_.ipAddress}" itemValue="#{ipa_.ipAddress}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSInstancesListController.syncAddedIPAddress(osi)}"
-                                                update="@form,:osInstanceTableForm:osInstanceTableMessages"/>
+                                                update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
                                     </p:inplace>
                                     <p:commandButton value="Unbind selected ipAddress" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{OSInstancesListController.syncRemovedIPAddress(osi)}"
-                                                     update="@form,:osInstanceTableForm:osInstanceTableMessages"/>
+                                                     update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
                                 </f:facet>
                             </c:if>
                         </p:dataTable>

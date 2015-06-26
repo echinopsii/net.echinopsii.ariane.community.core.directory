@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -56,14 +58,16 @@ public class IPAddress implements Serializable {
     @NotNull
     private String ipAddress;
 
+    @Column(name = "fqdn")
+    private String fqdn;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
     @NotNull
     private Subnet networkSubnet;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false)
-    @NotNull
+    @JoinColumn
     private OSInstance osInstances;
 
     public Long getId() {
@@ -102,6 +106,19 @@ public class IPAddress implements Serializable {
 
     public IPAddress setIpAddressR(final String ipAddress) {
         this.ipAddress = ipAddress;
+        return this;
+    }
+
+    public String getFqdn() {
+        return fqdn;
+    }
+
+    public void setFqdn(final String fqdn) {
+        this.fqdn = fqdn;
+    }
+
+    public IPAddress setFqdnR(final String fqdn){
+        this.fqdn = fqdn;
         return this;
     }
 
@@ -165,7 +182,7 @@ public class IPAddress implements Serializable {
     }
 
     public IPAddress clone() {
-        return new IPAddress().setIdR(this.id).setVersionR(this.version).setIpAddressR(this.ipAddress).
+        return new IPAddress().setIdR(this.id).setVersionR(this.version).setFqdnR(this.fqdn).setIpAddressR(this.ipAddress).
                                setNetworkSubnetR(this.networkSubnet).setOsInstancesR(this.osInstances);
     }
 
@@ -195,6 +212,29 @@ public class IPAddress implements Serializable {
 
         if((intSubnetIP & intSubnetMask) != (intIP & intSubnetMask)){
             throw new UnknownHostException();
+        }
+    }
+
+    /**
+     * Check if IpAddress is already bind to subnet
+     *
+     * @throws javax.transaction.NotSupportedException
+     * @throws javax.transaction.SystemException
+     * @throws Exception
+     */
+
+    public void isExist(Subnet subnet) throws NotSupportedException, SystemException, Exception{
+        Boolean exist = false;
+        for (IPAddress ipa: subnet.getIpAddress()){
+            if(ipa.getIpAddress().equals(this.ipAddress)){
+                exist = true;
+                break;
+            }
+        }
+
+        if(exist){
+            log.debug("IP address already bind to selected Subnet : {} {}", new Object[]{this.ipAddress, subnet.getName()});
+            throw new Exception("IP address already bind");
         }
     }
 }

@@ -52,6 +52,7 @@ public class IPAddressNewController implements Serializable {
     }
 
     private String ipAddress;
+    private String fqdn;
 
     private String rSubnet = "";
     private Subnet rsubnet;
@@ -99,6 +100,14 @@ public class IPAddressNewController implements Serializable {
         this.rosinstance = rosinstance;
     }
 
+    public String getFqdn() {
+        return fqdn;
+    }
+
+    public void setFqdn(String fqdn) {
+        this.fqdn = fqdn;
+    }
+
     /**
      * synchronize this.rsubnet from DB
      *
@@ -122,58 +131,11 @@ public class IPAddressNewController implements Serializable {
     }
 
     /**
-     * synchronize this.osInstance from DB
-     *
-     * @throws NotSupportedException
-     * @throws SystemException
-     */
-    private void syncOSInstance() throws NotSupportedException, SystemException {
-        OSInstance rosInstance = null;
-        for (OSInstance osInstance: OSInstancesListController.getAll()) {
-            if (osInstance.getName().equals(this.rOsInstance)) {
-                osInstance = em.find(osInstance.getClass(), osInstance.getId());
-                rosInstance = osInstance;
-                break;
-            }
-        }
-
-        if (rosInstance!=null) {
-            this.rosinstance = rosInstance;
-            log.debug("Synced Subnet : {} {}", new Object[]{this.rosinstance.getId(), this.rosinstance.getName()});
-        }
-    }
-
-    /**
-     * Check if IpAddress is already bind to subnet
-     *
-     * @throws NotSupportedException
-     * @throws SystemException
-     * @throws Exception
-     */
-
-    public void isExist() throws NotSupportedException, SystemException, Exception{
-        Boolean rsubnet = false;
-        for (IPAddress ipa: this.rsubnet.getIpAddress()){
-            if(ipa.getIpAddress().equals(this.ipAddress)){
-                rsubnet = true;
-                break;
-            }
-        }
-
-        if(rsubnet){
-            log.debug("IP address already bind to selected Subnet : {} {}", new Object[]{this.ipAddress, this.rsubnet.getName()});
-            throw new Exception("IP address already bind");
-        }
-    }
-
-    /**
      * save a new subnet thanks data provided through UI form
      */
     public void save() {
         try {
             syncSubnet();
-            syncOSInstance();
-            isExist();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -184,11 +146,14 @@ public class IPAddressNewController implements Serializable {
         }
 
         IPAddress newIPAddress = new IPAddress();
-        newIPAddress.setIpAddress(ipAddress);
-        newIPAddress.setNetworkSubnet(this.rsubnet);
-        newIPAddress.setOsInstances(this.rosinstance);
 
         try {
+            newIPAddress.setIpAddress(ipAddress);
+            newIPAddress.isExist(this.rsubnet);
+            newIPAddress.setFqdn(this.fqdn);
+            newIPAddress.setNetworkSubnet(this.rsubnet);
+            newIPAddress.setOsInstances(this.rosinstance);
+
             em.getTransaction().begin();
             em.persist(newIPAddress);
             newIPAddress.checkIP(this.rsubnet.getSubnetIP(), this.rsubnet.getSubnetMask());

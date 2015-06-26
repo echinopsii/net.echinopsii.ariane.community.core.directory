@@ -206,15 +206,7 @@
                             </p:dataTable>
 
                             <h:outputText value="Routing areas : " styleClass="arianeDialogLabel"/>
-                            <p:dataTable  value="#{selectedSubnet.rarea}" var="_item"
-                                          rows="5" paginator="true">
-                                <p:column headerText="Name">
-                                    <h:outputText id="raitemName" value="#{_item.name}"/>
-                                </p:column>
-                                <p:column headerText="Description">
-                                    <h:outputText id="raitemDescription" value="#{_item.description}"/>
-                                </p:column>
-                            </p:dataTable>
+                            <h:outputText value="#{selectedSubnet.rarea.name}"/>
 
                             <h:outputText value="OS Instances : " styleClass="arianeDialogLabel"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'osInstances')}" var="osR"
