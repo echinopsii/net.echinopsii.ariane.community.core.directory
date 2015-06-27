@@ -381,15 +381,14 @@ public class OSTypeEndpoint {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSType entity = findOSTypeById(em, id);
                 if (entity!=null) {
-                    OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, id);
+                    OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiID);
                     if (osInstance!=null) {
                         try {
                             em.getTransaction().begin();
                             entity.getOsInstances().add(osInstance);
-                            if (osInstance.getOsType()!=null && !osInstance.getOsType().equals(entity)) {
+                            if (osInstance.getOsType()!=null && !osInstance.getOsType().equals(entity))
                                 osInstance.getOsType().getOsInstances().remove(osInstance);
-                                osInstance.setOsType(entity);
-                            }
+                            osInstance.setOsType(entity);
                             em.flush();
                             em.getTransaction().commit();
                             em.close();
@@ -428,14 +427,13 @@ public class OSTypeEndpoint {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSType entity = findOSTypeById(em, id);
                 if (entity!=null) {
-                    OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, id);
+                    OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiID);
                     if (osInstance!=null) {
                         try {
                             em.getTransaction().begin();
                             entity.getOsInstances().remove(osInstance);
-                            if (osInstance.getOsType()!=null && osInstance.getOsType().equals(entity)) {
+                            if (osInstance.getOsType()!=null && osInstance.getOsType().equals(entity))
                                 osInstance.setOsType(null);
-                            }
                             em.flush();
                             em.getTransaction().commit();
                             em.close();
