@@ -478,25 +478,25 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/update/routingareas/add")
-    public Response updateDatacenterAddMulticastAreas(@QueryParam("id")Long id, @QueryParam("routingareaID")Long mareaID) {
-        if (id!=0 && mareaID!=0) {
+    public Response updateDatacenterAddRoutingAreas(@QueryParam("id") Long id, @QueryParam("routingareaID") Long rareaID) {
+        if (id!=0 && rareaID!=0) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update datacenter {} by adding routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
+            log.debug("[{}-{}] update datacenter {} by adding routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, rareaID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Datacenter entity = findDatacenterById(em, id);
                 if (entity != null) {
-                    RoutingArea marea = RoutingAreaEndpoint.findRoutingAreaById(em, mareaID);
-                    if (marea!=null) {
+                    RoutingArea rarea = RoutingAreaEndpoint.findRoutingAreaById(em, rareaID);
+                    if (rarea!=null) {
                         try {
                             em.getTransaction().begin();
-                            marea.getDatacenters().add(entity);
-                            entity.getRoutingAreas().add(marea);
+                            rarea.getDatacenters().add(entity);
+                            entity.getRoutingAreas().add(rarea);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by adding routing area " + mareaID).build();
+                            return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by adding routing area " + rareaID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -505,7 +505,7 @@ public class DatacenterEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("Multicast area " + mareaID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("Routing area " + rareaID + " not found.").build();
                     }
                 } else {
                     em.close();
@@ -521,7 +521,7 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/update/routingareas/delete")
-    public Response updateDatacenterDeleteMulticastAreas(@QueryParam("id")Long id, @QueryParam("routingareaID")Long mareaID) {
+    public Response updateDatacenterDeleteRoutingAreas(@QueryParam("id") Long id, @QueryParam("routingareaID") Long mareaID) {
         if (id!=0 && mareaID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} by deleting routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
@@ -548,7 +548,7 @@ public class DatacenterEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("Multicast area " + mareaID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("Routing area " + mareaID + " not found.").build();
                     }
                 } else {
                     em.close();
