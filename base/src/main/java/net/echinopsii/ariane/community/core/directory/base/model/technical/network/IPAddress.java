@@ -151,7 +151,7 @@ public class IPAddress implements Serializable {
     public String toString() {
         String result = getClass().getSimpleName() + " ";
         if (ipAddress != null && !ipAddress.trim().isEmpty())
-            result += ", IPAddress: " + ipAddress;
+            result += ", IP Address: " + ipAddress;
         return result;
     }
 
@@ -205,36 +205,31 @@ public class IPAddress implements Serializable {
         return intIP;
     }
 
-    public void checkIP(String subnetIP, String subnetMask) throws UnknownHostException {
+    public Boolean checkIP() throws UnknownHostException{
         int intIP = this.convertIPToInt(this.getIpAddress());
-        int intSubnetIP = this.convertIPToInt(subnetIP);
-        int intSubnetMask = this.convertIPToInt(subnetMask);
-
-        if((intSubnetIP & intSubnetMask) != (intIP & intSubnetMask)){
-            throw new UnknownHostException();
+        int intSubnetIP = this.convertIPToInt(this.getNetworkSubnet().getSubnetIP());
+        int intSubnetMask = this.convertIPToInt(this.getNetworkSubnet().getSubnetMask());
+        Boolean isValidate = false;
+        if((intSubnetIP & intSubnetMask) != (intIP & intSubnetMask)) {
+            isValidate = true;
         }
+        return isValidate;
     }
 
     /**
      * Check if IpAddress is already bind to subnet
      *
-     * @throws javax.transaction.NotSupportedException
-     * @throws javax.transaction.SystemException
-     * @throws Exception
      */
 
-    public void isExist(Subnet subnet) throws NotSupportedException, SystemException, Exception{
+    public Boolean isExist(){
         Boolean exist = false;
-        for (IPAddress ipa: subnet.getIpAddress()){
+        for (IPAddress ipa: this.getNetworkSubnet().getIpAddress()){
             if(ipa.getIpAddress().equals(this.ipAddress)){
                 exist = true;
                 break;
             }
         }
 
-        if(exist){
-            log.debug("IP address already bind to selected Subnet : {} {}", new Object[]{this.ipAddress, subnet.getName()});
-            throw new Exception("IP address already bind");
-        }
+        return exist;
     }
 }

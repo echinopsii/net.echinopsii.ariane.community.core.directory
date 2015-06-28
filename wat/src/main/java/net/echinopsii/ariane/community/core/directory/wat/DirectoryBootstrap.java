@@ -212,9 +212,9 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/routingArea.jsf").
                                                                               setDescription("Your routing areas definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                               addDisplayPermission("dirComITiNtwRarea:display")).
-                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("ipAddressTreeID").setValue("IPAddress").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("arianeico-routingarea-ariane").
+                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("ipAddressTreeID").setValue("IP Address").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-ellipsis-horizontal").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/ipAddress.jsf").
-                                                                              setDescription("Your ipAddress definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
+                                                                              setDescription("Your IP Addresses definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                               addDisplayPermission("dirComITiNtwIPAddress:display"));
 
 

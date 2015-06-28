@@ -191,16 +191,19 @@
                         </p:dataTable>
                     </h:form>
 
-                    <h:outputText value="IPAddresses : "  styleClass="arianeDialogLabel"/>
+                    <h:outputText value="IP Addresses : "  styleClass="arianeDialogLabel"/>
                     <h:form>
                         <p:dataTable value="#{directoryViewUtils.asList(osi,'ipAddress')}" var="ipa" styleClass="ui-widget-content grid" rowKey="#{ipa.id}"
                                      rows="5" paginator="true" selection="#{OSInstancesListController.removedIPAddresses[osi.id]}" selectionMode="multiple">
-                            <p:column headerText="IPAddress" sortBy="#{ipa.ipAddress}" filterBy="#{ipa.ipAddress}">
-                                <h:outputText id="ipAddress" value="#{ipa.ipAddress}"/>
+                            <p:column headerText="IP Address" sortBy="#{ipa.ipAddress}" filterBy="#{ipa.ipAddress}">
+                                <h:outputText id="ipaIPAddress" value="#{ipa.ipAddress}"/>
+                            </p:column>
+                            <p:column headerText="FQDN" sortBy="#{ipa.fqdn}" filterBy="#{ipa.fqdn}">
+                                <h:outputText id="ipaFQDN" value="#{ipa.fqdn}"/>
                             </p:column>
                             <c:if test="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                                 <f:facet name="footer">
-                                    <p:inplace label="Select ipAddress to bind" effectSpeed="fast" editor="true">
+                                    <p:inplace label="Select IP Address to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedIPAddress[osi.id]}">
                                             <f:selectItems value="#{ipAddressListController.getAll()}" var="ipa_"
                                                            itemLabel="#{ipa_.ipAddress}" itemValue="#{ipa_.ipAddress}"/>
@@ -208,7 +211,7 @@
                                         <p:ajax event="save" listener="#{OSInstancesListController.syncAddedIPAddress(osi)}"
                                                 update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
                                     </p:inplace>
-                                    <p:commandButton value="Unbind selected ipAddress" icon="ui-icon-closethick"
+                                    <p:commandButton value="Unbind selected IP Address" icon="ui-icon-closethick"
                                                      process="@form" actionListener="#{OSInstancesListController.syncRemovedIPAddress(osi)}"
                                                      update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
                                 </f:facet>

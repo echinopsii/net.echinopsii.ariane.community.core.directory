@@ -205,6 +205,20 @@
                                 </p:column>
                             </p:dataTable>
 
+                            <h:outputText value="IP Addresses : " styleClass="arianeDialogLabel"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'ipAddress')}" var="ipa"
+                                          rows="5" paginator="true">
+                                <p:column headerText="IP Address">
+                                    <h:outputText id="ipaIPAddress" value="#{ipa.ipAddress}"/>
+                                </p:column>
+                                <p:column headerText="FQDN">
+                                    <h:outputText id="ipaFQDN" value="#{ipa.fqdn}"/>
+                                </p:column>
+                                <p:column headerText="OS Instance">
+                                    <h:outputText id="ipaOSI" value="#{ipa.osInstances.name}"/>
+                                </p:column>
+                            </p:dataTable>
+
                             <h:outputText value="Routing areas : " styleClass="arianeDialogLabel"/>
                             <h:outputText value="#{selectedSubnet.rarea.name}"/>
 

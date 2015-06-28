@@ -75,7 +75,7 @@ public class Subnet implements Serializable
     @NotNull
     private RoutingArea rarea;
 
-    @OneToMany(mappedBy = "networkSubnet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "networkSubnet", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private Set<IPAddress> ipAddress = new HashSet<IPAddress>();
 

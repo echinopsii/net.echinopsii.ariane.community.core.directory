@@ -306,7 +306,6 @@ public class OSInstancesListController implements Serializable{
                     osInstance = em.find(osInstance.getClass(), osInstance.getId());
                     ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
                     osInstance.getIpAddress().add(ipAddress);
-                    ipAddress.setOsInstances(osInstance);
                     if (ipAddress.getOsInstances()!=null)
                         ipAddress.getOsInstances().getIpAddress().remove(ipAddress);
                     ipAddress.setOsInstances(osInstance);

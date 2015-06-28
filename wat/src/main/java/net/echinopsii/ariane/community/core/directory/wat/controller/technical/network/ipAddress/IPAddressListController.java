@@ -149,27 +149,59 @@ public class IPAddressListController implements Serializable {
      */
     public void update(IPAddress ipAddress) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-        try {
-            em.getTransaction().begin();
-            ipAddress = em.find(ipAddress.getClass(), ipAddress.getId()).setIpAddressR(ipAddress.getIpAddress()).
-                                                                setFqdnR(ipAddress.getFqdn()).setNetworkSubnetR(ipAddress.getNetworkSubnet());
-            em.flush();
-            em.getTransaction().commit();
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                    "IPAddress updated successfully !",
-                    "IPAddress: " + ipAddress.getIpAddress());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        } catch (Throwable t) {
-            log.debug("Throwable catched !");
-            t.printStackTrace();
+        Boolean isValidate = false;
+        /*Boolean isExist = ipAddress.isExist();
+
+        if(isExist){
+            log.debug("IP Address is already bind to subnet !");
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Throwable raised while updating IPAddress " + ipAddress.getIpAddress() + " !",
-                    "Throwable message : " + t.getMessage());
+                    "Throwable raised while creating IP Address " + ipAddress.getIpAddress() + " !",
+                    "Throwable message : IP Address is already bind to subnet " + ipAddress.getIpAddress());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-        } finally {
-            em.close();
+        }*/
+
+        try {
+            isValidate = ipAddress.checkIP();
+            if (isValidate) {
+                log.debug("Bad IP Address !");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Throwable raised while updating IP Address " + ipAddress.getIpAddress() + " !",
+                        "Throwable message : Bad IP Address " + ipAddress.getIpAddress());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
+        }catch (Exception e){
+            log.debug("Exception catched !");
+            e.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Exception raised while updating IP Address " + ipAddress.getIpAddress() + " !",
+                    "Exception message : " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+
+        if(!isValidate) {
+            try {
+                em.getTransaction().begin();
+                ipAddress = em.find(ipAddress.getClass(), ipAddress.getId()).setFqdnR(ipAddress.getFqdn()).
+                        setIpAddressR(ipAddress.getIpAddress()).setNetworkSubnetR(ipAddress.getNetworkSubnet());
+
+                em.flush();
+                em.getTransaction().commit();
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "IP Address updated successfully !",
+                        "IP Address: " + ipAddress.getIpAddress());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            } catch (Throwable t) {
+                log.debug("Throwable catched !");
+                t.printStackTrace();
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Throwable raised while updating IP Address " + ipAddress.getIpAddress() + " !",
+                        "Throwable message : " + t.getMessage());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+            } finally {
+                em.close();
+            }
         }
     }
 
@@ -177,7 +209,7 @@ public class IPAddressListController implements Serializable {
      * Remove selected IPAddress
      */
     public void delete() {
-        log.debug("Remove selected IPAddress !");
+        log.debug("Remove selected IP Address !");
         for (IPAddress ipAddress2BeRemoved : selectedIPAddressList) {
             EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             try {
@@ -187,14 +219,14 @@ public class IPAddressListController implements Serializable {
                 em.flush();
                 em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "IPAddress deleted successfully !",
-                        "IPAddress name : " + ipAddress2BeRemoved.getIpAddress());
+                        "IP Address deleted successfully !",
+                        "IP Address name : " + ipAddress2BeRemoved.getIpAddress());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
             } catch (Throwable t) {
                 log.debug("Throwable catched !");
                 t.printStackTrace();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "Throwable raised while deleting ipAddress " + ipAddress2BeRemoved.getIpAddress() + " !",
+                        "Throwable raised while deleting IP Address " + ipAddress2BeRemoved.getIpAddress() + " !",
                         "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
             } finally {
@@ -213,7 +245,7 @@ public class IPAddressListController implements Serializable {
      */
     public static List<IPAddress> getAll() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-        log.debug("Get all ipAddress from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+        log.debug("Get all IP Addresses from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                 new Object[]{
                         (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
                         (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",

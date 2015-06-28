@@ -18,7 +18,7 @@
                              paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                              rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
                     <f:facet name="header">
-                        IPAddress
+                        IP Address
                     </f:facet>
 
                     <p:ajax event="rowToggle" listener="#{ipAddressListController.onRowToggle}" />
@@ -37,6 +37,10 @@
 
                     <p:column headerText="Subnets">
                         <h:outputText value="#{ipa.networkSubnet.name}" />
+                    </p:column>
+
+                    <p:column headerText="OS Instances">
+                        <h:outputText value="#{ipa.osInstances.name!= null ? ipa.osInstances.name : 'not defined'}" />
                     </p:column>
 
                     <p:rowExpansion>
@@ -59,7 +63,7 @@
                         </h:form>
                         <h:outputText value="#{ipa.fqdn}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
 
-                            <h:outputText value="Subnet: " styleClass="arianeDialogLabel"/>
+                        <h:outputText value="Subnet: " styleClass="arianeDialogLabel"/>
                         <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
                             <p:inplace label="#{ipAddressListController.getIPAddressSubnetName(ipa)}" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{ipAddressListController.changedSubnet[ipa.id]}">
@@ -73,8 +77,8 @@
                         </h:panelGrid>
                     </p:rowExpansion>
                     <f:facet name="footer">
-                        <p:commandButton value="Create ipAddress" icon="ui-icon-disk" onclick="ipAddressCreateDialog.show()" rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:create')}"/>
-                        <p:commandButton value="Remove selected IPAddress" icon="ui-icon-closethick" onclick="ipAddressRemoveDialog.show()"
+                        <p:commandButton value="Create IP Address" icon="ui-icon-disk" onclick="ipAddressCreateDialog.show()" rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:create')}"/>
+                        <p:commandButton value="Remove selected IP Address" icon="ui-icon-closethick" onclick="ipAddressRemoveDialog.show()"
                                          update=":removeIPAddressDialogForm:display" rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:remove')}"/>
                         <p:commandButton value="Refresh table" id="ipAddressUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
                                          update=":ipAddressTableForm:ipAddressTable"/>
@@ -126,13 +130,13 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new IPAddress" widgetVar="ipAddressCreateDialog"
+            <p:dialog styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new IP Address" widgetVar="ipAddressCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createIPAddressDialogForm">
                     <ui:insert name="createIPAddress" >
                         <ui:include src="/templates/ipAddressNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this IPAddress" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                    <p:commandButton value="Save this IP Address" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{ipAddressNewController.save}" oncomplete="ipAddressCreateDialog.hide();"
                                      update=":createIPAddressDialogForm:ipAddressNewGrid,:ipAddressTableForm:ipAddressTableMessages,:ipAddressTableForm:ipAddressTable"/>
                 </h:form>

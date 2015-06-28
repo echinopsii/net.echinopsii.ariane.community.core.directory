@@ -249,16 +249,15 @@ public class OSInstanceNewController implements Serializable{
      */
     private void bindSelectedIPAddresses() throws NotSupportedException, SystemException {
         for (IPAddress ipAddress : IPAddressListController.getAll()) {
-            if(ipAddress.getOsInstances()!=null) {
-                for (String ipAddressToBind : ipaddressesToBind)
-                    if (ipAddress.getIpAddress().equals(ipAddressToBind)) {
-                        ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
-                        this.ipaddresses.add(ipAddress);
-                        log.debug("Synced subnet : {} {}", new Object[]{ipAddress.getId(), ipAddress.getIpAddress()});
-                        break;
-                    }
+            for (String ipAddressToBind : ipaddressesToBind){
+                if (ipAddress.getIpAddress().equals(ipAddressToBind)) {
+                    ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
+                    this.ipaddresses.add(ipAddress);
+                    log.debug("Synced IP Address : {} {}", new Object[]{ipAddress.getId(), ipAddress.getIpAddress()});
+                    break;
+                }
             }
-        }
+       }
     }
     public List<String> getEnvsToBind() {
         return envsToBind;
