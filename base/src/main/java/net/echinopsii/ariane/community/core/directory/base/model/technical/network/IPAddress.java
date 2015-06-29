@@ -205,6 +205,10 @@ public class IPAddress implements Serializable {
         return intIP;
     }
 
+    /**
+     * Check if IP address is compatible with subnet
+     * @return if valid return True else false
+     */
     public Boolean isValid(){
         Boolean ret = false;
         try {
@@ -216,14 +220,13 @@ public class IPAddress implements Serializable {
                 ret = true;
             }
         }catch(Exception e){
-
+            log.debug("Exception catched !");
         }
         return ret;
     }
 
     /**
      * Check if IpAddress is already bind to subnet
-     *
      */
 
     public Boolean isExist(){
@@ -234,7 +237,6 @@ public class IPAddress implements Serializable {
                 break;
             }
         }
-
         return exist;
     }
 }
