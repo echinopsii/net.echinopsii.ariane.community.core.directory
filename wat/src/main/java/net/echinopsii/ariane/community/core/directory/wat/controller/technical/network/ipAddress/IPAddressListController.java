@@ -151,7 +151,7 @@ public class IPAddressListController implements Serializable {
      */
     public void update(IPAddress ipAddress) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-        Boolean isValidate = false;
+        Boolean isValid = false;
         /*Boolean isExist = ipAddress.isExist();
 
         if(isExist){
@@ -163,8 +163,8 @@ public class IPAddressListController implements Serializable {
         }*/
 
         try {
-            isValidate = ipAddress.isValid();
-            if (!isValidate) {
+            isValid = ipAddress.isValid();
+            if (!isValid) {
                 log.debug("Bad IP Address !");
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                         "Throwable raised while updating IP Address " + ipAddress.getIpAddress() + " !",
@@ -180,7 +180,7 @@ public class IPAddressListController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
 
-        if(isValidate) {
+        if(isValid) {
             try {
                 em.getTransaction().begin();
                 ipAddress = em.find(ipAddress.getClass(), ipAddress.getId()).setFqdnR(ipAddress.getFqdn()).
