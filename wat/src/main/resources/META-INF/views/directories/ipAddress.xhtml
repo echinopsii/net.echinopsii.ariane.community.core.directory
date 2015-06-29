@@ -68,7 +68,7 @@
                             <p:inplace label="#{ipAddressListController.getIPAddressSubnetName(ipa)}" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{ipAddressListController.changedSubnet[ipa.id]}">
                                     <f:selectItems value="#{subnetsListController.getAll()}"  var="subnet"
-                                                   itemLabel="#{subnet.name}" itemValue="#{subnet.name}"/>
+                                                   itemLabel="#{subnet.name} - #{subnet.subnetIP}/#{subnet.subnetMask}" itemValue="#{subnet.name}"/>
                                 </h:selectOneMenu>
                                 <p:ajax event="save" listener="#{ipAddressListController.syncRSubnet(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages"/>
                             </p:inplace>

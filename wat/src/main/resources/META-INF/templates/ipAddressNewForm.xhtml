@@ -18,7 +18,7 @@
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the subnet type" value="#{ipAddressNewController.rSubnet}" required="true" style="width:68.5%">
                 <f:selectItems value="#{subnetsListController.getAll()}"  var="rsubnet"
-                               itemLabel="#{rsubnet.name}" itemValue="#{rsubnet.name}"/>
+                               itemLabel="#{rsubnet.name} - #{rsubnet.subnetIP}/#{rsubnet.subnetMask}" itemValue="#{rsubnet.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>
     </h:panelGrid>
