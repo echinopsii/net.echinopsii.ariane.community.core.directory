@@ -82,45 +82,47 @@ public class IPAddressListController implements Serializable {
      */
     public void syncRSubnet(IPAddress ipAddress) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-        try {
-            boolean noRsubnet = true;
-            ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
-            for (Subnet subnet: SubnetsListController.getAll()) {
-                if (subnet.getName().equals(changedSubnet.get(ipAddress.getId()))) {
+        ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
+        Subnet subnet = null;
+        for (Subnet subnetLoop : SubnetsListController.getAll()) {
+            if (subnetLoop.getName().equals(changedSubnet.get(ipAddress.getId()))) {
+                subnet = subnetLoop;
+                break;
+            }
+        }
+
+        if (subnet != null) {
+            Subnet previousSubnet = ipAddress.getNetworkSubnet();
+            if (ipAddress.setNetworkSubnetR(subnet).isValid()) {
+                try {
                     em.getTransaction().begin();
-                    subnet = em.find(subnet.getClass(), subnet.getId());
-                    ipAddress.setNetworkSubnetR(subnet);
+                    previousSubnet.getIpAddress().remove(ipAddress);
+                    ipAddress.setNetworkSubnet(subnet);
                     em.flush();
                     em.getTransaction().commit();
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                             "IPAddress updated successfully !",
                             "IPAddress : " + ipAddress.getIpAddress());
                     FacesContext.getCurrentInstance().addMessage(null, msg);
-                    noRsubnet = false;
-                    break;
+                } catch (Throwable t) {
+                    log.debug("Throwable catched !");
+                    t.printStackTrace();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Throwable raised while updating IPAddress " + ipAddress.getIpAddress() + " !",
+                            "Throwable message : " + t.getMessage());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                } finally {
+                    em.close();
                 }
-            }
-            if (noRsubnet) {
-                em.getTransaction().begin();
-                ipAddress.setNetworkSubnetR(null);
-                em.flush();
-                em.getTransaction().commit();
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "IPAddress updated successfully !",
-                        "IPAddress : " + ipAddress.getIpAddress());
+            } else {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Subnet changes is not valid according to defined IP ! ",
+                        "IP - Subnet definitions : " + ipAddress.getIpAddress() + " - " +
+                                ipAddress.getNetworkSubnet().getSubnetIP() + "/" + ipAddress.getNetworkSubnet().getSubnetMask());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
             }
-        } catch (Throwable t) {
-            log.debug("Throwable catched !");
-            t.printStackTrace();
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Throwable raised while updating IPAddress " + ipAddress.getIpAddress() + " !",
-                    "Throwable message : " + t.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-        } finally {
-            em.close();
         }
     }
 
@@ -161,8 +163,8 @@ public class IPAddressListController implements Serializable {
         }*/
 
         try {
-            isValidate = ipAddress.checkIP();
-            if (isValidate) {
+            isValidate = ipAddress.isValid();
+            if (!isValidate) {
                 log.debug("Bad IP Address !");
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                         "Throwable raised while updating IP Address " + ipAddress.getIpAddress() + " !",
@@ -178,7 +180,7 @@ public class IPAddressListController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
 
-        if(!isValidate) {
+        if(isValidate) {
             try {
                 em.getTransaction().begin();
                 ipAddress = em.find(ipAddress.getClass(), ipAddress.getId()).setFqdnR(ipAddress.getFqdn()).

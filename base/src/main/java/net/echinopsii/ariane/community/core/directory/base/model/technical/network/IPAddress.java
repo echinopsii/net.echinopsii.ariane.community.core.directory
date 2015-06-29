@@ -205,15 +205,20 @@ public class IPAddress implements Serializable {
         return intIP;
     }
 
-    public Boolean checkIP() throws UnknownHostException{
-        int intIP = this.convertIPToInt(this.getIpAddress());
-        int intSubnetIP = this.convertIPToInt(this.getNetworkSubnet().getSubnetIP());
-        int intSubnetMask = this.convertIPToInt(this.getNetworkSubnet().getSubnetMask());
-        Boolean isValidate = false;
-        if((intSubnetIP & intSubnetMask) != (intIP & intSubnetMask)) {
-            isValidate = true;
+    public Boolean isValid(){
+        Boolean ret = false;
+        try {
+            int intIP = this.convertIPToInt(this.getIpAddress());
+            int intSubnetIP = this.convertIPToInt(this.getNetworkSubnet().getSubnetIP());
+            int intSubnetMask = this.convertIPToInt(this.getNetworkSubnet().getSubnetMask());
+
+            if ((intSubnetIP & intSubnetMask) == (intIP & intSubnetMask)) {
+                ret = true;
+            }
+        }catch(Exception e){
+
         }
-        return isValidate;
+        return ret;
     }
 
     /**

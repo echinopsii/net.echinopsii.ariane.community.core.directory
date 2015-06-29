@@ -152,7 +152,7 @@ public class IPAddressNewController implements Serializable {
         newIPAddress.setOsInstances(this.rosinstance);
 
         Boolean isExist = newIPAddress.isExist();
-        Boolean isValidate = false;
+        Boolean isValid;
 
         if(isExist){
             log.debug("IP Address is already bind to subnet !");
@@ -163,8 +163,8 @@ public class IPAddressNewController implements Serializable {
         }
 
         try {
-            isValidate = newIPAddress.checkIP();
-            if (isValidate) {
+            isValid = newIPAddress.isValid();
+            if (!isValid) {
                 log.debug("Bad IP Address !");
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                         "Throwable raised while creating IP Address " + newIPAddress.getIpAddress() + " !",
@@ -178,9 +178,10 @@ public class IPAddressNewController implements Serializable {
                     "Exception raised while creating IP Address " + newIPAddress.getIpAddress() + " !",
                     "Exception message : " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
         }
 
-        if(!isExist && !isValidate) {
+        if(!isExist && isValid) {
             try {
                 em.getTransaction().begin();
                 em.persist(newIPAddress);
