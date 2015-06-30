@@ -232,7 +232,12 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("OSTypeTreeID").setValue("OS Type").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-tag").
                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/OSType.jsf").
                                                                              setDescription("Your OS types definitions").addDisplayRole("sysreviewer").addDisplayRole("sysadmin").
-                                                                             addDisplayPermission("dirComITiSysOst:display"));
+                                                                             addDisplayPermission("dirComITiSysOst:display")).
+                                 addChildTreeMenuEntity(new TreeMenuEntity().setId("SysIPAddressTreeID").setValue("IP Address").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-ellipsis-horizontal").
+                                                                             setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/ipAddress.jsf").
+                                                                             setDescription("Your IP Addresses definitions").addDisplayRole("sysreviewer").addDisplayRole("sysadmin").
+                                                                             addDisplayPermission("dirComITiNtwIPAddress:display"));
+
 
             log.debug("{} has registered its commons directory items", new Object[]{DIRECTORY_COMPONENT});
 
