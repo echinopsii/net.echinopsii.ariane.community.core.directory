@@ -66,7 +66,7 @@
                             <h:outputText value=" create new ipAddress"/>
                         </p:commandLink><br/>
                         <p:selectManyMenu id="osInstIPA" value="#{OSInstanceNewController.ipaddressesToBind}" style="width:100%;height:100px">
-                            <f:selectItems value="#{ipAddressListController.getAll()}"  var="ipa"
+                            <f:selectItems value="#{OSInstanceNewController.iplist}"  var="ipa"
                                            itemLabel="#{ipa.ipAddress}" itemValue="#{ipa.ipAddress}"/>
                         </p:selectManyMenu>
                     </h:panelGroup>
@@ -90,6 +90,7 @@
                             <h:outputText value=" create new subnet"/>
                         </p:commandLink><br/>
                         <p:selectManyMenu id="osInstSubnets" value="#{OSInstanceNewController.subnetsToBind}" style="width:100%;height:100px">
+                            <p:ajax listener="#{OSInstanceNewController.handleSelectedSubnets}" update=":createOSInstanceDialogForm:osInstanceNewTabView:osInstIPA"></p:ajax>
                             <f:selectItems value="#{subnetsListController.getAll()}"  var="subnet"
                                            itemLabel="#{subnet.name}" itemValue="#{subnet.name}"/>
                         </p:selectManyMenu>

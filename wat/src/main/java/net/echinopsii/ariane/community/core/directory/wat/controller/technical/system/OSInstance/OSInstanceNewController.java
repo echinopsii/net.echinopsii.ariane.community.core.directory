@@ -78,6 +78,8 @@ public class OSInstanceNewController implements Serializable{
     private List<String> ipaddressesToBind = new ArrayList<String>();
     private Set<IPAddress>  ipaddresses    = new HashSet<IPAddress>();
 
+    private List<IPAddress> iplist = new ArrayList<IPAddress>();
+
     private List<String>     envsToBind = new ArrayList<String>();
     private Set<Environment> envs       = new HashSet<Environment>();
 
@@ -355,6 +357,27 @@ public class OSInstanceNewController implements Serializable{
                     this.apps.add(application);
                     log.debug("Synced app : {} {}", new Object[]{application.getId(), application.getName()});
                 }
+        }
+    }
+
+    public List<IPAddress> getIplist() {
+        return iplist;
+    }
+
+    public void setIplist(List<IPAddress> iplist) {
+        this.iplist = iplist;
+    }
+
+    public void handleSelectedSubnets(){
+        for (Subnet subnet : SubnetsListController.getAll()) {
+            for (String subnetToBind : subnetsToBind) {
+                if (subnet.getName().equals(subnetToBind)) {
+                    subnet = em.find(subnet.getClass(), subnet.getId());
+                    for(IPAddress ipAddress : subnet.getIpAddress()){
+                        this.iplist.add(ipAddress);
+                    }
+                }
+            }
         }
     }
 
