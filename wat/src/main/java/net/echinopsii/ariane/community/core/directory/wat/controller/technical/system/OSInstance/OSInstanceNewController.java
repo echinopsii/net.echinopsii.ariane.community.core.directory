@@ -369,15 +369,18 @@ public class OSInstanceNewController implements Serializable{
     }
 
     public void handleSelectedSubnets(){
+        Subnet rsubnet = null;
         for (Subnet subnet : SubnetsListController.getAll()) {
             for (String subnetToBind : subnetsToBind) {
                 if (subnet.getName().equals(subnetToBind)) {
-                    subnet = em.find(subnet.getClass(), subnet.getId());
-                    for(IPAddress ipAddress : subnet.getIpAddress()){
-                        this.iplist.add(ipAddress);
-                    }
+                    rsubnet = subnet;
+                    break;
                 }
             }
+        }
+
+        if(rsubnet != null){
+            this.iplist = IPAddressListController.getAllFromSubnet(rsubnet);
         }
     }
 

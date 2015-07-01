@@ -20,9 +20,7 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress;
 
-import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
@@ -145,66 +143,44 @@ public class IPAddressListController implements Serializable {
     }
 
     /**
-     * When UI actions an update merge the corresponding subnet bean with the correct subnet instance in the DB and save this instance
+     * check entered subnet and IPAddress are compatiable or not
+     * before update
      *
      * @param ipAddress bean UI is working on
      */
     public void update(IPAddress ipAddress) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-        Boolean isValid = false;
-        /*Boolean isExist = ipAddress.isExist();
 
-        if(isExist){
-            log.debug("IP Address is already bind to subnet !");
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Throwable raised while creating IP Address " + ipAddress.getIpAddress() + " !",
-                    "Throwable message : IP Address is already bind to subnet " + ipAddress.getIpAddress());
+        Boolean isValid = ipAddress.isValid();
+        Boolean isBindToSubnet = ipAddress.isBindToSubnet();
+
+        if(isValid && !isBindToSubnet) {
+            em.getTransaction().begin();
+            IPAddress ipAddressToUpdate = em.find(ipAddress.getClass(), ipAddress.getId());
+            ipAddressToUpdate.setFqdnR(ipAddress.getFqdn()).
+                              setIpAddressR(ipAddress.getIpAddress()).setNetworkSubnetR(ipAddress.getNetworkSubnet());
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    "IP Address updated successfully !",
+                    "IP Address: " + ipAddress.getIpAddress());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-        }*/
-
-        try {
-            isValid = ipAddress.isValid();
+        } else {
             if (!isValid) {
-                log.debug("Bad IP Address !");
+                log.debug("Bad IP Address definition !");
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                         "Throwable raised while updating IP Address " + ipAddress.getIpAddress() + " !",
-                        "Throwable message : Bad IP Address " + ipAddress.getIpAddress());
+                        "Throwable message : Bad IP Address " + ipAddress.getIpAddress() + " - " + ipAddress.getNetworkSubnet().getSubnetIP());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-            }
-        }catch (Exception e){
-            log.debug("Exception catched !");
-            e.printStackTrace();
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Exception raised while updating IP Address " + ipAddress.getIpAddress() + " !",
-                    "Exception message : " + e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
-
-        if(isValid) {
-            try {
-                em.getTransaction().begin();
-                ipAddress = em.find(ipAddress.getClass(), ipAddress.getId()).setFqdnR(ipAddress.getFqdn()).
-                        setIpAddressR(ipAddress.getIpAddress()).setNetworkSubnetR(ipAddress.getNetworkSubnet());
-
-                em.flush();
-                em.getTransaction().commit();
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "IP Address updated successfully !",
-                        "IP Address: " + ipAddress.getIpAddress());
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            } catch (Throwable t) {
-                log.debug("Throwable catched !");
-                t.printStackTrace();
+            } else {
+                log.debug("IP Address is already bind to subnet !");
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "Throwable raised while updating IP Address " + ipAddress.getIpAddress() + " !",
-                        "Throwable message : " + t.getMessage());
+                        "Throwable raised while creating IP Address " + ipAddress.getIpAddress() + " !",
+                        "Throwable message : IP Address is already bind to subnet " + ipAddress.getIpAddress());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-            } finally {
-                em.close();
             }
         }
+        em.close();
     }
 
     /**
@@ -239,11 +215,8 @@ public class IPAddressListController implements Serializable {
     }
 
     /**
-     * Get all ipAddress from the db
-     *
-     * @return all ipAddress from the db
-     * @throws SystemException
-     * @throws NotSupportedException
+     * Get All IPAddresses from DB
+     * @return List of IPAddress
      */
     public static List<IPAddress> getAll() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -265,5 +238,28 @@ public class IPAddressListController implements Serializable {
         List<IPAddress> ret = em.createQuery(criteria).getResultList();
         em.close();
         return ret;
+    }
+
+    public static List<IPAddress> getAllFromSubnet(Subnet subnet){
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        log.debug("Get all IP Addresses from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                new Object[]{
+                        (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                });
+        CriteriaBuilder        builder  = em.getCriteriaBuilder();
+        CriteriaQuery<IPAddress> criteria = builder.createQuery(IPAddress.class);
+        Root<IPAddress>       root     = criteria.from(IPAddress.class);
+        criteria.select(root).where(builder.isNull(root.get("osInstances"))).where(builder.equal(root.get("networkSubnet"), subnet)).orderBy(builder.asc(root.get("ipAddress")));
+
+        List<IPAddress> ret = em.createQuery(criteria).getResultList();
+        em.close();
+        return ret;
+
     }
 }

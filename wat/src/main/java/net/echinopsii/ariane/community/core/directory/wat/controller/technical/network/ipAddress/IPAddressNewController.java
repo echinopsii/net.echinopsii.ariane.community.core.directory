@@ -151,37 +151,10 @@ public class IPAddressNewController implements Serializable {
         newIPAddress.setNetworkSubnet(this.rsubnet);
         newIPAddress.setOsInstances(this.rosinstance);
 
-        Boolean isExist = newIPAddress.isExist();
-        Boolean isValid;
+        Boolean isBindToSubnet = newIPAddress.isBindToSubnet();
+        Boolean isValid = newIPAddress.isValid();
 
-        if(isExist){
-            log.debug("IP Address is already bind to subnet !");
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Throwable raised while creating IP Address " + newIPAddress.getIpAddress() + " !",
-                    "Throwable message : IP Address is already bind to subnet " + newIPAddress.getIpAddress());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
-
-        try {
-            isValid = newIPAddress.isValid();
-            if (!isValid) {
-                log.debug("Bad IP Address !");
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "Throwable raised while creating IP Address " + newIPAddress.getIpAddress() + " !",
-                        "Throwable message : Bad IP Address " + newIPAddress.getIpAddress());
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            }
-        }catch (Exception e){
-            log.debug("Exception catched !");
-            e.printStackTrace();
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Exception raised while creating IP Address " + newIPAddress.getIpAddress() + " !",
-                    "Exception message : " + e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
-
-        if(!isExist && isValid) {
+        if(!isBindToSubnet && isValid) {
             try {
                 em.getTransaction().begin();
                 em.persist(newIPAddress);
@@ -210,6 +183,20 @@ public class IPAddressNewController implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (em.getTransaction().isActive())
                     em.getTransaction().rollback();
+            }
+        } else {
+            if (!isValid) {
+                log.debug("Bad IP Address !");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Throwable raised while creating IP Address " + newIPAddress.getIpAddress() + " !",
+                        "Throwable message : Bad IP Address " + newIPAddress.getIpAddress());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            } else{
+                log.debug("IP Address is already bind to subnet !");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Throwable raised while creating IP Address " + newIPAddress.getIpAddress() + " !",
+                        "Throwable message : IP Address is already bind to subnet " + newIPAddress.getIpAddress());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
             }
         }
     }

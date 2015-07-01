@@ -35,8 +35,6 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Entity
@@ -195,6 +193,12 @@ public class IPAddress implements Serializable {
     }
 
 
+    /**
+     * Convert IPAddress to interger values
+     * @param IP
+     * @return IPAddress in interger format
+     * @throws UnknownHostException
+     */
     public int convertIPToInt(String IP) throws UnknownHostException {
         Inet4Address inet4Address = (Inet4Address) InetAddress.getByName(IP);
         byte[] inetByte = inet4Address.getAddress();
@@ -226,17 +230,18 @@ public class IPAddress implements Serializable {
     }
 
     /**
-     * Check if IpAddress is already bind to subnet
+     * Check if IpAddress is already bind to selected subnet
+     *
+     * @return True if already bind else false
      */
-
-    public Boolean isExist(){
-        Boolean exist = false;
+    public Boolean isBindToSubnet(){
+        Boolean ret = false;
         for (IPAddress ipa: this.getNetworkSubnet().getIpAddress()){
-            if(ipa.getIpAddress().equals(this.ipAddress)){
-                exist = true;
+            if(ipa.getIpAddress().equals(this.ipAddress) && !ipa.getId().equals(this.id)){
+                ret = true;
                 break;
             }
         }
-        return exist;
+        return ret;
     }
 }
