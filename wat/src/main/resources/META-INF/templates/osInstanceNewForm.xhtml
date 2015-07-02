@@ -2,7 +2,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
 <ui:composition>
     <p:tabView id="osInstanceNewTabView" styleClass="arianeDialogGridOSInstance arianeDialogTabs">
         <p:tab title="Primary Definitions">
@@ -38,6 +38,17 @@
         <p:tab title="Context Links">
             <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGridOSInstance">
                 <h:panelGroup>
+                    <h:outputText value="Applications"  styleClass="arianeDialogLabel"/><br/>
+                    <h:panelGroup>
+                        <p:commandLink onclick="appCreateDialog.show()">
+                            <h:outputText value=" create new application"/>
+                        </p:commandLink><br/>
+                        <p:selectManyMenu id="osInstApp" value="#{OSInstanceNewController.appsToBind}" style="width:100%;height:100px">
+                            <f:selectItems value="#{applicationsListController.getAll()}"  var="app"
+                                           itemLabel="#{app.name}" itemValue="#{app.name}"/>
+                        </p:selectManyMenu><br/>
+                    </h:panelGroup>
+
                     <h:outputText value="Supporting teams" styleClass="arianeDialogLabel"/><br/>
                     <h:panelGroup>
                         <p:commandLink onclick="teamCreateDialog.show()">
@@ -59,31 +70,9 @@
                                            itemLabel="#{env.name}" itemValue="#{env.name}"/>
                         </p:selectManyMenu><br/>
                     </h:panelGroup>
-
-                    <h:outputText value="IP Addresses" styleClass="arianeDialogLabel"/><br/>
-                    <h:panelGroup>
-                        <p:commandLink onclick="ipAddressCreateDialog.show()">
-                            <h:outputText value=" create new ipAddress"/>
-                        </p:commandLink><br/>
-                        <p:selectManyMenu id="osInstIPA" value="#{OSInstanceNewController.ipaddressesToBind}" style="width:100%;height:100px">
-                            <f:selectItems value="#{OSInstanceNewController.iplist}"  var="ipa"
-                                           itemLabel="#{ipa.ipAddress}" itemValue="#{ipa.ipAddress}"/>
-                        </p:selectManyMenu>
-                    </h:panelGroup>
                 </h:panelGroup>
 
-                <h:panelGroup style="display: block; padding-bottom: 83.5% !important;">
-                    <h:outputText value="Applications"  styleClass="arianeDialogLabel"/><br/>
-                    <h:panelGroup>
-                        <p:commandLink onclick="appCreateDialog.show()">
-                            <h:outputText value=" create new application"/>
-                        </p:commandLink><br/>
-                        <p:selectManyMenu id="osInstApp" value="#{OSInstanceNewController.appsToBind}" style="width:100%;height:100px">
-                            <f:selectItems value="#{applicationsListController.getAll()}"  var="app"
-                                           itemLabel="#{app.name}" itemValue="#{app.name}"/>
-                        </p:selectManyMenu><br/>
-                    </h:panelGroup>
-
+                <h:panelGroup style="display: block; padding-bottom: 93% !important;">
                     <h:outputText value="Subnets" styleClass="arianeDialogLabel"/><br/>
                     <h:panelGroup>
                         <p:commandLink onclick="subnetCreateDialog.show()">
@@ -93,7 +82,26 @@
                             <p:ajax listener="#{OSInstanceNewController.handleSelectedSubnets}" update=":createOSInstanceDialogForm:osInstanceNewTabView:osInstIPA"></p:ajax>
                             <f:selectItems value="#{subnetsListController.getAll()}"  var="subnet"
                                            itemLabel="#{subnet.name}" itemValue="#{subnet.name}"/>
-                        </p:selectManyMenu>
+                        </p:selectManyMenu><br/>
+                    </h:panelGroup>
+
+                    <h:outputText value="IP Addresses" styleClass="arianeDialogLabel"/><br/>
+                    <h:panelGroup id="osInstIPA">
+                        <c:if test="#{OSInstanceNewController.iplist.size() gt 0}">
+                            <p:commandLink onclick="ipAddressCreateDialog.show()">
+                                <h:outputText value=" create new ipAddress"/>
+                            </p:commandLink><br/>
+                            <h:form>
+                                <p:selectManyMenu id="osInstIPASelect" value="#{OSInstanceNewController.ipaddressesToBind}" style="width:100%;height:100px">
+                                    <f:selectItems value="#{OSInstanceNewController.iplist}"  var="ipa"
+                                                   itemLabel="#{ipa.ipAddress}" itemValue="#{ipa.ipAddress}"/>
+                                <p:ajax listener="#{OSInstanceNewController.handleSelectedSubnets}"></p:ajax>
+                                </p:selectManyMenu>
+                            </h:form>
+                        </c:if>
+                        <c:if test="#{OSInstanceNewController.iplist.size() eq 0}">
+                            <h:outputText value="Select subnets to bind first."/>
+                        </c:if>
                     </h:panelGroup>
                 </h:panelGroup>
             </h:panelGrid>

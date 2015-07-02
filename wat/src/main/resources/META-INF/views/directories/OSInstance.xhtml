@@ -322,7 +322,7 @@
                     </ui:insert>
                     <p:commandButton value="Save this OS instance" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{OSInstanceNewController.save}" oncomplete="osInstanceCreateDialog.hide();"
-                                     update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTable,:osInstanceTableForm:osInstanceTableMessages"/>
+                                     update=":osInstanceTableForm:osInstanceTable,:osInstanceTableForm:osInstanceTableMessages"/>
                 </h:form>
             </p:dialog>
 

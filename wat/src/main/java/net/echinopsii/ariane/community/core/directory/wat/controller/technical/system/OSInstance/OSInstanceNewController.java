@@ -251,7 +251,7 @@ public class OSInstanceNewController implements Serializable{
      */
     private void bindSelectedIPAddresses() throws NotSupportedException, SystemException {
         for (IPAddress ipAddress : IPAddressListController.getAll()) {
-            for (String ipAddressToBind : ipaddressesToBind){
+             for (String ipAddressToBind : ipaddressesToBind){
                 if (ipAddress.getIpAddress().equals(ipAddressToBind)) {
                     ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
                     this.ipaddresses.add(ipAddress);
@@ -369,19 +369,17 @@ public class OSInstanceNewController implements Serializable{
     }
 
     public void handleSelectedSubnets(){
-        Subnet rsubnet = null;
+        Set<Subnet> rsubnets = new HashSet<>();
         for (Subnet subnet : SubnetsListController.getAll()) {
             for (String subnetToBind : subnetsToBind) {
-                if (subnet.getName().equals(subnetToBind)) {
-                    rsubnet = subnet;
-                    break;
-                }
+                if (subnet.getName().equals(subnetToBind))
+                    rsubnets.add(subnet);
             }
         }
 
-        if(rsubnet != null){
+        this.iplist.clear();
+        for (Subnet rsubnet : rsubnets)
             this.iplist = IPAddressListController.getAllFromSubnet(rsubnet);
-        }
     }
 
     /**

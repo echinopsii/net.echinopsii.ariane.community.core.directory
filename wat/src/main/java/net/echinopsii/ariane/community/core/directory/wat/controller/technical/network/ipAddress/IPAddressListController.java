@@ -20,7 +20,9 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
@@ -53,6 +55,8 @@ public class IPAddressListController implements Serializable {
 
     private HashMap<Long, String> changedSubnet = new HashMap<Long, String>();
 
+    private HashMap<Long, String> changedOSInstance = new HashMap<Long, String>();
+
     public LazyDataModel<IPAddress> getLazyModel() {
         return lazyModel;
     }
@@ -71,6 +75,14 @@ public class IPAddressListController implements Serializable {
 
     public void setChangedSubnet(HashMap<Long, String> changedSubnet) {
         this.changedSubnet = changedSubnet;
+    }
+
+    public HashMap<Long, String> getChangedOSInstance() {
+        return changedOSInstance;
+    }
+
+    public void setChangedOSInstance(HashMap<Long, String> changedOSInstance) {
+        this.changedOSInstance = changedOSInstance;
     }
 
     /**
@@ -99,8 +111,8 @@ public class IPAddressListController implements Serializable {
                     em.flush();
                     em.getTransaction().commit();
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "IPAddress updated successfully !",
-                            "IPAddress : " + ipAddress.getIpAddress());
+                            "IP Address updated successfully !",
+                            "IP Address : " + ipAddress.getIpAddress());
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                 } catch (Throwable t) {
                     log.debug("Throwable catched !");
@@ -132,13 +144,69 @@ public class IPAddressListController implements Serializable {
         return msubnetName;
     }
 
+    public void syncRosInstance(IPAddress ipAddress) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            boolean noRosInstance = true;
+            ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
+            for (OSInstance osInstance : OSInstancesListController.getAll()) {
+                if (osInstance.getName().equals(changedOSInstance.get(ipAddress.getId()))) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    ipAddress.setOsInstances(osInstance);
+                    osInstance.getIpAddress().add(ipAddress);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "IP Address updated successfully !",
+                            "IP Address: " + ipAddress.getIpAddress());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    noRosInstance = false;
+                    break;
+                }
+            }
+            if (noRosInstance) {
+                em.getTransaction().begin();
+                ipAddress.setOsInstances(null);
+                em.flush();
+                em.getTransaction().commit();
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "IP Address updated successfully !",
+                        "IP Address : " + ipAddress.getIpAddress());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Throwable raised while updating IP Address " + ipAddress.getIpAddress() + " !",
+                    "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
+
+    public String getIPAddressOSInstanceName(IPAddress ipAddress) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
+        String mOSInstanceName = (ipAddress.getOsInstances()!=null) ? ipAddress.getOsInstances().getName() : "None";
+        em.close();
+        return mOSInstanceName;
+    }
+
     public void onRowToggle(ToggleEvent event) {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         IPAddress eventIPAddress = ((IPAddress) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
             changedSubnet.remove(eventIPAddress.getId());
+            changedOSInstance.remove(eventIPAddress.getId());
         } else {
             changedSubnet.put(eventIPAddress.getId(), "");
+            changedOSInstance.put(eventIPAddress.getId(), "");
         }
     }
 
@@ -193,6 +261,8 @@ public class IPAddressListController implements Serializable {
             try {
                 em.getTransaction().begin();
                 ipAddress2BeRemoved = em.find(ipAddress2BeRemoved.getClass(), ipAddress2BeRemoved.getId());
+                if (ipAddress2BeRemoved.getNetworkSubnet()!=null) ipAddress2BeRemoved.getNetworkSubnet().getIpAddress().remove(ipAddress2BeRemoved);
+                if (ipAddress2BeRemoved.getOsInstances()!=null) ipAddress2BeRemoved.getOsInstances().getIpAddress().remove(ipAddress2BeRemoved);
                 em.remove(ipAddress2BeRemoved);
                 em.flush();
                 em.getTransaction().commit();

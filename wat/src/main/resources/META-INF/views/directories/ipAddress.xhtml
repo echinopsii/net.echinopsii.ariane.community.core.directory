@@ -74,7 +74,20 @@
                             </p:inplace>
                         </h:form>
                         <h:outputText value="#{ipAddressListController.getIPAddressSubnetName(ipa)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
-                        </h:panelGrid>
+
+                        <h:outputText value="OS Instances: " styleClass="arianeDialogLabel"/>
+                        <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
+                            <p:inplace label="#{ipAddressListController.getIPAddressOSInstanceName(ipa)}" effectSpeed="fast" editor="true">
+                                <h:selectOneMenu value="#{ipAddressListController.changedOSInstance[ipa.id]}">
+                                    <f:selectItems value="#{OSInstancesListController.getAll()}"  var="osi"
+                                                   itemLabel="#{osi.name}" itemValue="#{osi.name}"/>
+                                </h:selectOneMenu>
+                                <p:ajax event="save" listener="#{ipAddressListController.syncRosInstance(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages"/>
+                            </p:inplace>
+                        </h:form>
+                        <h:outputText value="#{ipAddressListController.getIPAddressSubnetName(ipa)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
+                    </h:panelGrid>
+
                     </p:rowExpansion>
                     <f:facet name="footer">
                         <p:commandButton value="Create IP Address" icon="ui-icon-disk" onclick="ipAddressCreateDialog.show()" rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:create')}"/>

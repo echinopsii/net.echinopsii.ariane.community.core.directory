@@ -915,7 +915,7 @@ public class OSInstancesListController implements Serializable{
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<OSInstance> list =  em.createQuery(criteria).getResultList();
-        list.add(0, new OSInstance().setNameR("Select routing area for this subnet"));
+        list.add(0, new OSInstance().setNameR("Select OS instance"));
         em.close();
         return list;
     }
