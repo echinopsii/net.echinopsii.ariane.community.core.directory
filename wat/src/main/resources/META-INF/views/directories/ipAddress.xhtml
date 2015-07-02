@@ -75,7 +75,7 @@
                         </h:form>
                         <h:outputText value="#{ipAddressListController.getIPAddressSubnetName(ipa)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
 
-                        <h:outputText value="OS Instances: " styleClass="arianeDialogLabel"/>
+                        <h:outputText value="OS Instance: " styleClass="arianeDialogLabel"/>
                         <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
                             <p:inplace label="#{ipAddressListController.getIPAddressOSInstanceName(ipa)}" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{ipAddressListController.changedOSInstance[ipa.id]}">
