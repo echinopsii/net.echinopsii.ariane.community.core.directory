@@ -206,7 +206,7 @@
                                     <p:inplace label="Select IP Address to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedIPAddress[osi.id]}">
                                             <f:selectItems value="#{OSInstancesListController.getAllFromSubnet(osi)}" var="ipa_"
-                                                           itemLabel="#{ipa_.ipAddress}" itemValue="#{ipa_.ipAddress}"/>
+                                                           itemLabel="#{ipa_.ipAddress} - #{ipa_.networkSubnet.subnetIP}" itemValue="#{ipa_.ipAddress}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSInstancesListController.syncAddedIPAddress(osi)}"
                                                 update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
