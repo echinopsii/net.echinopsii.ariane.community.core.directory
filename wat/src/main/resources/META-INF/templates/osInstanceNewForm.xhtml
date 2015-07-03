@@ -101,6 +101,8 @@
                         </c:if>
                         <c:if test="#{OSInstanceNewController.iplist.size() eq 0}">
                             <h:outputText value="Select subnets to bind first."/>
+                            <p:selectManyMenu style="width:100%; height: 100px;">
+                            </p:selectManyMenu>
                         </c:if>
                     </h:panelGroup>
                 </h:panelGroup>
