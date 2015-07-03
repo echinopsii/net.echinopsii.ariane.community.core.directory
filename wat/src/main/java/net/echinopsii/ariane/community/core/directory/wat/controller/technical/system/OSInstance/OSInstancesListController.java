@@ -248,10 +248,6 @@ public class OSInstancesListController implements Serializable{
         this.removedSubnets = removedSubnets;
     }
 
-    public HashMap<Long, String> getAddedIPAddress() {
-        return addedIPAddress;
-    }
-
     /**
      * Synchronize removed subnets from an OS instance to database
      *
@@ -290,6 +286,10 @@ public class OSInstancesListController implements Serializable{
 
     public void setAddedIPAddress(HashMap<Long, String> addedIPAddress) {
         this.addedIPAddress = addedIPAddress;
+    }
+
+    public HashMap<Long, String> getAddedIPAddress() {
+        return addedIPAddress;
     }
 
     /**
@@ -889,6 +889,20 @@ public class OSInstancesListController implements Serializable{
         em.close();
         return ret;
     }
+
+    public static List<IPAddress> getAllFromSubnet(OSInstance osInstance){
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        osInstance = em.find(osInstance.getClass(), osInstance.getId());
+        List<IPAddress> ret = new ArrayList<IPAddress>();
+        for (Subnet subnet : osInstance.getNetworkSubnets()){
+            for (IPAddress ipAddress : subnet.getIpAddress()){
+                ret.add(ipAddress);
+            }
+        }
+        em.close();
+        return ret;
+    }
+
 
     /**
      * Get all OS Instances from the db + select string

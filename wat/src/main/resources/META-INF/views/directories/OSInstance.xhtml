@@ -205,7 +205,7 @@
                                 <f:facet name="footer">
                                     <p:inplace label="Select IP Address to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedIPAddress[osi.id]}">
-                                            <f:selectItems value="#{ipAddressListController.getAll()}" var="ipa_"
+                                            <f:selectItems value="#{OSInstancesListController.getAllFromSubnet(osi)}" var="ipa_"
                                                            itemLabel="#{ipa_.ipAddress}" itemValue="#{ipa_.ipAddress}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSInstancesListController.syncAddedIPAddress(osi)}"
