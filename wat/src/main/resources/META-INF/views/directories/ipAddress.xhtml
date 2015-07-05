@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:arianeidm="http://echinopsii.net/ariane/idm">
+<ui:composition template="/templates/directoryLayout.xhtml">
+    <ui:define name="directoryContent">
+        <ui:fragment rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:display')}">
+
+            <h:form id="ipAddressTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
+                <p:growl id="ipAddressTableMessages" showDetail="true" />
+                <p:dataTable id="ipAddressTable" styleClass="arianeTableRow" var="ipa" value="#{ipAddressListController.lazyModel}"
+                             selectionMode="multiple" selection="#{ipAddressListController.selectedIPAddressList}" rowKey="#{ipa.id}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
+                    <f:facet name="header">
+                        IP Address
+                    </f:facet>
+
+                    <p:ajax event="rowToggle" listener="#{ipAddressListController.onRowToggle}" />
+
+                    <p:column style="width:2%">
+                        <p:rowToggler/>
+                    </p:column>
+
+                    <p:column headerText="IP Address" sortBy="#{ipa.ipAddress}" filterBy="#{ipa.ipAddress}">
+                        <h:outputText value="#{ipa.ipAddress}" />
+                    </p:column>
+
+                    <p:column headerText="FQDN" sortBy="#{ipa.fqdn}" filterBy="#{ipa.fqdn}">
+                        <h:outputText value="#{ipa.fqdn}" />
+                    </p:column>
+
+                    <p:column headerText="Subnets">
+                        <h:outputText value="#{ipa.networkSubnet.name}" />
+                    </p:column>
+
+                    <p:column headerText="OS Instances">
+                        <h:outputText value="#{ipa.osInstances.name!= null ? ipa.osInstances.name : 'not defined'}" />
+                    </p:column>
+
+                    <p:rowExpansion>
+                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5" styleClass="arianeEmbeddedGrid">
+                        <h:outputText value="IP Address: " styleClass="arianeDialogLabel"/>
+                        <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="IPA" value="#{ipa.ipAddress}"/>
+                                <p:ajax event="save" listener="#{ipAddressListController.update(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages" />
+                            </p:inplace>
+                        </h:form>
+                        <h:outputText value="#{ipa.ipAddress}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
+
+                        <h:outputText value="FQDN : " styleClass="arianeDialogLabel"/>
+                        <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
+                            <p:inplace editor="true">
+                                <p:inputText required="true" label="IPA" value="#{ipa.fqdn}"/>
+                                <p:ajax event="save" listener="#{ipAddressListController.update(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages" />
+                            </p:inplace>
+                        </h:form>
+                        <h:outputText value="#{ipa.fqdn}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
+
+                        <h:outputText value="Subnet: " styleClass="arianeDialogLabel"/>
+                        <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
+                            <p:inplace label="#{ipAddressListController.getIPAddressSubnetName(ipa)}" effectSpeed="fast" editor="true">
+                                <h:selectOneMenu value="#{ipAddressListController.changedSubnet[ipa.id]}">
+                                    <f:selectItems value="#{subnetsListController.getAll()}"  var="subnet"
+                                                   itemLabel="#{subnet.name} - #{subnet.subnetIP}/#{subnet.subnetMask}" itemValue="#{subnet.name}"/>
+                                </h:selectOneMenu>
+                                <p:ajax event="save" listener="#{ipAddressListController.syncRSubnet(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages"/>
+                            </p:inplace>
+                        </h:form>
+                        <h:outputText value="#{ipAddressListController.getIPAddressSubnetName(ipa)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
+
+                        <h:outputText value="OS Instance: " styleClass="arianeDialogLabel"/>
+                        <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
+                            <p:inplace label="#{ipAddressListController.getIPAddressOSInstanceName(ipa)}" effectSpeed="fast" editor="true">
+                                <h:selectOneMenu value="#{ipAddressListController.changedOSInstance[ipa.id]}">
+                                    <f:selectItems value="#{OSInstancesListController.getAll()}"  var="osi"
+                                                   itemLabel="#{osi.name}" itemValue="#{osi.name}"/>
+                                </h:selectOneMenu>
+                                <p:ajax event="save" listener="#{ipAddressListController.syncRosInstance(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages"/>
+                            </p:inplace>
+                        </h:form>
+                        <h:outputText value="#{ipAddressListController.getIPAddressSubnetName(ipa)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
+                    </h:panelGrid>
+
+                    </p:rowExpansion>
+                    <f:facet name="footer">
+                        <p:commandButton value="Create IP Address" icon="ui-icon-disk" onclick="ipAddressCreateDialog.show()" rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:create')}"/>
+                        <p:commandButton value="Remove selected IP Address" icon="ui-icon-closethick" onclick="ipAddressRemoveDialog.show()"
+                                         update=":removeIPAddressDialogForm:display" rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:remove')}"/>
+                        <p:commandButton value="Refresh table" id="ipAddressUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                         update=":ipAddressTableForm:ipAddressTable"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+
+            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="ipAddressRemoveDialog"
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
+                <h:form id="removeIPAddressDialogForm">
+                    <h:outputText value="Are you sure you want delete following IPAddress ?" styleClass="arianeDialogLabel text-marginForMessage"/><br/>
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                                     actionListener="#{ipAddressListController.delete}" oncomplete="ipAddressRemoveDialog.hide();"
+                                     update=":ipAddressTableForm:ipAddressTable,:ipAddressTableForm:ipAddressTableMessages"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtonNo" icon="ui-icon-close" onclick="ipAddressRemoveDialog.hide();"/>
+                    <p:separator/>
+                    <p:dataList id="display"
+                                value="#{ipAddressListController.selectedIPAddressList}"
+                                var="selectedIPAddress" type="definition">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <h:outputText value="IPAddress : " styleClass="arianeDialogLabel"/>
+                            <h:outputText value="#{selectedIPAddress.ipAddress}"/>
+
+                            <h:outputText value="Subnet : " styleClass="arianeDialogLabel"/>
+                            <p:dataTable  value="#{selectedIPAddress.networkSubnet}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="Name">
+                                    <h:outputText id="subnetitemName" value="#{_item.name}"/>
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText id="subnetitemDescription" value="#{_item.description}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <p:separator/>
+                    </p:dataList>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new subnet" widgetVar="subnetCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
+                <h:form id="createSubnetDialogForm">
+                    <ui:insert name="createSubnet" >
+                        <ui:include src="/templates/subnetNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this subnet" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                                     actionListener="#{subnetNewController.save}" oncomplete="subnetCreateDialog.hide();"
+                                     update=":createIPAddressDialogForm:ipAddressNewGrid,:ipAddressTableForm:ipAddressTable,:ipAddressTableForm:ipAddressTableMessages"/>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new IP Address" widgetVar="ipAddressCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
+                <h:form id="createIPAddressDialogForm">
+                    <ui:insert name="createIPAddress" >
+                        <ui:include src="/templates/ipAddressNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this IP Address" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                                     actionListener="#{ipAddressNewController.save}" oncomplete="ipAddressCreateDialog.hide();"
+                                     update=":createIPAddressDialogForm:ipAddressNewGrid,:ipAddressTableForm:ipAddressTableMessages,:ipAddressTableForm:ipAddressTable"/>
+                </h:form>
+            </p:dialog>
+
+        </ui:fragment>
+    </ui:define>
+</ui:composition>
+</html>

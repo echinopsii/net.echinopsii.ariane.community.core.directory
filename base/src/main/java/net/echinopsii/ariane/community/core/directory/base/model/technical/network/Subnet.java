@@ -75,6 +75,10 @@ public class Subnet implements Serializable
     @NotNull
     private RoutingArea rarea;
 
+    @OneToMany(mappedBy = "networkSubnet", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<IPAddress> ipAddress = new HashSet<IPAddress>();
+
     public Long getId() {
         return this.id;
     }
@@ -218,6 +222,19 @@ public class Subnet implements Serializable
         return this;
     }
 
+    public Set<IPAddress> getIpAddress() {
+        return this.ipAddress;
+    }
+
+    public void setIpAddress(final Set<IPAddress> ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public Subnet setIpAddressR(final Set<IPAddress> ipAddress){
+        this.ipAddress = ipAddress;
+        return this;
+    }
+
     public RoutingArea getRarea() {
         return this.rarea;
     }
@@ -233,7 +250,8 @@ public class Subnet implements Serializable
 
     public Subnet clone() {
         return new Subnet().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setSubnetIPR(this.subnetIP).
-                       setSubnetMaskR(this.subnetMask).setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setRareaR(this.rarea).setOsInstancesR(new HashSet<OSInstance>(this.osInstances));
+                       setSubnetMaskR(this.subnetMask).setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setRareaR(this.rarea).
+                       setOsInstancesR(new HashSet<OSInstance>(this.osInstances)).setIpAddressR(new HashSet<IPAddress>(this.ipAddress));
     }
 
     public final static String SUBNET_MAPPING_PROPERTIES = "Network";

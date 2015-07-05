@@ -5,7 +5,7 @@
     <persistence-unit name="ariane-directory">
         <class>net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter</class>
         <class>net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet</class>
-        <class>net.echinopsii.ariane.community.core.directory.base.model.technical.network.SubnetType</class>
+        <class>net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress</class>
         <class>net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea</class>
         <class>net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance</class>
         <class>net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSType</class>

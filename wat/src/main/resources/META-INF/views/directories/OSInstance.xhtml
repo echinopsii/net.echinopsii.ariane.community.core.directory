@@ -191,6 +191,34 @@
                         </p:dataTable>
                     </h:form>
 
+                    <h:outputText value="IP Addresses : "  styleClass="arianeDialogLabel"/>
+                    <h:form>
+                        <p:dataTable value="#{directoryViewUtils.asList(osi,'ipAddress')}" var="ipa" styleClass="ui-widget-content grid" rowKey="#{ipa.id}"
+                                     rows="5" paginator="true" selection="#{OSInstancesListController.removedIPAddresses[osi.id]}" selectionMode="multiple">
+                            <p:column headerText="IP Address" sortBy="#{ipa.ipAddress}" filterBy="#{ipa.ipAddress}">
+                                <h:outputText id="ipaIPAddress" value="#{ipa.ipAddress}"/>
+                            </p:column>
+                            <p:column headerText="FQDN" sortBy="#{ipa.fqdn}" filterBy="#{ipa.fqdn}">
+                                <h:outputText id="ipaFQDN" value="#{ipa.fqdn}"/>
+                            </p:column>
+                            <c:if test="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
+                                <f:facet name="footer">
+                                    <p:inplace label="Select IP Address to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{OSInstancesListController.addedIPAddress[osi.id]}">
+                                            <f:selectItems value="#{OSInstancesListController.getAllFromSubnet(osi)}" var="ipa_"
+                                                           itemLabel="#{ipa_.ipAddress} - #{ipa_.networkSubnet.subnetIP}" itemValue="#{ipa_.ipAddress}"/>
+                                        </h:selectOneMenu>
+                                        <p:ajax event="save" listener="#{OSInstancesListController.syncAddedIPAddress(osi)}"
+                                                update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
+                                    </p:inplace>
+                                    <p:commandButton value="Unbind selected IP Address" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{OSInstancesListController.syncRemovedIPAddress(osi)}"
+                                                     update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
+                                </f:facet>
+                            </c:if>
+                        </p:dataTable>
+                    </h:form>
+
                     <h:outputText value="Embedding OS Instance : " styleClass="arianeDialogLabel"/>
                     <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace label="#{OSInstancesListController.getOSInstanceEmbeddingOSI(osi)}" effectSpeed="fast" editor="true">
@@ -270,6 +298,16 @@
                                     <h:outputText id="itemDescription" value="#{_item.description}"/>
                                 </p:column>
                             </p:dataTable>
+
+
+                            <h:outputText value="IPAddress : " styleClass="arianeDialogLabel"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedOSInstance,'ipAddress')}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="IPAddress">
+                                    <h:outputText id="rIPAddressName" value="#{_item.ipAddress}"/>
+                                </p:column>
+                            </p:dataTable>
+
                         </h:panelGrid>
                         <p:separator/>
                     </p:dataList>
@@ -284,7 +322,7 @@
                     </ui:insert>
                     <p:commandButton value="Save this OS instance" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{OSInstanceNewController.save}" oncomplete="osInstanceCreateDialog.hide();"
-                                     update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTable,:osInstanceTableForm:osInstanceTableMessages"/>
+                                     update=":osInstanceTableForm:osInstanceTable,:osInstanceTableForm:osInstanceTableMessages"/>
                 </h:form>
             </p:dialog>
 
@@ -358,6 +396,18 @@
                     </ui:insert>
                     <p:commandButton value="Save this subnet" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{subnetNewController.save}" oncomplete="subnetCreateDialog.hide();"
+                                     update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTableMessages"/>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new ipAddress" widgetVar="ipAddressCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
+                <h:form id="createIPAddressDialogForm">
+                    <ui:insert name="createIPAddress" >
+                        <ui:include src="/templates/ipAddressNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this ipAddress" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                                     actionListener="#{ipAddressNewController.save}" oncomplete="ipAddressCreateDialog.hide();"
                                      update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTableMessages"/>
                 </h:form>
             </p:dialog>

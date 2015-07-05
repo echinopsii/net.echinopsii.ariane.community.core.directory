@@ -128,6 +128,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
             mainMenuEntity.getDisplayPermissions().add("dirComITiNtwDC:display");
             mainMenuEntity.getDisplayPermissions().add("dirComITiNtwMarea:display");
             mainMenuEntity.getDisplayPermissions().add("dirComITiNtwSubnet:display");
+            mainMenuEntity.getDisplayPermissions().add("dirComITiNtwIPAddress:display");
             mainMenuEntity.getDisplayPermissions().add("dirComITiSysOsi:display");
             mainMenuEntity.getDisplayPermissions().add("dirComITiSysOst:display");
             mainMenuEntity.getDisplayPermissions().add("dirComOrgApp:display");
@@ -148,7 +149,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                            addDisplayRole("ntwadmin").addDisplayRole("sysadmin").addDisplayRole("orgadmin").
                                                                            addDisplayRole("ntwreviewer").addDisplayRole("sysreviewer").addDisplayRole("orgreviewer").
                                                                            addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwRarea:display").
-                                                                           addDisplayPermission("dirComITiNtwSubnet:display").addDisplayPermission("dirComITiSysOsi:display").
+                                                                           addDisplayPermission("dirComITiNtwSubnet:display").addDisplayPermission("dirComITiNtwIPAddress:display").addDisplayPermission("dirComITiSysOsi:display").
                                                                            addDisplayPermission("dirComITiSysOst:display").addDisplayPermission("dirComOrgApp:display").
                                                                            addDisplayPermission("dirComOrgCompany:display").addDisplayPermission("dirComOrgEnvironment:display").
                                                                            addDisplayPermission("dirComOrgTeam:display");
@@ -188,7 +189,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                           setType(MenuEntityType.TYPE_MENU_SUBMENU).
                                                                           setParentTreeMenuEntity(commonRootTreeMenuEntity).
                                                                           addDisplayRole("ntwadmin").addDisplayRole("sysadmin").
-                                                                          addDisplayRole("ntwreviewer").addDisplayRole("sysreviewer").addDisplayPermission("dirComITiNtwSubnet:display").
+                                                                          addDisplayRole("ntwreviewer").addDisplayRole("sysreviewer").addDisplayPermission("dirComITiNtwSubnet:display").addDisplayPermission("dirComITiNtwIPAddress:display").
                                                                           addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwRarea:display");
             commonRootTreeMenuEntity.addChildTreeMenuEntity(technicalTreeMenuEntity);
 
@@ -210,7 +211,12 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                   addChildTreeMenuEntity(new TreeMenuEntity().setId("multicastAreaTreeID").setValue("Routing Area").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("arianeico-routingarea-ariane").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/routingArea.jsf").
                                                                               setDescription("Your routing areas definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
-                                                                              addDisplayPermission("dirComITiNtwRarea:display"));
+                                                                              addDisplayPermission("dirComITiNtwRarea:display")).
+                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("ipAddressTreeID").setValue("IP Address").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-ellipsis-horizontal").
+                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/ipAddress.jsf").
+                                                                              setDescription("Your IP Addresses definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
+                                                                              addDisplayPermission("dirComITiNtwIPAddress:display"));
+
 
 
             TreeMenuEntity systemTreeMenuEntity = new TreeMenuEntity().setId("commonSysDir").setValue("System").
@@ -226,7 +232,12 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("OSTypeTreeID").setValue("OS Type").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-tag").
                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/OSType.jsf").
                                                                              setDescription("Your OS types definitions").addDisplayRole("sysreviewer").addDisplayRole("sysadmin").
-                                                                             addDisplayPermission("dirComITiSysOst:display"));
+                                                                             addDisplayPermission("dirComITiSysOst:display")).
+                                 addChildTreeMenuEntity(new TreeMenuEntity().setId("SysIPAddressTreeID").setValue("IP Address").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-ellipsis-horizontal").
+                                                                             setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/ipAddress.jsf").
+                                                                             setDescription("Your IP Addresses definitions").addDisplayRole("sysreviewer").addDisplayRole("sysadmin").
+                                                                             addDisplayPermission("dirComITiNtwIPAddress:display"));
+
 
             log.debug("{} has registered its commons directory items", new Object[]{DIRECTORY_COMPONENT});
 

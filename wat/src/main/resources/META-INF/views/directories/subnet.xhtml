@@ -160,6 +160,19 @@
                                 </p:dataTable>
                             </h:form>
 
+                            <h:outputText value="IP Addresses : "  styleClass="arianeDialogLabel"/>
+                            <h:form>
+                                <p:dataTable value="#{directoryViewUtils.asList(subnet,'ipAddress')}" var="ipa" styleClass="ui-widget-content grid" rowKey="#{ipa.id}"
+                                             rows="5" paginator="true" selectionMode="multiple">
+                                    <p:column headerText="IP Address" sortBy="#{ipa.ipAddress}" filterBy="#{ipa.ipAddress}">
+                                        <h:outputText id="ipaIPAddress" value="#{ipa.ipAddress}"/>
+                                    </p:column>
+                                    <p:column headerText="FQDN" sortBy="#{ipa.fqdn}" filterBy="#{ipa.fqdn}">
+                                        <h:outputText id="ipaFQDN" value="#{ipa.fqdn}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:form>
+
                         </h:panelGrid>
                     </p:rowExpansion>
                     <f:facet name="footer">
@@ -205,16 +218,22 @@
                                 </p:column>
                             </p:dataTable>
 
-                            <h:outputText value="Routing areas : " styleClass="arianeDialogLabel"/>
-                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'rarea')}" var="_item"
+                            <h:outputText value="IP Addresses : " styleClass="arianeDialogLabel"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'ipAddress')}" var="ipa"
                                           rows="5" paginator="true">
-                                <p:column headerText="Name">
-                                    <h:outputText id="raitemName" value="#{_item.name}"/>
+                                <p:column headerText="IP Address">
+                                    <h:outputText id="ipaIPAddress" value="#{ipa.ipAddress}"/>
                                 </p:column>
-                                <p:column headerText="Description">
-                                    <h:outputText id="raitemDescription" value="#{_item.description}"/>
+                                <p:column headerText="FQDN">
+                                    <h:outputText id="ipaFQDN" value="#{ipa.fqdn}"/>
+                                </p:column>
+                                <p:column headerText="OS Instance">
+                                    <h:outputText id="ipaOSI" value="#{ipa.osInstances.name}"/>
                                 </p:column>
                             </p:dataTable>
+
+                            <h:outputText value="Routing areas : " styleClass="arianeDialogLabel"/>
+                            <h:outputText value="#{selectedSubnet.rarea.name}"/>
 
                             <h:outputText value="OS Instances : " styleClass="arianeDialogLabel"/>
                             <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'osInstances')}" var="osR"

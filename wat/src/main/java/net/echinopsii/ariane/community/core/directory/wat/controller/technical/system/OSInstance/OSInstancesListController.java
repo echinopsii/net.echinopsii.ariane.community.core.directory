@@ -18,6 +18,8 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.controller.organisational.application.ApplicationsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.organisational.environment.EnvironmentsListController;
@@ -64,6 +66,9 @@ public class OSInstancesListController implements Serializable{
 
     private HashMap<Long,String>       addedSubnet    = new HashMap<Long, String>();
     private HashMap<Long,List<Subnet>> removedSubnets = new HashMap<Long, List<Subnet>>();
+
+    private HashMap<Long,String>       addedIPAddress    = new HashMap<Long, String>();
+    private HashMap<Long,List<IPAddress>> removedIPAddresses = new HashMap<Long, List<IPAddress>>();
 
     private HashMap<Long,String>            addedEnv    = new HashMap<Long, String>();
     private HashMap<Long,List<Environment>> removedEnvs = new HashMap<Long, List<Environment>>();
@@ -258,6 +263,97 @@ public class OSInstancesListController implements Serializable{
                 subnet = em.find(subnet.getClass(), subnet.getId());
                 osInstance.getNetworkSubnets().remove(subnet);
                 subnet.getOsInstances().remove(osInstance);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    "OS Instance updated successfully !",
+                    "OS Instance name : " + osInstance.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                    "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void setAddedIPAddress(HashMap<Long, String> addedIPAddress) {
+        this.addedIPAddress = addedIPAddress;
+    }
+
+    public HashMap<Long, String> getAddedIPAddress() {
+        return addedIPAddress;
+    }
+
+    /**
+     * Synchronize added ipAddress into an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncAddedIPAddress(OSInstance osInstance) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (IPAddress ipAddress : IPAddressListController.getAll())
+                if (ipAddress.getIpAddress().equals(this.addedIPAddress.get(osInstance.getId()))) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
+                    osInstance.getIpAddress().add(ipAddress);
+                    if (ipAddress.getOsInstances()!=null)
+                        ipAddress.getOsInstances().getIpAddress().remove(ipAddress);
+                    ipAddress.setOsInstances(osInstance);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "OS Instance updated successfully !",
+                            "OS Instance name : " + osInstance.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                    "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
+    public HashMap<Long, List<IPAddress>> getRemovedIPAddresses() {
+        return removedIPAddresses;
+    }
+
+    public void setRemovedIPAddresses(HashMap<Long, List<IPAddress>> removedIPAddresses) {
+        this.removedIPAddresses = removedIPAddresses;
+    }
+
+    /**
+     * Synchronize removed ipAddress from an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncRemovedIPAddress(OSInstance osInstance) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            osInstance = em.find(osInstance.getClass(), osInstance.getId());
+            List<IPAddress> ipAddresses = this.removedIPAddresses.get(osInstance.getId());
+            for (IPAddress ipAddress : ipAddresses) {
+                ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
+                osInstance.getIpAddress().remove(ipAddress);
+                ipAddress.setOsInstances(null);
             }
             em.flush();
             em.getTransaction().commit();
@@ -656,6 +752,8 @@ public class OSInstancesListController implements Serializable{
             changedEmbeddingOSI.remove(osInstance.getId());
             addedSubnet.remove(osInstance.getId());
             removedSubnets.remove(osInstance.getId());
+            addedIPAddress.remove(osInstance.getId());
+            removedIPAddresses.remove(osInstance.getId());
             addedEmbeddedOSI.remove(osInstance.getId());
             removedEmbeddedOSI.remove(osInstance.getId());
             addedEnv.remove(osInstance.getId());
@@ -669,6 +767,8 @@ public class OSInstancesListController implements Serializable{
             changedEmbeddingOSI.put(osInstance.getId(),"");
             addedSubnet.put(osInstance.getId(), "");
             removedSubnets.put(osInstance.getId(), new ArrayList<Subnet>());
+            addedIPAddress.put(osInstance.getId(), "");
+            removedIPAddresses.put(osInstance.getId(), new ArrayList<IPAddress>());
             addedEmbeddedOSI.put(osInstance.getId(),"");
             removedEmbeddedOSI.put(osInstance.getId(),new ArrayList<OSInstance>());
             addedEnv.put(osInstance.getId(),"");
@@ -727,6 +827,8 @@ public class OSInstancesListController implements Serializable{
                     environment.getOsInstances().remove(osInstance);
                 for (Subnet subnet : osInstance.getNetworkSubnets())
                     subnet.getOsInstances().remove(osInstance);
+                for (IPAddress ipAddress : osInstance.getIpAddress())
+                    ipAddress.setOsInstances(null);
                 if (osInstance.getEmbeddingOSInstance()!=null)
                     osInstance.getEmbeddingOSInstance().getEmbeddedOSInstances().remove(osInstance);
                 for (OSInstance osi: osInstance.getEmbeddedOSInstances())
@@ -788,6 +890,20 @@ public class OSInstancesListController implements Serializable{
         return ret;
     }
 
+    public static List<IPAddress> getAllFromSubnet(OSInstance osInstance){
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        osInstance = em.find(osInstance.getClass(), osInstance.getId());
+        List<IPAddress> ret = new ArrayList<IPAddress>();
+        for (Subnet subnet : osInstance.getNetworkSubnets()){
+            for (IPAddress ipAddress : subnet.getIpAddress()){
+                ret.add(ipAddress);
+            }
+        }
+        em.close();
+        return ret;
+    }
+
+
     /**
      * Get all OS Instances from the db + select string
      *
@@ -813,7 +929,7 @@ public class OSInstancesListController implements Serializable{
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<OSInstance> list =  em.createQuery(criteria).getResultList();
-        list.add(0, new OSInstance().setNameR("None"));
+        list.add(0, new OSInstance().setNameR("Select OS instance"));
         em.close();
         return list;
     }

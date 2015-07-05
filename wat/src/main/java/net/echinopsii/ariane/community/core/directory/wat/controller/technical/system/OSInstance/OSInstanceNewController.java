@@ -18,6 +18,8 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.controller.organisational.application.ApplicationsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.organisational.environment.EnvironmentsListController;
@@ -72,6 +74,11 @@ public class OSInstanceNewController implements Serializable{
 
     private List<String> subnetsToBind = new ArrayList<String>();
     private Set<Subnet>  subnets       = new HashSet<Subnet>();
+
+    private List<String> ipaddressesToBind = new ArrayList<String>();
+    private Set<IPAddress>  ipaddresses    = new HashSet<IPAddress>();
+
+    private List<IPAddress> iplist = new ArrayList<IPAddress>();
 
     private List<String>     envsToBind = new ArrayList<String>();
     private Set<Environment> envs       = new HashSet<Environment>();
@@ -220,6 +227,41 @@ public class OSInstanceNewController implements Serializable{
         }
     }
 
+    public List<String> getIpaddressesToBind() {
+        return ipaddressesToBind;
+    }
+
+    public void setIpaddressesToBind(List<String> ipaddressesToBind) {
+        this.ipaddressesToBind = ipaddressesToBind;
+    }
+
+    public Set<IPAddress> getIpaddresses() {
+        return ipaddresses;
+    }
+
+    public void setIpaddresses(Set<IPAddress> ipaddresses) {
+        this.ipaddresses = ipaddresses;
+    }
+
+    /**
+     * populate ipaddresses through ipaddressesToBind list provided through UI form
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
+    private void bindSelectedIPAddresses() throws NotSupportedException, SystemException {
+        for (IPAddress ipAddress : IPAddressListController.getAll()) {
+             for (String ipAddressToBind : ipaddressesToBind){
+                if (ipAddress.getIpAddress().equals(ipAddressToBind)) {
+                    ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
+                    this.ipaddresses.add(ipAddress);
+                    log.debug("Synced IP Address : {} {}", new Object[]{ipAddress.getId(), ipAddress.getIpAddress()});
+                    break;
+                }
+            }
+       }
+    }
+
     public List<String> getEnvsToBind() {
         return envsToBind;
     }
@@ -319,6 +361,28 @@ public class OSInstanceNewController implements Serializable{
         }
     }
 
+    public List<IPAddress> getIplist() {
+        return iplist;
+    }
+
+    public void setIplist(List<IPAddress> iplist) {
+        this.iplist = iplist;
+    }
+
+    public void handleSelectedSubnets(){
+        Set<Subnet> rsubnets = new HashSet<>();
+        for (Subnet subnet : SubnetsListController.getAll()) {
+            for (String subnetToBind : subnetsToBind) {
+                if (subnet.getName().equals(subnetToBind))
+                    rsubnets.add(subnet);
+            }
+        }
+
+        this.iplist.clear();
+        for (Subnet rsubnet : rsubnets)
+            this.iplist = IPAddressListController.getAllFromSubnet(rsubnet);
+    }
+
     /**
      * save a new OS Instance thanks data provided through UI form
      */
@@ -330,6 +394,7 @@ public class OSInstanceNewController implements Serializable{
             bindSelectedEnvs();
             bindSelectedTeams();
             bindSelectedApps();
+            bindSelectedIPAddresses();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -346,6 +411,7 @@ public class OSInstanceNewController implements Serializable{
         osInstance.setAdminGateURIR(adminGateURI);
         osInstance.setEmbeddingOSInstance(embingOSI);
         osInstance.setNetworkSubnets(subnets);
+        osInstance.setIpAddress(ipaddresses);
         osInstance.setEnvironments(envs);
         osInstance.setTeams(teams);
         osInstance.setApplications(apps);
@@ -370,6 +436,11 @@ public class OSInstanceNewController implements Serializable{
                 subnet.getOsInstances().add(osInstance);
                 em.merge(subnet);
             }
+            for (IPAddress ipAddress : this.ipaddresses) {
+                ipAddress.setOsInstances(osInstance);
+                em.merge(ipAddress);
+            }
+
             if (embingOSI!=null) {embingOSI.getEmbeddedOSInstances().add(osInstance); em.merge(embingOSI);}
             em.flush();
             em.getTransaction().commit();
