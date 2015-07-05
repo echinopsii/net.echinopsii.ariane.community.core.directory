@@ -227,8 +227,8 @@ public class ApplicationEndpoint {
                         em.getTransaction().begin();
                         for (OSInstance osInstance : entity.getOsInstances())
                             osInstance.getApplications().remove(entity);
-                        entity.getCompany().getApplications().remove(entity);
-                        entity.getTeam().getApplications().remove(entity);
+                        if (entity.getCompany()!=null) entity.getCompany().getApplications().remove(entity);
+                        if (entity.getTeam()!=null) entity.getTeam().getApplications().remove(entity);
                         em.remove(entity);
                         em.flush();
                         em.getTransaction().commit();

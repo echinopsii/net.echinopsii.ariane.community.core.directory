@@ -290,7 +290,7 @@ SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirCom
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:create' AND r.roleName='ntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:remove' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwSubnet:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
@@ -301,19 +301,28 @@ SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirCom
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:display' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:display' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:display' AND r.roleName='ntwreviewer';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:display' AND r.roleName='sysreviwer';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:create' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:create' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:create' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:remove' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
-SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:create' AND r.roleName='ntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:remove' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:remove' AND r.roleName='sysadmin';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:update' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:update' AND r.roleName='ntwadmin';
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:update' AND r.roleName='sysadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:display' AND r.roleName='Jedi';
@@ -565,6 +574,20 @@ INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:remove' AND r.roleName='ntwadmin';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:update' AND r.roleName='ntwadmin';
+
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:display' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:create' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:remove' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:update' AND r.roleName='sysadmin';
+
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:display' AND r.roleName='ntwreviewer';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:display' AND r.roleName='sysreviewer';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:display' AND r.roleName='ntwreviewer';

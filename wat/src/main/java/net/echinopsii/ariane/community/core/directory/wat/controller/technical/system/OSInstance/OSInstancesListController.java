@@ -248,10 +248,6 @@ public class OSInstancesListController implements Serializable{
         this.removedSubnets = removedSubnets;
     }
 
-    public HashMap<Long, String> getAddedIPAddress() {
-        return addedIPAddress;
-    }
-
     /**
      * Synchronize removed subnets from an OS instance to database
      *
@@ -292,6 +288,10 @@ public class OSInstancesListController implements Serializable{
         this.addedIPAddress = addedIPAddress;
     }
 
+    public HashMap<Long, String> getAddedIPAddress() {
+        return addedIPAddress;
+    }
+
     /**
      * Synchronize added ipAddress into an OS instance to database
      *
@@ -306,7 +306,6 @@ public class OSInstancesListController implements Serializable{
                     osInstance = em.find(osInstance.getClass(), osInstance.getId());
                     ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
                     osInstance.getIpAddress().add(ipAddress);
-                    ipAddress.setOsInstances(osInstance);
                     if (ipAddress.getOsInstances()!=null)
                         ipAddress.getOsInstances().getIpAddress().remove(ipAddress);
                     ipAddress.setOsInstances(osInstance);
@@ -891,6 +890,20 @@ public class OSInstancesListController implements Serializable{
         return ret;
     }
 
+    public static List<IPAddress> getAllFromSubnet(OSInstance osInstance){
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        osInstance = em.find(osInstance.getClass(), osInstance.getId());
+        List<IPAddress> ret = new ArrayList<IPAddress>();
+        for (Subnet subnet : osInstance.getNetworkSubnets()){
+            for (IPAddress ipAddress : subnet.getIpAddress()){
+                ret.add(ipAddress);
+            }
+        }
+        em.close();
+        return ret;
+    }
+
+
     /**
      * Get all OS Instances from the db + select string
      *
@@ -916,7 +929,7 @@ public class OSInstancesListController implements Serializable{
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
         List<OSInstance> list =  em.createQuery(criteria).getResultList();
-        list.add(0, new OSInstance().setNameR("Select routing area for this subnet"));
+        list.add(0, new OSInstance().setNameR("Select OS instance"));
         em.close();
         return list;
     }

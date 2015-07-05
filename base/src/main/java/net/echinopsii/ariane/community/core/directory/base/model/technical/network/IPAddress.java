@@ -35,8 +35,6 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Entity
@@ -151,7 +149,7 @@ public class IPAddress implements Serializable {
     public String toString() {
         String result = getClass().getSimpleName() + " ";
         if (ipAddress != null && !ipAddress.trim().isEmpty())
-            result += ", IPAddress: " + ipAddress;
+            result += ", IP Address: " + ipAddress;
         return result;
     }
 
@@ -195,6 +193,12 @@ public class IPAddress implements Serializable {
     }
 
 
+    /**
+     * Convert IPAddress to interger values
+     * @param IP
+     * @return IPAddress in interger format
+     * @throws UnknownHostException
+     */
     public int convertIPToInt(String IP) throws UnknownHostException {
         Inet4Address inet4Address = (Inet4Address) InetAddress.getByName(IP);
         byte[] inetByte = inet4Address.getAddress();
@@ -205,14 +209,40 @@ public class IPAddress implements Serializable {
         return intIP;
     }
 
-    public void checkIP(String subnetIP, String subnetMask) throws UnknownHostException {
-        int intIP = this.convertIPToInt(this.getIpAddress());
-        int intSubnetIP = this.convertIPToInt(subnetIP);
-        int intSubnetMask = this.convertIPToInt(subnetMask);
+    /**
+     * Check if IP address is compatible with subnet
+     * @return if valid return True else false
+     */
+    public Boolean isValid(){
+        Boolean ret = false;
+        try {
+            int intIP = this.convertIPToInt(this.getIpAddress());
+            int intSubnetIP = this.convertIPToInt(this.getNetworkSubnet().getSubnetIP());
+            int intSubnetMask = this.convertIPToInt(this.getNetworkSubnet().getSubnetMask());
 
-        if((intSubnetIP & intSubnetMask) != (intIP & intSubnetMask)){
-            throw new UnknownHostException();
+            if ((intSubnetIP & intSubnetMask) == (intIP & intSubnetMask)) {
+                ret = true;
+            }
+        }catch(Exception e){
+            log.debug("Exception catched !");
         }
+        return ret;
+    }
+
+    /**
+     * Check if IpAddress is already bind to selected subnet
+     *
+     * @return True if already bind else false
+     */
+    public Boolean isBindToSubnet(){
+        Boolean ret = false;
+        for (IPAddress ipa: this.getNetworkSubnet().getIpAddress()){
+            if(ipa.getIpAddress().equals(this.ipAddress) && !ipa.getId().equals(this.id)){
+                ret = true;
+                break;
+            }
+        }
+        return ret;
     }
 
     /**

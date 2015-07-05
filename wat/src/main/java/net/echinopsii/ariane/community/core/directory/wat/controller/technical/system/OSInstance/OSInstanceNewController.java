@@ -78,6 +78,8 @@ public class OSInstanceNewController implements Serializable{
     private List<String> ipaddressesToBind = new ArrayList<String>();
     private Set<IPAddress>  ipaddresses    = new HashSet<IPAddress>();
 
+    private List<IPAddress> iplist = new ArrayList<IPAddress>();
+
     private List<String>     envsToBind = new ArrayList<String>();
     private Set<Environment> envs       = new HashSet<Environment>();
 
@@ -249,16 +251,15 @@ public class OSInstanceNewController implements Serializable{
      */
     private void bindSelectedIPAddresses() throws NotSupportedException, SystemException {
         for (IPAddress ipAddress : IPAddressListController.getAll()) {
-            if(ipAddress.getOsInstances()!=null) {
-                for (String ipAddressToBind : ipaddressesToBind)
-                    if (ipAddress.getIpAddress().equals(ipAddressToBind)) {
-                        ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
-                        this.ipaddresses.add(ipAddress);
-                        log.debug("Synced subnet : {} {}", new Object[]{ipAddress.getId(), ipAddress.getIpAddress()});
-                        break;
-                    }
+             for (String ipAddressToBind : ipaddressesToBind){
+                if (ipAddress.getIpAddress().equals(ipAddressToBind)) {
+                    ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
+                    this.ipaddresses.add(ipAddress);
+                    log.debug("Synced IP Address : {} {}", new Object[]{ipAddress.getId(), ipAddress.getIpAddress()});
+                    break;
+                }
             }
-        }
+       }
     }
     public List<String> getEnvsToBind() {
         return envsToBind;
@@ -357,6 +358,28 @@ public class OSInstanceNewController implements Serializable{
                     log.debug("Synced app : {} {}", new Object[]{application.getId(), application.getName()});
                 }
         }
+    }
+
+    public List<IPAddress> getIplist() {
+        return iplist;
+    }
+
+    public void setIplist(List<IPAddress> iplist) {
+        this.iplist = iplist;
+    }
+
+    public void handleSelectedSubnets(){
+        Set<Subnet> rsubnets = new HashSet<>();
+        for (Subnet subnet : SubnetsListController.getAll()) {
+            for (String subnetToBind : subnetsToBind) {
+                if (subnet.getName().equals(subnetToBind))
+                    rsubnets.add(subnet);
+            }
+        }
+
+        this.iplist.clear();
+        for (Subnet rsubnet : rsubnets)
+            this.iplist = IPAddressListController.getAllFromSubnet(rsubnet);
     }
 
     /**

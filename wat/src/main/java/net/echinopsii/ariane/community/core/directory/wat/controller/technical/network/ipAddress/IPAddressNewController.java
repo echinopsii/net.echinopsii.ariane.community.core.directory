@@ -146,38 +146,58 @@ public class IPAddressNewController implements Serializable {
         }
 
         IPAddress newIPAddress = new IPAddress();
+        newIPAddress.setIpAddress(ipAddress);
+        newIPAddress.setFqdn(this.fqdn);
+        newIPAddress.setNetworkSubnet(this.rsubnet);
+        newIPAddress.setOsInstances(this.rosinstance);
 
-        try {
-            newIPAddress.setIpAddress(ipAddress);
-            newIPAddress.isExist(this.rsubnet);
-            newIPAddress.setFqdn(this.fqdn);
-            newIPAddress.setNetworkSubnet(this.rsubnet);
-            newIPAddress.setOsInstances(this.rosinstance);
+        Boolean isBindToSubnet = newIPAddress.isBindToSubnet();
+        Boolean isValid = newIPAddress.isValid();
 
-            em.getTransaction().begin();
-            em.persist(newIPAddress);
-            newIPAddress.checkIP(this.rsubnet.getSubnetIP(), this.rsubnet.getSubnetMask());
-            if (rsubnet!=null) {
-                rsubnet.getIpAddress().add(newIPAddress); em.merge(rsubnet);}
-            if (rosinstance!=null) {
-                rosinstance.getIpAddress().add(newIPAddress); em.merge(rosinstance);}
+        if(!isBindToSubnet && isValid) {
+            try {
+                em.getTransaction().begin();
+                em.persist(newIPAddress);
+                if (rsubnet != null) {
+                    rsubnet.getIpAddress().add(newIPAddress);
+                    em.merge(rsubnet);
+                }
+                if (rosinstance != null) {
+                    rosinstance.getIpAddress().add(newIPAddress);
+                    em.merge(rosinstance);
+                }
 
-            em.flush();
-            em.getTransaction().commit();
-            log.debug("Save new IPAddress {} !", new Object[]{ipAddress});
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                    "IPAddress created successfully !",
-                    "IPAddress : " + newIPAddress.getIpAddress());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        } catch (Throwable t) {
-            log.debug("Throwable catched !");
-            t.printStackTrace();
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Throwable raised while creating subnet " + newIPAddress.getIpAddress() + " !",
-                    "Throwable message : " + t.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
+                em.flush();
+                em.getTransaction().commit();
+                log.debug("Save new IPAddress {} !", new Object[]{ipAddress});
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "IPAddress created successfully !",
+                        "IPAddress : " + newIPAddress.getIpAddress());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            } catch (Throwable t) {
+                log.debug("Throwable catched !");
+                t.printStackTrace();
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Throwable raised while creating IP Address " + newIPAddress.getIpAddress() + " !",
+                        "Throwable message : " + t.getMessage());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+            }
+        } else {
+            if (!isValid) {
+                log.debug("Bad IP Address !");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Throwable raised while creating IP Address " + newIPAddress.getIpAddress() + " !",
+                        "Throwable message : Bad IP Address " + newIPAddress.getIpAddress());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            } else{
+                log.debug("IP Address is already bind to subnet !");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Throwable raised while creating IP Address " + newIPAddress.getIpAddress() + " !",
+                        "Throwable message : IP Address is already bind to subnet " + newIPAddress.getIpAddress());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
         }
     }
 }
