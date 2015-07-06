@@ -211,7 +211,7 @@ public class IPAddressEndpoint {
     @GET
     @Path("/create")
     public Response createIPAddress(@QueryParam("ipAddress")String ipAddress, @QueryParam("fqdn")String fqdn,
-                                 @QueryParam("networkSubnet")int subnetID, @QueryParam("osInstances")int osInstanceID) {
+                                 @QueryParam("networkSubnet")int subnetID, @QueryParam("osInstance")int osInstanceID) {
         if (ipAddress!=null && fqdn!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create ipAddress : ({},{},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), ipAddress, fqdn, subnetID});
@@ -411,7 +411,7 @@ public class IPAddressEndpoint {
     }
 
     @GET
-    @Path("/update/osInstances")
+    @Path("/update/osInstance")
     public Response updateIPAddressOSInstance(@QueryParam("id") Long id, @QueryParam("osInstanceID") Long osInstanceID) {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();

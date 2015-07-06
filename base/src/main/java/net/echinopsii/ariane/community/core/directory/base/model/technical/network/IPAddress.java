@@ -244,27 +244,4 @@ public class IPAddress implements Serializable {
         }
         return ret;
     }
-
-    /**
-     * Check if IpAddress is already bind to subnet
-     *
-     * @throws javax.transaction.NotSupportedException
-     * @throws javax.transaction.SystemException
-     * @throws Exception
-     */
-
-    public void isExist(Subnet subnet) throws NotSupportedException, SystemException, Exception{
-        Boolean exist = false;
-        for (IPAddress ipa: subnet.getIpAddress()){
-            if(ipa.getIpAddress().equals(this.ipAddress)){
-                exist = true;
-                break;
-            }
-        }
-
-        if(exist){
-            log.debug("IP address already bind to selected Subnet : {} {}", new Object[]{this.ipAddress, subnet.getName()});
-            throw new Exception("IP address already bind");
-        }
-    }
 }

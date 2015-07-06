@@ -1367,7 +1367,7 @@ r.status_code
 #     "ipAddressSubnetID": 5
 # }]
 
-ipAddressParams = {'ipAddress': '123.123.48.123', 'fqdn':'Fake FQDN', 'networkSubnet': dummy_subnetID, 'osInstances':-1}
+ipAddressParams = {'ipAddress': '123.123.48.123', 'fqdn':'Fake FQDN', 'networkSubnet': dummy_subnetID, 'osInstance':-1}
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/create', params=ipAddressParams)
 r.status_code
 
@@ -2554,7 +2554,7 @@ r.status_code
 
 
 ipAddressParams = {'id': fake_ipAddressID, 'osInstanceID': fakeOSID}
-r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/update/osInstances', params=ipAddressParams)
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/update/osInstance', params=ipAddressParams)
 r.status_code
 #200
 
@@ -2581,6 +2581,7 @@ r.status_code
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/delete', params={'id': solID})
 r.status_code
+
 #200
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/get', params={'id': solID})
 r.status_code

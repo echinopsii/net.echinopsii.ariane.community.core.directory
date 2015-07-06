@@ -932,23 +932,23 @@ public class OSInstanceEndpoint {
                             em.flush();
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated by adding ipAddress " + ipAddressID).build();
+                            return Response.status(Status.OK).entity("OS Instance " + id + " has been successfully updated by adding IP Address " + ipAddressID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating IPAddress " + entity.getName() + " : " + t.getMessage()).build();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating IP Address " + entity.getName() + " : " + t.getMessage()).build();
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("IPAddress " + ipAddressID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("IP Address " + ipAddressID + " not found.").build();
                     }
                 } else {
                     em.close();
-                    return Response.status(Status.NOT_FOUND).entity("IPAddress " + id + " not found.").build();
+                    return Response.status(Status.NOT_FOUND).entity("IP Address " + id + " not found.").build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update IPAddress. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update IP Address. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ipAddressID are not defined. You must define these parameters.").build();
@@ -976,7 +976,7 @@ public class OSInstanceEndpoint {
                             em.flush();
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting ipAddress " + ipAddressID).build();
+                            return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting IP Address " + ipAddressID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -985,14 +985,14 @@ public class OSInstanceEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("IPAddress " + ipAddressID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("IP Address " + ipAddressID + " not found.").build();
                     }
                 } else {
                     em.close();
-                    return Response.status(Status.NOT_FOUND).entity("IPAddress " + id + " not found.").build();
+                    return Response.status(Status.NOT_FOUND).entity("IP Address " + id + " not found.").build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update IPAddresses. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update IP Addresses. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ipAddressID are not defined. You must define these parameters.").build();
