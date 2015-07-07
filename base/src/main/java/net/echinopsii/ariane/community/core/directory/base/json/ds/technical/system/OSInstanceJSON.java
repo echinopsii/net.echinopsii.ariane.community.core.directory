@@ -25,6 +25,7 @@ import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMe
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Team;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 
@@ -52,6 +53,7 @@ public class OSInstanceJSON {
     public final static String OSI_APPS_ID          = "osInstanceApplicationsID";
     public final static String OSI_TEAMS_ID         = "osInstanceTeamsID";
     public final static String OSI_ENVS_ID          = "osInstanceEnvironmentsID";
+    public final static String OSI_IPADDRESSES_ID   = "osInstanceIPAddressesID";
 
     public final static void osInstance2JSON(OSInstance osInstance, JsonGenerator jgenerator) throws IOException {
         jgenerator.writeStartObject();
@@ -82,6 +84,10 @@ public class OSInstanceJSON {
         jgenerator.writeArrayFieldStart(OSI_ENVS_ID);
         for (Environment env : osInstance.getEnvironments())
             jgenerator.writeNumber(env.getId());
+        jgenerator.writeEndArray();
+        jgenerator.writeArrayFieldStart(OSI_IPADDRESSES_ID);
+        for (IPAddress ipAddress : osInstance.getIpAddress())
+            jgenerator.writeNumber(ipAddress.getId());
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
     }

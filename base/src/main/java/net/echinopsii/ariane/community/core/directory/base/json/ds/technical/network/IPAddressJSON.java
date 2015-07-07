@@ -45,7 +45,7 @@ public class IPAddressJSON {
     public final static String IPADDRESS_IPA            = "ipAddressIPA";
     public final static String IPADDRESS_FQDN           = "ipAddressFQDN";
     public final static String IPADDRESS_SUBNET_ID      = "ipAddressSubnetID";
-    public final static String IPADDRESS_OSI_ID         = "ipAddressOSInstancesID";
+    public final static String IPADDRESS_OSI_ID         = "ipAddressOSInstanceID";
 
 
     public final static void ipAddress2JSON(IPAddress ipAddress, JsonGenerator jgenerator) throws IOException {
