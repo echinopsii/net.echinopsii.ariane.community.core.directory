@@ -261,7 +261,6 @@ public class OSInstanceNewController implements Serializable{
             }
        }
     }
-
     public List<String> getEnvsToBind() {
         return envsToBind;
     }

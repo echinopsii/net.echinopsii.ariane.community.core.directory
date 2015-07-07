@@ -19,6 +19,7 @@
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
@@ -641,4 +642,5 @@ public class SubnetEndpoint {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
+
 }

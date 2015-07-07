@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 
@@ -48,6 +49,7 @@ public class SubnetJSON {
     public final static String SUBNET_OSI_ID         = "subnetOSInstancesID";
     public final static String SUBNET_DATACENTERS_ID = "subnetDatacentersID";
     public final static String SUBNET_MAREA_ID       = "subnetRoutingAreaID";
+    public final static String SUBNET_IPADDRESSES_ID = "subnetIPAddressesID";
 
     public final static void subnet2JSON(Subnet subnet, JsonGenerator jgenerator) throws IOException {
         jgenerator.writeStartObject();
@@ -70,6 +72,11 @@ public class SubnetJSON {
         jgenerator.writeEndArray();
 
         jgenerator.writeNumberField(SUBNET_MAREA_ID, ((subnet.getRarea()!=null)?subnet.getRarea().getId():-1));
+
+        jgenerator.writeArrayFieldStart(SUBNET_IPADDRESSES_ID);
+        for (IPAddress ipAddress : subnet.getIpAddress())
+            jgenerator.writeNumber(ipAddress.getId());
+        jgenerator.writeEndArray();
 
         jgenerator.writeEndObject();
     }
