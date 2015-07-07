@@ -643,47 +643,4 @@ public class SubnetEndpoint {
         }
     }
 
-    @GET
-    @Path("/update/ipAddresses/add")
-    public Response updateSubnetAddIPAddress(@QueryParam("id")Long id, @QueryParam("ipAddressID")Long ipAddressID) {
-        if (id!=0 && ipAddressID!=null) {
-            Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update subnet {} by adding IP Address : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, ipAddressID});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
-                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
-            {
-                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Subnet entity = findSubnetById(em, id);
-                if (entity!=null) {
-                    IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, ipAddressID);
-                    if (ipAddress!=null) {
-                        try {
-                            em.getTransaction().begin();
-                            ipAddress.setNetworkSubnet(entity);
-                            entity.getIpAddress().add(ipAddress);
-                            em.flush();
-                            em.getTransaction().commit();
-                            em.close();
-                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by adding IP Address " + ipAddressID).build();
-                        } catch (Throwable t) {
-                            if (em.getTransaction().isActive())
-                                em.getTransaction().rollback();
-                            em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating IP Address " + entity.getName() + " : " + t.getMessage()).build();
-                        }
-                    } else {
-                        em.close();
-                        return Response.status(Status.NOT_FOUND).entity("IP Address " + ipAddressID + " not found.").build();
-                    }
-                } else {
-                    em.close();
-                    return Response.status(Status.NOT_FOUND).entity("IP Address " + id + " not found.").build();
-                }
-            } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update IP Address. Contact your administrator.").build();
-            }
-        } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ipAddressID are not defined. You must define these parameters.").build();
-        }
-    }
 }
