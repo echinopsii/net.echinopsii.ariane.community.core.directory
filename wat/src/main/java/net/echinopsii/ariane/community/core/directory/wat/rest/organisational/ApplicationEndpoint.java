@@ -23,11 +23,14 @@ import net.echinopsii.ariane.community.core.directory.base.model.organisational.
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.ApplicationJSON;
+import net.echinopsii.ariane.community.core.directory.base.persistence.iPojo.DirectoryJPAProviderImpl;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.primefaces.json.JSONException;
+import org.primefaces.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +41,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
 
 /**
@@ -88,6 +92,11 @@ public class ApplicationEndpoint {
             entity = null;
         }
         return entity;
+    }
+
+    public static Application jsonFriendlyToHibernateFriendly(ApplicationJSON.JSONFriendlyApplication jFA) {
+
+        return null;
     }
 
     @GET
@@ -187,6 +196,48 @@ public class ApplicationEndpoint {
                 if (entity == null) {
                     entity = new Application();
                     entity.setNameR(name).setShortNameR(shortName).setColorCodeR(colorCode).setDescription(description);
+                    try {
+                        em.getTransaction().begin();
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } catch (Throwable t) {
+                        if(em.getTransaction().isActive())
+                            em.getTransaction().rollback();
+                        em.close();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating application " + entity.getName() + " : " + t.getMessage()).build();
+                    }
+                }
+
+                Response ret = applicationToJSON(entity);
+                em.close();
+                return ret;
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create applications. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or short name and/or color code are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @POST
+    @Path("/")
+    public Response createApplicationPost(@QueryParam("params")String params) throws JSONException, IOException {
+        JSONObject jsonObj = new JSONObject(params);
+        String name = jsonObj.getString("name");
+        String shortName = jsonObj.getString("shortName");
+        String description = jsonObj.getString("description");
+        String colorCode = jsonObj.getString("colorCode");
+
+        if (name!=null && shortName!=null && colorCode!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] create application : ({},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, shortName, description, colorCode});
+            if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:create") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Application entity = null;
+                if (entity == null) {
                     try {
                         em.getTransaction().begin();
                         em.persist(entity);
