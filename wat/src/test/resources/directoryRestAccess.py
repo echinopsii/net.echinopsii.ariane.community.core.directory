@@ -16,6 +16,7 @@ s.auth = (username, password)
 r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications')
 r.status_code
 #200
+
 #pprint(r.json())
 #{'applications': [{'applicationColorCode': '6092c4',
 #                   'applicationCompanyID': 1,
@@ -175,8 +176,40 @@ r.status_code
 #r.text
 #'Application 11 has been successfully updated with color code ddffddff'
 
+payload = "{'applicationName':'fake App name', 'applicationShortName':'fake app', 'applicationColorCode': 'dddddd', 'applicationDescription':'This is fake app'}"
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
+fakeID = r.json().get('applicationID')
+#200
+# pprint(r.json())
+#{'applicationColorCode': 'dddddd',
+# 'applicationCompanyID': -1,
+# 'applicationDescription': 'This is fake app',
+# 'applicationID': 12,
+# 'applicationName': 'fake App name',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'fake app',
+# 'applicationTeamID': -1,
+# 'applicationVersion': -1}
 
+payload = "{'applicationID': "+ str(fakeID) +",'applicationName': 'New Fake app name'}"
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
+#200
+#'Application 5 has been successfully updated'
 
+payload = "{'applicationID': "+ str(fakeID) +", 'applicationShortName': 'New Fake app'}"
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
+#200
+#'Application 5 has been successfully updated'
+
+payload = "{'applicationID': "+ str(fakeID) +", 'applicationColorCode': 'de28de'}"
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
+#200
+#'Application 5 has been successfully updated'
+
+payload = "{'applicationID': "+ str(fakeID) +", 'applicationDescription': 'updated description'}"
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
+#200
+#'Application 5 has been successfully updated'
 
 r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies')
 r.status_code
@@ -354,6 +387,11 @@ r.status_code
 # 'companyOSTypesID': [],
 # 'companyVersion': 0}
 oracleCmp = r.json().get('companyID')
+
+payload = "{'applicationID': "+ str(fakeID) +", 'applicationCompanyID': "+ str(spectralCmp) +"}"
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
+#200
+#'Application 5 has been successfully updated'
 
 r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/update/name', params={'id': oracleCmp, 'name': 'Oracle Corp'})
 r.status_code
@@ -641,6 +679,11 @@ r.status_code
 # 'teamOSInstancesID': [],
 # 'teamVersion': 0}
 dppTeamID = r.json().get('teamID')
+
+payload = "{'applicationID': "+ str(fakeID) +", 'applicationTeamID': "+ str(dppTeamID) +"}"
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
+#200
+#'Application 5 has been successfully updated'
 
 r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/update/applications/add', params={'id': dppTeamID, 'applicationID': dppID})
 r.status_code
@@ -1792,6 +1835,11 @@ r.status_code
 # 'osInstanceVersion': 0}
 fakeOSID = r.json().get("osInstanceID")
 
+payload = "{'applicationID': "+ str(fakeID) +",'applicationOSInstancesID': [1,2,3]}"
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
+#200
+#'Application 5 has been successfully updated'
+
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/name', params={'id': fakeOSID, 'name': 'fakeOs1'})
 r.status_code
 #200
@@ -2313,7 +2361,7 @@ r.status_code
 # 'environmentOSInstancesID': [],
 # 'environmentVersion': 3}
 
-r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/ipAddresses/add', params={'id': fakeOSID, 'ipAddressID': fake_ipAddressID)
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/ipAddresses/add', params={'id': fakeOSID, 'ipAddressID': fake_ipAddressID})
 r.status_code
 #200
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/get', params={'id': fakeOSID})

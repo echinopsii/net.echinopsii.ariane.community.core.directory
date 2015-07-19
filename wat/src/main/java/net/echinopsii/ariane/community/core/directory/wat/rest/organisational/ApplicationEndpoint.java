@@ -296,7 +296,7 @@ public class ApplicationEndpoint {
             if (entity != null) {
                 try {
                     em.getTransaction().begin();
-                    if (entity.getId() == 0){
+                    if (entity.getId() == null){
                         em.persist(entity);
                         em.flush();
                         em.getTransaction().commit();
