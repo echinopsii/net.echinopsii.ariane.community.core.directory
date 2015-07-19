@@ -127,24 +127,26 @@ public class ApplicationEndpoint {
                         entity.setTeam(team);
                         team.getApplications().add(entity);
                     }
-                } else if (jsonFriendlyApplication.getApplicationOSInstancesID() != 0){
-                    OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, jsonFriendlyApplication.getApplicationOSInstancesID());
-                    if (osInstance != null){
-                        Boolean exists = false;
-                        for (Application application : osInstance.getApplications()){
-                            if (application.getId().equals(jsonFriendlyApplication.getApplicationID())){
-                                exists = true;
-                                break;
+                } else if (!jsonFriendlyApplication.getApplicationOSInstancesID().isEmpty()){
+                    for (Long osiId : jsonFriendlyApplication.getApplicationOSInstancesID()) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                        if (osInstance != null) {
+                            Boolean exists = false;
+                            for (Application application : osInstance.getApplications()) {
+                                if (application.getId().equals(jsonFriendlyApplication.getApplicationID())) {
+                                    exists = true;
+                                    break;
+                                }
                             }
-                        }
-                        if (exists){
-                            // remove OS Instance ID
-                            entity.getOsInstances().remove(osInstance);
-                            osInstance.getApplications().remove(entity);
-                        } else {
-                            // add OS Instance ID
-                            entity.getOsInstances().add(osInstance);
-                            osInstance.getApplications().add(entity);
+                            if (exists) {
+                                // remove OS Instance ID
+                                entity.getOsInstances().remove(osInstance);
+                                osInstance.getApplications().remove(entity);
+                            } else {
+                                // add OS Instance ID
+                                entity.getOsInstances().add(osInstance);
+                                osInstance.getApplications().add(entity);
+                            }
                         }
                     }
                 }

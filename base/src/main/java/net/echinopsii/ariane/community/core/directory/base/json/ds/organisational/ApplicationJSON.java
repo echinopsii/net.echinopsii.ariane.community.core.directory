@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Our own object to JSON tools as :
@@ -93,7 +94,7 @@ public class ApplicationJSON {
         private String applicationShortName;
         private String applicationColorCode;
         private String applicationDescription;
-        private long applicationOSInstancesID;
+        private List<Long> applicationOSInstancesID;
         private long applicationTeamID;
         private long applicationCompanyID;
 
@@ -157,11 +158,11 @@ public class ApplicationJSON {
             this.applicationDescription = applicationDescription;
         }
 
-        public long getApplicationOSInstancesID() {
+        public List<Long> getApplicationOSInstancesID() {
             return applicationOSInstancesID;
         }
 
-        public void setApplicationOSInstancesID(long applicationOSInstancesID) {
+        public void setApplicationOSInstancesID(List<Long> applicationOSInstancesID) {
             this.applicationOSInstancesID = applicationOSInstancesID;
         }
 
