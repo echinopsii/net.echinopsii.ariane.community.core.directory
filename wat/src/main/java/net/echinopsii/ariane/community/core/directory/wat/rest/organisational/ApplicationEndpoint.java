@@ -128,22 +128,16 @@ public class ApplicationEndpoint {
                         team.getApplications().add(entity);
                     }
                 } else if (!jsonFriendlyApplication.getApplicationOSInstancesID().isEmpty()){
+                    for (OSInstance osInstance : entity.getOsInstances()){
+                        if (!jsonFriendlyApplication.getApplicationOSInstancesID().contains(osInstance.getId())) {
+                            entity.getOsInstances().remove(osInstance);
+                            osInstance.getApplications().remove(entity);
+                        }
+                    }
                     for (Long osiId : jsonFriendlyApplication.getApplicationOSInstancesID()) {
                         OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
                         if (osInstance != null) {
-                            Boolean exists = false;
-                            for (Application application : osInstance.getApplications()) {
-                                if (application.getId().equals(jsonFriendlyApplication.getApplicationID())) {
-                                    exists = true;
-                                    break;
-                                }
-                            }
-                            if (exists) {
-                                // remove OS Instance ID
-                                entity.getOsInstances().remove(osInstance);
-                                osInstance.getApplications().remove(entity);
-                            } else {
-                                // add OS Instance ID
+                            if (!entity.getOsInstances().contains(osInstance)) {
                                 entity.getOsInstances().add(osInstance);
                                 osInstance.getApplications().add(entity);
                             }
