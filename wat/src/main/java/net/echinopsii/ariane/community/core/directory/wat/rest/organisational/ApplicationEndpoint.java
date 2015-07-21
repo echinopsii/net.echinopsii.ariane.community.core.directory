@@ -38,7 +38,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.ApplicationJSON.JSONFriendlyApplication;
 
 /**
  *
@@ -90,17 +93,90 @@ public class ApplicationEndpoint {
         return entity;
     }
 
+    public static Application jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyApplication jsonFriendlyApplication) {
+        Application entity = null;
+
+        if(jsonFriendlyApplication.getApplicationID() != 0) {
+            entity = findApplicationById(em, jsonFriendlyApplication.getApplicationID());
+            if(entity != null) {
+                if (jsonFriendlyApplication.getApplicationName() !=null) {
+                    entity.setName(jsonFriendlyApplication.getApplicationName());
+                }
+                if (jsonFriendlyApplication.getApplicationShortName() != null) {
+                    entity.setShortName(jsonFriendlyApplication.getApplicationShortName());
+                }
+                if (jsonFriendlyApplication.getApplicationColorCode() != null) {
+                    entity.setColorCode(jsonFriendlyApplication.getApplicationColorCode());
+                }
+                if (jsonFriendlyApplication.getApplicationDescription() != null) {
+                    entity.setDescription(jsonFriendlyApplication.getApplicationDescription());
+                }
+                if (jsonFriendlyApplication.getApplicationCompanyID() != 0) {
+                    Company company = CompanyEndpoint.findCompanyById(em, jsonFriendlyApplication.getApplicationCompanyID());
+                    if (company != null) {
+                        if (entity.getCompany() != null)
+                            entity.getCompany().getApplications().remove(entity);
+                        entity.setCompany(company);
+                        company.getApplications().add(entity);
+                    }
+                }
+                if (jsonFriendlyApplication.getApplicationTeamID() != 0) {
+                    Team team = TeamEndpoint.findTeamById(em, jsonFriendlyApplication.getApplicationTeamID());
+                    if (team != null) {
+                        if (entity.getTeam() != null)
+                            entity.getTeam().getApplications().remove(entity);
+                        entity.setTeam(team);
+                        team.getApplications().add(entity);
+                    }
+                }
+                if(jsonFriendlyApplication.getApplicationOSInstancesID() != null) {
+                    if (!jsonFriendlyApplication.getApplicationOSInstancesID().isEmpty()) {
+                        for (OSInstance osInstance : entity.getOsInstances()) {
+                            if (!jsonFriendlyApplication.getApplicationOSInstancesID().contains(osInstance.getId())) {
+                                entity.getOsInstances().remove(osInstance);
+                                osInstance.getApplications().remove(entity);
+                            }
+                        }
+                        for (Long osiId : jsonFriendlyApplication.getApplicationOSInstancesID()) {
+                            OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                            if (osInstance != null) {
+                                if (!entity.getOsInstances().contains(osInstance)) {
+                                    entity.getOsInstances().add(osInstance);
+                                    osInstance.getApplications().add(entity);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                log.error("Request error: Failed to update Application, unable to lookup provided Application Id.");
+            }
+        } else {
+            entity = findApplicationByName(em, jsonFriendlyApplication.getApplicationName());
+            if(jsonFriendlyApplication.getApplicationName()!=null && jsonFriendlyApplication.getApplicationShortName()!=null
+               && jsonFriendlyApplication.getApplicationColorCode()!=null){
+                if(entity == null) {
+                    entity = new Application();
+                    entity.setNameR(jsonFriendlyApplication.getApplicationName()).setShortNameR(jsonFriendlyApplication.getApplicationShortName())
+                          .setColorCodeR(jsonFriendlyApplication.getApplicationColorCode()).setDescription(jsonFriendlyApplication.getApplicationDescription());
+                }
+            } else {
+                log.error("Request error: name and/or short name and/or color code are not defined. You must define these parameters.");
+            }
+        }
+        return entity;
+    }
+
     @GET
     @Path("/{id:[0-9][0-9]*}")
     public Response displayApplication(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
         if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgApp:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
-        {
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             Application entity = findApplicationById(em, id);
-            if (entity == null){
+            if (entity == null) {
                 em.close();
                 return Response.status(Status.NOT_FOUND).build();
             }
@@ -116,10 +192,9 @@ public class ApplicationEndpoint {
     @GET
     public Response displayAllApplications() {
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] get applications", new Object[]{Thread.currentThread().getId(),subject.getPrincipal()});
+        log.debug("[{}-{}] get applications", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
         if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgApp:display") ||
-            subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
-        {
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             final HashSet<Application> results = new HashSet(em.createQuery("SELECT DISTINCT a FROM Application a LEFT JOIN FETCH a.osInstances LEFT JOIN FETCH a.company ORDER BY a.id", Application.class).getResultList());
             String result;
@@ -145,15 +220,14 @@ public class ApplicationEndpoint {
 
     @GET
     @Path("/get")
-    public Response getApplication(@QueryParam("name")String name, @QueryParam("id")long id) {
-        if (id!=0) {
+    public Response getApplication(@QueryParam("name") String name, @QueryParam("id") long id) {
+        if (id != 0) {
             return displayApplication(id);
-        } else if (name!=null) {
+        } else if (name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] get application : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
             if (subject.hasRole("orgadmin") || subject.hasRole("orgreviewer") || subject.isPermitted("dirComOrgApp:display") ||
-                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
-            {
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationByName(em, name);
                 if (entity == null) {
@@ -174,14 +248,13 @@ public class ApplicationEndpoint {
 
     @GET
     @Path("/create")
-    public Response createApplication(@QueryParam("name")String name, @QueryParam("shortName")String shortName,
-                                      @QueryParam("description")String description, @QueryParam("colorCode")String colorCode) {
-        if (name!=null && shortName!=null && colorCode!=null) {
+    public Response createApplication(@QueryParam("name") String name, @QueryParam("shortName") String shortName,
+                                      @QueryParam("description") String description, @QueryParam("colorCode") String colorCode) {
+        if (name != null && shortName != null && colorCode != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create application : ({},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, shortName, description, colorCode});
             if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:create") ||
-                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
-            {
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Application entity = findApplicationByName(em, name);
                 if (entity == null) {
@@ -193,7 +266,7 @@ public class ApplicationEndpoint {
                         em.flush();
                         em.getTransaction().commit();
                     } catch (Throwable t) {
-                        if(em.getTransaction().isActive())
+                        if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
                         return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating application " + entity.getName() + " : " + t.getMessage()).build();
@@ -208,6 +281,45 @@ public class ApplicationEndpoint {
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or short name and/or color code are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @POST
+    public Response postApplication(@QueryParam("payload") String payload) throws IOException {
+
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] create/update application : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            JSONFriendlyApplication jsonFriendlyApplication = ApplicationJSON.JSON2Application(payload);
+            Application entity = jsonFriendlyToHibernateFriendly(em, jsonFriendlyApplication);
+            if (entity != null) {
+                try {
+                    em.getTransaction().begin();
+                    if (entity.getId() == null){
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } else {
+                        em.merge(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    }
+                    Response ret = applicationToJSON(entity);
+                    em.close();
+                    return ret;
+                } catch (Throwable t) {
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                    em.close();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating application " + payload + " : " + t.getMessage()).build();
+                }
+            } else{
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Check server logs to know more.").build();
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create applications. Contact your administrator.").build();
         }
     }
 

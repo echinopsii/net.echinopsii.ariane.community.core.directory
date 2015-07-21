@@ -21,6 +21,8 @@ package net.echinopsii.ariane.community.core.directory.base.json.ds.organisation
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
@@ -29,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Our own object to JSON tools as :
@@ -82,5 +85,101 @@ public class ApplicationJSON {
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
         jgenerator.close();
+    }
+
+    public static class JSONFriendlyApplication {
+        private long applicationID;
+        private long applicationVersion;
+        private String applicationName;
+        private String applicationShortName;
+        private String applicationColorCode;
+        private String applicationDescription;
+        private List<Long> applicationOSInstancesID;
+        private long applicationTeamID;
+        private long applicationCompanyID;
+
+        public JSONFriendlyApplication(){
+
+        }
+
+        public long getApplicationCompanyID() {
+            return applicationCompanyID;
+        }
+
+        public void setApplicationCompanyID(long applicationCompanyID) {
+            this.applicationCompanyID = applicationCompanyID;
+        }
+
+        public long getApplicationID() {
+            return applicationID;
+        }
+
+        public void setApplicationID(long applicationID) {
+            this.applicationID = applicationID;
+        }
+
+        public long getApplicationVersion() {
+            return applicationVersion;
+        }
+
+        public void setApplicationVersion(long applicationVersion) {
+            this.applicationVersion = applicationVersion;
+        }
+
+        public String getApplicationName() {
+            return applicationName;
+        }
+
+        public void setApplicationName(String applicationName) {
+            this.applicationName = applicationName;
+        }
+
+        public String getApplicationShortName() {
+            return applicationShortName;
+        }
+
+        public void setApplicationShortName(String applicationShortName) {
+            this.applicationShortName = applicationShortName;
+        }
+
+        public String getApplicationColorCode() {
+            return applicationColorCode;
+        }
+
+        public void setApplicationColorCode(String applicationColorCode) {
+            this.applicationColorCode = applicationColorCode;
+        }
+
+        public String getApplicationDescription() {
+            return applicationDescription;
+        }
+
+        public void setApplicationDescription(String applicationDescription) {
+            this.applicationDescription = applicationDescription;
+        }
+
+        public List<Long> getApplicationOSInstancesID() {
+            return applicationOSInstancesID;
+        }
+
+        public void setApplicationOSInstancesID(List<Long> applicationOSInstancesID) {
+            this.applicationOSInstancesID = applicationOSInstancesID;
+        }
+
+        public long getApplicationTeamID() {
+            return applicationTeamID;
+        }
+
+        public void setApplicationTeamID(long applicationTeamID) {
+            this.applicationTeamID = applicationTeamID;
+        }
+
+    }
+
+    public final static JSONFriendlyApplication JSON2Application(String payload) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        JSONFriendlyApplication jsonFriendlyApp = mapper.readValue(payload, JSONFriendlyApplication.class);
+        return jsonFriendlyApp;
     }
 }
