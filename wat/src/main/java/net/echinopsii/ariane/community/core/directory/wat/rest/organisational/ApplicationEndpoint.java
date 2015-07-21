@@ -23,14 +23,11 @@ import net.echinopsii.ariane.community.core.directory.base.model.organisational.
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.ApplicationJSON;
-import net.echinopsii.ariane.community.core.directory.base.persistence.iPojo.DirectoryJPAProviderImpl;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.primefaces.json.JSONException;
-import org.primefaces.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +94,6 @@ public class ApplicationEndpoint {
     }
 
     public static Application jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyApplication jsonFriendlyApplication) {
-        em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         Application entity = null;
 
         if(jsonFriendlyApplication.getApplicationID() != 0) {
@@ -277,15 +273,14 @@ public class ApplicationEndpoint {
     }
 
     @POST
-    public Response postApplication(@QueryParam("payload") String payload) throws JSONException, IOException {
-        JSONObject jsonObject = new JSONObject(payload);
+    public Response postApplication(@QueryParam("payload") String payload) throws IOException {
 
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] create/update application : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), jsonObject.toString()});
+        log.debug("[{}-{}] create/update application : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            JSONFriendlyApplication jsonFriendlyApplication = ApplicationJSON.JSON2Application(jsonObject.toString());
+            JSONFriendlyApplication jsonFriendlyApplication = ApplicationJSON.JSON2Application(payload);
             Application entity = jsonFriendlyToHibernateFriendly(em, jsonFriendlyApplication);
             if (entity != null) {
                 try {
@@ -294,25 +289,23 @@ public class ApplicationEndpoint {
                         em.persist(entity);
                         em.flush();
                         em.getTransaction().commit();
-                        Response ret = applicationToJSON(entity);
-                        em.close();
-                        return ret;
                     } else {
                         em.merge(entity);
                         em.flush();
                         em.getTransaction().commit();
                         em.close();
-                        return Response.status(Status.OK).entity("Application " + entity.getId() + " has been successfully updated").build();
                     }
-
+                    Response ret = applicationToJSON(entity);
+                    em.close();
+                    return ret;
                 } catch (Throwable t) {
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating application " + jsonObject.toString() + " : " + t.getMessage()).build();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating application " + payload + " : " + t.getMessage()).build();
                 }
             } else{
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to post application " + jsonObject.toString()).build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to post application " + payload).build();
             }
         } else {
             return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create applications. Contact your administrator.").build();

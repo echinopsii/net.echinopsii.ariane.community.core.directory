@@ -171,11 +171,4 @@ public class DirectoryJPAProviderImpl implements DirectoryJPAProvider {
         sharedEMF.close();
         sharedEMF = persistenceProvider.createEntityManagerFactory(DIRECTORY_TXPERSISTENCE_PERSISTENCE_UNIT_NAME, hibernateConf);
     }
-
-    public static EntityManager createSEM() {
-        if (sharedEMF!=null)
-            return sharedEMF.createEntityManager();
-        else
-            return null;
-    }
 }
