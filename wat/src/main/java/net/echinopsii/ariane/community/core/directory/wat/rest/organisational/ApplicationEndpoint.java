@@ -312,6 +312,7 @@ public class ApplicationEndpoint {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating application " + payload + " : " + t.getMessage()).build();
                 }
             } else{
+                log.error("Check server logs to know more.");
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to post application " + payload).build();
             }
         } else {
