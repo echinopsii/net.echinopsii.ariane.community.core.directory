@@ -101,13 +101,17 @@ public class ApplicationEndpoint {
             if(entity != null) {
                 if (jsonFriendlyApplication.getApplicationName() !=null) {
                     entity.setName(jsonFriendlyApplication.getApplicationName());
-                } else if (jsonFriendlyApplication.getApplicationShortName() != null) {
+                }
+                if (jsonFriendlyApplication.getApplicationShortName() != null) {
                     entity.setShortName(jsonFriendlyApplication.getApplicationShortName());
-                } else if (jsonFriendlyApplication.getApplicationColorCode() != null) {
+                }
+                if (jsonFriendlyApplication.getApplicationColorCode() != null) {
                     entity.setColorCode(jsonFriendlyApplication.getApplicationColorCode());
-                } else if (jsonFriendlyApplication.getApplicationDescription() != null) {
+                }
+                if (jsonFriendlyApplication.getApplicationDescription() != null) {
                     entity.setDescription(jsonFriendlyApplication.getApplicationDescription());
-                } else if (jsonFriendlyApplication.getApplicationCompanyID() != 0) {
+                }
+                if (jsonFriendlyApplication.getApplicationCompanyID() != 0) {
                     Company company = CompanyEndpoint.findCompanyById(em, jsonFriendlyApplication.getApplicationCompanyID());
                     if (company != null) {
                         if (entity.getCompany() != null)
@@ -115,7 +119,8 @@ public class ApplicationEndpoint {
                         entity.setCompany(company);
                         company.getApplications().add(entity);
                     }
-                } else if (jsonFriendlyApplication.getApplicationTeamID() != 0) {
+                }
+                if (jsonFriendlyApplication.getApplicationTeamID() != 0) {
                     Team team = TeamEndpoint.findTeamById(em, jsonFriendlyApplication.getApplicationTeamID());
                     if (team != null) {
                         if (entity.getTeam() != null)
@@ -123,19 +128,22 @@ public class ApplicationEndpoint {
                         entity.setTeam(team);
                         team.getApplications().add(entity);
                     }
-                } else if (!jsonFriendlyApplication.getApplicationOSInstancesID().isEmpty()){
-                    for (OSInstance osInstance : entity.getOsInstances()){
-                        if (!jsonFriendlyApplication.getApplicationOSInstancesID().contains(osInstance.getId())) {
-                            entity.getOsInstances().remove(osInstance);
-                            osInstance.getApplications().remove(entity);
+                }
+                if(jsonFriendlyApplication.getApplicationOSInstancesID() != null) {
+                    if (!jsonFriendlyApplication.getApplicationOSInstancesID().isEmpty()) {
+                        for (OSInstance osInstance : entity.getOsInstances()) {
+                            if (!jsonFriendlyApplication.getApplicationOSInstancesID().contains(osInstance.getId())) {
+                                entity.getOsInstances().remove(osInstance);
+                                osInstance.getApplications().remove(entity);
+                            }
                         }
-                    }
-                    for (Long osiId : jsonFriendlyApplication.getApplicationOSInstancesID()) {
-                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
-                        if (osInstance != null) {
-                            if (!entity.getOsInstances().contains(osInstance)) {
-                                entity.getOsInstances().add(osInstance);
-                                osInstance.getApplications().add(entity);
+                        for (Long osiId : jsonFriendlyApplication.getApplicationOSInstancesID()) {
+                            OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                            if (osInstance != null) {
+                                if (!entity.getOsInstances().contains(osInstance)) {
+                                    entity.getOsInstances().add(osInstance);
+                                    osInstance.getApplications().add(entity);
+                                }
                             }
                         }
                     }
@@ -293,7 +301,6 @@ public class ApplicationEndpoint {
                         em.merge(entity);
                         em.flush();
                         em.getTransaction().commit();
-                        em.close();
                     }
                     Response ret = applicationToJSON(entity);
                     em.close();
