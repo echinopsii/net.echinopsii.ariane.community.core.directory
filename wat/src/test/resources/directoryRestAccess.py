@@ -194,22 +194,58 @@ fakeID = r.json().get('applicationID')
 payload = "{'applicationID': "+ str(fakeID) +",'applicationName': 'New Fake app name'}"
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
 #200
-#'Application 5 has been successfully updated'
+# pprint(r.json())
+#{'applicationColorCode': 'dddddd',
+# 'applicationCompanyID': -1,
+# 'applicationDescription': 'This is fake app',
+# 'applicationID': 12,
+# 'applicationName': 'New Fake app name',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'fake app',
+# 'applicationTeamID': -1,
+# 'applicationVersion': -1}
 
 payload = "{'applicationID': "+ str(fakeID) +", 'applicationShortName': 'New Fake app'}"
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
 #200
-#'Application 5 has been successfully updated'
+# pprint(r.json())
+#{'applicationColorCode': 'dddddd',
+# 'applicationCompanyID': -1,
+# 'applicationDescription': 'This is fake app',
+# 'applicationID': 12,
+# 'applicationName': 'New Fake app name',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'New Fake app',
+# 'applicationTeamID': -1,
+# 'applicationVersion': -1}
 
 payload = "{'applicationID': "+ str(fakeID) +", 'applicationColorCode': 'de28de'}"
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
 #200
-#'Application 5 has been successfully updated'
+# pprint(r.json())
+#{'applicationColorCode': 'de28de',
+# 'applicationCompanyID': -1,
+# 'applicationDescription': 'This is fake app',
+# 'applicationID': 12,
+# 'applicationName': 'New Fake app name',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'New Fake app',
+# 'applicationTeamID': -1,
+# 'applicationVersion': -1}
 
 payload = "{'applicationID': "+ str(fakeID) +", 'applicationDescription': 'updated description'}"
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
 #200
-#'Application 5 has been successfully updated'
+# pprint(r.json())
+#{'applicationColorCode': 'de28de',
+# 'applicationCompanyID': -1,
+# 'applicationDescription': 'updated description',
+# 'applicationID': 12,
+# 'applicationName': 'New Fake app name',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'New Fake app',
+# 'applicationTeamID': -1,
+# 'applicationVersion': -1}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies')
 r.status_code
@@ -391,7 +427,17 @@ oracleCmp = r.json().get('companyID')
 payload = "{'applicationID': "+ str(fakeID) +", 'applicationCompanyID': "+ str(spectralCmp) +"}"
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
 #200
-#'Application 5 has been successfully updated'
+# pprint(r.json())
+#{'applicationColorCode': 'de28de',
+# 'applicationCompanyID': 25,
+# 'applicationDescription': 'This is fake app',
+# 'applicationID': 12,
+# 'applicationName': 'New Fake app name',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'New Fake app',
+# 'applicationTeamID': -1,
+# 'applicationVersion': -1}
+
 
 r = s.get(srv_url + 'ariane/rest/directories/common/organisation/companies/update/name', params={'id': oracleCmp, 'name': 'Oracle Corp'})
 r.status_code
@@ -683,7 +729,16 @@ dppTeamID = r.json().get('teamID')
 payload = "{'applicationID': "+ str(fakeID) +", 'applicationTeamID': "+ str(dppTeamID) +"}"
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
 #200
-#'Application 5 has been successfully updated'
+# pprint(r.json())
+#{'applicationColorCode': 'de28de',
+# 'applicationCompanyID': -1,
+# 'applicationDescription': 'This is fake app',
+# 'applicationID': 12,
+# 'applicationName': 'New Fake app name',
+# 'applicationOSInstancesID': [],
+# 'applicationShortName': 'New Fake app',
+# 'applicationTeamID': 11,
+# 'applicationVersion': -1}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams/update/applications/add', params={'id': dppTeamID, 'applicationID': dppID})
 r.status_code
@@ -1838,7 +1893,16 @@ fakeOSID = r.json().get("osInstanceID")
 payload = "{'applicationID': "+ str(fakeID) +",'applicationOSInstancesID': [1,2,3]}"
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
 #200
-#'Application 5 has been successfully updated'
+# pprint(r.json())
+#{'applicationColorCode': 'de28de',
+# 'applicationCompanyID': 25,
+# 'applicationDescription': 'This is fake app',
+# 'applicationID': 12,
+# 'applicationName': 'New Fake app name',
+# 'applicationOSInstancesID': [1,2,3],
+# 'applicationShortName': 'New Fake app',
+# 'applicationTeamID': 11,
+# 'applicationVersion': -1}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/name', params={'id': fakeOSID, 'name': 'fakeOs1'})
 r.status_code
