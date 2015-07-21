@@ -148,6 +148,8 @@ public class ApplicationEndpoint {
                         }
                     }
                 }
+            } else {
+                log.error("Request error: Failed to update Application, unable to lookup provided Application Id.");
             }
         } else {
             entity = findApplicationByName(em, jsonFriendlyApplication.getApplicationName());
@@ -158,6 +160,8 @@ public class ApplicationEndpoint {
                     entity.setNameR(jsonFriendlyApplication.getApplicationName()).setShortNameR(jsonFriendlyApplication.getApplicationShortName())
                           .setColorCodeR(jsonFriendlyApplication.getApplicationColorCode()).setDescription(jsonFriendlyApplication.getApplicationDescription());
                 }
+            } else {
+                log.error("Request error: name and/or short name and/or color code are not defined. You must define these parameters.");
             }
         }
         return entity;
@@ -312,8 +316,7 @@ public class ApplicationEndpoint {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating application " + payload + " : " + t.getMessage()).build();
                 }
             } else{
-                log.error("Check server logs to know more.");
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to post application " + payload).build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Check server logs to know more.").build();
             }
         } else {
             return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create applications. Contact your administrator.").build();
