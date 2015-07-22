@@ -192,7 +192,6 @@ fakeID = r.json().get('applicationID')
 # 'applicationVersion': -1}
 
 payload = '{"applicationID": '+ str(fakeID) +',"applicationName": "New Fake app name"}'
-print(payload)
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
 #200
 # pprint(r.json())
@@ -424,6 +423,51 @@ r.status_code
 # 'companyOSTypesID': [],
 # 'companyVersion': 0}
 oracleCmp = r.json().get('companyID')
+
+payload = '{"companyName":"fake Comp name", "companyDescription":"This is fake Comp"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload":payload})
+fakeCompID = r.json().get('companyID')
+#200
+# pprint(r.json())
+#{'companyVersion': 1,
+# 'companyDescription': 'This is fake Comp',
+# 'companyID': 12,
+# 'companyName': 'fake Comp name',
+# 'companyOSTypesID': [],
+# 'companyApplicationsID': []}
+
+payload = '{"companyID": '+ str(fakeCompID) +',"companyName": "New Fake Comp name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'companyVersion': 1,
+# 'companyDescription': 'This is fake Comp',
+# 'companyID': 12,
+# 'companyName': 'New Fake Comp name',
+# 'companyOSTypesID': [],
+# 'companyApplicationsID': []}
+
+payload = '{"companyID": '+ str(fakeCompID) +',"companyDescription": "updated Description"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'companyVersion': 1,
+# 'companyDescription': 'updated Description',
+# 'companyID': 12,
+# 'companyName': 'New Fake Comp name',
+# 'companyOSTypesID': [],
+# 'companyApplicationsID': []}
+
+payload = '{"companyID": '+ str(fakeCompID) +',"companyApplicationsID": [1,2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'companyVersion': 1,
+# 'companyDescription': 'updated Description',
+# 'companyID': 12,
+# 'companyName': 'New Fake Comp name',
+# 'companyOSTypesID': [],
+# 'companyApplicationsID': [1,2]}
 
 payload = '{"applicationID": '+ str(fakeID) +', "applicationCompanyID": '+ str(spectralCmp) +'}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
@@ -1655,6 +1699,28 @@ r.status_code
 # 'osTypeOSInstancesID': [],
 # 'osTypeVersion': 0}
 solID = r.json().get('osTypeID')
+
+payload = '{"companyID": '+ str(fakeCompID) +',"companyOSTypesID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'companyVersion': 1,
+# 'companyDescription': 'updated Description',
+# 'companyID': 12,
+# 'companyName': 'New Fake Comp name',
+# 'companyOSTypesID': [1],
+# 'companyApplicationsID': [1,2]}
+
+payload = '{"companyName": '+ str(fakeCompID) +',"companyDescription": "updated for Comp2", "companyOSTypesID": [1,2], "companyApplicationsID": [2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'companyVersion': 1,
+# 'companyDescription': 'updated for Comp2',
+# 'companyID': 12,
+# 'companyName': 'New Fake Comp name',
+# 'companyOSTypesID': [1,2],
+# 'companyApplicationsID': [2]}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/update/name', params={'id': solID, 'name': 'Solaris OS'})
 r.status_code

@@ -37,7 +37,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.CompanyJSON.JSONFriendlyCompany;
 
 /**
  *
@@ -84,6 +87,73 @@ public class CompanyEndpoint {
             entity = findByNameQuery.getSingleResult();
         } catch (NoResultException nre) {
             entity = null;
+        }
+        return entity;
+    }
+
+    public static Company jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyCompany jsonFriendlyCompany) {
+        Company entity = null;
+
+        if(jsonFriendlyCompany.getCompanyID() != 0) {
+            entity = findCompanyById(em, jsonFriendlyCompany.getCompanyID());
+            if(entity != null) {
+                if (jsonFriendlyCompany.getCompanyName() !=null) {
+                    entity.setName(jsonFriendlyCompany.getCompanyName());
+                }
+                if (jsonFriendlyCompany.getCompanyDescription() != null) {
+                    entity.setDescription(jsonFriendlyCompany.getCompanyDescription());
+                }
+                if(jsonFriendlyCompany.getCompanyApplicationsID() != null) {
+                    if (!jsonFriendlyCompany.getCompanyApplicationsID().isEmpty()) {
+                        for (Application application : entity.getApplications()) {
+                            if (!jsonFriendlyCompany.getCompanyApplicationsID().contains(application.getId())) {
+                                entity.getApplications().remove(application);
+                                application.setCompany(null);
+                            }
+                        }
+                        for (Long appid : jsonFriendlyCompany.getCompanyApplicationsID()) {
+                            Application application = ApplicationEndpoint.findApplicationById(em, appid);
+                            if (application != null) {
+                                if (!entity.getApplications().contains(application)) {
+                                    entity.getApplications().add(application);
+                                    application.setCompany(entity);
+                                }
+                            }
+                        }
+                    }
+                }
+                if(jsonFriendlyCompany.getCompanyOSTypesID() != null) {
+                    if (!jsonFriendlyCompany.getCompanyOSTypesID().isEmpty()) {
+                        for (OSType osType: entity.getOsTypes()) {
+                            if (!jsonFriendlyCompany.getCompanyOSTypesID().contains(osType.getId())) {
+                                entity.getOsTypes().remove(osType);
+                                osType.setCompany(entity);
+                            }
+                        }
+                        for (Long osTypeid : jsonFriendlyCompany.getCompanyOSTypesID()) {
+                            OSType osType = OSTypeEndpoint.findOSTypeById(em, osTypeid);
+                            if (osType != null) {
+                                if (!entity.getOsTypes().contains(osType)) {
+                                    entity.getOsTypes().add(osType);
+                                    osType.setCompany(entity);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                log.error("Request error: Failed to update Company, unable to lookup provided Company Id.");
+            }
+        } else {
+            entity = findCompanyByName(em, jsonFriendlyCompany.getCompanyName());
+            if(jsonFriendlyCompany.getCompanyName()!=null){
+                if(entity == null) {
+                    entity = new Company();
+                    entity.setNameR(jsonFriendlyCompany.getCompanyName()).setDescription(jsonFriendlyCompany.getCompanyDescription());
+                }
+            } else {
+                log.error("Request error: name is not defined. You must define these parameters.");
+            }
         }
         return entity;
     }
@@ -204,6 +274,45 @@ public class CompanyEndpoint {
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name is not defined. You must define this parameter.").build();
+        }
+    }
+
+    @POST
+    public Response postCompany(@QueryParam("payload") String payload) throws IOException {
+
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] create/update company : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgCompany:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            JSONFriendlyCompany jsonFriendlyCompany = CompanyJSON.JSON2Company(payload);
+            Company entity = jsonFriendlyToHibernateFriendly(em, jsonFriendlyCompany);
+            if (entity != null) {
+                try {
+                    em.getTransaction().begin();
+                    if (entity.getId() == null){
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } else {
+                        em.merge(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    }
+                    Response ret = companyToJSON(entity);
+                    em.close();
+                    return ret;
+                } catch (Throwable t) {
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                    em.close();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating company " + payload + " : " + t.getMessage()).build();
+                }
+            } else{
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Check server logs to know more.").build();
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create companies. Contact your administrator.").build();
         }
     }
 
