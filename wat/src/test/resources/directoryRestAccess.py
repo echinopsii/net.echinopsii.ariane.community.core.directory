@@ -1711,7 +1711,7 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', pa
 # 'companyOSTypesID': [1],
 # 'companyApplicationsID': [1,2]}
 
-payload = '{"companyName": '+ str(fakeCompID) +',"companyDescription": "updated for Comp2", "companyOSTypesID": [1,2], "companyApplicationsID": [2]}'
+payload = '{"companyName": "New fake Comp name","companyDescription": "updated for Comp2", "companyOSTypesID": [1,2], "companyApplicationsID": [2]}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload":payload})
 #200
 # pprint(r.json())

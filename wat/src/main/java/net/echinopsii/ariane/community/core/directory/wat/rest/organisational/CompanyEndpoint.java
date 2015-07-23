@@ -25,6 +25,7 @@ import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.CompanyJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSTypeEndpoint;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -91,8 +92,9 @@ public class CompanyEndpoint {
         return entity;
     }
 
-    public static Company jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyCompany jsonFriendlyCompany) {
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyCompany jsonFriendlyCompany) {
         Company entity = null;
+        CommonRestResponse commonRestResponse = new CommonRestResponse();
 
         if(jsonFriendlyCompany.getCompanyID() != 0) {
             entity = findCompanyById(em, jsonFriendlyCompany.getCompanyID());
@@ -141,8 +143,10 @@ public class CompanyEndpoint {
                         }
                     }
                 }
+                commonRestResponse.setDesrializedObject(entity);
             } else {
                 log.error("Request error: Failed to update Company, unable to lookup provided Company Id.");
+                commonRestResponse.setErrorMessage("Request error: Failed to update Company, unable to lookup provided Company Id.");
             }
         } else {
             entity = findCompanyByName(em, jsonFriendlyCompany.getCompanyName());
@@ -150,12 +154,46 @@ public class CompanyEndpoint {
                 if(entity == null) {
                     entity = new Company();
                     entity.setNameR(jsonFriendlyCompany.getCompanyName()).setDescription(jsonFriendlyCompany.getCompanyDescription());
+
+                    if (jsonFriendlyCompany.getCompanyApplicationsID() != null) {
+                        if (!jsonFriendlyCompany.getCompanyApplicationsID().isEmpty()) {
+                            for (Long appid : jsonFriendlyCompany.getCompanyApplicationsID()) {
+                                Application application = ApplicationEndpoint.findApplicationById(em, appid);
+                                if (application != null) {
+                                    if (!entity.getApplications().contains(application)) {
+                                        entity.getApplications().add(application);
+                                        application.setCompany(entity);
+                                    }
+                                } else {
+                                    // Application not found raise error
+                                }
+                            }
+                        }
+                    }
+
+                    if (jsonFriendlyCompany.getCompanyOSTypesID() != null) {
+                        if (!jsonFriendlyCompany.getCompanyOSTypesID().isEmpty()) {
+                            for (Long osTypeid : jsonFriendlyCompany.getCompanyOSTypesID()) {
+                                OSType osType = OSTypeEndpoint.findOSTypeById(em, osTypeid);
+                                if (osType != null) {
+                                    if (!entity.getOsTypes().contains(osType)) {
+                                        entity.getOsTypes().add(osType);
+                                        osType.setCompany(entity);
+                                    }
+                                } else {
+                                    // osType is not found raise error
+                                }
+                            }
+                        }
+                    }
                 }
+                commonRestResponse.setDesrializedObject(entity);
             } else {
                 log.error("Request error: name is not defined. You must define these parameters.");
+                commonRestResponse.setErrorMessage("Request error: name is not defined. You must define these parameters.");
             }
         }
-        return entity;
+        return commonRestResponse;
     }
 
     @GET
@@ -286,7 +324,8 @@ public class CompanyEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             JSONFriendlyCompany jsonFriendlyCompany = CompanyJSON.JSON2Company(payload);
-            Company entity = jsonFriendlyToHibernateFriendly(em, jsonFriendlyCompany);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyCompany);
+            Company entity = (Company) commonRestResponse.getDesrializedObject();
             if (entity != null) {
                 try {
                     em.getTransaction().begin();
@@ -309,7 +348,7 @@ public class CompanyEndpoint {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating company " + payload + " : " + t.getMessage()).build();
                 }
             } else{
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Check server logs to know more.").build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
             return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create companies. Contact your administrator.").build();
