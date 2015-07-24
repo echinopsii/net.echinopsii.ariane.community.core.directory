@@ -120,7 +120,15 @@ public class CompanyEndpoint {
                                     entity.getApplications().add(application);
                                     application.setCompany(entity);
                                 }
+                            } else {
+                                commonRestResponse.setErrorMessage("Fail to update Company. Reason : provided Application ID " + appid +" was not found.");
+                                return commonRestResponse;
                             }
+                        }
+                    } else {
+                        for (Application application : entity.getApplications()) {
+                            entity.getApplications().remove(application);
+                            application.setCompany(null);
                         }
                     }
                 }
@@ -129,7 +137,7 @@ public class CompanyEndpoint {
                         for (OSType osType: entity.getOsTypes()) {
                             if (!jsonFriendlyCompany.getCompanyOSTypesID().contains(osType.getId())) {
                                 entity.getOsTypes().remove(osType);
-                                osType.setCompany(entity);
+                                osType.setCompany(null);
                             }
                         }
                         for (Long osTypeid : jsonFriendlyCompany.getCompanyOSTypesID()) {
@@ -139,14 +147,21 @@ public class CompanyEndpoint {
                                     entity.getOsTypes().add(osType);
                                     osType.setCompany(entity);
                                 }
+                            } else {
+                                commonRestResponse.setErrorMessage("Fail to update Company. Reason : provided OSType ID " + osTypeid +" was not found.");
+                                return  commonRestResponse;
                             }
+                        }
+                    } else {
+                        for (OSType osType: entity.getOsTypes()) {
+                            entity.getOsTypes().remove(osType);
+                            osType.setCompany(null);
                         }
                     }
                 }
-                commonRestResponse.setDesrializedObject(entity);
+                commonRestResponse.setDeserialiedObject(entity);
             } else {
-                log.error("Request error: Failed to update Company, unable to lookup provided Company Id.");
-                commonRestResponse.setErrorMessage("Request error: Failed to update Company, unable to lookup provided Company Id.");
+                commonRestResponse.setErrorMessage("Request error: Failed to update Company, unable to lookup provided Company Id " + jsonFriendlyCompany.getCompanyID());
             }
         } else {
             entity = findCompanyByName(em, jsonFriendlyCompany.getCompanyName());
@@ -165,7 +180,8 @@ public class CompanyEndpoint {
                                         application.setCompany(entity);
                                     }
                                 } else {
-                                    // Application not found raise error
+                                    commonRestResponse.setErrorMessage("Fail to create Company. Reason : provided Application ID " + appid +" was not found.");
+                                    return commonRestResponse;
                                 }
                             }
                         }
@@ -181,15 +197,15 @@ public class CompanyEndpoint {
                                         osType.setCompany(entity);
                                     }
                                 } else {
-                                    // osType is not found raise error
+                                    commonRestResponse.setErrorMessage("Fail to create Company. Reason : provided OSType ID " + osTypeid +" was not found.");
+                                    return  commonRestResponse;
                                 }
                             }
                         }
                     }
                 }
-                commonRestResponse.setDesrializedObject(entity);
+                commonRestResponse.setDeserialiedObject(entity);
             } else {
-                log.error("Request error: name is not defined. You must define these parameters.");
                 commonRestResponse.setErrorMessage("Request error: name is not defined. You must define these parameters.");
             }
         }
@@ -325,7 +341,7 @@ public class CompanyEndpoint {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             JSONFriendlyCompany jsonFriendlyCompany = CompanyJSON.JSON2Company(payload);
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyCompany);
-            Company entity = (Company) commonRestResponse.getDesrializedObject();
+            Company entity = (Company) commonRestResponse.getDeserialiedObject();
             if (entity != null) {
                 try {
                     em.getTransaction().begin();
