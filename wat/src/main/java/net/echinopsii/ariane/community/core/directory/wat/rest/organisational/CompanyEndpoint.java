@@ -25,6 +25,7 @@ import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.CompanyJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSTypeEndpoint;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -37,7 +38,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.CompanyJSON.JSONFriendlyCompany;
 
 /**
  *
@@ -86,6 +90,120 @@ public class CompanyEndpoint {
             entity = null;
         }
         return entity;
+    }
+
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyCompany jsonFriendlyCompany) {
+        Company entity = null;
+        CommonRestResponse commonRestResponse = new CommonRestResponse();
+
+        if(jsonFriendlyCompany.getCompanyID() !=0)
+            entity = findCompanyById(em, jsonFriendlyCompany.getCompanyID());
+        if(entity == null){
+            if(jsonFriendlyCompany.getCompanyName() != null){
+                entity = findCompanyByName(em, jsonFriendlyCompany.getCompanyName());
+            }
+        }
+        if(entity != null){
+            if (jsonFriendlyCompany.getCompanyName() !=null) {
+                entity.setName(jsonFriendlyCompany.getCompanyName());
+            }
+            if (jsonFriendlyCompany.getCompanyDescription() != null) {
+                entity.setDescription(jsonFriendlyCompany.getCompanyDescription());
+            }
+            if(jsonFriendlyCompany.getCompanyApplicationsID() != null) {
+                if (!jsonFriendlyCompany.getCompanyApplicationsID().isEmpty()) {
+                    for (Application application : entity.getApplications()) {
+                        if (!jsonFriendlyCompany.getCompanyApplicationsID().contains(application.getId())) {
+                            entity.getApplications().remove(application);
+                            application.setCompany(null);
+                        }
+                    }
+                    for (Long appid : jsonFriendlyCompany.getCompanyApplicationsID()) {
+                        Application application = ApplicationEndpoint.findApplicationById(em, appid);
+                        if (application != null) {
+                            if (!entity.getApplications().contains(application)) {
+                                entity.getApplications().add(application);
+                                application.setCompany(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Company. Reason : provided Application ID " + appid +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (Application application : entity.getApplications()) {
+                        entity.getApplications().remove(application);
+                        application.setCompany(null);
+                    }
+                }
+            }
+            if(jsonFriendlyCompany.getCompanyOSTypesID() != null) {
+                if (!jsonFriendlyCompany.getCompanyOSTypesID().isEmpty()) {
+                    for (OSType osType: entity.getOsTypes()) {
+                        if (!jsonFriendlyCompany.getCompanyOSTypesID().contains(osType.getId())) {
+                            entity.getOsTypes().remove(osType);
+                            osType.setCompany(null);
+                        }
+                    }
+                    for (Long osTypeid : jsonFriendlyCompany.getCompanyOSTypesID()) {
+                        OSType osType = OSTypeEndpoint.findOSTypeById(em, osTypeid);
+                        if (osType != null) {
+                            if (!entity.getOsTypes().contains(osType)) {
+                                entity.getOsTypes().add(osType);
+                                osType.setCompany(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Company. Reason : provided OSType ID " + osTypeid +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (OSType osType: entity.getOsTypes()) {
+                        entity.getOsTypes().remove(osType);
+                        osType.setCompany(null);
+                    }
+                }
+            }
+            commonRestResponse.setDeserialiedObject(entity);
+        } else {
+            entity = new Company();
+            entity.setNameR(jsonFriendlyCompany.getCompanyName()).setDescription(jsonFriendlyCompany.getCompanyDescription());
+            if (jsonFriendlyCompany.getCompanyApplicationsID() != null) {
+                if (!jsonFriendlyCompany.getCompanyApplicationsID().isEmpty()) {
+                    for (Long appid : jsonFriendlyCompany.getCompanyApplicationsID()) {
+                        Application application = ApplicationEndpoint.findApplicationById(em, appid);
+                        if (application != null) {
+                            if (!entity.getApplications().contains(application)) {
+                                entity.getApplications().add(application);
+                                application.setCompany(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create Company. Reason : provided Application ID " + appid +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+
+            if (jsonFriendlyCompany.getCompanyOSTypesID() != null) {
+                if (!jsonFriendlyCompany.getCompanyOSTypesID().isEmpty()) {
+                    for (Long osTypeid : jsonFriendlyCompany.getCompanyOSTypesID()) {
+                        OSType osType = OSTypeEndpoint.findOSTypeById(em, osTypeid);
+                        if (osType != null) {
+                            if (!entity.getOsTypes().contains(osType)) {
+                                entity.getOsTypes().add(osType);
+                                osType.setCompany(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create Company. Reason : provided OSType ID " + osTypeid +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                }
+            }
+            commonRestResponse.setDeserialiedObject(entity);
+        }
+        return commonRestResponse;
     }
 
     @GET
@@ -204,6 +322,46 @@ public class CompanyEndpoint {
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name is not defined. You must define this parameter.").build();
+        }
+    }
+
+    @POST
+    public Response postCompany(@QueryParam("payload") String payload) throws IOException {
+
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] create/update company : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgCompany:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            JSONFriendlyCompany jsonFriendlyCompany = CompanyJSON.JSON2Company(payload);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyCompany);
+            Company entity = (Company) commonRestResponse.getDeserialiedObject();
+            if (entity != null) {
+                try {
+                    em.getTransaction().begin();
+                    if (entity.getId() == null){
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } else {
+                        em.merge(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    }
+                    Response ret = companyToJSON(entity);
+                    em.close();
+                    return ret;
+                } catch (Throwable t) {
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                    em.close();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating company " + payload + " : " + t.getMessage()).build();
+                }
+            } else{
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create companies. Contact your administrator.").build();
         }
     }
 

@@ -21,6 +21,8 @@ package net.echinopsii.ariane.community.core.directory.base.json.ds.organisation
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Company;
@@ -30,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Our own object to JSON tools as :
@@ -81,4 +84,69 @@ public class CompanyJSON {
         jgenerator.writeEndObject();
         jgenerator.close();
     }
+
+    public static class JSONFriendlyCompany {
+        private long companyID;
+        private long companyVersion;
+        private String companyName;
+        private String companyDescription;
+        private List<Long> companyApplicationsID;
+        private List<Long> companyOSTypesID;
+
+        public List<Long> getCompanyOSTypesID() {
+            return companyOSTypesID;
+        }
+
+        public void setCompanyOSTypesID(List<Long> companyOSTypesID) {
+            this.companyOSTypesID = companyOSTypesID;
+        }
+
+        public List<Long> getCompanyApplicationsID() {
+            return companyApplicationsID;
+        }
+
+        public void setCompanyApplicationsID(List<Long> companyApplicationsID) {
+            this.companyApplicationsID = companyApplicationsID;
+        }
+
+        public String getCompanyDescription() {
+            return companyDescription;
+        }
+
+        public void setCompanyDescription(String companyDescription) {
+            this.companyDescription = companyDescription;
+        }
+
+        public String getCompanyName() {
+            return companyName;
+        }
+
+        public void setCompanyName(String companyName) {
+            this.companyName = companyName;
+        }
+
+        public long getCompanyVersion() {
+            return companyVersion;
+        }
+
+        public void setCompanyVersion(long companyVersion) {
+            this.companyVersion = companyVersion;
+        }
+
+        public long getCompanyID() {
+            return companyID;
+        }
+
+        public void setCompanyID(long companyID) {
+            this.companyID = companyID;
+        }
+    }
+
+    public final static JSONFriendlyCompany JSON2Company(String payload) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        JSONFriendlyCompany jsonFriendlyComp = mapper.readValue(payload, JSONFriendlyCompany.class);
+        return jsonFriendlyComp;
+    }
+
 }
