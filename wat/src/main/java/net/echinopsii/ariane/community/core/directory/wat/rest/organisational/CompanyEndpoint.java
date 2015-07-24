@@ -96,118 +96,112 @@ public class CompanyEndpoint {
         Company entity = null;
         CommonRestResponse commonRestResponse = new CommonRestResponse();
 
-        if(jsonFriendlyCompany.getCompanyID() != 0) {
+        if(jsonFriendlyCompany.getCompanyID() !=0)
             entity = findCompanyById(em, jsonFriendlyCompany.getCompanyID());
-            if(entity != null) {
-                if (jsonFriendlyCompany.getCompanyName() !=null) {
-                    entity.setName(jsonFriendlyCompany.getCompanyName());
-                }
-                if (jsonFriendlyCompany.getCompanyDescription() != null) {
-                    entity.setDescription(jsonFriendlyCompany.getCompanyDescription());
-                }
-                if(jsonFriendlyCompany.getCompanyApplicationsID() != null) {
-                    if (!jsonFriendlyCompany.getCompanyApplicationsID().isEmpty()) {
-                        for (Application application : entity.getApplications()) {
-                            if (!jsonFriendlyCompany.getCompanyApplicationsID().contains(application.getId())) {
-                                entity.getApplications().remove(application);
-                                application.setCompany(null);
-                            }
-                        }
-                        for (Long appid : jsonFriendlyCompany.getCompanyApplicationsID()) {
-                            Application application = ApplicationEndpoint.findApplicationById(em, appid);
-                            if (application != null) {
-                                if (!entity.getApplications().contains(application)) {
-                                    entity.getApplications().add(application);
-                                    application.setCompany(entity);
-                                }
-                            } else {
-                                commonRestResponse.setErrorMessage("Fail to update Company. Reason : provided Application ID " + appid +" was not found.");
-                                return commonRestResponse;
-                            }
-                        }
-                    } else {
-                        for (Application application : entity.getApplications()) {
+        if(entity == null){
+            if(jsonFriendlyCompany.getCompanyName() != null){
+                entity = findCompanyByName(em, jsonFriendlyCompany.getCompanyName());
+            }
+        }
+        if(entity != null){
+            if (jsonFriendlyCompany.getCompanyName() !=null) {
+                entity.setName(jsonFriendlyCompany.getCompanyName());
+            }
+            if (jsonFriendlyCompany.getCompanyDescription() != null) {
+                entity.setDescription(jsonFriendlyCompany.getCompanyDescription());
+            }
+            if(jsonFriendlyCompany.getCompanyApplicationsID() != null) {
+                if (!jsonFriendlyCompany.getCompanyApplicationsID().isEmpty()) {
+                    for (Application application : entity.getApplications()) {
+                        if (!jsonFriendlyCompany.getCompanyApplicationsID().contains(application.getId())) {
                             entity.getApplications().remove(application);
                             application.setCompany(null);
                         }
                     }
+                    for (Long appid : jsonFriendlyCompany.getCompanyApplicationsID()) {
+                        Application application = ApplicationEndpoint.findApplicationById(em, appid);
+                        if (application != null) {
+                            if (!entity.getApplications().contains(application)) {
+                                entity.getApplications().add(application);
+                                application.setCompany(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Company. Reason : provided Application ID " + appid +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (Application application : entity.getApplications()) {
+                        entity.getApplications().remove(application);
+                        application.setCompany(null);
+                    }
                 }
-                if(jsonFriendlyCompany.getCompanyOSTypesID() != null) {
-                    if (!jsonFriendlyCompany.getCompanyOSTypesID().isEmpty()) {
-                        for (OSType osType: entity.getOsTypes()) {
-                            if (!jsonFriendlyCompany.getCompanyOSTypesID().contains(osType.getId())) {
-                                entity.getOsTypes().remove(osType);
-                                osType.setCompany(null);
-                            }
-                        }
-                        for (Long osTypeid : jsonFriendlyCompany.getCompanyOSTypesID()) {
-                            OSType osType = OSTypeEndpoint.findOSTypeById(em, osTypeid);
-                            if (osType != null) {
-                                if (!entity.getOsTypes().contains(osType)) {
-                                    entity.getOsTypes().add(osType);
-                                    osType.setCompany(entity);
-                                }
-                            } else {
-                                commonRestResponse.setErrorMessage("Fail to update Company. Reason : provided OSType ID " + osTypeid +" was not found.");
-                                return  commonRestResponse;
-                            }
-                        }
-                    } else {
-                        for (OSType osType: entity.getOsTypes()) {
+            }
+            if(jsonFriendlyCompany.getCompanyOSTypesID() != null) {
+                if (!jsonFriendlyCompany.getCompanyOSTypesID().isEmpty()) {
+                    for (OSType osType: entity.getOsTypes()) {
+                        if (!jsonFriendlyCompany.getCompanyOSTypesID().contains(osType.getId())) {
                             entity.getOsTypes().remove(osType);
                             osType.setCompany(null);
                         }
                     }
+                    for (Long osTypeid : jsonFriendlyCompany.getCompanyOSTypesID()) {
+                        OSType osType = OSTypeEndpoint.findOSTypeById(em, osTypeid);
+                        if (osType != null) {
+                            if (!entity.getOsTypes().contains(osType)) {
+                                entity.getOsTypes().add(osType);
+                                osType.setCompany(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Company. Reason : provided OSType ID " + osTypeid +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (OSType osType: entity.getOsTypes()) {
+                        entity.getOsTypes().remove(osType);
+                        osType.setCompany(null);
+                    }
                 }
-                commonRestResponse.setDeserialiedObject(entity);
-            } else {
-                commonRestResponse.setErrorMessage("Request error: Failed to update Company, unable to lookup provided Company Id " + jsonFriendlyCompany.getCompanyID());
             }
+            commonRestResponse.setDeserialiedObject(entity);
         } else {
-            entity = findCompanyByName(em, jsonFriendlyCompany.getCompanyName());
-            if(jsonFriendlyCompany.getCompanyName()!=null){
-                if(entity == null) {
-                    entity = new Company();
-                    entity.setNameR(jsonFriendlyCompany.getCompanyName()).setDescription(jsonFriendlyCompany.getCompanyDescription());
-
-                    if (jsonFriendlyCompany.getCompanyApplicationsID() != null) {
-                        if (!jsonFriendlyCompany.getCompanyApplicationsID().isEmpty()) {
-                            for (Long appid : jsonFriendlyCompany.getCompanyApplicationsID()) {
-                                Application application = ApplicationEndpoint.findApplicationById(em, appid);
-                                if (application != null) {
-                                    if (!entity.getApplications().contains(application)) {
-                                        entity.getApplications().add(application);
-                                        application.setCompany(entity);
-                                    }
-                                } else {
-                                    commonRestResponse.setErrorMessage("Fail to create Company. Reason : provided Application ID " + appid +" was not found.");
-                                    return commonRestResponse;
-                                }
+            entity = new Company();
+            entity.setNameR(jsonFriendlyCompany.getCompanyName()).setDescription(jsonFriendlyCompany.getCompanyDescription());
+            if (jsonFriendlyCompany.getCompanyApplicationsID() != null) {
+                if (!jsonFriendlyCompany.getCompanyApplicationsID().isEmpty()) {
+                    for (Long appid : jsonFriendlyCompany.getCompanyApplicationsID()) {
+                        Application application = ApplicationEndpoint.findApplicationById(em, appid);
+                        if (application != null) {
+                            if (!entity.getApplications().contains(application)) {
+                                entity.getApplications().add(application);
+                                application.setCompany(entity);
                             }
-                        }
-                    }
-
-                    if (jsonFriendlyCompany.getCompanyOSTypesID() != null) {
-                        if (!jsonFriendlyCompany.getCompanyOSTypesID().isEmpty()) {
-                            for (Long osTypeid : jsonFriendlyCompany.getCompanyOSTypesID()) {
-                                OSType osType = OSTypeEndpoint.findOSTypeById(em, osTypeid);
-                                if (osType != null) {
-                                    if (!entity.getOsTypes().contains(osType)) {
-                                        entity.getOsTypes().add(osType);
-                                        osType.setCompany(entity);
-                                    }
-                                } else {
-                                    commonRestResponse.setErrorMessage("Fail to create Company. Reason : provided OSType ID " + osTypeid +" was not found.");
-                                    return  commonRestResponse;
-                                }
-                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create Company. Reason : provided Application ID " + appid +" was not found.");
+                            return commonRestResponse;
                         }
                     }
                 }
-                commonRestResponse.setDeserialiedObject(entity);
-            } else {
-                commonRestResponse.setErrorMessage("Request error: name is not defined. You must define these parameters.");
             }
+
+            if (jsonFriendlyCompany.getCompanyOSTypesID() != null) {
+                if (!jsonFriendlyCompany.getCompanyOSTypesID().isEmpty()) {
+                    for (Long osTypeid : jsonFriendlyCompany.getCompanyOSTypesID()) {
+                        OSType osType = OSTypeEndpoint.findOSTypeById(em, osTypeid);
+                        if (osType != null) {
+                            if (!entity.getOsTypes().contains(osType)) {
+                                entity.getOsTypes().add(osType);
+                                osType.setCompany(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create Company. Reason : provided OSType ID " + osTypeid +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                }
+            }
+            commonRestResponse.setDeserialiedObject(entity);
         }
         return commonRestResponse;
     }
