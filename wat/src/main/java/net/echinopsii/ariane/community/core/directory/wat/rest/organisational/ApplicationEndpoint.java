@@ -125,6 +125,9 @@ public class ApplicationEndpoint {
                         entity.getCompany().getApplications().remove(entity);
                     entity.setCompany(company);
                     company.getApplications().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create Application. Reason : provided Company ID " + jsonFriendlyApplication.getApplicationCompanyID() +" was not found.");
+                    return commonRestResponse;
                 }
             }
             if (jsonFriendlyApplication.getApplicationTeamID() != 0) {
@@ -134,6 +137,9 @@ public class ApplicationEndpoint {
                         entity.getTeam().getApplications().remove(entity);
                     entity.setTeam(team);
                     team.getApplications().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to update Application. Reason : provided Team ID " + jsonFriendlyApplication.getApplicationTeamID() +" was not found.");
+                    return commonRestResponse;
                 }
             }
             if(jsonFriendlyApplication.getApplicationOSInstancesID() != null) {
