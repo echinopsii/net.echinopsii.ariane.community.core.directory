@@ -2804,6 +2804,28 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', pa
 # 'companyOSTypesID': [2],
 # 'companyApplicationsID': [1,2]}
 
+payload = '{"companyID": '+ str(newFakeCompId)+ ',"companyName": "New updated fake Comp name","companyDescription": "new updated for Comp2", "companyOSTypesID": [], "companyApplicationsID": []}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'companyVersion': 1,
+# 'companyDescription': 'new updated for Comp2',
+# 'companyID': 12,
+# 'companyName': 'New updated Fake Comp name',
+# 'companyOSTypesID': [],
+# 'companyApplicationsID': []}
+
+payload = '{"companyID": '+ str(newFakeCompId)+ ',"companyName": "Latest updated fake Comp name","companyDescription": "updated for Comp3"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'companyVersion': 1,
+# 'companyDescription': 'new updated for Comp3',
+# 'companyID': 12,
+# 'companyName': 'Latest updated Fake Comp name',
+# 'companyOSTypesID': -1,
+# 'companyApplicationsID': -1}
+
 ipAddressParams = {'id': fake_ipAddressID, 'osInstanceID': fakeOSID}
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/update/osInstance', params=ipAddressParams)
 r.status_code
