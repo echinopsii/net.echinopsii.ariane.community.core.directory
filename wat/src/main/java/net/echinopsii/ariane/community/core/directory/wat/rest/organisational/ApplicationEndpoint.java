@@ -25,6 +25,7 @@ import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.ApplicationJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -93,78 +94,131 @@ public class ApplicationEndpoint {
         return entity;
     }
 
-    public static Application jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyApplication jsonFriendlyApplication) {
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyApplication jsonFriendlyApplication) {
         Application entity = null;
+        CommonRestResponse commonRestResponse = new CommonRestResponse();
 
-        if(jsonFriendlyApplication.getApplicationID() != 0) {
+        if(jsonFriendlyApplication.getApplicationID() !=0)
             entity = findApplicationById(em, jsonFriendlyApplication.getApplicationID());
-            if(entity != null) {
-                if (jsonFriendlyApplication.getApplicationName() !=null) {
-                    entity.setName(jsonFriendlyApplication.getApplicationName());
-                }
-                if (jsonFriendlyApplication.getApplicationShortName() != null) {
-                    entity.setShortName(jsonFriendlyApplication.getApplicationShortName());
-                }
-                if (jsonFriendlyApplication.getApplicationColorCode() != null) {
-                    entity.setColorCode(jsonFriendlyApplication.getApplicationColorCode());
-                }
-                if (jsonFriendlyApplication.getApplicationDescription() != null) {
-                    entity.setDescription(jsonFriendlyApplication.getApplicationDescription());
-                }
-                if (jsonFriendlyApplication.getApplicationCompanyID() != 0) {
-                    Company company = CompanyEndpoint.findCompanyById(em, jsonFriendlyApplication.getApplicationCompanyID());
-                    if (company != null) {
-                        if (entity.getCompany() != null)
-                            entity.getCompany().getApplications().remove(entity);
-                        entity.setCompany(company);
-                        company.getApplications().add(entity);
-                    }
-                }
-                if (jsonFriendlyApplication.getApplicationTeamID() != 0) {
-                    Team team = TeamEndpoint.findTeamById(em, jsonFriendlyApplication.getApplicationTeamID());
-                    if (team != null) {
-                        if (entity.getTeam() != null)
-                            entity.getTeam().getApplications().remove(entity);
-                        entity.setTeam(team);
-                        team.getApplications().add(entity);
-                    }
-                }
-                if(jsonFriendlyApplication.getApplicationOSInstancesID() != null) {
-                    if (!jsonFriendlyApplication.getApplicationOSInstancesID().isEmpty()) {
-                        for (OSInstance osInstance : entity.getOsInstances()) {
-                            if (!jsonFriendlyApplication.getApplicationOSInstancesID().contains(osInstance.getId())) {
-                                entity.getOsInstances().remove(osInstance);
-                                osInstance.getApplications().remove(entity);
-                            }
-                        }
-                        for (Long osiId : jsonFriendlyApplication.getApplicationOSInstancesID()) {
-                            OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
-                            if (osInstance != null) {
-                                if (!entity.getOsInstances().contains(osInstance)) {
-                                    entity.getOsInstances().add(osInstance);
-                                    osInstance.getApplications().add(entity);
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                log.error("Request error: Failed to update Application, unable to lookup provided Application Id.");
-            }
-        } else {
-            entity = findApplicationByName(em, jsonFriendlyApplication.getApplicationName());
-            if(jsonFriendlyApplication.getApplicationName()!=null && jsonFriendlyApplication.getApplicationShortName()!=null
-               && jsonFriendlyApplication.getApplicationColorCode()!=null){
-                if(entity == null) {
-                    entity = new Application();
-                    entity.setNameR(jsonFriendlyApplication.getApplicationName()).setShortNameR(jsonFriendlyApplication.getApplicationShortName())
-                          .setColorCodeR(jsonFriendlyApplication.getApplicationColorCode()).setDescription(jsonFriendlyApplication.getApplicationDescription());
-                }
-            } else {
-                log.error("Request error: name and/or short name and/or color code are not defined. You must define these parameters.");
+        if(entity == null){
+            if(jsonFriendlyApplication.getApplicationName() != null){
+                entity = findApplicationByName(em, jsonFriendlyApplication.getApplicationName());
             }
         }
-        return entity;
+        if(entity != null) {
+            if (jsonFriendlyApplication.getApplicationName() !=null) {
+                entity.setName(jsonFriendlyApplication.getApplicationName());
+            }
+            if (jsonFriendlyApplication.getApplicationShortName() != null) {
+                entity.setShortName(jsonFriendlyApplication.getApplicationShortName());
+            }
+            if (jsonFriendlyApplication.getApplicationColorCode() != null) {
+                entity.setColorCode(jsonFriendlyApplication.getApplicationColorCode());
+            }
+            if (jsonFriendlyApplication.getApplicationDescription() != null) {
+                entity.setDescription(jsonFriendlyApplication.getApplicationDescription());
+            }
+            if (jsonFriendlyApplication.getApplicationCompanyID() != 0) {
+                Company company = CompanyEndpoint.findCompanyById(em, jsonFriendlyApplication.getApplicationCompanyID());
+                if (company != null) {
+                    if (entity.getCompany() != null)
+                        entity.getCompany().getApplications().remove(entity);
+                    entity.setCompany(company);
+                    company.getApplications().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create Application. Reason : provided Company ID " + jsonFriendlyApplication.getApplicationCompanyID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if (jsonFriendlyApplication.getApplicationTeamID() != 0) {
+                Team team = TeamEndpoint.findTeamById(em, jsonFriendlyApplication.getApplicationTeamID());
+                if (team != null) {
+                    if (entity.getTeam() != null)
+                        entity.getTeam().getApplications().remove(entity);
+                    entity.setTeam(team);
+                    team.getApplications().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to update Application. Reason : provided Team ID " + jsonFriendlyApplication.getApplicationTeamID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if(jsonFriendlyApplication.getApplicationOSInstancesID() != null) {
+                if (!jsonFriendlyApplication.getApplicationOSInstancesID().isEmpty()) {
+                    for (OSInstance osInstance : entity.getOsInstances()) {
+                        if (!jsonFriendlyApplication.getApplicationOSInstancesID().contains(osInstance.getId())) {
+                            entity.getOsInstances().remove(osInstance);
+                            osInstance.getApplications().remove(entity);
+                        }
+                    }
+                    for (Long osiId : jsonFriendlyApplication.getApplicationOSInstancesID()) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                        if (osInstance != null) {
+                            if (!entity.getOsInstances().contains(osInstance)) {
+                                entity.getOsInstances().add(osInstance);
+                                osInstance.getApplications().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Application. Reason : provided OS Instance ID " + osiId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (OSInstance osInstance: entity.getOsInstances()) {
+                        entity.getOsInstances().remove(osInstance);
+                        osInstance.getApplications().remove(entity);
+                    }
+                }
+            }
+            commonRestResponse.setDeserialiedObject(entity);
+        } else {
+            entity = new Application();
+            entity.setNameR(jsonFriendlyApplication.getApplicationName()).setShortNameR(jsonFriendlyApplication.getApplicationShortName())
+                  .setColorCodeR(jsonFriendlyApplication.getApplicationColorCode()).setDescription(jsonFriendlyApplication.getApplicationDescription());
+            if (jsonFriendlyApplication.getApplicationCompanyID() != 0) {
+                Company company = CompanyEndpoint.findCompanyById(em, jsonFriendlyApplication.getApplicationCompanyID());
+                if (company != null) {
+                    if (entity.getCompany() != null)
+                        entity.getCompany().getApplications().remove(entity);
+                    entity.setCompany(company);
+                    company.getApplications().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create Application. Reason : provided Company ID " + jsonFriendlyApplication.getApplicationCompanyID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+
+            if (jsonFriendlyApplication.getApplicationTeamID() != 0) {
+                Team team = TeamEndpoint.findTeamById(em, jsonFriendlyApplication.getApplicationTeamID());
+                if (team != null) {
+                    if (entity.getTeam() != null)
+                        entity.getTeam().getApplications().remove(entity);
+                    entity.setTeam(team);
+                    team.getApplications().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create Application. Reason : provided Team ID " + jsonFriendlyApplication.getApplicationTeamID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+
+            if(jsonFriendlyApplication.getApplicationOSInstancesID() != null) {
+                if (!jsonFriendlyApplication.getApplicationOSInstancesID().isEmpty()) {
+                    for (Long osiId : jsonFriendlyApplication.getApplicationOSInstancesID()) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                        if (osInstance != null) {
+                            if (!entity.getOsInstances().contains(osInstance)) {
+                                entity.getOsInstances().add(osInstance);
+                                osInstance.getApplications().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Application. Reason : provided OS Instance ID " + osiId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            commonRestResponse.setDeserialiedObject(entity);
+        }
+        return commonRestResponse;
     }
 
     @GET
@@ -293,7 +347,8 @@ public class ApplicationEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             JSONFriendlyApplication jsonFriendlyApplication = ApplicationJSON.JSON2Application(payload);
-            Application entity = jsonFriendlyToHibernateFriendly(em, jsonFriendlyApplication);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyApplication);
+            Application entity = (Application) commonRestResponse.getDeserialiedObject();
             if (entity != null) {
                 try {
                     em.getTransaction().begin();
@@ -316,7 +371,7 @@ public class ApplicationEndpoint {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating application " + payload + " : " + t.getMessage()).build();
                 }
             } else{
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Check server logs to know more.").build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
             return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create applications. Contact your administrator.").build();
