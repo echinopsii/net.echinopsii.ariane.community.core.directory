@@ -24,6 +24,7 @@ import net.echinopsii.ariane.community.core.directory.base.model.technical.syste
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.TeamJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -37,7 +38,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.TeamJSON.JSONFriendlyTeam;
 
 /**
  *
@@ -86,6 +90,123 @@ public class TeamEndpoint {
             entity = null;
         }
         return entity;
+    }
+
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyTeam jsonFriendlyTeam) {
+        Team entity = null;
+        CommonRestResponse commonRestResponse = new CommonRestResponse();
+
+        if(jsonFriendlyTeam.getTeamID() !=0)
+            entity = findTeamById(em, jsonFriendlyTeam.getTeamID());
+        if(entity == null){
+            if(jsonFriendlyTeam.getTeamName() != null){
+                entity = findTeamByName(em, jsonFriendlyTeam.getTeamName());
+            }
+        }
+        if(entity != null){
+            if (jsonFriendlyTeam.getTeamName() !=null) {
+                entity.setName(jsonFriendlyTeam.getTeamName());
+            }
+            if (jsonFriendlyTeam.getTeamDescription() != null) {
+                entity.setDescription(jsonFriendlyTeam.getTeamDescription());
+            }
+            if (jsonFriendlyTeam.getTeamColorCode() != null) {
+                entity.setDescription(jsonFriendlyTeam.getTeamColorCode());
+            }
+            if(jsonFriendlyTeam.getTeamApplicationsID() != null) {
+                if (!jsonFriendlyTeam.getTeamApplicationsID().isEmpty()) {
+                    for (Application application : entity.getApplications()) {
+                        if (!jsonFriendlyTeam.getTeamApplicationsID().contains(application.getId())) {
+                            entity.getApplications().remove(application);
+                            application.setTeam(null);
+                        }
+                    }
+                    for (Long appid : jsonFriendlyTeam.getTeamApplicationsID()) {
+                        Application application = ApplicationEndpoint.findApplicationById(em, appid);
+                        if (application != null) {
+                            if (!entity.getApplications().contains(application)) {
+                                entity.getApplications().add(application);
+                                application.setTeam(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Team. Reason : provided Application ID " + appid +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (Application application : entity.getApplications()) {
+                        entity.getApplications().remove(application);
+                        application.setTeam(null);
+                    }
+                }
+            }
+            if(jsonFriendlyTeam.getTeamOSInstancesID() != null) {
+                if (!jsonFriendlyTeam.getTeamOSInstancesID().isEmpty()) {
+                    for (OSInstance osInstance: entity.getOsInstances()) {
+                        if (!jsonFriendlyTeam.getTeamOSInstancesID().contains(osInstance.getId())) {
+                            entity.getOsInstances().remove(osInstance);
+                            osInstance.getTeams().remove(entity);
+                        }
+                    }
+                    for (Long osiId : jsonFriendlyTeam.getTeamOSInstancesID()) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                        if (osInstance != null) {
+                            if (!entity.getOsInstances().contains(osInstance)) {
+                                entity.getOsInstances().add(osInstance);
+                                osInstance.getTeams().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Team. Reason : provided OS Instance ID " + osiId +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (OSInstance osInstance : entity.getOsInstances()) {
+                        entity.getOsInstances().remove(osInstance);
+                        osInstance.getTeams().remove(entity);
+                    }
+                }
+            }
+            commonRestResponse.setDeserialiedObject(entity);
+        } else {
+            entity = new Team();
+            entity.setNameR(jsonFriendlyTeam.getTeamName()).setColorCodeR(jsonFriendlyTeam.getTeamColorCode()).setDescription(jsonFriendlyTeam.getTeamDescription());
+            if (jsonFriendlyTeam.getTeamApplicationsID() != null) {
+                if (!jsonFriendlyTeam.getTeamApplicationsID().isEmpty()) {
+                    for (Long appid : jsonFriendlyTeam.getTeamApplicationsID()) {
+                        Application application = ApplicationEndpoint.findApplicationById(em, appid);
+                        if (application != null) {
+                            if (!entity.getApplications().contains(application)) {
+                                entity.getApplications().add(application);
+                                application.setTeam(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create Team. Reason : provided Application ID " + appid +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+
+            if (jsonFriendlyTeam.getTeamOSInstancesID() != null) {
+                if (!jsonFriendlyTeam.getTeamOSInstancesID().isEmpty()) {
+                    for (Long osiId : jsonFriendlyTeam.getTeamOSInstancesID()) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                        if (osInstance != null) {
+                            if (!entity.getOsInstances().contains(osInstance)) {
+                                entity.getOsInstances().add(osInstance);
+                                osInstance.getTeams().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create Team. Reason : provided OS Instance ID " + osiId +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                }
+            }
+            commonRestResponse.setDeserialiedObject(entity);
+        }
+        return commonRestResponse;
     }
 
     @GET
@@ -204,6 +325,46 @@ public class TeamEndpoint {
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or colorCode are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @POST
+    public Response postTeam(@QueryParam("payload") String payload) throws IOException {
+
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] create/update Team : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgTeam:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            JSONFriendlyTeam jsonFriendlyTeam = TeamJSON.JSON2Team(payload);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyTeam);
+            Team entity = (Team) commonRestResponse.getDeserialiedObject();
+            if (entity != null) {
+                try {
+                    em.getTransaction().begin();
+                    if (entity.getId() == null){
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } else {
+                        em.merge(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    }
+                    Response ret = teamToJSON(entity);
+                    em.close();
+                    return ret;
+                } catch (Throwable t) {
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                    em.close();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating team " + payload + " : " + t.getMessage()).build();
+                }
+            } else{
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create teams. Contact your administrator.").build();
         }
     }
 

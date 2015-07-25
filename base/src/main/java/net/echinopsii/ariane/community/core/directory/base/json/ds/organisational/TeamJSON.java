@@ -21,6 +21,8 @@ package net.echinopsii.ariane.community.core.directory.base.json.ds.organisation
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Team;
@@ -30,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Our own object to JSON tools as :
@@ -82,5 +85,78 @@ public class TeamJSON {
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
         jgenerator.close();
+    }
+
+    public static class JSONFriendlyTeam {
+        private long teamID;
+        private long teamVersion;
+        private String teamName;
+        private String teamDescription;
+        private String teamColorCode;
+        private List<Long> teamOSInstancesID;
+        private List<Long> teamApplicationsID;
+
+        public List<Long> getTeamApplicationsID() {
+            return teamApplicationsID;
+        }
+
+        public void setTeamApplicationsID(List<Long> teamApplicationsID) {
+            this.teamApplicationsID = teamApplicationsID;
+        }
+
+        public List<Long> getTeamOSInstancesID() {
+            return teamOSInstancesID;
+        }
+
+        public void setTeamOSInstancesID(List<Long> teamOSInstancesID) {
+            this.teamOSInstancesID = teamOSInstancesID;
+        }
+
+        public String getTeamColorCode() {
+            return teamColorCode;
+        }
+
+        public void setTeamColorCode(String teamColorCode) {
+            this.teamColorCode = teamColorCode;
+        }
+
+        public String getTeamDescription() {
+            return teamDescription;
+        }
+
+        public void setTeamDescription(String teamDescription) {
+            this.teamDescription = teamDescription;
+        }
+
+        public String getTeamName() {
+            return teamName;
+        }
+
+        public void setTeamName(String teamName) {
+            this.teamName = teamName;
+        }
+
+        public long getTeamVersion() {
+            return teamVersion;
+        }
+
+        public void setTeamVersion(long teamVersion) {
+            this.teamVersion = teamVersion;
+        }
+
+        public long getTeamID() {
+            return teamID;
+        }
+
+        public void setTeamID(long teamID) {
+            this.teamID = teamID;
+        }
+    }
+
+    public final static JSONFriendlyTeam JSON2Team(String payload) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        JSONFriendlyTeam jsonFriendlyTeam = mapper.readValue(payload, JSONFriendlyTeam.class);
+        return jsonFriendlyTeam;
     }
 }
