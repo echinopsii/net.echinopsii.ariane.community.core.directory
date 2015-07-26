@@ -164,7 +164,7 @@ public class CompanyEndpoint {
                     }
                 }
             }
-            commonRestResponse.setDeserialiedObject(entity);
+            commonRestResponse.setDeserializedObject(entity);
         } else {
             entity = new Company();
             entity.setNameR(jsonFriendlyCompany.getCompanyName()).setDescription(jsonFriendlyCompany.getCompanyDescription());
@@ -201,7 +201,7 @@ public class CompanyEndpoint {
                     }
                 }
             }
-            commonRestResponse.setDeserialiedObject(entity);
+            commonRestResponse.setDeserializedObject(entity);
         }
         return commonRestResponse;
     }
@@ -335,7 +335,7 @@ public class CompanyEndpoint {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             JSONFriendlyCompany jsonFriendlyCompany = CompanyJSON.JSON2Company(payload);
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyCompany);
-            Company entity = (Company) commonRestResponse.getDeserialiedObject();
+            Company entity = (Company) commonRestResponse.getDeserializedObject();
             if (entity != null) {
                 try {
                     em.getTransaction().begin();

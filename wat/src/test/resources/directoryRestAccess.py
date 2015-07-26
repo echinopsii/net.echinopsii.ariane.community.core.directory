@@ -497,9 +497,6 @@ r.text
 #'Company 25 has been successfully updated with description The devil company'
 
 
-
-
-
 r = s.get(srv_url + 'ariane/rest/directories/common/organisation/environments')
 r.status_code
 #200
@@ -783,6 +780,73 @@ r.status_code
 # 'teamOSInstancesID': [],
 # 'teamVersion': 0}
 dppTeamID = r.json().get('teamID')
+
+payload = '{"teamName":"fake Team name", "teamColorCode":"054d32", "teamDescription":"This is fake Team"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload":payload})
+fakeTeamID = r.json().get('teamID')
+#200()
+# pprint(r.json())
+#{'teamApplicationsID': [],
+# 'teamColorCode': '054d32',
+# 'teamDescription': 'This is fake Team',
+# 'teamID': 1,
+# 'teamName': 'fake Team name',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 0}
+
+payload = '{"teamID": '+ str(fakeTeamID) +',"teamName": "New Fake Team name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'teamApplicationsID': [],
+# 'teamColorCode': '054d32',
+# 'teamDescription': 'This is fake Team',
+# 'teamID': 1,
+# 'teamName': 'New fake Team name',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 0}
+
+payload = '{"teamID": '+ str(fakeTeamID) +',"teamDescription": "updated Description"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'teamApplicationsID': [],
+# 'teamColorCode': '054d32',
+# 'teamDescription': 'updated Description',
+# 'teamID': 1,
+# 'teamName': 'New fake Team name',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 0}
+
+payload = '{"teamID": '+ str(fakeTeamID) +',"teamColorCode": "054d33"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'teamApplicationsID': [],
+# 'teamColorCode': '054d33',
+# 'teamDescription': 'updated Description',
+# 'teamID': 1,
+# 'teamName': 'New fake Team name',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 0}
+
+payload = '{"teamID": '+ str(fakeTeamID) +', "teamApplicationsID" : [1, 2] }'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'teamApplicationsID': [1,2],
+# 'teamColorCode': '054d33',
+# 'teamDescription': 'updated Description',
+# 'teamID': 1,
+# 'teamName': 'New fake Team name',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 0}
+
+payload = '{"teamID": 50, "teamName" : "New Team name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload":payload})
+#200
+# pprint(r.json())
+# Request Error : provided Team ID 50 was not found.
 
 payload = '{"applicationID": '+ str(fakeID) +', "applicationTeamID": '+ str(dppTeamID) +'}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
@@ -2002,6 +2066,56 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications',
 # 'applicationShortName': 'New Fake app',
 # 'applicationTeamID': 11,
 # 'applicationVersion': -1}
+
+payload = '{"teamID": '+ str(fakeTeamID) +',"teamOSInstancesID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'teamApplicationsID': [1,2],
+# 'teamColorCode': '054d33',
+# 'teamDescription': 'updated Description',
+# 'teamID': 1,
+# 'teamName': 'New fake Team name',
+# 'teamOSInstancesID': [1],
+# 'teamVersion': 0}
+
+payload = '{"teamName": "New fake Team2 name", "teamColorCode":"054d34", teamDescription": "updated for Team2", "teamOSInstancesID": [1,2], "teamApplicationsID": [2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload":payload})
+newFakeTeamId = r.json().get("TeamID")
+#200
+# pprint(r.json())
+#{'teamApplicationsID': [2],
+# 'teamColorCode': '054d34',
+# 'teamDescription': 'updated for Team2',
+# 'teamID': 2,
+# 'teamName': 'New fake Team2 name',
+# 'teamOSInstancesID': [1,2],
+# 'teamVersion': 0}
+
+payload = '{"teamID": '+ str(newFakeTeamId)+ ',"teamName": "New updated fake Team name","teamDescription": "new updated for Team2", "teamColorCode": "054d35", "teamOSInstancesID": [2], "teamApplicationsID": [1,2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'teamApplicationsID': [1,2],
+# 'teamColorCode': '054d35',
+# 'teamDescription': 'new updated for Team2',
+# 'teamID': 2,
+# 'teamName': 'New updated fake Team',
+# 'teamOSInstancesID': [2],
+# 'teamVersion': 0}
+
+
+payload = '{"teamID": '+ str(newFakeTeamId)+ ',"teamName": "New updated fake Team name","teamDescription": "new updated for Team2", "teamColorCode": "054d35", "teamOSInstancesID": [], "teamApplicationsID": []}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'teamApplicationsID': [],
+# 'teamColorCode': '054d35',
+# 'teamDescription': 'new updated for Team2',
+# 'teamID': 2,
+# 'teamName': 'New updated fake Team',
+# 'teamOSInstancesID': [],
+# 'teamVersion': 0}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/name', params={'id': fakeOSID, 'name': 'fakeOs1'})
 r.status_code
