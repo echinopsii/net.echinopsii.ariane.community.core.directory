@@ -98,6 +98,10 @@ public class TeamEndpoint {
 
         if(jsonFriendlyTeam.getTeamID() !=0)
             entity = findTeamById(em, jsonFriendlyTeam.getTeamID());
+        if(entity == null && jsonFriendlyTeam.getTeamID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided Team ID " + jsonFriendlyTeam.getTeamID() +" was not found.");
+            return commonRestResponse;
+        }
         if(entity == null){
             if(jsonFriendlyTeam.getTeamName() != null){
                 entity = findTeamByName(em, jsonFriendlyTeam.getTeamName());
@@ -167,7 +171,7 @@ public class TeamEndpoint {
                     }
                 }
             }
-            commonRestResponse.setDeserialiedObject(entity);
+            commonRestResponse.setDeserializedObject(entity);
         } else {
             entity = new Team();
             entity.setNameR(jsonFriendlyTeam.getTeamName()).setColorCodeR(jsonFriendlyTeam.getTeamColorCode()).setDescription(jsonFriendlyTeam.getTeamDescription());
@@ -204,7 +208,7 @@ public class TeamEndpoint {
                     }
                 }
             }
-            commonRestResponse.setDeserialiedObject(entity);
+            commonRestResponse.setDeserializedObject(entity);
         }
         return commonRestResponse;
     }
@@ -338,7 +342,7 @@ public class TeamEndpoint {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             JSONFriendlyTeam jsonFriendlyTeam = TeamJSON.JSON2Team(payload);
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyTeam);
-            Team entity = (Team) commonRestResponse.getDeserialiedObject();
+            Team entity = (Team) commonRestResponse.getDeserializedObject();
             if (entity != null) {
                 try {
                     em.getTransaction().begin();

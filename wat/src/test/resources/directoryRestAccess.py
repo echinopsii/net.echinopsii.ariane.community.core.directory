@@ -842,6 +842,12 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params
 # 'teamOSInstancesID': [],
 # 'teamVersion': 0}
 
+payload = '{"teamID": 50, "teamName" : "New Team name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload":payload})
+#200
+# pprint(r.json())
+# Request Error : provided Team ID 50 was not found.
+
 payload = '{"applicationID": '+ str(fakeID) +', "applicationTeamID": '+ str(dppTeamID) +'}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload":payload})
 #200

@@ -169,7 +169,7 @@ public class ApplicationEndpoint {
                     }
                 }
             }
-            commonRestResponse.setDeserialiedObject(entity);
+            commonRestResponse.setDeserializedObject(entity);
         } else {
             entity = new Application();
             entity.setNameR(jsonFriendlyApplication.getApplicationName()).setShortNameR(jsonFriendlyApplication.getApplicationShortName())
@@ -216,7 +216,7 @@ public class ApplicationEndpoint {
                     }
                 }
             }
-            commonRestResponse.setDeserialiedObject(entity);
+            commonRestResponse.setDeserializedObject(entity);
         }
         return commonRestResponse;
     }
@@ -348,7 +348,7 @@ public class ApplicationEndpoint {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             JSONFriendlyApplication jsonFriendlyApplication = ApplicationJSON.JSON2Application(payload);
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyApplication);
-            Application entity = (Application) commonRestResponse.getDeserialiedObject();
+            Application entity = (Application) commonRestResponse.getDeserializedObject();
             if (entity != null) {
                 try {
                     em.getTransaction().begin();
