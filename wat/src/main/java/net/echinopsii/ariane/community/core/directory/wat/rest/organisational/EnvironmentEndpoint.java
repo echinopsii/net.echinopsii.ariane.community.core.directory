@@ -19,10 +19,12 @@
 package net.echinopsii.ariane.community.core.directory.wat.rest.organisational;
 
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
+import net.echinopsii.ariane.community.core.directory.base.model.organisational.Team;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.EnvironmentJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -36,7 +38,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.EnvironmentJSON.JSONFriendlyEnvironment;
 
 /**
  *
@@ -85,6 +90,82 @@ public class EnvironmentEndpoint {
             entity=null;
         }
         return entity;
+    }
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyEnvironment jsonFriendlyEnvironment) {
+        Environment entity = null;
+        CommonRestResponse commonRestResponse = new CommonRestResponse();
+
+        if(jsonFriendlyEnvironment.getEnvironmentID() !=0)
+            entity = findEnvironmentByID(em, jsonFriendlyEnvironment.getEnvironmentID());
+        if(entity == null && jsonFriendlyEnvironment.getEnvironmentID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided Environment ID " + jsonFriendlyEnvironment.getEnvironmentID() +" was not found.");
+            return commonRestResponse;
+        }
+        if(entity == null){
+            if(jsonFriendlyEnvironment.getEnvironmentName() != null){
+                entity = findEnvironmentByName(em, jsonFriendlyEnvironment.getEnvironmentName());
+            }
+        }
+        if(entity != null){
+            if (jsonFriendlyEnvironment.getEnvironmentName() !=null) {
+                entity.setName(jsonFriendlyEnvironment.getEnvironmentName());
+            }
+            if (jsonFriendlyEnvironment.getEnvironmentDescription() != null) {
+                entity.setDescription(jsonFriendlyEnvironment.getEnvironmentDescription());
+            }
+            if (jsonFriendlyEnvironment.getEnvironmentColorCode() != null) {
+                entity.setColorCode(jsonFriendlyEnvironment.getEnvironmentColorCode());
+            }
+            if(jsonFriendlyEnvironment.getEnvironmentOSInstancesID() != null) {
+                if (!jsonFriendlyEnvironment.getEnvironmentOSInstancesID().isEmpty()) {
+                    for (OSInstance osInstance: entity.getOsInstances()) {
+                        if (!jsonFriendlyEnvironment.getEnvironmentOSInstancesID().contains(osInstance.getId())) {
+                            entity.getOsInstances().remove(osInstance);
+                            osInstance.getEnvironments().remove(entity);
+                        }
+                    }
+                    for (Long osiId : jsonFriendlyEnvironment.getEnvironmentOSInstancesID()) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                        if (osInstance != null) {
+                            if (!entity.getOsInstances().contains(osInstance)) {
+                                entity.getOsInstances().add(osInstance);
+                                osInstance.getEnvironments().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Environment. Reason : provided OS Instance ID " + osiId +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (OSInstance osInstance : entity.getOsInstances()) {
+                        entity.getOsInstances().remove(osInstance);
+                        osInstance.getEnvironments().remove(entity);
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        } else {
+            entity = new Environment();
+            entity.setNameR(jsonFriendlyEnvironment.getEnvironmentName()).setColorCodeR(jsonFriendlyEnvironment.getEnvironmentColorCode()).setDescription(jsonFriendlyEnvironment.getEnvironmentDescription());
+            if (jsonFriendlyEnvironment.getEnvironmentOSInstancesID() != null) {
+                if (!jsonFriendlyEnvironment.getEnvironmentOSInstancesID().isEmpty()) {
+                    for (Long osiId : jsonFriendlyEnvironment.getEnvironmentOSInstancesID()) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                        if (osInstance != null) {
+                            if (!entity.getOsInstances().contains(osInstance)) {
+                                entity.getOsInstances().add(osInstance);
+                                osInstance.getEnvironments().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create Environment. Reason : provided OS Instance ID " + osiId +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        }
+        return commonRestResponse;
     }
 
     @GET
@@ -206,6 +287,45 @@ public class EnvironmentEndpoint {
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name is not defined. You must define this parameter.").build();
+        }
+    }
+
+    @POST
+    public Response postEnvironment(@QueryParam("payload") String payload) throws IOException {
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] create/update Environment : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgEnvironment:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            JSONFriendlyEnvironment jsonFriendlyEnvironment = EnvironmentJSON.JSON2Environment(payload);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyEnvironment);
+            Environment entity = (Environment) commonRestResponse.getDeserializedObject();
+            if (entity != null) {
+                try {
+                    em.getTransaction().begin();
+                    if (entity.getId() == null){
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } else {
+                        em.merge(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    }
+                    Response ret = environmentToJSON(entity);
+                    em.close();
+                    return ret;
+                } catch (Throwable t) {
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                    em.close();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating environment " + payload + " : " + t.getMessage()).build();
+                }
+            } else{
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create environments. Contact your administrator.").build();
         }
     }
 
