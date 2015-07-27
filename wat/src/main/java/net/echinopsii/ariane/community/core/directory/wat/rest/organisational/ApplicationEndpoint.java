@@ -100,6 +100,10 @@ public class ApplicationEndpoint {
 
         if(jsonFriendlyApplication.getApplicationID() !=0)
             entity = findApplicationById(em, jsonFriendlyApplication.getApplicationID());
+        if(entity == null && jsonFriendlyApplication.getApplicationID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided Application ID " + jsonFriendlyApplication.getApplicationID() +" was not found.");
+            return commonRestResponse;
+        }
         if(entity == null){
             if(jsonFriendlyApplication.getApplicationName() != null){
                 entity = findApplicationByName(em, jsonFriendlyApplication.getApplicationName());
