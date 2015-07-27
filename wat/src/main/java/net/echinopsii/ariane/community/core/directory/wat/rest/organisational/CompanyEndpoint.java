@@ -98,6 +98,10 @@ public class CompanyEndpoint {
 
         if(jsonFriendlyCompany.getCompanyID() !=0)
             entity = findCompanyById(em, jsonFriendlyCompany.getCompanyID());
+        if(entity == null && jsonFriendlyCompany.getCompanyID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided Company ID " + jsonFriendlyCompany.getCompanyID() +" was not found.");
+            return commonRestResponse;
+        }
         if(entity == null){
             if(jsonFriendlyCompany.getCompanyName() != null){
                 entity = findCompanyByName(em, jsonFriendlyCompany.getCompanyName());
