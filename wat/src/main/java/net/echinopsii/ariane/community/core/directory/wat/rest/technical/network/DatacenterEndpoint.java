@@ -18,14 +18,17 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
+import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.EnvironmentJSON;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.DatacenterJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.neo4j.shell.impl.RemoteOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +39,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.DatacenterJSON.JSONFriendlyDatacenter;
 
 /**
  *
@@ -87,12 +93,147 @@ public class DatacenterEndpoint {
         return entity;
     }
 
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyDatacenter jsonFriendlyDatacenter) {
+        Datacenter entity = null;
+        CommonRestResponse commonRestResponse = new CommonRestResponse();
+
+        if(jsonFriendlyDatacenter.getDatacenterID() !=0)
+            entity = findDatacenterById(em, jsonFriendlyDatacenter.getDatacenterID());
+        if(entity == null && jsonFriendlyDatacenter.getDatacenterID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided Datacenter ID " + jsonFriendlyDatacenter.getDatacenterID() +" was not found.");
+            return commonRestResponse;
+        }
+        if(entity == null){
+            if(jsonFriendlyDatacenter.getDatacenterName() != null){
+                entity = findDatacenterByName(em, jsonFriendlyDatacenter.getDatacenterName());
+            }
+        }
+        if(entity != null){
+            if (jsonFriendlyDatacenter.getDatacenterName() !=null) {
+                entity.setName(jsonFriendlyDatacenter.getDatacenterName());
+            }
+            if (jsonFriendlyDatacenter.getDatacenterDescription() != null) {
+                entity.setDescription(jsonFriendlyDatacenter.getDatacenterDescription());
+            }
+            if (jsonFriendlyDatacenter.getDatacenterAddress() != null) {
+                entity.setAddress(jsonFriendlyDatacenter.getDatacenterAddress());
+            }
+            if (jsonFriendlyDatacenter.getDatacenterCountry() != null) {
+                entity.setCountry(jsonFriendlyDatacenter.getDatacenterCountry());
+            }
+            entity.setGpsLatitude(jsonFriendlyDatacenter.getDatacenterGPSLat());
+            entity.setGpsLongitude(jsonFriendlyDatacenter.getDatacenterGPSLng());
+
+            if (jsonFriendlyDatacenter.getDatacenterZipcode() != 0) {
+                entity.setZipCode(jsonFriendlyDatacenter.getDatacenterZipcode());
+            }
+            if (jsonFriendlyDatacenter.getDatacenterTown() != null) {
+                entity.setTown(jsonFriendlyDatacenter.getDatacenterTown());
+            }
+            if(jsonFriendlyDatacenter.getDatacenterRoutingAreasID() != null) {
+                if (!jsonFriendlyDatacenter.getDatacenterRoutingAreasID().isEmpty()) {
+                    for (RoutingArea routingArea : entity.getRoutingAreas()) {
+                        if (!jsonFriendlyDatacenter.getDatacenterRoutingAreasID().contains(routingArea.getId())) {
+                            entity.getRoutingAreas().remove(routingArea);
+                            routingArea.getDatacenters().remove(entity);
+                        }
+                    }
+                    for (Long routingId : jsonFriendlyDatacenter.getDatacenterRoutingAreasID()) {
+                        RoutingArea routingArea = RoutingAreaEndpoint.findRoutingAreaById(em, routingId);
+                        if (routingArea != null) {
+                            if (!entity.getRoutingAreas().contains(routingArea)) {
+                                entity.getRoutingAreas().add(routingArea);
+                                routingArea.getDatacenters().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Datacenters. Reason : provided RoutingArea ID " + routingId +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (RoutingArea routingArea : entity.getRoutingAreas()) {
+                        entity.getRoutingAreas().remove(routingArea);
+                        routingArea.getDatacenters().remove(entity);
+                    }
+                }
+            }
+            if(jsonFriendlyDatacenter.getDatacenterSubnetsID() != null) {
+                if (!jsonFriendlyDatacenter.getDatacenterSubnetsID().isEmpty()) {
+                    for (Subnet subnet: entity.getSubnets()) {
+                        if (!jsonFriendlyDatacenter.getDatacenterSubnetsID().contains(subnet.getId())) {
+                            entity.getSubnets().remove(subnet);
+                            subnet.getDatacenters().remove(entity);
+                        }
+                    }
+                    for (Long subnetId : jsonFriendlyDatacenter.getDatacenterSubnetsID()) {
+                        Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetId);
+                        if (subnet != null) {
+                            if (!entity.getSubnets().contains(subnet)) {
+                                entity.getSubnets().add(subnet);
+                                subnet.getDatacenters().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Datacenters. Reason : provided Subnet ID " + subnetId +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (Subnet subnet : entity.getSubnets()) {
+                        entity.getSubnets().remove(subnet);
+                        subnet.getDatacenters().remove(entity);
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        } else {
+            entity = new Datacenter();
+            entity.setNameR(jsonFriendlyDatacenter.getDatacenterName()).setCountryR(jsonFriendlyDatacenter.getDatacenterCountry()).setDescriptionR(jsonFriendlyDatacenter.getDatacenterDescription()).
+                   setGpsLatitudeR(jsonFriendlyDatacenter.getDatacenterGPSLat()).setGpsLongitudeR(jsonFriendlyDatacenter.getDatacenterGPSLat()).
+                    setTownR(jsonFriendlyDatacenter.getDatacenterTown()).setZipCodeR(jsonFriendlyDatacenter.getDatacenterZipcode());
+
+            if (jsonFriendlyDatacenter.getDatacenterRoutingAreasID() != null) {
+                if (!jsonFriendlyDatacenter.getDatacenterRoutingAreasID().isEmpty()) {
+                    for (Long routingId : jsonFriendlyDatacenter.getDatacenterRoutingAreasID()) {
+                        RoutingArea routingArea = RoutingAreaEndpoint.findRoutingAreaById(em, routingId);
+                        if (routingArea != null) {
+                            if (!entity.getRoutingAreas().contains(routingArea)) {
+                                entity.getRoutingAreas().add(routingArea);
+                                routingArea.getDatacenters().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create Datacenters. Reason : provided RoutingArea ID " + routingId +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                }
+            }
+            if (jsonFriendlyDatacenter.getDatacenterSubnetsID() != null) {
+                if (!jsonFriendlyDatacenter.getDatacenterSubnetsID().isEmpty()) {
+                    for (Long subnetId : jsonFriendlyDatacenter.getDatacenterSubnetsID()) {
+                        Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetId);
+                        if (subnet != null) {
+                            if (!entity.getSubnets().contains(subnet)) {
+                                entity.getSubnets().add(subnet);
+                                subnet.getDatacenters().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create Datacenters. Reason : provided Subnet ID " + subnetId +" was not found.");
+                            return  commonRestResponse;
+                        }
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        }
+        return commonRestResponse;
+    }
+
     @GET
     @Path("/{id:[0-9][0-9]*}")
     public Response displayDatacenter(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("irComITiNtwDC:display") ||
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwDC:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -114,7 +255,7 @@ public class DatacenterEndpoint {
     public Response displayAllDatacenters() {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get datacenters", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
-        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("irComITiNtwDC:display") ||
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwDC:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -149,7 +290,7 @@ public class DatacenterEndpoint {
         } else if (name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] get datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("irComITiNtwDC:display") ||
+            if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwDC:display") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -178,7 +319,7 @@ public class DatacenterEndpoint {
         if (name!=null && address!=null && zipCode!=null && town!=null && country!=null && gpsLat!=null && gpsLng!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:create") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwDC:create") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -209,13 +350,51 @@ public class DatacenterEndpoint {
         }
     }
 
+    @POST
+    public Response postDatacenter(@QueryParam("payload") String payload) throws IOException {
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] create/update Datacenter : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwDC:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            JSONFriendlyDatacenter jsonFriendlyDatacenter = DatacenterJSON.JSON2Datacenter(payload);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyDatacenter);
+            Datacenter entity = (Datacenter) commonRestResponse.getDeserializedObject();
+            if (entity != null) {
+                try {
+                    em.getTransaction().begin();
+                    if (entity.getId() == null){
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } else {
+                        em.merge(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    }
+                    Response ret = datacenterToJSON(entity);
+                    em.close();
+                    return ret;
+                } catch (Throwable t) {
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                    em.close();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating datacenter " + payload + " : " + t.getMessage()).build();
+                }
+            } else{
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create datacenters. Contact your administrator.").build();
+        }
+    }
     @GET
     @Path("/delete")
     public Response deleteDatacenter(@QueryParam("id")Long id) {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] delete datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:delete") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwDC:delete") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -255,7 +434,7 @@ public class DatacenterEndpoint {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwDC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -286,7 +465,7 @@ public class DatacenterEndpoint {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} full address : ({},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id,
                                                                                                 address, zipCode, town, country});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwDC:update") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -325,7 +504,7 @@ public class DatacenterEndpoint {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} gps coord : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id,
                                                                                        gpsLat, gpsLng});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwDC:update") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -361,7 +540,7 @@ public class DatacenterEndpoint {
         if (id!=0 && description!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, description});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwDC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -396,7 +575,7 @@ public class DatacenterEndpoint {
         if (id!=0 && subnetID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} by adding subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetID});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwDC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -439,7 +618,7 @@ public class DatacenterEndpoint {
         if (id!=0 && subnetID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} by deleting subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetID});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwDC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -482,7 +661,7 @@ public class DatacenterEndpoint {
         if (id!=0 && rareaID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} by adding routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, rareaID});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwDC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
@@ -525,7 +704,7 @@ public class DatacenterEndpoint {
         if (id!=0 && mareaID!=0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update datacenter {} by deleting routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("irComITiNtwDC:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwDC:update") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();

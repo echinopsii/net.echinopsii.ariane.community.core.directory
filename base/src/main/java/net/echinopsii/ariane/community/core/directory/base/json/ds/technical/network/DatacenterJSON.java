@@ -21,6 +21,8 @@ package net.echinopsii.ariane.community.core.directory.base.json.ds.technical.ne
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
@@ -30,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Our own object to JSON tools as :
@@ -92,5 +95,123 @@ public class DatacenterJSON {
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
         jgenerator.close();
+    }
+
+    public static class JSONFriendlyDatacenter {
+        private long datacenterID;
+        private long datacenterVersion;
+        private String datacenterName;
+        private String datacenterAddress;
+        private long datacenterZipcode;
+        private String datacenterTown;
+        private String datacenterCountry;
+        private double datacenterGPSLat;
+        private double datacenterGPSLng;
+        private String datacenterDescription;
+        private List<Long> datacenterSubnetsID;
+        private List<Long> datacenterRoutingAreasID;
+
+        public String getDatacenterTown() {
+            return datacenterTown;
+        }
+
+        public void setDatacenterTown(String datacenterTown) {
+            this.datacenterTown = datacenterTown;
+        }
+
+        public List<Long> getDatacenterRoutingAreasID() {
+            return datacenterRoutingAreasID;
+        }
+
+        public void setDatacenterRoutingAreasID(List<Long> datacenterRoutingAreasID) {
+            this.datacenterRoutingAreasID = datacenterRoutingAreasID;
+        }
+
+        public List<Long> getDatacenterSubnetsID() {
+            return datacenterSubnetsID;
+        }
+
+        public void setDatacenterSubnetsID(List<Long> datacenterSubnetsID) {
+            this.datacenterSubnetsID = datacenterSubnetsID;
+        }
+
+        public String getDatacenterDescription() {
+            return datacenterDescription;
+        }
+
+        public void setDatacenterDescription(String datacenterDescription) {
+            this.datacenterDescription = datacenterDescription;
+        }
+
+        public double getDatacenterGPSLng() {
+            return datacenterGPSLng;
+        }
+
+        public void setDatacenterGPSLng(double datacenterGPSLng) {
+            this.datacenterGPSLng = datacenterGPSLng;
+        }
+
+        public double getDatacenterGPSLat() {
+            return datacenterGPSLat;
+        }
+
+        public void setDatacenterGPSLat(double datacenterGPSLat) {
+            this.datacenterGPSLat = datacenterGPSLat;
+        }
+
+        public String getDatacenterCountry() {
+            return datacenterCountry;
+        }
+
+        public void setDatacenterCountry(String datacenterCountry) {
+            this.datacenterCountry = datacenterCountry;
+        }
+
+        public long getDatacenterZipcode() {
+            return datacenterZipcode;
+        }
+
+        public void setDatacenterZipcode(long datacenterZipcode) {
+            this.datacenterZipcode = datacenterZipcode;
+        }
+
+        public String getDatacenterAddress() {
+            return datacenterAddress;
+        }
+
+        public void setDatacenterAddress(String datacenterAddress) {
+            this.datacenterAddress = datacenterAddress;
+        }
+
+        public String getDatacenterName() {
+            return datacenterName;
+        }
+
+        public void setDatacenterName(String datacenterName) {
+            this.datacenterName = datacenterName;
+        }
+
+        public long getDatacenterVersion() {
+            return datacenterVersion;
+        }
+
+        public void setDatacenterVersion(long datacenterVersion) {
+            this.datacenterVersion = datacenterVersion;
+        }
+
+        public long getDatacenterID() {
+            return datacenterID;
+        }
+
+        public void setDatacenterID(long datacenterID) {
+            this.datacenterID = datacenterID;
+        }
+    }
+
+    public final static JSONFriendlyDatacenter JSON2Datacenter(String payload) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        JSONFriendlyDatacenter jsonFriendlyDatacenter = mapper.readValue(payload, JSONFriendlyDatacenter.class);
+        return jsonFriendlyDatacenter;
     }
 }
