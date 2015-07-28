@@ -8,7 +8,7 @@
 {% endblock %}
 {% block version %}"{{version}}"{% endblock %}
 {%- block configuration -%}
-<artifact type="configuration" name="net.echinopsii.ariane.community.core.DirectoryJPAProviderManagedService"/>
+ <artifact type="configuration" name="net.echinopsii.ariane.community.core.DirectoryJPAProviderManagedService"/>
 {%- endblock -%}
 {% block bundle %}
         {% for s in submodules -%}
@@ -19,3 +19,4 @@
         {% endif -%}
         {%- endfor %}
 {% endblock %}
+
