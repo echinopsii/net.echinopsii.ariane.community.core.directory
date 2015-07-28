@@ -98,6 +98,10 @@ public class CompanyEndpoint {
 
         if(jsonFriendlyCompany.getCompanyID() !=0)
             entity = findCompanyById(em, jsonFriendlyCompany.getCompanyID());
+        if(entity == null && jsonFriendlyCompany.getCompanyID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided Company ID " + jsonFriendlyCompany.getCompanyID() +" was not found.");
+            return commonRestResponse;
+        }
         if(entity == null){
             if(jsonFriendlyCompany.getCompanyName() != null){
                 entity = findCompanyByName(em, jsonFriendlyCompany.getCompanyName());
@@ -164,7 +168,7 @@ public class CompanyEndpoint {
                     }
                 }
             }
-            commonRestResponse.setDeserialiedObject(entity);
+            commonRestResponse.setDeserializedObject(entity);
         } else {
             entity = new Company();
             entity.setNameR(jsonFriendlyCompany.getCompanyName()).setDescription(jsonFriendlyCompany.getCompanyDescription());
@@ -201,7 +205,7 @@ public class CompanyEndpoint {
                     }
                 }
             }
-            commonRestResponse.setDeserialiedObject(entity);
+            commonRestResponse.setDeserializedObject(entity);
         }
         return commonRestResponse;
     }
@@ -335,7 +339,7 @@ public class CompanyEndpoint {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             JSONFriendlyCompany jsonFriendlyCompany = CompanyJSON.JSON2Company(payload);
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyCompany);
-            Company entity = (Company) commonRestResponse.getDeserialiedObject();
+            Company entity = (Company) commonRestResponse.getDeserializedObject();
             if (entity != null) {
                 try {
                     em.getTransaction().begin();

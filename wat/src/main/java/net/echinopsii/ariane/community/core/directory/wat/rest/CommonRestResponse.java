@@ -20,7 +20,7 @@ package net.echinopsii.ariane.community.core.directory.wat.rest;
 
 
 public class CommonRestResponse {
-    Object deserialiedObject;
+    Object deserializedObject;
     String errorMessage;
 
     public String getErrorMessage() {
@@ -31,11 +31,11 @@ public class CommonRestResponse {
         this.errorMessage = errorMessage;
     }
 
-    public Object getDeserialiedObject() {
-        return deserialiedObject;
+    public Object getDeserializedObject() {
+        return deserializedObject;
     }
 
-    public void setDeserialiedObject(Object deserialiedObject) {
-        this.deserialiedObject = deserialiedObject;
+    public void setDeserializedObject(Object deserializedObject) {
+        this.deserializedObject = deserializedObject;
     }
 }
