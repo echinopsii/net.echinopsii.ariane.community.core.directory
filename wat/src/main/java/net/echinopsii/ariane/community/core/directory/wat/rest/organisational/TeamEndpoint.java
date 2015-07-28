@@ -115,7 +115,7 @@ public class TeamEndpoint {
                 entity.setDescription(jsonFriendlyTeam.getTeamDescription());
             }
             if (jsonFriendlyTeam.getTeamColorCode() != null) {
-                entity.setDescription(jsonFriendlyTeam.getTeamColorCode());
+                entity.setColorCode(jsonFriendlyTeam.getTeamColorCode());
             }
             if(jsonFriendlyTeam.getTeamApplicationsID() != null) {
                 if (!jsonFriendlyTeam.getTeamApplicationsID().isEmpty()) {

@@ -15,13 +15,13 @@ s.auth = (username, password)
 
 r = s.get(srv_url + 'ariane/rest/directories/common/organisation/applications')
 r.status_code
-#200
+# 200
 
-#pprint(r.json())
-#{'applications': [{'applicationColorCode': '6092c4',
-#                   'applicationCompanyID': 1,
-#                   'applicationDescription': 'Multicast bus for business applications',
-#                   'applicationID': 1,
+# pprint(r.json())
+# {'applications': [{'applicationColorCode': '6092c4',
+# 'applicationCompanyID': 1,
+# 'applicationDescription': 'Multicast bus for business applications',
+# 'applicationID': 1,
 #                   'applicationName': 'Tibco RendezVous',
 #                   'applicationOSInstancesID': [2, 3, 4, 5],
 #                   'applicationShortName': 'TibcoRV',
@@ -182,7 +182,8 @@ r.status_code
 #r.text
 #'Application 11 has been successfully updated with color code ddffddff'
 
-payload = '{"applicationName":"fake App name", "applicationShortName":"fake app", "applicationColorCode": "dddddd", "applicationDescription":"This is fake app"}'
+payload = '{"applicationName":"fake App name", "applicationShortName":"fake app", "applicationColorCode": "dddddd",' \
+          ' "applicationDescription":"This is fake app"}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload": payload})
 fakeID = r.json().get('applicationID')
 #200
@@ -583,8 +584,51 @@ r.status_code
 r.text
 #'Environment 2 has been successfully updated with name QA'
 
+payload = '{"environmentName":"fake environment name", "environmentColorCode":"054d32",' \
+          '"environmentDescription":"This is fake environment"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload": payload})
+fakeEnvID = r.json().get('environmentID')
+#200()
+# pprint(r.json())
+#{'environmentColorCode': '054d32',
+# 'environmentDescription': 'This is fake environment',
+# 'environmentID': 1,
+# 'environmentName': 'fake environment name',
+# 'environmentOSInstancesID': [],
+# 'environmentVersion': 0}
 
+payload = '{"environmentID": ' + str(fakeEnvID) + ',"environmentName": "New Fake environment name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'environmentColorCode': '054d32',
+# 'environmentDescription': 'This is fake environment',
+# 'environmentID': 1,
+# 'environmentName': 'New fake environment name',
+# 'environmentOSInstancesID': [],
+# 'environmentVersion': 0}
 
+payload = '{"environmentID": ' + str(fakeEnvID) + ',"environmentDescription": "updated Description"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'environmentColorCode': '054d32',
+# 'environmentDescription': 'updated Description',
+# 'environmentID': 1,
+# 'environmentName': 'New fake environment name',
+# 'environmentOSInstancesID': [],
+# 'environmentVersion': 0}
+
+payload = '{"environmentID": ' + str(fakeEnvID) + ',"environmentColorCode": "054d33"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'environmentColorCode': '054d33',
+# 'environmentDescription': 'updated Description',
+# 'environmentID': 1,
+# 'environmentName': 'New fake environment name',
+# 'environmentOSInstancesID': [],
+# 'environmentVersion': 0}
 
 
 r = s.get(srv_url + 'ariane/rest/directories/common/organisation/teams')
@@ -1842,7 +1886,8 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', pa
 # 'companyOSTypesID': [1],
 # 'companyApplicationsID': [1,2]}
 
-payload = '{"companyName": "New fake Comp name","companyDescription": "updated for Comp2", "companyOSTypesID": [1,2], "companyApplicationsID": [2]}'
+payload = '{"companyName": "New fake Comp name","companyDescription": "updated for Comp2", "companyOSTypesID": [1,2],' \
+          ' "companyApplicationsID": [2]}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload": payload})
 newFakeCompId = r.json().get("CompanyID")
 #200
@@ -2153,7 +2198,8 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params
 # 'teamOSInstancesID': [1],
 # 'teamVersion': 0}
 
-payload = '{"teamName": "New fake Team2 name", "teamColorCode":"054d34", teamDescription": "updated for Team2", "teamOSInstancesID": [1,2], "teamApplicationsID": [2]}'
+payload = '{"teamName": "New fake Team2 name", "teamColorCode":"054d34", teamDescription": "updated for Team2",' \
+          '"teamOSInstancesID": [1,2], "teamApplicationsID": [2]}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload": payload})
 newFakeTeamId = r.json().get("TeamID")
 #200
@@ -2167,7 +2213,8 @@ newFakeTeamId = r.json().get("TeamID")
 # 'teamVersion': 0}
 
 payload = '{"teamID": ' + str(
-    newFakeTeamId) + ',"teamName": "New updated fake Team name","teamDescription": "new updated for Team2", "teamColorCode": "054d35", "teamOSInstancesID": [2], "teamApplicationsID": [1,2]}'
+    newFakeTeamId) + ',"teamName": "New updated fake Team name","teamDescription": "new updated for Team2",' \
+                     '"teamColorCode": "054d35", "teamOSInstancesID": [2], "teamApplicationsID": [1,2]}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload": payload})
 #200
 # pprint(r.json())
@@ -2181,7 +2228,8 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params
 
 
 payload = '{"teamID": ' + str(
-    newFakeTeamId) + ',"teamName": "New updated fake Team name","teamDescription": "new updated for Team2", "teamColorCode": "054d35", "teamOSInstancesID": [], "teamApplicationsID": []}'
+    newFakeTeamId) + ',"teamName": "New updated fake Team name","teamDescription": "new updated for Team2",' \
+                     ' "teamColorCode": "054d35", "teamOSInstancesID": [], "teamApplicationsID": []}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params={"payload": payload})
 #200
 # pprint(r.json())
@@ -2192,6 +2240,58 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/teams', params
 # 'teamName': 'New updated fake Team',
 # 'teamOSInstancesID': [],
 # 'teamVersion': 0}
+
+payload = '{"environmentID": ' + str(fakeEnvID) + ',"environmentOSInstancesID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'environmentColorCode': '054d33',
+# 'environmentDescription': 'updated Description',
+# 'environmentID': 1,
+# 'environmentName': 'New fake environment name',
+# 'environmentOSInstancesID': [1],
+# 'environmentVersion': 0}
+
+payload = '{"environmentName": "New fake environment2 name", "environmentColorCode":"054d34", environmentDescription": "updated for environment2", "environmentOSInstancesID": [1,2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload":payload})
+newfakeEnvID = r.json().get("environmentID")
+#200
+# pprint(r.json())
+#{'environmentColorCode': '054d34',
+# 'environmentDescription': 'updated for environment2',
+# 'environmentID': 2,
+# 'environmentName': 'New fake environment2 name',
+# 'environmentOSInstancesID': [1,2],
+# 'environmentVersion': 0}
+
+payload = '{"environmentID": '+ str(newfakeEnvID)+ ',"environmentName": "New updated fake environment name","environmentDescription": "new updated for environment2", "environmentColorCode": "054d35", "environmentOSInstancesID": [2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'environmentColorCode': '054d35',
+# 'environmentDescription': 'new updated for environment2',
+# 'environmentID': 2,
+# 'environmentName': 'New updated fake environment',
+# 'environmentOSInstancesID': [2],
+# 'environmentVersion': 0}
+
+
+payload = '{"environmentID": '+ str(newfakeEnvID)+ ',"environmentName": "New updated fake environment name","environmentDescription": "new updated for environment2", "environmentColorCode": "054d35", "environmentOSTypesID": []}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload":payload})
+#200
+# pprint(r.json())
+#{'environmentColorCode': '054d35',
+# 'environmentDescription': 'new updated for environment2',
+# 'environmentID': 2,
+# 'environmentName': 'New updated fake environment',
+# 'environmentOSInstancesID': [],
+# 'environmentVersion': 0}
+
+payload = '{"environmentID": 50 , "environmentOSInstancesID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload": payload})
+#200
+# pprint(r.json())
+# Request Error : provided Environment ID 50 was not found.
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/name',
           params={'id': fakeOSID, 'name': 'fakeOs1'})
@@ -2983,7 +3083,8 @@ r.status_code
 # 'teamOSInstancesID': [],
 # 'teamVersion': 1}
 
-payload = '{"applicationName":"fake App name2", "applicationShortName":"fake app2", "applicationColorCode": "de26de", "applicationDescription":"This is fake app2", "applicationTeamID" : ' + str(
+payload = '{"applicationName":"fake App name2", "applicationShortName":"fake app2", "applicationColorCode": "de26de",' \
+          '"applicationDescription":"This is fake app2", "applicationTeamID" : ' + str(
     dppTeamID) + ', "applicationCompanyID": ' + str(oracleCmp) + ', "applicationOSInstancesID": [1,2]}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload": payload})
 fakeAppID2 = r.json().get('applicationID')
@@ -3000,7 +3101,9 @@ fakeAppID2 = r.json().get('applicationID')
 # 'applicationVersion': 1}
 
 payload = '{"applicationID": ' + str(
-    fakeAppID2) + ',"applicationName":"updated fake App name2", "applicationShortName":"updated fake app2", "applicationColorCode": "de25de", "applicationDescription":"This is updated fake app2", "applicationTeamID" : ' + str(
+    fakeAppID2) + ',"applicationName":"updated fake App name2", "applicationShortName":"updated fake app2",' \
+                  ' "applicationColorCode": "de25de", "applicationDescription":"This is updated fake app2", ' \
+                  '"applicationTeamID" : ' + str(
     dppTeamID2) + ', "applicationCompanyID": ' + str(spectralCmp) + ', "applicationOSInstancesID": [2]}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload": payload})
 fakeAppID2 = r.json().get('applicationID')
@@ -3017,7 +3120,8 @@ fakeAppID2 = r.json().get('applicationID')
 # 'applicationVersion': 1}
 
 payload = '{"companyID": ' + str(
-    newFakeCompId) + ',"companyName": "New updated fake Comp name","companyDescription": "new updated for Comp2", "companyOSTypesID": [2], "companyApplicationsID": [1,2]}'
+    newFakeCompId) + ',"companyName": "New updated fake Comp name","companyDescription": "new updated for Comp2", ' \
+                     '"companyOSTypesID": [2], "companyApplicationsID": [1,2]}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload": payload})
 #200
 # pprint(r.json())
@@ -3029,7 +3133,8 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', pa
 # 'companyApplicationsID': [1,2]}
 
 payload = '{"companyID": ' + str(
-    newFakeCompId) + ',"companyName": "New updated fake Comp name","companyDescription": "new updated for Comp2", "companyOSTypesID": [], "companyApplicationsID": []}'
+    newFakeCompId) + ',"companyName": "New updated fake Comp name","companyDescription": "new updated for Comp2",' \
+                     '"companyOSTypesID": [], "companyApplicationsID": []}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/companies', params={"payload": payload})
 #200
 # pprint(r.json())

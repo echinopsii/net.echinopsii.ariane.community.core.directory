@@ -21,6 +21,8 @@ package net.echinopsii.ariane.community.core.directory.base.json.ds.organisation
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
@@ -29,6 +31,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+
 
 /**
  * Our own object to JSON tools as :
@@ -76,5 +80,69 @@ public class EnvironmentJSON {
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
         jgenerator.close();
+    }
+
+    public static class JSONFriendlyEnvironment{
+        private long environmentID;
+        private long environmentVersion;
+        private String environmentName;
+        private String environmentColorCode;
+        private String environmentDescription;
+        private List<Long> environmentOSInstancesID;
+
+        public String getEnvironmentDescription() {
+            return environmentDescription;
+        }
+
+        public void setEnvironmentDescription(String environmentDescription) {
+            this.environmentDescription = environmentDescription;
+        }
+
+        public List<Long> getEnvironmentOSInstancesID() {
+            return environmentOSInstancesID;
+        }
+
+        public void setEnvironmentOSInstancesID(List<Long> environmentOSInstancesID) {
+            this.environmentOSInstancesID = environmentOSInstancesID;
+        }
+
+        public String getEnvironmentColorCode() {
+            return environmentColorCode;
+        }
+
+        public void setEnvironmentColorCode(String environmentColorCode) {
+            this.environmentColorCode = environmentColorCode;
+        }
+
+        public String getEnvironmentName() {
+            return environmentName;
+        }
+
+        public void setEnvironmentName(String environmentName) {
+            this.environmentName = environmentName;
+        }
+
+        public long getEnvironmentVersion() {
+            return environmentVersion;
+        }
+
+        public void setEnvironmentVersion(long environmentVersion) {
+            this.environmentVersion = environmentVersion;
+        }
+
+        public long getEnvironmentID() {
+            return environmentID;
+        }
+
+        public void setEnvironmentID(long environmentID) {
+            this.environmentID = environmentID;
+        }
+    }
+
+    public final static JSONFriendlyEnvironment JSON2Environment(String payload) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        JSONFriendlyEnvironment jsonFriendlyEnvironment = mapper.readValue(payload, JSONFriendlyEnvironment.class);
+        return jsonFriendlyEnvironment;
     }
 }
