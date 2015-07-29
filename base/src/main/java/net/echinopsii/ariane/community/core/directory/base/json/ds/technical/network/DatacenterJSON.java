@@ -102,7 +102,7 @@ public class DatacenterJSON {
         private long datacenterVersion;
         private String datacenterName;
         private String datacenterAddress;
-        private long datacenterZipcode;
+        private long datacenterZipCode;
         private String datacenterTown;
         private String datacenterCountry;
         private double datacenterGPSLat;
@@ -167,12 +167,12 @@ public class DatacenterJSON {
             this.datacenterCountry = datacenterCountry;
         }
 
-        public long getDatacenterZipcode() {
-            return datacenterZipcode;
+        public long getDatacenterZipCode() {
+            return datacenterZipCode;
         }
 
-        public void setDatacenterZipcode(long datacenterZipcode) {
-            this.datacenterZipcode = datacenterZipcode;
+        public void setDatacenterZipCode(long datacenterZipCode) {
+            this.datacenterZipCode = datacenterZipCode;
         }
 
         public String getDatacenterAddress() {

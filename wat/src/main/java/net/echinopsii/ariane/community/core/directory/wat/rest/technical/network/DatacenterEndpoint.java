@@ -18,7 +18,6 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
-import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.EnvironmentJSON;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
@@ -28,7 +27,6 @@ import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAPro
 import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.neo4j.shell.impl.RemoteOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,8 +122,8 @@ public class DatacenterEndpoint {
             entity.setGpsLatitude(jsonFriendlyDatacenter.getDatacenterGPSLat());
             entity.setGpsLongitude(jsonFriendlyDatacenter.getDatacenterGPSLng());
 
-            if (jsonFriendlyDatacenter.getDatacenterZipcode() != 0) {
-                entity.setZipCode(jsonFriendlyDatacenter.getDatacenterZipcode());
+            if (jsonFriendlyDatacenter.getDatacenterZipCode() != 0) {
+                entity.setZipCode(jsonFriendlyDatacenter.getDatacenterZipCode());
             }
             if (jsonFriendlyDatacenter.getDatacenterTown() != null) {
                 entity.setTown(jsonFriendlyDatacenter.getDatacenterTown());
@@ -189,7 +187,7 @@ public class DatacenterEndpoint {
             entity = new Datacenter();
             entity.setNameR(jsonFriendlyDatacenter.getDatacenterName()).setCountryR(jsonFriendlyDatacenter.getDatacenterCountry()).setDescriptionR(jsonFriendlyDatacenter.getDatacenterDescription()).
                    setGpsLatitudeR(jsonFriendlyDatacenter.getDatacenterGPSLat()).setGpsLongitudeR(jsonFriendlyDatacenter.getDatacenterGPSLat()).
-                    setTownR(jsonFriendlyDatacenter.getDatacenterTown()).setZipCodeR(jsonFriendlyDatacenter.getDatacenterZipcode());
+                    setTownR(jsonFriendlyDatacenter.getDatacenterTown()).setZipCodeR(jsonFriendlyDatacenter.getDatacenterZipCode()).setAddressR(jsonFriendlyDatacenter.getDatacenterAddress());
 
             if (jsonFriendlyDatacenter.getDatacenterRoutingAreasID() != null) {
                 if (!jsonFriendlyDatacenter.getDatacenterRoutingAreasID().isEmpty()) {
