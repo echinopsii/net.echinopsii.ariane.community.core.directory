@@ -27,6 +27,7 @@ import net.echinopsii.ariane.community.core.directory.base.model.technical.netwo
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -36,16 +37,16 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.IPAddressJSON.JSONFriendlyIPAddress;
 
 @Path("/directories/common/infrastructure/network/ipAddress")
 public class IPAddressEndpoint {
@@ -123,6 +124,85 @@ public class IPAddressEndpoint {
             entity = null;
         }
         return entity;
+    }
+
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyIPAddress jsonFriendlyIPAddress) {
+        IPAddress entity = null;
+        CommonRestResponse commonRestResponse = new CommonRestResponse();
+
+        if(jsonFriendlyIPAddress.getIpAddressID() !=0)
+            entity = findIPAddressById(em, jsonFriendlyIPAddress.getIpAddressID());
+        if(entity == null && jsonFriendlyIPAddress.getIpAddressID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided IPAddress ID " + jsonFriendlyIPAddress.getIpAddressID() +" was not found.");
+            return commonRestResponse;
+        }
+        if(entity == null){
+            if(jsonFriendlyIPAddress.getIpAddressIPA() != null){
+                entity = findIPAddressByIPA(em, jsonFriendlyIPAddress.getIpAddressIPA());
+            }
+        }
+        if(entity != null) {
+            if (jsonFriendlyIPAddress.getIpAddressIPA() !=null) {
+                entity.setIpAddress(jsonFriendlyIPAddress.getIpAddressIPA());
+            }
+            if (jsonFriendlyIPAddress.getIpAddressFQDN() != null) {
+                entity.setFqdn(jsonFriendlyIPAddress.getIpAddressFQDN());
+            }
+            if (jsonFriendlyIPAddress.getIpAddressOSInstanceID() != 0) {
+                OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, jsonFriendlyIPAddress.getIpAddressOSInstanceID());
+                if (osInstance!= null) {
+                    if (entity.getOsInstances() != null)
+                        entity.getOsInstances().getIpAddress().remove(entity);
+                    entity.setOsInstances(osInstance);
+                    osInstance.getIpAddress().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create IPAddress. Reason : provided OS Instance ID " + jsonFriendlyIPAddress.getIpAddressOSInstanceID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if (jsonFriendlyIPAddress.getIpAddressSubnetID() != 0) {
+                Subnet subnet = SubnetEndpoint.findSubnetById(em, jsonFriendlyIPAddress.getIpAddressSubnetID());
+                if (subnet != null) {
+                    if (entity.getNetworkSubnet() != null)
+                        entity.getNetworkSubnet().getIpAddress().remove(entity);
+                    entity.setNetworkSubnet(subnet);
+                    subnet.getIpAddress().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to update IPAddress. Reason : provided Subnet ID " + jsonFriendlyIPAddress.getIpAddressSubnetID() + " was not found.");
+                    return commonRestResponse;
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        } else {
+            entity = new IPAddress();
+            entity.setIpAddressR(jsonFriendlyIPAddress.getIpAddressIPA()).setFqdnR(jsonFriendlyIPAddress.getIpAddressFQDN());
+            if (jsonFriendlyIPAddress.getIpAddressOSInstanceID() != 0) {
+                OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, jsonFriendlyIPAddress.getIpAddressOSInstanceID());
+                if (osInstance!= null) {
+                    if (entity.getOsInstances() != null)
+                        entity.getOsInstances().getIpAddress().remove(entity);
+                    entity.setOsInstances(osInstance);
+                    osInstance.getIpAddress().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create IPAddress. Reason : provided OS Instance ID " + jsonFriendlyIPAddress.getIpAddressOSInstanceID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if (jsonFriendlyIPAddress.getIpAddressSubnetID() != 0) {
+                Subnet subnet = SubnetEndpoint.findSubnetById(em, jsonFriendlyIPAddress.getIpAddressSubnetID());
+                if (subnet != null) {
+                    if (entity.getNetworkSubnet() != null)
+                        entity.getNetworkSubnet().getIpAddress().remove(entity);
+                    entity.setNetworkSubnet(subnet);
+                    subnet.getIpAddress().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to update IPAddress. Reason : provided Subnet ID " + jsonFriendlyIPAddress.getIpAddressSubnetID() + " was not found.");
+                    return commonRestResponse;
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        }
+        return commonRestResponse;
     }
 
     @GET
@@ -252,6 +332,46 @@ public class IPAddressEndpoint {
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: ipAddress and/or FQDN are not defined. " +
                     "You must define these parameters.").build();
+        }
+    }
+
+    @POST
+    public Response postIPAddress(@QueryParam("payload") String payload) throws IOException {
+
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] create/update IPAddress : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwIPAddress:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            JSONFriendlyIPAddress jsonFriendlyIPAddress  = IPAddressJSON.JSON2IPAddress(payload);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyIPAddress);
+            IPAddress entity = (IPAddress) commonRestResponse.getDeserializedObject();
+            if (entity != null) {
+                try {
+                    em.getTransaction().begin();
+                    if (entity.getId() == null){
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } else {
+                        em.merge(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    }
+                    Response ret = ipAddresstToJSON(entity);
+                    em.close();
+                    return ret;
+                } catch (Throwable t) {
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                    em.close();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating ipAddress " + payload + " : " + t.getMessage()).build();
+                }
+            } else{
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create ipAddresses. Contact your administrator.").build();
         }
     }
 
