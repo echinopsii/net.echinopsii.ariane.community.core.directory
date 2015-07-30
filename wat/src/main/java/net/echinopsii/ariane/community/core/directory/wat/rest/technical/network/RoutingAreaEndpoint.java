@@ -18,12 +18,14 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
+import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.ApplicationJSON;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.RoutingAreaJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -36,7 +38,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.RoutingAreaJSON.JSONFriendlyRoutingArea;
 
 /**
  *
@@ -85,6 +90,88 @@ public class RoutingAreaEndpoint {
             entity = null;
         }
         return entity;
+    }
+
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyRoutingArea jsonFriendlyRoutingArea) {
+        RoutingArea entity = null;
+        CommonRestResponse commonRestResponse = new CommonRestResponse();
+
+        if(jsonFriendlyRoutingArea.getRoutingAreaID() !=0)
+            entity = findRoutingAreaById(em, jsonFriendlyRoutingArea.getRoutingAreaID());
+        if(entity == null && jsonFriendlyRoutingArea.getRoutingAreaID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided Routing area ID " + jsonFriendlyRoutingArea.getRoutingAreaID() +" was not found.");
+            return commonRestResponse;
+        }
+        if(entity == null){
+            if(jsonFriendlyRoutingArea.getRoutingAreaName() != null){
+                entity = findRoutingAreaByName(em, jsonFriendlyRoutingArea.getRoutingAreaName());
+            }
+        }
+        if(entity != null) {
+            if (jsonFriendlyRoutingArea.getRoutingAreaName() !=null) {
+                entity.setName(jsonFriendlyRoutingArea.getRoutingAreaName());
+            }
+            if (jsonFriendlyRoutingArea.getRoutingAreaType() != null) {
+                entity.setType(jsonFriendlyRoutingArea.getRoutingAreaType());
+            }
+            if (jsonFriendlyRoutingArea.getRoutingAreaMulticast() != null) {
+                entity.setMulticast(jsonFriendlyRoutingArea.getRoutingAreaMulticast());
+            }
+            if (jsonFriendlyRoutingArea.getRoutingAreaDescription() != null) {
+                entity.setDescription(jsonFriendlyRoutingArea.getRoutingAreaDescription());
+            }
+            if(jsonFriendlyRoutingArea.getRoutingAreaDatacentersID() != null) {
+                if (!jsonFriendlyRoutingArea.getRoutingAreaDatacentersID().isEmpty()) {
+                    for (Datacenter datacenter : entity.getDatacenters()) {
+                        if (!jsonFriendlyRoutingArea.getRoutingAreaDatacentersID().contains(datacenter.getId())) {
+                            entity.getDatacenters().remove(datacenter);
+                            datacenter.getRoutingAreas().remove(entity);
+                        }
+                    }
+                    for (Long dcId : jsonFriendlyRoutingArea.getRoutingAreaDatacentersID()) {
+                        Datacenter datacenter = DatacenterEndpoint.findDatacenterById(em, dcId);
+                        if (datacenter != null) {
+                            if (!entity.getDatacenters().contains(datacenter)) {
+                                entity.getDatacenters().add(datacenter);
+                                datacenter.getRoutingAreas().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Routing Area. Reason : provided Datacenter ID " + dcId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (Datacenter datacenter : entity.getDatacenters()) {
+                        entity.getDatacenters().remove(datacenter);
+                        datacenter.getRoutingAreas().remove(entity);
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        } else {
+            entity = new RoutingArea();
+            entity.setNameR(jsonFriendlyRoutingArea.getRoutingAreaName()).setDescriptionR(jsonFriendlyRoutingArea.getRoutingAreaDescription())
+                  .setMulticastR(jsonFriendlyRoutingArea.getRoutingAreaMulticast()).setTypeR(jsonFriendlyRoutingArea.getRoutingAreaType());
+
+            if(jsonFriendlyRoutingArea.getRoutingAreaDatacentersID() != null) {
+                if (!jsonFriendlyRoutingArea.getRoutingAreaDatacentersID().isEmpty()) {
+                    for (Long dcId : jsonFriendlyRoutingArea.getRoutingAreaDatacentersID()) {
+                        Datacenter datacenter = DatacenterEndpoint.findDatacenterById(em, dcId);
+                        if (datacenter != null) {
+                            if (!entity.getDatacenters().contains(datacenter)) {
+                                entity.getDatacenters().add(datacenter);
+                                datacenter.getRoutingAreas().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Routing area. Reason : provided Datacenter ID " + dcId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        }
+        return commonRestResponse;
     }
 
     @GET
@@ -236,6 +323,45 @@ public class RoutingAreaEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete routing areas. Contact your administrator.").build();
         } else
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define this parameter.").build();
+    }
+
+    @POST
+    public Response postRoutingarea(@QueryParam("payload") String payload) throws IOException {
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] create/update routing area : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwRarea:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            JSONFriendlyRoutingArea jsonFriendlyRoutingArea  = RoutingAreaJSON.JSON2Routingarea(payload);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyRoutingArea);
+            RoutingArea entity = (RoutingArea) commonRestResponse.getDeserializedObject();
+            if (entity != null) {
+                try {
+                    em.getTransaction().begin();
+                    if (entity.getId() == null){
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } else {
+                        em.merge(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    }
+                    Response ret = routingAreaToJSON(entity);
+                    em.close();
+                    return ret;
+                } catch (Throwable t) {
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                    em.close();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating routing area " + payload + " : " + t.getMessage()).build();
+                }
+            } else{
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create routing areas. Contact your administrator.").build();
+        }
     }
 
     @GET
