@@ -25,6 +25,7 @@ import net.echinopsii.ariane.community.core.directory.base.model.technical.netwo
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -34,14 +35,14 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.IPAddressJSON.JSONFriendlyIPAddress;
 
 @SuppressWarnings("ALL")
 @Path("/directories/common/infrastructure/network/ipAddress")
@@ -126,7 +127,7 @@ public class IPAddressEndpoint {
         }
         if(entity == null){
             if(jsonFriendlyIPAddress.getIpAddressIPA() != null){
-                entity = findIPAddressByIPA(em, jsonFriendlyIPAddress.getIpAddressIPA());
+                entity = findIPAddressByFQDN(em, jsonFriendlyIPAddress.getIpAddressFQDN());
             }
         }
         if(entity != null) {
@@ -139,10 +140,10 @@ public class IPAddressEndpoint {
             if (jsonFriendlyIPAddress.getIpAddressOSInstanceID() != 0) {
                 OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, jsonFriendlyIPAddress.getIpAddressOSInstanceID());
                 if (osInstance!= null) {
-                    if (entity.getOsInstances() != null)
-                        entity.getOsInstances().getIpAddress().remove(entity);
-                    entity.setOsInstances(osInstance);
-                    osInstance.getIpAddress().add(entity);
+                    if (entity.getOsInstance() != null)
+                        entity.getOsInstance().getIpAddresses().remove(entity);
+                    entity.setOsInstance(osInstance);
+                    osInstance.getIpAddresses().add(entity);
                 } else {
                     commonRestResponse.setErrorMessage("Fail to create IPAddress. Reason : provided OS Instance ID " + jsonFriendlyIPAddress.getIpAddressOSInstanceID() +" was not found.");
                     return commonRestResponse;
@@ -152,9 +153,9 @@ public class IPAddressEndpoint {
                 Subnet subnet = SubnetEndpoint.findSubnetById(em, jsonFriendlyIPAddress.getIpAddressSubnetID());
                 if (subnet != null) {
                     if (entity.getNetworkSubnet() != null)
-                        entity.getNetworkSubnet().getIpAddress().remove(entity);
+                        entity.getNetworkSubnet().getIpAddresses().remove(entity);
                     entity.setNetworkSubnet(subnet);
-                    subnet.getIpAddress().add(entity);
+                    subnet.getIpAddresses().add(entity);
                 } else {
                     commonRestResponse.setErrorMessage("Fail to update IPAddress. Reason : provided Subnet ID " + jsonFriendlyIPAddress.getIpAddressSubnetID() + " was not found.");
                     return commonRestResponse;
@@ -167,10 +168,10 @@ public class IPAddressEndpoint {
             if (jsonFriendlyIPAddress.getIpAddressOSInstanceID() != 0) {
                 OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, jsonFriendlyIPAddress.getIpAddressOSInstanceID());
                 if (osInstance!= null) {
-                    if (entity.getOsInstances() != null)
-                        entity.getOsInstances().getIpAddress().remove(entity);
-                    entity.setOsInstances(osInstance);
-                    osInstance.getIpAddress().add(entity);
+                    if (entity.getOsInstance() != null)
+                        entity.getOsInstance().getIpAddresses().remove(entity);
+                    entity.setOsInstance(osInstance);
+                    osInstance.getIpAddresses().add(entity);
                 } else {
                     commonRestResponse.setErrorMessage("Fail to create IPAddress. Reason : provided OS Instance ID " + jsonFriendlyIPAddress.getIpAddressOSInstanceID() +" was not found.");
                     return commonRestResponse;
@@ -180,9 +181,9 @@ public class IPAddressEndpoint {
                 Subnet subnet = SubnetEndpoint.findSubnetById(em, jsonFriendlyIPAddress.getIpAddressSubnetID());
                 if (subnet != null) {
                     if (entity.getNetworkSubnet() != null)
-                        entity.getNetworkSubnet().getIpAddress().remove(entity);
+                        entity.getNetworkSubnet().getIpAddresses().remove(entity);
                     entity.setNetworkSubnet(subnet);
-                    subnet.getIpAddress().add(entity);
+                    subnet.getIpAddresses().add(entity);
                 } else {
                     commonRestResponse.setErrorMessage("Fail to update IPAddress. Reason : provided Subnet ID " + jsonFriendlyIPAddress.getIpAddressSubnetID() + " was not found.");
                     return commonRestResponse;
