@@ -86,7 +86,7 @@ public class OSInstanceJSON {
             jgenerator.writeNumber(env.getId());
         jgenerator.writeEndArray();
         jgenerator.writeArrayFieldStart(OSI_IPADDRESSES_ID);
-        for (IPAddress ipAddress : osInstance.getIpAddress())
+        for (IPAddress ipAddress : osInstance.getIpAddresses())
             jgenerator.writeNumber(ipAddress.getId());
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();

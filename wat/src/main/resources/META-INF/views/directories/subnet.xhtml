@@ -162,7 +162,7 @@
 
                             <h:outputText value="IP Addresses : "  styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(subnet,'ipAddress')}" var="ipa" styleClass="ui-widget-content grid" rowKey="#{ipa.id}"
+                                <p:dataTable value="#{directoryViewUtils.asList(subnet,'ipAddresses')}" var="ipa" styleClass="ui-widget-content grid" rowKey="#{ipa.id}"
                                              rows="5" paginator="true" selectionMode="multiple">
                                     <p:column headerText="IP Address" sortBy="#{ipa.ipAddress}" filterBy="#{ipa.ipAddress}">
                                         <h:outputText id="ipaIPAddress" value="#{ipa.ipAddress}"/>
@@ -219,7 +219,7 @@
                             </p:dataTable>
 
                             <h:outputText value="IP Addresses : " styleClass="arianeDialogLabel"/>
-                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'ipAddress')}" var="ipa"
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'ipAddresses')}" var="ipa"
                                           rows="5" paginator="true">
                                 <p:column headerText="IP Address">
                                     <h:outputText id="ipaIPAddress" value="#{ipa.ipAddress}"/>
@@ -228,7 +228,7 @@
                                     <h:outputText id="ipaFQDN" value="#{ipa.fqdn}"/>
                                 </p:column>
                                 <p:column headerText="OS Instance">
-                                    <h:outputText id="ipaOSI" value="#{ipa.osInstances.name}"/>
+                                    <h:outputText id="ipaOSI" value="#{ipa.osInstance.name}"/>
                                 </p:column>
                             </p:dataTable>
 

@@ -23,10 +23,7 @@ package net.echinopsii.ariane.community.core.directory.base.json.ds.technical.ne
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -54,7 +51,7 @@ public class IPAddressJSON {
         jgenerator.writeNumberField(IPADDRESS_VERSION, ipAddress.getVersion());
         jgenerator.writeStringField(IPADDRESS_IPA, ipAddress.getIpAddress());
         jgenerator.writeStringField(IPADDRESS_FQDN, ipAddress.getFqdn());
-        jgenerator.writeNumberField(IPADDRESS_OSI_ID, ((ipAddress.getOsInstances()!=null)?ipAddress.getOsInstances().getId():-1));
+        jgenerator.writeNumberField(IPADDRESS_OSI_ID, ((ipAddress.getOsInstance()!=null)?ipAddress.getOsInstance().getId():-1));
         jgenerator.writeNumberField(IPADDRESS_SUBNET_ID, ((ipAddress.getNetworkSubnet()!=null)?ipAddress.getNetworkSubnet().getId():-1));
 
         jgenerator.writeEndObject();

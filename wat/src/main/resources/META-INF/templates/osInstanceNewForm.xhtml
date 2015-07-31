@@ -89,7 +89,7 @@
                     <h:panelGroup id="osInstIPA">
                         <c:if test="#{OSInstanceNewController.iplist.size() gt 0}">
                             <p:commandLink onclick="ipAddressCreateDialog.show()">
-                                <h:outputText value=" create new ipAddress"/>
+                                <h:outputText value=" create new ipAddresses"/>
                             </p:commandLink><br/>
                             <h:form>
                                 <p:selectManyMenu id="osInstIPASelect" value="#{OSInstanceNewController.ipaddressesToBind}" style="width:100%;height:100px">
