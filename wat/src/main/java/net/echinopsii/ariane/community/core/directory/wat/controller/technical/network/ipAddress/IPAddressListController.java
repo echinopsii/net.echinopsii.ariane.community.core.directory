@@ -37,7 +37,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.transaction.*;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -106,7 +105,7 @@ public class IPAddressListController implements Serializable {
             if (ipAddress.setNetworkSubnetR(subnet).isValid()) {
                 try {
                     em.getTransaction().begin();
-                    previousSubnet.getIpAddress().remove(ipAddress);
+                    previousSubnet.getIpAddresses().remove(ipAddress);
                     ipAddress.setNetworkSubnet(subnet);
                     em.flush();
                     em.getTransaction().commit();
@@ -153,8 +152,8 @@ public class IPAddressListController implements Serializable {
                 if (osInstance.getName().equals(changedOSInstance.get(ipAddress.getId()))) {
                     em.getTransaction().begin();
                     osInstance = em.find(osInstance.getClass(), osInstance.getId());
-                    ipAddress.setOsInstances(osInstance);
-                    osInstance.getIpAddress().add(ipAddress);
+                    ipAddress.setOsInstance(osInstance);
+                    osInstance.getIpAddresses().add(ipAddress);
                     em.flush();
                     em.getTransaction().commit();
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -167,7 +166,7 @@ public class IPAddressListController implements Serializable {
             }
             if (noRosInstance) {
                 em.getTransaction().begin();
-                ipAddress.setOsInstances(null);
+                ipAddress.setOsInstance(null);
                 em.flush();
                 em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -193,7 +192,7 @@ public class IPAddressListController implements Serializable {
     public String getIPAddressOSInstanceName(IPAddress ipAddress) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
-        String mOSInstanceName = (ipAddress.getOsInstances()!=null) ? ipAddress.getOsInstances().getName() : "None";
+        String mOSInstanceName = (ipAddress.getOsInstance()!=null) ? ipAddress.getOsInstance().getName() : "None";
         em.close();
         return mOSInstanceName;
     }
@@ -261,8 +260,8 @@ public class IPAddressListController implements Serializable {
             try {
                 em.getTransaction().begin();
                 ipAddress2BeRemoved = em.find(ipAddress2BeRemoved.getClass(), ipAddress2BeRemoved.getId());
-                if (ipAddress2BeRemoved.getNetworkSubnet()!=null) ipAddress2BeRemoved.getNetworkSubnet().getIpAddress().remove(ipAddress2BeRemoved);
-                if (ipAddress2BeRemoved.getOsInstances()!=null) ipAddress2BeRemoved.getOsInstances().getIpAddress().remove(ipAddress2BeRemoved);
+                if (ipAddress2BeRemoved.getNetworkSubnet()!=null) ipAddress2BeRemoved.getNetworkSubnet().getIpAddresses().remove(ipAddress2BeRemoved);
+                if (ipAddress2BeRemoved.getOsInstance()!=null) ipAddress2BeRemoved.getOsInstance().getIpAddresses().remove(ipAddress2BeRemoved);
                 em.remove(ipAddress2BeRemoved);
                 em.flush();
                 em.getTransaction().commit();

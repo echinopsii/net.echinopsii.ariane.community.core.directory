@@ -6,7 +6,7 @@
 <ui:composition>
     <h:panelGrid id="ipAddressNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
         <h:outputText value="IP Address" styleClass="arianeDialogLabel"/>
-        <p:inputText id="ipAddress" label="IPAddress" required="true" value="#{ipAddressNewController.ipAddress}" onblur="validateIP()"/>
+        <p:inputText id="ipAddresses" label="IPAddress" required="true" value="#{ipAddressNewController.ipAddress}" onblur="validateIP()"/>
 
         <h:outputText value="FQDN" styleClass="arianeDialogLabel"/>
         <p:inputText id="fqdn" label="FQDN" value="#{ipAddressNewController.fqdn}"/>
@@ -25,7 +25,7 @@
     <script type="application/javascript">
         //<![CDATA[
         function validateIP() {
-            var IP = document.getElementById("createIPAddressDialogForm:ipAddress");
+            var IP = document.getElementById("createIPAddressDialogForm:ipAddresses");
             var ipFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
             var ip = IP.value.match(ipFormat);
             if(ip) {

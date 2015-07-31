@@ -193,7 +193,7 @@
 
                     <h:outputText value="IP Addresses : "  styleClass="arianeDialogLabel"/>
                     <h:form>
-                        <p:dataTable value="#{directoryViewUtils.asList(osi,'ipAddress')}" var="ipa" styleClass="ui-widget-content grid" rowKey="#{ipa.id}"
+                        <p:dataTable value="#{directoryViewUtils.asList(osi,'ipAddresses')}" var="ipa" styleClass="ui-widget-content grid" rowKey="#{ipa.id}"
                                      rows="5" paginator="true" selection="#{OSInstancesListController.removedIPAddresses[osi.id]}" selectionMode="multiple">
                             <p:column headerText="IP Address" sortBy="#{ipa.ipAddress}" filterBy="#{ipa.ipAddress}">
                                 <h:outputText id="ipaIPAddress" value="#{ipa.ipAddress}"/>
@@ -301,7 +301,7 @@
 
 
                             <h:outputText value="IPAddress : " styleClass="arianeDialogLabel"/>
-                            <p:dataTable  value="#{directoryViewUtils.asList(selectedOSInstance,'ipAddress')}" var="_item"
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedOSInstance,'ipAddresses')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="IPAddress">
                                     <h:outputText id="rIPAddressName" value="#{_item.ipAddress}"/>

@@ -927,8 +927,8 @@ public class OSInstanceEndpoint {
                     if (ipAddress!=null) {
                         try {
                             em.getTransaction().begin();
-                            ipAddress.setOsInstances(entity);
-                            entity.getIpAddress().add(ipAddress);
+                            ipAddress.setOsInstance(entity);
+                            entity.getIpAddresses().add(ipAddress);
                             em.flush();
                             em.getTransaction().commit();
                             em.close();
@@ -971,8 +971,8 @@ public class OSInstanceEndpoint {
                     if (ipAddress!=null) {
                         try {
                             em.getTransaction().begin();
-                            ipAddress.setOsInstances(null);
-                            entity.getIpAddress().remove(ipAddress);
+                            ipAddress.setOsInstance(null);
+                            entity.getIpAddresses().remove(ipAddress);
                             em.flush();
                             em.getTransaction().commit();
                             em.close();
