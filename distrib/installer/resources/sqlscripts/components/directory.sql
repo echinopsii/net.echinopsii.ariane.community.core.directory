@@ -158,6 +158,8 @@ CREATE TABLE IF NOT EXISTS `ipaddress` (
   CONSTRAINT `FK_3n0207eaccxw6baxbsonaqtl6` FOREIGN KEY (`networkSubnet_id`) REFERENCES `subnet` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+ALTER TABLE`ipaddress` CHANGE `osInstances_id` `osInstance_id` bigint(20);
+
 --
 -- Table structure for table `application`
 --

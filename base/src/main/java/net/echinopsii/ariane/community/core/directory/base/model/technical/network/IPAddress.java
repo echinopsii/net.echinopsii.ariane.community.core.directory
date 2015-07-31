@@ -20,14 +20,10 @@
 package net.echinopsii.ariane.community.core.directory.base.model.technical.network;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -66,7 +62,7 @@ public class IPAddress implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
-    private OSInstance osInstances;
+    private OSInstance osInstance;
 
     public Long getId() {
         return this.id;
@@ -166,22 +162,22 @@ public class IPAddress implements Serializable {
         return this;
     }
 
-    public OSInstance getOsInstances() {
-        return this.osInstances;
+    public OSInstance getOsInstance() {
+        return this.osInstance;
     }
 
-    public void setOsInstances(final OSInstance osInstances) {
-        this.osInstances = osInstances;
+    public void setOsInstance(final OSInstance osInstance) {
+        this.osInstance = osInstance;
     }
 
     public IPAddress setOsInstancesR(final OSInstance osInstances) {
-        this.osInstances = osInstances;
+        this.osInstance = osInstances;
         return this;
     }
 
     public IPAddress clone() {
         return new IPAddress().setIdR(this.id).setVersionR(this.version).setFqdnR(this.fqdn).setIpAddressR(this.ipAddress).
-                               setNetworkSubnetR(this.networkSubnet).setOsInstancesR(this.osInstances);
+                               setNetworkSubnetR(this.networkSubnet).setOsInstancesR(this.osInstance);
     }
 
     public final static String SUBNET_SUBNET_MAPPING_FIELD = "networkSubnet";
@@ -236,7 +232,7 @@ public class IPAddress implements Serializable {
      */
     public Boolean isBindToSubnet(){
         Boolean ret = false;
-        for (IPAddress ipa: this.getNetworkSubnet().getIpAddress()){
+        for (IPAddress ipa: this.getNetworkSubnet().getIpAddresses()){
             if(ipa.getIpAddress().equals(this.ipAddress) && !ipa.getId().equals(this.id)){
                 ret = true;
                 break;

@@ -23,7 +23,6 @@ package net.echinopsii.ariane.community.core.directory.wat.controller.technical.
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import org.slf4j.Logger;
@@ -149,7 +148,7 @@ public class IPAddressNewController implements Serializable {
         newIPAddress.setIpAddress(ipAddress);
         newIPAddress.setFqdn(this.fqdn);
         newIPAddress.setNetworkSubnet(this.rsubnet);
-        newIPAddress.setOsInstances(this.rosinstance);
+        newIPAddress.setOsInstance(this.rosinstance);
 
         Boolean isBindToSubnet = newIPAddress.isBindToSubnet();
         Boolean isValid = newIPAddress.isValid();
@@ -159,11 +158,11 @@ public class IPAddressNewController implements Serializable {
                 em.getTransaction().begin();
                 em.persist(newIPAddress);
                 if (rsubnet != null) {
-                    rsubnet.getIpAddress().add(newIPAddress);
+                    rsubnet.getIpAddresses().add(newIPAddress);
                     em.merge(rsubnet);
                 }
                 if (rosinstance != null) {
-                    rosinstance.getIpAddress().add(newIPAddress);
+                    rosinstance.getIpAddresses().add(newIPAddress);
                     em.merge(rosinstance);
                 }
 
