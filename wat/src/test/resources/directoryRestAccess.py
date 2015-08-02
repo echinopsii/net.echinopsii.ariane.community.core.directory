@@ -2381,7 +2381,7 @@ r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostyp
 #  'osTypeOSInstancesID': [3],
 #  'osTypeVersion': 1}
 
-payload = '{"osTypeID": '+ str(3)+ ',"osTypeName":"new fake osType name2",' \
+payload = '{"osTypeID": '+ str(newfakeosTypeID)+ ',"osTypeName":"new fake osType name2",' \
                                    ' "osTypeArchitecture":"new fake architecture2", "osTypeOSInstancesID": []}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload":payload})
 #200
