@@ -92,7 +92,7 @@ public class IPAddressEndpoint {
     }
 
     public static IPAddress findIPAddressByIPAndOSI(EntityManager em, String ipAddress, long osiID) {
-        TypedQuery<IPAddress> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstance LEFT JOIN FETCH l.networkSubnet WHERE l.ipAddress = :entityIPA AND l.osInstances.id = :osiID ORDER BY l.ipAddress", IPAddress.class);
+        TypedQuery<IPAddress> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstance LEFT JOIN FETCH l.networkSubnet WHERE l.ipAddress = :entityIPA AND l.osInstance.id = :osiID ORDER BY l.ipAddress", IPAddress.class);
         findByNameQuery.setParameter("entityIPA", ipAddress).setParameter("osiID", osiID);
         IPAddress entity;
         try {
@@ -297,7 +297,7 @@ public class IPAddressEndpoint {
     @Path("/create")
     public Response createIPAddress(@QueryParam("ipAddress")String ipAddress, @QueryParam("fqdn")String fqdn,
                                     @QueryParam("networkSubnet")long subnetID, @QueryParam("osInstance")int osInstanceID) {
-        if (ipAddress!=null && fqdn!=null) {
+        if (ipAddress!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create ipAddress : ({},{},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), ipAddress, fqdn, subnetID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwIPAddress:create") ||
