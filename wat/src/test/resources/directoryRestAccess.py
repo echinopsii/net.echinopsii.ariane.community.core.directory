@@ -226,7 +226,7 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications',
 # 'applicationTeamID': -1,
 # 'applicationVersion': -1}
 
-payload = '{"applicationID": ' + str(fakeID) + ', "applicationColorCode": "de28de"}'
+payl0oad = '{"applicationID": ' + str(fakeID) + ', "applicationColorCode": "de28de"}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload": payload})
 #200
 # pprint(r.json())
@@ -2209,109 +2209,89 @@ r.status_code
 #     "ipAddressSubnetID": 2
 #}
 
-payload = '{"ipAddressIPA":"123.123.48.123", "ipAddressFQDN": "fakeFQDN",' \
-          ' "ipAddressSubnetID": 1, "ipAddressOSInstanceID": -1}'
+payload = '{"ipAddressIPA":"123.123.48.122", "ipAddressFQDN": "fakeFQDN",' \
+          ' "ipAddressSubnetID": 1}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
 fakeipAddressID = r.json().get('ipAddressID')
-print(r.text)
-input()
 #200()
 # pprint(r.json())
-#{"ipAddressID": 1,
-# "ipAddressVersion": 0,
-# "ipAddressIPA": "123.123.48.123",
-# "ipAddressFQDN": "Fake FQDN"
-# "ipAddressOSInstanceID": -1,
-# "ipAddressSubnetID": 5
-# }
+# {'ipAddressFQDN': 'fakeFQDN',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.122',
+#  'ipAddressOSInstanceID': -1,
+#  'ipAddressSubnetID': 1,
+#  'ipAddressVersion': 0}
 
 payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressIPA": "123.123.48.130"}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
-print(r.text)
-input()
 #200
 # pprint(r.json())
-#{"ipAddressID": 1,
-# "ipAddressVersion": 0,
-# "ipAddressIPA": "123.123.48.130",
-# "ipAddressFQDN": "Fake FQDN"
-# "ipAddressOSInstanceID": -1,
-# "ipAddressSubnetID": 5
-# }
+# {'ipAddressFQDN': 'fakeFQDN',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.130',
+#  'ipAddressOSInstanceID': -1,
+#  'ipAddressSubnetID': 1,
+#  'ipAddressVersion': 1}
 
 payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressFQDN": "Fake FQDN2"}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
-print(r.text)
-input()
 #200
 # pprint(r.json())
-#{"ipAddressID": 1,
-# "ipAddressVersion": 0,
-# "ipAddressIPA": "123.123.48.130",
-# "ipAddressFQDN": "Fake FQDN2"
-# "ipAddressOSInstanceID": -1,
-# "ipAddressSubnetID": 5
-# }
+# {'ipAddressFQDN': 'Fake FQDN2',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.130',
+#  'ipAddressOSInstanceID': -1,
+#  'ipAddressSubnetID': 1,
+#  'ipAddressVersion': 2}
 
 payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressSubnetID": 2}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
-print(r.text)
-input()
 #200
 # pprint(r.json())
-#{"ipAddressID": 1,
-# "ipAddressVersion": 0,
-# "ipAddressIPA": "123.123.48.130",
-# "ipAddressFQDN": "Fake FQDN2"
-# "ipAddressOSInstanceID": -1,
-# "ipAddressSubnetID": 5
-# }
+# {'ipAddressFQDN': 'Fake FQDN2',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.130',
+#  'ipAddressOSInstanceID': -1,
+#  'ipAddressSubnetID': 2,
+#  'ipAddressVersion': 3}
 
-payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressOSInstanceID": 1}'
+
+payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressOSInstanceID": 2}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
-print(r.text)
-input()
 #200
 # pprint(r.json())
-#{"ipAddressID": 1,
-# "ipAddressVersion": 0,
-# "ipAddressIPA": "123.123.48.130",
-# "ipAddressFQDN": "Fake FQDN2"
-# "ipAddressOSInstanceID": 1,
-# "ipAddressSubnetID": 5
-# }
+# {'ipAddressFQDN': 'Fake FQDN2',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.130',
+#  'ipAddressOSInstanceID': 2,
+#  'ipAddressSubnetID': 2,
+#  'ipAddressVersion': 4}
 
 payload = '{"ipAddressIPA":"123.123.48.123", "ipAddressFQDN": "fakeFQDN2", "ipAddressSubnetID": 1,' \
           ' "ipAddressOSInstanceID": 2}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
 fakeipAddressID = r.json().get('ipAddressID')
-print(r.text)
-input()
 #200()
 # pprint(r.json())
-#{"ipAddressID": 1,
-# "ipAddressVersion": 0,
-# "ipAddressIPA": "123.123.48.123",
-# "ipAddressFQDN": "Fake FQDN2"
-# "ipAddressOSInstanceID": 2,
-# "ipAddressSubnetID": 5
-# }
+# {'ipAddressFQDN': 'fakeFQDN2',
+#  'ipAddressID': 26,
+#  'ipAddressIPA': '123.123.48.123',
+#  'ipAddressOSInstanceID': 2,
+#  'ipAddressSubnetID': 1,
+#  'ipAddressVersion': 0}
 
 payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressIPA":"123.123.48.123",' \
                                                       ' "ipAddressFQDN": "fakeFQDN3", ' \
                                                       '"ipAddressSubnetID": 1, "ipAddressOSInstanceID": 3}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
-print(r.text)
-input()
 #200()
 # pprint(r.json())
-#{"ipAddressID": 1,
-# "ipAddressVersion": 0,
-# "ipAddressIPA": "123.123.48.123",
-# "ipAddressFQDN": "Fake FQDN3"
-# "ipAddressOSInstanceID": 3,
-# "ipAddressSubnetID": 5
-# }
+# {'ipAddressFQDN': 'fakeFQDN3',
+#  'ipAddressID': 26,
+#  'ipAddressIPA': '123.123.48.123',
+#  'ipAddressOSInstanceID': 3,
+#  'ipAddressSubnetID': 1,
+#  'ipAddressVersion': 1}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes')
 r.status_code
