@@ -18,6 +18,7 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
+import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.EnvironmentJSON;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
@@ -26,6 +27,7 @@ import net.echinopsii.ariane.community.core.directory.base.model.technical.syste
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.SubnetJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInstanceEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -39,9 +41,12 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.SubnetJSON.JSONFriendlySubnet;
 
 /**
  *
@@ -110,6 +115,200 @@ public class SubnetEndpoint {
         for (RoutingArea rarea : resultList)
             routingAreaNames.add(rarea.getId());
         return routingAreaNames.toString();
+    }
+
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlySubnet jsonFriendlySubnet) {
+        Subnet entity = null;
+        CommonRestResponse commonRestResponse = new CommonRestResponse();
+
+        if(jsonFriendlySubnet.getSubnetID() !=0)
+            entity = findSubnetById(em, jsonFriendlySubnet.getSubnetID());
+        if(entity == null && jsonFriendlySubnet.getSubnetID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided Subnet ID " + jsonFriendlySubnet.getSubnetID() +" was not found.");
+            return commonRestResponse;
+        }
+        if(entity == null){
+            if(jsonFriendlySubnet.getSubnetName() != null){
+                entity = findSubnetByName(em, jsonFriendlySubnet.getSubnetName());
+            }
+        }
+        if(entity != null) {
+            if (jsonFriendlySubnet.getSubnetName() !=null) {
+                entity.setName(jsonFriendlySubnet.getSubnetName());
+            }
+            if (jsonFriendlySubnet.getSubnetMask() != null) {
+                entity.setSubnetMask(jsonFriendlySubnet.getSubnetMask());
+            }
+            if (jsonFriendlySubnet.getSubnetDescription() != null) {
+                entity.setDescription(jsonFriendlySubnet.getSubnetDescription());
+            }
+            if (jsonFriendlySubnet.getSubnetIP() != null) {
+                entity.setSubnetIP(jsonFriendlySubnet.getSubnetIP());
+            }
+            if (jsonFriendlySubnet.getSubnetMask() != null) {
+                entity.setSubnetMask(jsonFriendlySubnet.getSubnetMask());
+            }
+            if (jsonFriendlySubnet.getSubnetRoutingAreaID() != 0) {
+                RoutingArea routingArea = RoutingAreaEndpoint.findRoutingAreaById(em, jsonFriendlySubnet.getSubnetRoutingAreaID());
+                if (routingArea != null) {
+                    if (entity.getRarea() != null)
+                        entity.getRarea().getSubnets().remove(entity);
+                    entity.setRarea(routingArea);
+                    routingArea.getSubnets().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create Subnet. Reason : provided Routing Area ID " + jsonFriendlySubnet.getSubnetRoutingAreaID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if(jsonFriendlySubnet.getSubnetOSInstancesID() != null) {
+                if (!jsonFriendlySubnet.getSubnetOSInstancesID().isEmpty()) {
+                    for (OSInstance osInstance : entity.getOsInstances()) {
+                        if (!jsonFriendlySubnet.getSubnetOSInstancesID().contains(osInstance.getId())) {
+                            entity.getOsInstances().remove(osInstance);
+                            osInstance.getNetworkSubnets().remove(entity);
+                        }
+                    }
+                    for (Long osiId : jsonFriendlySubnet.getSubnetOSInstancesID()) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                        if (osInstance != null) {
+                            if (!entity.getOsInstances().contains(osInstance)) {
+                                entity.getOsInstances().add(osInstance);
+                                osInstance.getNetworkSubnets().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided OS Instance ID " + osiId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (OSInstance osInstance: entity.getOsInstances()) {
+                        entity.getOsInstances().remove(osInstance);
+                        osInstance.getNetworkSubnets().remove(entity);
+                    }
+                }
+            }
+            if(jsonFriendlySubnet.getSubnetDatacentersID() != null) {
+                if (!jsonFriendlySubnet.getSubnetDatacentersID().isEmpty()) {
+                    for (Datacenter datacenter : entity.getDatacenters()) {
+                        if (!jsonFriendlySubnet.getSubnetDatacentersID().contains(datacenter.getId())) {
+                            entity.getDatacenters().remove(datacenter);
+                            datacenter.getSubnets().remove(entity);
+                        }
+                    }
+                    for (Long dcId : jsonFriendlySubnet.getSubnetDatacentersID()) {
+                        Datacenter datacenter = DatacenterEndpoint.findDatacenterById(em, dcId);
+                        if (datacenter != null) {
+                            if (!entity.getDatacenters().contains(datacenter)) {
+                                entity.getDatacenters().add(datacenter);
+                                datacenter.getSubnets().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided Datacenter ID " + dcId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (Datacenter datacenter : entity.getDatacenters()) {
+                        entity.getDatacenters().remove(datacenter);
+                        datacenter.getSubnets().remove(entity);
+                    }
+                }
+            }
+            if(jsonFriendlySubnet.getSubnetIPAddressesID() != null) {
+                if (!jsonFriendlySubnet.getSubnetIPAddressesID().isEmpty()) {
+                    for (IPAddress ipAddress : entity.getIpAddresses()) {
+                        if (!jsonFriendlySubnet.getSubnetIPAddressesID().contains(ipAddress.getId())) {
+                            entity.getIpAddresses().remove(ipAddress);
+                            ipAddress.setNetworkSubnet(null);
+                        }
+                    }
+                    for (Long ipaId : jsonFriendlySubnet.getSubnetIPAddressesID()) {
+                        IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, ipaId);
+                        if (ipAddress != null) {
+                            if (!entity.getIpAddresses().contains(ipAddress)) {
+                                entity.getIpAddresses().add(ipAddress);
+                                ipAddress.setNetworkSubnet(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided IPAddress ID " + ipaId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (IPAddress ipAddress : entity.getIpAddresses()) {
+                        entity.getIpAddresses().remove(ipAddress);
+                        ipAddress.setNetworkSubnet(null);
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        } else {
+            entity = new Subnet();
+            entity.setNameR(jsonFriendlySubnet.getSubnetName()).setDescriptionR(jsonFriendlySubnet.getSubnetDescription()).setSubnetIPR(jsonFriendlySubnet.getSubnetIP())
+                  .setSubnetMaskR(jsonFriendlySubnet.getSubnetMask());
+            if (jsonFriendlySubnet.getSubnetRoutingAreaID() != 0) {
+                RoutingArea routingArea = RoutingAreaEndpoint.findRoutingAreaById(em, jsonFriendlySubnet.getSubnetRoutingAreaID());
+                if (routingArea != null) {
+                    if (entity.getRarea() != null)
+                        entity.getRarea().getSubnets().remove(entity);
+                    entity.setRarea(routingArea);
+                    routingArea.getSubnets().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create Subnet. Reason : provided Routing Area ID " + jsonFriendlySubnet.getSubnetRoutingAreaID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if(jsonFriendlySubnet.getSubnetOSInstancesID() != null) {
+                if (!jsonFriendlySubnet.getSubnetOSInstancesID().isEmpty()) {
+                    for (Long osiId : jsonFriendlySubnet.getSubnetOSInstancesID()) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                        if (osInstance != null) {
+                            if (!entity.getOsInstances().contains(osInstance)) {
+                                entity.getOsInstances().add(osInstance);
+                                osInstance.getNetworkSubnets().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided OS Instance ID " + osiId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            if(jsonFriendlySubnet.getSubnetDatacentersID() != null) {
+                if (!jsonFriendlySubnet.getSubnetDatacentersID().isEmpty()) {
+                    for (Long dcId : jsonFriendlySubnet.getSubnetDatacentersID()) {
+                        Datacenter datacenter = DatacenterEndpoint.findDatacenterById(em, dcId);
+                        if (datacenter != null) {
+                            if (!entity.getDatacenters().contains(datacenter)) {
+                                entity.getDatacenters().add(datacenter);
+                                datacenter.getSubnets().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided Datacenter ID " + dcId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            if(jsonFriendlySubnet.getSubnetIPAddressesID() != null) {
+                if (!jsonFriendlySubnet.getSubnetIPAddressesID().isEmpty()) {
+                    for (Long ipaId : jsonFriendlySubnet.getSubnetIPAddressesID()) {
+                        IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, ipaId);
+                        if (ipAddress != null) {
+                            if (!entity.getIpAddresses().contains(ipAddress)) {
+                                entity.getIpAddresses().add(ipAddress);
+                                ipAddress.setNetworkSubnet(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided IPAddress ID " + ipaId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        }
+        return commonRestResponse;
     }
 
     @GET
@@ -237,6 +436,46 @@ public class SubnetEndpoint {
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or subnetIP and/or subnetMask and/or type are not defined. " +
                                                                         "You must define these parameters.").build();
+        }
+    }
+
+    @POST
+    public Response postApplication(@QueryParam("payload") String payload) throws IOException {
+
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] create/update application : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            JSONFriendlySubnet jsonFriendlySubnet = SubnetJSON.JSON2Subnet(payload);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlySubnet);
+            Subnet entity = (Subnet) commonRestResponse.getDeserializedObject();
+            if (entity != null) {
+                try {
+                    em.getTransaction().begin();
+                    if (entity.getId() == null){
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } else {
+                        em.merge(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    }
+                    Response ret = subnetToJSON(entity);
+                    em.close();
+                    return ret;
+                } catch (Throwable t) {
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                    em.close();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating application " + payload + " : " + t.getMessage()).build();
+                }
+            } else{
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create applications. Contact your administrator.").build();
         }
     }
 

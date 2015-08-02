@@ -21,7 +21,10 @@ package net.echinopsii.ariane.community.core.directory.base.json.ds.technical.ne
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
+import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.CompanyJSON;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
@@ -31,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Our own object to JSON tools as :
@@ -39,16 +43,16 @@ import java.util.Iterator;
  */
 public class SubnetJSON {
 
-    public final static String SUBNET_ID             = "subnetID";
-    public final static String SUBNET_VERSION        = "subnetVersion";
-    public final static String SUBNET_NAME           = "subnetName";
-    public final static String SUBNET_DESCRIPTION    = "subnetDescription";
-    public final static String SUBNET_IP             = "subnetIP";
-    public final static String SUBNET_MASK           = "subnetMask";
-    public final static String SUBNET_TYPE           = "subnetType";
-    public final static String SUBNET_OSI_ID         = "subnetOSInstancesID";
+    public final static String SUBNET_ID = "subnetID";
+    public final static String SUBNET_VERSION = "subnetVersion";
+    public final static String SUBNET_NAME = "subnetName";
+    public final static String SUBNET_DESCRIPTION = "subnetDescription";
+    public final static String SUBNET_IP = "subnetIP";
+    public final static String SUBNET_MASK = "subnetMask";
+    public final static String SUBNET_TYPE = "subnetType";
+    public final static String SUBNET_OSI_ID = "subnetOSInstancesID";
     public final static String SUBNET_DATACENTERS_ID = "subnetDatacentersID";
-    public final static String SUBNET_MAREA_ID       = "subnetRoutingAreaID";
+    public final static String SUBNET_MAREA_ID = "subnetRoutingAreaID";
     public final static String SUBNET_IPADDRESSES_ID = "subnetIPAddressesID";
 
     public final static void subnet2JSON(Subnet subnet, JsonGenerator jgenerator) throws IOException {
@@ -71,7 +75,7 @@ public class SubnetJSON {
             jgenerator.writeNumber(dc.getId());
         jgenerator.writeEndArray();
 
-        jgenerator.writeNumberField(SUBNET_MAREA_ID, ((subnet.getRarea()!=null)?subnet.getRarea().getId():-1));
+        jgenerator.writeNumberField(SUBNET_MAREA_ID, ((subnet.getRarea() != null) ? subnet.getRarea().getId() : -1));
 
         jgenerator.writeArrayFieldStart(SUBNET_IPADDRESSES_ID);
         for (IPAddress ipAddress : subnet.getIpAddresses())
@@ -99,5 +103,114 @@ public class SubnetJSON {
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
         jgenerator.close();
+    }
+
+    public static class JSONFriendlySubnet {
+        private long subnetID;
+        private long subnetVersion;
+        private String subnetName;
+        private String subnetDescription;
+        private String subnetIP;
+        private String subnetType;
+        private String subnetMask;
+        private long subnetRoutingAreaID;
+        private List<Long> subnetOSInstancesID;
+        private List<Long> subnetDatacentersID;
+        private List<Long> subnetIPAddressesID;
+
+        public List<Long> getSubnetDatacentersID() {
+            return subnetDatacentersID;
+        }
+
+        public void setSubnetDatacentersID(List<Long> subnetDatacentersID) {
+            this.subnetDatacentersID = subnetDatacentersID;
+        }
+
+        public List<Long> getSubnetOSInstancesID() {
+            return subnetOSInstancesID;
+        }
+
+        public void setSubnetOSInstancesID(List<Long> subnetOSInstancesID) {
+            this.subnetOSInstancesID = subnetOSInstancesID;
+        }
+
+        public long getSubnetRoutingAreaID() {
+            return subnetRoutingAreaID;
+        }
+
+        public void setSubnetRoutingAreaID(long subnetRoutingAreaID) {
+            this.subnetRoutingAreaID = subnetRoutingAreaID;
+        }
+
+        public String getSubnetMask() {
+            return subnetMask;
+        }
+
+        public void setSubnetMask(String subnetMask) {
+            this.subnetMask = subnetMask;
+        }
+
+        public String getSubnetType() {
+            return subnetType;
+        }
+
+        public void setSubnetType(String subnetType) {
+            this.subnetType = subnetType;
+        }
+
+        public String getSubnetIP() {
+            return subnetIP;
+        }
+
+        public void setSubnetIP(String subnetIP) {
+            this.subnetIP = subnetIP;
+        }
+
+        public String getSubnetDescription() {
+            return subnetDescription;
+        }
+
+        public void setSubnetDescription(String subnetDescription) {
+            this.subnetDescription = subnetDescription;
+        }
+
+        public String getSubnetName() {
+            return subnetName;
+        }
+
+        public void setSubnetName(String subnetName) {
+            this.subnetName = subnetName;
+        }
+
+        public long getSubnetVersion() {
+            return subnetVersion;
+        }
+
+        public void setSubnetVersion(long subnetVersion) {
+            this.subnetVersion = subnetVersion;
+        }
+
+        public long getSubnetID() {
+            return subnetID;
+        }
+
+        public void setSubnetID(long subnetID) {
+            this.subnetID = subnetID;
+        }
+
+        public List<Long> getSubnetIPAddressesID() {
+            return subnetIPAddressesID;
+        }
+
+        public void setSubnetIPAddressesID(List<Long> subnetIPAddressesID) {
+            this.subnetIPAddressesID = subnetIPAddressesID;
+        }
+    }
+
+    public final static JSONFriendlySubnet JSON2Subnet(String payload) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        JSONFriendlySubnet jsonFriendlySubnet = mapper.readValue(payload, JSONFriendlySubnet.class);
+        return jsonFriendlySubnet;
     }
 }
