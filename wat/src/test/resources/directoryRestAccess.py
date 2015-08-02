@@ -23,8 +23,8 @@ r.status_code
 # 'applicationDescription': 'Multicast bus for business applications',
 # 'applicationID': 1,
 # 'applicationName': 'Tibco RendezVous',
-# 'applicationOSInstancesID': [2, 3, 4, 5],
-# 'applicationShortName': 'TibcoRV',
+#                   'applicationOSInstancesID': [2, 3, 4, 5],
+#                   'applicationShortName': 'TibcoRV',
 #                   'applicationTeamID': 2,
 #                   'applicationVersion': 9},
 #                  {'applicationColorCode': '5e647a',
@@ -1396,6 +1396,136 @@ r.status_code
 # 'routingAreaType': 'LAN',
 # 'routingAreaVersion': 0}
 devilRareaID = r.json().get("routingAreaID")
+
+payload = '{"routingAreaName":"fake routingArea name", "routingAreaMulticast": "NOLIMIT", "routingAreaType": "LAN",' \
+          ' "routingAreaDescription":"This is fake routingArea"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+fakerAreaID = r.json().get('routingAreaID')
+#200
+#pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'This is fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+
+
+payload = '{"routingAreaID": ' + str(fakerAreaID) + ',"routingAreaName": "New Fake routingArea name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'This is fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'New fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 1}
+
+
+payload = '{"routingAreaID": ' + str(fakerAreaID) + ',"routingAreaDescription": "updated Description"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 2}
+
+
+payload = '{"routingAreaID": ' + str(fakerAreaID) + ',"routingAreaType": "WAN"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 3}
+
+payload = '{"routingAreaID": ' + str(fakerAreaID) + ',"routingAreaMulticast": "LIMT"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 4}
+
+payload = '{"routingAreaID": ' + str(fakerAreaID) + ',"routingAreaDatacentersID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [1],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 5}
+
+payload = '{"routingAreaName":"fake routingArea name2", "routingAreaMulticast": "NOLIMIT", "routingAreaType": "WAN",' \
+          ' "routingAreaDescription":"This is fake routingArea", "routingAreaDatacentersID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+newfakerAreaID = r.json().get("routingAreaID")
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [1],
+# 'routingAreaDescription': 'This is fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name2',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 0}
+
+payload = '{"routingAreaID": ' + str(newfakerAreaID) + ',"routingAreaName":"fake routingArea name3",' \
+                                                       ' "routingAreaMulticast": "LIMIT", "routingAreaType": "LAN",' \
+                                                       ' "routingAreaDescription":"This is updated fake routingArea",' \
+                                                       ' "routingAreaDatacentersID": [2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [2],
+# 'routingAreaDescription': 'This is updated fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name3',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 1}
+
+payload = '{"routingAreaID": ' + str(newfakerAreaID) + ',"routingAreaName":"fake routingArea name3",' \
+                                                       ' "routingAreaMulticast": "LIMIT", "routingAreaType": "LAN",' \
+                                                       ' "routingAreaDescription":"This is updated fake routingArea",' \
+                                                       ' "routingAreaDatacentersID": []}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'This is updated fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name3',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 2}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/create',
           params={'name': "devilsMindMAN", 'description': "666 mind", 'type': "MAN", 'multicast': "TOTO"})
