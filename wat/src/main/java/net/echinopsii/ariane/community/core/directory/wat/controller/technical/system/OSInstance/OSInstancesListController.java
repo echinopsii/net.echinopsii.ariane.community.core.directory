@@ -305,10 +305,10 @@ public class OSInstancesListController implements Serializable{
                     em.getTransaction().begin();
                     osInstance = em.find(osInstance.getClass(), osInstance.getId());
                     ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
-                    osInstance.getIpAddress().add(ipAddress);
-                    if (ipAddress.getOsInstances()!=null)
-                        ipAddress.getOsInstances().getIpAddress().remove(ipAddress);
-                    ipAddress.setOsInstances(osInstance);
+                    osInstance.getIpAddresses().add(ipAddress);
+                    if (ipAddress.getOsInstance()!=null)
+                        ipAddress.getOsInstance().getIpAddresses().remove(ipAddress);
+                    ipAddress.setOsInstance(osInstance);
                     em.flush();
                     em.getTransaction().commit();
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -352,8 +352,8 @@ public class OSInstancesListController implements Serializable{
             List<IPAddress> ipAddresses = this.removedIPAddresses.get(osInstance.getId());
             for (IPAddress ipAddress : ipAddresses) {
                 ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
-                osInstance.getIpAddress().remove(ipAddress);
-                ipAddress.setOsInstances(null);
+                osInstance.getIpAddresses().remove(ipAddress);
+                ipAddress.setOsInstance(null);
             }
             em.flush();
             em.getTransaction().commit();
@@ -827,8 +827,8 @@ public class OSInstancesListController implements Serializable{
                     environment.getOsInstances().remove(osInstance);
                 for (Subnet subnet : osInstance.getNetworkSubnets())
                     subnet.getOsInstances().remove(osInstance);
-                for (IPAddress ipAddress : osInstance.getIpAddress())
-                    ipAddress.setOsInstances(null);
+                for (IPAddress ipAddress : osInstance.getIpAddresses())
+                    ipAddress.setOsInstance(null);
                 if (osInstance.getEmbeddingOSInstance()!=null)
                     osInstance.getEmbeddingOSInstance().getEmbeddedOSInstances().remove(osInstance);
                 for (OSInstance osi: osInstance.getEmbeddedOSInstances())
@@ -895,7 +895,7 @@ public class OSInstancesListController implements Serializable{
         osInstance = em.find(osInstance.getClass(), osInstance.getId());
         List<IPAddress> ret = new ArrayList<IPAddress>();
         for (Subnet subnet : osInstance.getNetworkSubnets()){
-            for (IPAddress ipAddress : subnet.getIpAddress()){
+            for (IPAddress ipAddress : subnet.getIpAddresses()){
                 ret.add(ipAddress);
             }
         }

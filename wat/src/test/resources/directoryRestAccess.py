@@ -1397,6 +1397,149 @@ r.status_code
 # 'routingAreaVersion': 0}
 devilRareaID = r.json().get("routingAreaID")
 
+
+payload = '{"routingAreaName":"fake routingArea name", "routingAreaMulticast": "NOLIMIT", "routingAreaType": "LAN", "routingAreaDescription":"This is fake routingArea"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload":payload})
+fakerAreaID = r.json().get('routingAreaID')
+print(r.text)
+input()
+#200
+#pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'This is fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+
+
+payload = '{"routingAreaID": '+ str(fakerAreaID) +',"routingAreaName": "New Fake routingArea name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload":payload})
+print(r.text)
+input()
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'This is fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'New fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+
+
+payload = '{"routingAreaID": '+ str(fakerAreaID) +',"routingAreaDescription": "updated Description"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload":payload})
+print(r.text)
+input()
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+
+
+payload = '{"routingAreaID": '+ str(fakerAreaID) +',"routingAreaType": "WAN"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload":payload})
+print(r.text)
+input()
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 0}
+
+payload = '{"routingAreaID": '+ str(fakerAreaID) +',"routingAreaMulticast": "LIMT"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload":payload})
+print(r.text)
+input()
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 0}
+
+payload = '{"routingAreaID": '+ str(fakerAreaID) +',"routingAreaDatacentersID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload":payload})
+print(r.text)
+input()
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [1],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 0}
+
+payload = '{"routingAreaName":"fake routingArea name2", "routingAreaMulticast": "NOLIMIT", "routingAreaType": "WAN", "routingAreaDescription":"This is fake routingArea", "routingAreaDatacentersID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload":payload})
+newfakerAreaID = r.json().get("routingAreaID")
+print(r.text)
+input()
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [1],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name2',
+# 'routingAreaSubnetsID': [1],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 0}
+
+
+payload = '{"routingAreaID": '+ str(newfakerAreaID)+ ',"routingAreaName":"fake routingArea name3", "routingAreaMulticast": "LIMIT", "routingAreaType": "LAN", "routingAreaDescription":"This is updated fake routingArea", "routingAreaDatacentersID": [2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload":payload})
+print(r.text)
+input()
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [2],
+# 'routingAreaDescription': 'This is updated fake description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name3',
+# 'routingAreaSubnetsID': [2],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+
+
+payload = '{"routingAreaID": '+ str(newfakerAreaID)+ ',"routingAreaName":"fake routingArea name3", "routingAreaMulticast": "LIMIT", "routingAreaType": "LAN", "routingAreaDescription":"This is updated fake routingArea", "routingAreaDatacentersID": []}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload":payload})
+print(r.text)
+input()
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [2],
+# 'routingAreaDescription': 'This is updated fake description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name3',
+# 'routingAreaSubnetsID': [2],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/create',
           params={'name': "devilsMindMAN", 'description': "666 mind", 'type': "MAN", 'multicast': "TOTO"})
 r.status_code
@@ -1934,14 +2077,14 @@ r.status_code
 #     "ipAddressVersion": 0,
 #     "ipAddressIPA": "123.123.48.123",
 #     "ipAddressFQDN": "Fake FQDN"
-#     "ipAddressOSInstancesID": -1,
+#     "ipAddressOSInstanceID": -1,
 #     "ipAddressSubnetID": 5
 # },{
 #     "ipAddressID": 2,
 #     "ipAddressVersion": 0,
 #     "ipAddressIPA": "123.123.48.122",
 #     "ipAddressFQDN": "Fake FQDN2"
-#     "ipAddressOSInstancesID": -1,
+#     "ipAddressOSInstanceID": -1,
 #     "ipAddressSubnetID": 5
 # }]
 
@@ -1958,7 +2101,7 @@ fake_ipAddressID = r.json().get('ipAddressID')
 #     "ipAddressVersion": 0,
 #     "ipAddressIPA": "123.123.48.123",
 #     "ipAddressFQDN": "Fake FQDN"
-#     "ipAddressOSInstancesID": -1,
+#     "ipAddressOSInstanceID": -1,
 #     "ipAddressSubnetID": 5
 # }
 
@@ -1971,7 +2114,7 @@ r.status_code
 #     "ipAddressVersion": 0,
 #     "ipAddressIPA": "123.123.48.123",
 #     "ipAddressFQDN": "Fake FQDN"
-#     "ipAddressOSInstancesID": -1,
+#     "ipAddressOSInstanceID": -1,
 #     "ipAddressSubnetID": 5
 #}
 
@@ -1985,11 +2128,11 @@ r.status_code
 #     "ipAddressVersion": 0,
 #     "ipAddressIPA": "123.123.48.123",
 #     "ipAddressFQDN": "Fake FQDN"
-#     "ipAddressOSInstancesID": -1,
+#     "ipAddressOSInstanceID": -1,
 #     "ipAddressSubnetID": 1
 #}
 
-ipAddressParams = {'ipAddress': '123.123.48.123'}
+ipAddressParams = {'fqdn': 'Fake FQDN'}
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/get', params=ipAddressParams)
 r.status_code
 #200
@@ -1999,7 +2142,21 @@ r.status_code
 #     "ipAddressVersion": 0,
 #     "ipAddressIPA": "123.123.48.123",
 #     "ipAddressFQDN": "Fake FQDN"
-#     "ipAddressOSInstancesID": -1,
+#     "ipAddressOSInstanceID": -1,
+#     "ipAddressSubnetID": 1
+#}
+
+ipAddressParams = {'ipAddress': '123.123.48.123', 'subnetID': 1}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress/get', params=ipAddressParams)
+r.status_code
+#200
+#pprint(r.json())
+#{
+#     "ipAddressID": 1,
+#     "ipAddressVersion": 0,
+#     "ipAddressIPA": "123.123.48.123",
+#     "ipAddressFQDN": "Fake FQDN"
+#     "ipAddressOSInstanceID": -1,
 #     "ipAddressSubnetID": 5
 #}
 
@@ -2019,7 +2176,7 @@ r.status_code
 #     "ipAddressVersion": 0,
 #     "ipAddressIPA": "123.123.48.119",
 #     "ipAddressFQDN": "Fake FQDN"
-#     "ipAddressOSInstancesID": -1,
+#     "ipAddressOSInstanceID": -1,
 #     "ipAddressSubnetID": 1
 #}
 
@@ -2039,7 +2196,7 @@ r.status_code
 #     "ipAddressVersion": 0,
 #     "ipAddressIPA": "123.123.48.119",
 #     "ipAddressFQDN": "Fake FQDN3"
-#     "ipAddressOSInstancesID": -1,
+#     "ipAddressOSInstanceID": -1,
 #     "ipAddressSubnetID": 1
 #}
 
@@ -2059,7 +2216,7 @@ r.status_code
 #     "ipAddressVersion": 0,
 #     "ipAddressIPA": "123.123.48.119",
 #     "ipAddressFQDN": "Fake FQDN3"
-#     "ipAddressOSInstancesID": -1,
+#     "ipAddressOSInstanceID": -1,
 #     "ipAddressSubnetID": 2
 #}
 
@@ -2273,6 +2430,7 @@ r.status_code
 #                  'osInstanceEmbeddingOSInstanceID': -1,
 #                  'osInstanceEnvironmentsID': [1],
 #                  'osInstanceID': 1,
+#                  'osInstanceIPAddressesID': [],
 #                  'osInstanceName': 'hvirt.dekatonshIVr',
 #                  'osInstanceOSTypeID': 1,
 #                  'osInstanceSubnetsID': [1, 2, 3],
@@ -2285,6 +2443,7 @@ r.status_code
 #                  'osInstanceEmbeddingOSInstanceID': 1,
 #                  'osInstanceEnvironmentsID': [1],
 #                  'osInstanceID': 2,
+#                  'osInstanceIPAddressesID': [],
 #                  'osInstanceName': 'tibrvrdl03prd01',
 #                  'osInstanceOSTypeID': 1,
 #                  'osInstanceSubnetsID': [1],
@@ -2297,6 +2456,7 @@ r.status_code
 #                  'osInstanceEmbeddingOSInstanceID': 1,
 #                  'osInstanceEnvironmentsID': [1],
 #                  'osInstanceID': 3,
+#                  'osInstanceIPAddressesID': [],
 #                  'osInstanceName': 'tibrvrdl05prd01',
 #                  'osInstanceOSTypeID': 1,
 #                  'osInstanceSubnetsID': [1],
@@ -2309,6 +2469,7 @@ r.status_code
 #                  'osInstanceEmbeddingOSInstanceID': 1,
 #                  'osInstanceEnvironmentsID': [1],
 #                  'osInstanceID': 4,
+#                  'osInstanceIPAddressesID': [],
 #                  'osInstanceName': 'tibrvrdmprd01',
 #                  'osInstanceOSTypeID': 1,
 #                  'osInstanceSubnetsID': [2],
@@ -2321,6 +2482,7 @@ r.status_code
 #                  'osInstanceEmbeddingOSInstanceID': 1,
 #                  'osInstanceEnvironmentsID': [1],
 #                  'osInstanceID': 5,
+#                  'osInstanceIPAddressesID': [],
 #                  'osInstanceName': 'tibrvrdwprd01',
 #                  'osInstanceOSTypeID': 1,
 #                  'osInstanceSubnetsID': [3],
@@ -2338,6 +2500,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [1],
 # 'osInstanceID': 1,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'hvirt.dekatonshIVr',
 # 'osInstanceOSTypeID': 1,
 # 'osInstanceSubnetsID': [1, 2, 3],
@@ -2356,6 +2519,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [1],
 # 'osInstanceID': 1,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'hvirt.dekatonshIVr',
 # 'osInstanceOSTypeID': 1,
 # 'osInstanceSubnetsID': [1, 2, 3],
@@ -2374,6 +2538,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [1],
 # 'osInstanceID': 1,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'hvirt.dekatonshIVr',
 # 'osInstanceOSTypeID': 1,
 # 'osInstanceSubnetsID': [1, 2, 3],
@@ -2398,6 +2563,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [],
 # 'osInstanceID': 7,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'fakeOs',
 # 'osInstanceOSTypeID': -1,
 # 'osInstanceSubnetsID': [],
@@ -2560,6 +2726,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [],
 # 'osInstanceID': 7,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'fakeOs1',
 # 'osInstanceOSTypeID': -1,
 # 'osInstanceSubnetsID': [],
@@ -2581,6 +2748,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [],
 # 'osInstanceID': 7,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'fakeOs1',
 # 'osInstanceOSTypeID': -1,
 # 'osInstanceSubnetsID': [],
@@ -2602,6 +2770,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [],
 # 'osInstanceID': 7,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'fakeOs1',
 # 'osInstanceOSTypeID': -1,
 # 'osInstanceSubnetsID': [],
@@ -2623,6 +2792,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [],
 # 'osInstanceID': 7,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'fakeOs1',
 # 'osInstanceOSTypeID': 2,
 # 'osInstanceSubnetsID': [],
@@ -2644,6 +2814,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': 1,
 # 'osInstanceEnvironmentsID': [],
 # 'osInstanceID': 7,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'fakeOs1',
 # 'osInstanceOSTypeID': 2,
 # 'osInstanceSubnetsID': [],
@@ -2660,6 +2831,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [1],
 # 'osInstanceID': 1,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'hvirt.dekatonshIVr',
 # 'osInstanceOSTypeID': 1,
 # 'osInstanceSubnetsID': [1, 2, 3],
@@ -2682,6 +2854,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [1],
 # 'osInstanceID': 1,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'hvirt.dekatonshIVr',
 # 'osInstanceOSTypeID': 1,
 # 'osInstanceSubnetsID': [1, 2, 3],
@@ -2698,6 +2871,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [],
 # 'osInstanceID': 7,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'fakeOs1',
 # 'osInstanceOSTypeID': 2,
 # 'osInstanceSubnetsID': [],
@@ -2719,6 +2893,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': -1,
 # 'osInstanceEnvironmentsID': [1],
 # 'osInstanceID': 1,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'hvirt.dekatonshIVr',
 # 'osInstanceOSTypeID': 1,
 # 'osInstanceSubnetsID': [1, 2, 3],
@@ -2735,6 +2910,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': 1,
 # 'osInstanceEnvironmentsID': [],
 # 'osInstanceID': 7,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'fakeOs1',
 # 'osInstanceOSTypeID': 2,
 # 'osInstanceSubnetsID': [],
@@ -2756,6 +2932,7 @@ r.status_code
 # 'osInstanceEmbeddingOSInstanceID': 1,
 # 'osInstanceEnvironmentsID': [],
 # 'osInstanceID': 7,
+# 'osInstanceIPAddressesID': [],
 # 'osInstanceName': 'fakeOs1',
 # 'osInstanceOSTypeID': 2,
 # 'osInstanceSubnetsID': [4],
@@ -2769,6 +2946,7 @@ r.status_code
 # 'subnetDescription': 'A fake subnet',
 # 'subnetID': 4,
 # 'subnetIP': '192.168.69.69',
+# 'subnetIPAddressesID': [],
 # 'subnetMask': '255.255.255.255',
 # 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.lan',
@@ -2804,6 +2982,7 @@ r.status_code
 # 'subnetDescription': 'A fake subnet',
 # 'subnetID': 4,
 # 'subnetIP': '192.168.69.69',
+# 'subnetIPAddressesID': [],
 # 'subnetMask': '255.255.255.255',
 # 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.lan',
@@ -2823,6 +3002,7 @@ r.status_code
 # 'subnetDescription': 'A fake subnet',
 # 'subnetID': 4,
 # 'subnetIP': '192.168.69.69',
+# 'subnetIPAddressesID': [],
 # 'subnetMask': '255.255.255.255',
 # 'subnetRoutingAreaID': -1,
 # 'subnetName': 'fake.lan',

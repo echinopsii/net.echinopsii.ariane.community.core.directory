@@ -21,9 +21,7 @@ package net.echinopsii.ariane.community.core.directory.wat.rest.technical.networ
 
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.IPAddressJSON;
-import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.SubnetJSON;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
@@ -43,10 +41,9 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
+@SuppressWarnings("ALL")
 @Path("/directories/common/infrastructure/network/ipAddress")
 public class IPAddressEndpoint {
     private static final Logger log = LoggerFactory.getLogger(RoutingAreaEndpoint.class);
@@ -70,7 +67,7 @@ public class IPAddressEndpoint {
     }
 
     public static IPAddress findIPAddressById(EntityManager em, long id) {
-        TypedQuery<IPAddress> findByIdQuery = em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.networkSubnet WHERE l.id = :entityId ORDER BY l.id", IPAddress.class);
+        TypedQuery<IPAddress> findByIdQuery = em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstance LEFT JOIN FETCH l.networkSubnet WHERE l.id = :entityId ORDER BY l.id", IPAddress.class);
         findByIdQuery.setParameter("entityId", id);
         IPAddress entity;
         try {
@@ -81,9 +78,9 @@ public class IPAddressEndpoint {
         return entity;
     }
 
-    public static IPAddress findIPAddressByIPA(EntityManager em, String ipAddress) {
-        TypedQuery<IPAddress> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.networkSubnet WHERE l.ipAddress = :entityName ORDER BY l.ipAddress", IPAddress.class);
-        findByNameQuery.setParameter("entityName", ipAddress);
+    public static IPAddress findIPAddressByIPAndSubnet(EntityManager em, String ipAddress, long subnetID) {
+        TypedQuery<IPAddress> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstance LEFT JOIN FETCH l.networkSubnet WHERE l.ipAddress = :entityIPA AND l.networkSubnet.id = :subnetID ORDER BY l.ipAddress", IPAddress.class);
+        findByNameQuery.setParameter("entityIPA", ipAddress).setParameter("subnetID", subnetID);
         IPAddress entity;
         try {
             entity = findByNameQuery.getSingleResult();
@@ -93,10 +90,10 @@ public class IPAddressEndpoint {
         return entity;
     }
 
-    public static Subnet findSubnetByID(EntityManager em, long id) {
-        TypedQuery<Subnet> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l WHERE l.id = :entityID ORDER BY l.name", Subnet.class);
-        findByNameQuery.setParameter("entityID", id);
-        Subnet entity;
+    public static IPAddress findIPAddressByIPAndOSI(EntityManager em, String ipAddress, long osiID) {
+        TypedQuery<IPAddress> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstance LEFT JOIN FETCH l.networkSubnet WHERE l.ipAddress = :entityIPA AND l.osInstances.id = :osiID ORDER BY l.ipAddress", IPAddress.class);
+        findByNameQuery.setParameter("entityIPA", ipAddress).setParameter("osiID", osiID);
+        IPAddress entity;
         try {
             entity = findByNameQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -105,18 +102,10 @@ public class IPAddressEndpoint {
         return entity;
     }
 
-    public static String getAvailableSubnet(EntityManager em) {
-        List<Subnet> resultList = em.createQuery("SELECT DISTINCT l FROM Subnet l ORDER BY l.name", Subnet.class).getResultList();
-        List<Long> subnetNames = new ArrayList<>();
-        for (Subnet rsubnet : resultList)
-            subnetNames.add(rsubnet.getId());
-        return subnetNames.toString();
-    }
-
-    public static OSInstance findOSInstanceByID(EntityManager em, long id) {
-        TypedQuery<OSInstance> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM OSInstance l WHERE l.id = :entityID ORDER BY l.name", OSInstance.class);
-        findByNameQuery.setParameter("entityID", id);
-        OSInstance entity;
+    public static IPAddress findIPAddressByFQDN(EntityManager em, String fqdn) {
+        TypedQuery<IPAddress> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstance LEFT JOIN FETCH l.networkSubnet WHERE l.fqdn = :entityFQDN ORDER BY l.ipAddress", IPAddress.class);
+        findByNameQuery.setParameter("entityFQDN", fqdn);
+        IPAddress entity;
         try {
             entity = findByNameQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -156,7 +145,7 @@ public class IPAddressEndpoint {
         if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwIPAddress:display") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            final HashSet<IPAddress> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.networkSubnet ORDER BY l.id", IPAddress.class).getResultList());
+            final HashSet<IPAddress> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM IPAddress l LEFT JOIN FETCH l.osInstance LEFT JOIN FETCH l.networkSubnet ORDER BY l.id", IPAddress.class).getResultList());
 
             Response ret = null;
             String result;
@@ -181,69 +170,81 @@ public class IPAddressEndpoint {
 
     @GET
     @Path("/get")
-    public Response getIPAddress(@QueryParam("ipAddress")String ipAddress, @QueryParam("id")long id) {
-        if (id!=0) {
-            return displayIPAddress(id);
-        } else if (ipAddress != null) {
-            Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] get subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), ipAddress});
-            if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwIPAddress:display") ||
-                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
-            {
+    public Response getIPAddress(@QueryParam("ipAddress")String ipAddress, @QueryParam("subnetID") long subnetID, @QueryParam("osiID") long osiID, @QueryParam("fqdn") String fqdn, @QueryParam("id")long id) {
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] get subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), ipAddress});
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwIPAddress:display") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            if (id != 0) {
+                return displayIPAddress(id);
+            } else if (fqdn != null) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                IPAddress entity = findIPAddressByIPA(em, ipAddress);
-                if (entity == null) {
-                    em.close();
-                    return Response.status(Status.NOT_FOUND).build();
-                }
-
-                Response ret = ipAddresstToJSON(entity);
+                Response ret ;
+                IPAddress entity = findIPAddressByFQDN(em, fqdn);
+                if (entity == null)
+                    ret = Response.status(Status.NOT_FOUND).build();
+                else
+                    ret = ipAddresstToJSON(entity);
                 em.close();
                 return ret;
-            } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display ipAddress. Contact your administrator.").build();
-            }
-        } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
-        }
+            } else if (ipAddress != null && subnetID != 0) {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Response ret ;
+                IPAddress entity = findIPAddressByIPAndSubnet(em, ipAddress, subnetID);
+                if (entity == null)
+                    ret = Response.status(Status.NOT_FOUND).build();
+                else
+                    ret = ipAddresstToJSON(entity);
+                em.close();
+                return ret;
+            } else if (ipAddress != null && osiID != 0) {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Response ret ;
+                IPAddress entity = findIPAddressByIPAndOSI(em, ipAddress, osiID);
+                if (entity == null)
+                    ret = Response.status(Status.NOT_FOUND).build();
+                else
+                    ret = ipAddresstToJSON(entity);
+                em.close();
+                return ret;
+            } else
+                return Response.status(Status.BAD_REQUEST).entity("Bad request. You should provide at least: IP id or IP fqdn or (IP address and Subnet ID) or (IP address or OS instance ID).").build();
+        } else
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display ipAddress. Contact your administrator.").build();
     }
 
     @GET
     @Path("/create")
     public Response createIPAddress(@QueryParam("ipAddress")String ipAddress, @QueryParam("fqdn")String fqdn,
-                                 @QueryParam("networkSubnet")int subnetID, @QueryParam("osInstance")int osInstanceID) {
+                                    @QueryParam("networkSubnet")long subnetID, @QueryParam("osInstance")int osInstanceID) {
         if (ipAddress!=null && fqdn!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create ipAddress : ({},{},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), ipAddress, fqdn, subnetID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwIPAddress:create") ||
-                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                IPAddress entity = findIPAddressByIPA(em, ipAddress);
-                if (entity==null) {
-                    Subnet subnet = findSubnetByID(em, subnetID);
-                    OSInstance osInstance = findOSInstanceByID(em, osInstanceID);
-                    if (subnet!=null) {
+                Response ret;
+                Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetID);
+                if (subnet!=null) {
+                    IPAddress entity = findIPAddressByFQDN(em, fqdn);
+                    if (entity==null) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osInstanceID);
                         entity = new IPAddress().setIpAddressR(ipAddress).setFqdnR(fqdn).setNetworkSubnetR(subnet).setOsInstancesR(osInstance);
                         try {
                             em.getTransaction().begin();
                             em.persist(entity);
                             em.getTransaction().commit();
+                            ret = ipAddresstToJSON(entity);
                         } catch (Throwable t) {
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
-                            em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating IPAddress " + entity.getIpAddress() + " : " + t.getMessage()).build();
+                            ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating IPAddress " + entity.getIpAddress() + " : " + t.getMessage()).build();
                         }
-                    } else {
-                        Response ret = Response.status(Status.INTERNAL_SERVER_ERROR).
-                                entity("Wrong subnet " + subnetID + ". Available subnets are : " + getAvailableSubnet(em)).build();
-                        em.close();
-                        return ret;
-                    }
-                }
-
-                Response ret = ipAddresstToJSON(entity);
+                    } else
+                        ret = ipAddresstToJSON(entity);
+                } else
+                    ret = Response.status(Status.BAD_REQUEST).entity("Wrong subnet " + subnetID + ".").build();
                 em.close();
                 return ret;
             } else {
@@ -270,7 +271,7 @@ public class IPAddressEndpoint {
                     try {
                         em.getTransaction().begin();
                         if (entity.getNetworkSubnet()!=null)
-                            entity.getNetworkSubnet().getIpAddress().remove(entity);
+                            entity.getNetworkSubnet().getIpAddresses().remove(entity);
                         em.remove(entity);
                         em.getTransaction().commit();
                         em.close();
@@ -382,8 +383,8 @@ public class IPAddressEndpoint {
                         try {
                             em.getTransaction().begin();
                             if (entity.getNetworkSubnet()!=null)
-                                entity.getNetworkSubnet().getIpAddress().remove(entity);
-                            subnet.getIpAddress().add(entity);
+                                entity.getNetworkSubnet().getIpAddresses().remove(entity);
+                            subnet.getIpAddresses().add(entity);
                             entity.setNetworkSubnet(subnet);
                             em.getTransaction().commit();
                             em.close();
@@ -426,10 +427,10 @@ public class IPAddressEndpoint {
                     if (osInstance!=null) {
                         try {
                             em.getTransaction().begin();
-                            if (entity.getOsInstances()!=null)
-                                entity.getOsInstances().getIpAddress().remove(entity);
-                            osInstance.getIpAddress().add(entity);
-                            entity.setOsInstances(osInstance);
+                            if (entity.getOsInstance()!=null)
+                                entity.getOsInstance().getIpAddresses().remove(entity);
+                            osInstance.getIpAddresses().add(entity);
+                            entity.setOsInstance(osInstance);
                             em.getTransaction().commit();
                             em.close();
                             return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with osInstnace " + osInstanceID).build();

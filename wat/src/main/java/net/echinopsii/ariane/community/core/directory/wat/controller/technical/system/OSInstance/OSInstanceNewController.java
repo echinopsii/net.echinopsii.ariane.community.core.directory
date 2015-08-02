@@ -410,7 +410,7 @@ public class OSInstanceNewController implements Serializable{
         osInstance.setAdminGateURIR(adminGateURI);
         osInstance.setEmbeddingOSInstance(embingOSI);
         osInstance.setNetworkSubnets(subnets);
-        osInstance.setIpAddress(ipaddresses);
+        osInstance.setIpAddresses(ipaddresses);
         osInstance.setEnvironments(envs);
         osInstance.setTeams(teams);
         osInstance.setApplications(apps);
@@ -436,7 +436,7 @@ public class OSInstanceNewController implements Serializable{
                 em.merge(subnet);
             }
             for (IPAddress ipAddress : this.ipaddresses) {
-                ipAddress.setOsInstances(osInstance);
+                ipAddress.setOsInstance(osInstance);
                 em.merge(ipAddress);
             }
 

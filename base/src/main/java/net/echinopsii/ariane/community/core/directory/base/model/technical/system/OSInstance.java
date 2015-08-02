@@ -61,9 +61,9 @@ public class OSInstance implements Serializable {
     @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
     private Set<Subnet> networkSubnets;
 
-    @OneToMany(mappedBy = "osInstances", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "osInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private Set<IPAddress> ipAddress = new HashSet<IPAddress>();
+    private Set<IPAddress> ipAddresses = new HashSet<IPAddress>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     private OSInstance embeddingOSInstance;
@@ -202,16 +202,16 @@ public class OSInstance implements Serializable {
     }
 
 
-    public Set<IPAddress> getIpAddress() {
-        return ipAddress;
+    public Set<IPAddress> getIpAddresses() {
+        return ipAddresses;
     }
 
-    public void setIpAddress(Set<IPAddress> ipAddress) {
-        this.ipAddress = ipAddress;
+    public void setIpAddresses(Set<IPAddress> ipAddresses) {
+        this.ipAddresses = ipAddresses;
     }
 
     public OSInstance setIpAddressR(final Set<IPAddress> ipAddress) {
-        this.ipAddress = ipAddress;
+        this.ipAddresses = ipAddress;
         return this;
     }
 
@@ -296,7 +296,7 @@ public class OSInstance implements Serializable {
     public OSInstance clone() {
         return new OSInstance().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setAdminGateURIR(this.adminGateURI).setOsTypeR(this.osType).
                    setApplicationsR(new HashSet<Application>(this.applications)).setEmbeddedOSInstancesR(new HashSet<OSInstance>(this.embeddedOSInstances)).setEmbeddingOSInstanceR(this.embeddingOSInstance).
-                   setEnvironementsR(new HashSet<Environment>(this.environments)).setNetworkSubnetsR(new HashSet<Subnet>(networkSubnets)).setIpAddressR(new HashSet<IPAddress>(ipAddress)).setTeamsR(new HashSet<Team>(this.teams));
+                   setEnvironementsR(new HashSet<Environment>(this.environments)).setNetworkSubnetsR(new HashSet<Subnet>(networkSubnets)).setIpAddressR(new HashSet<IPAddress>(ipAddresses)).setTeamsR(new HashSet<Team>(this.teams));
     }
 
     public final static String OSI_MAPPING_PROPERTIES = "Server";

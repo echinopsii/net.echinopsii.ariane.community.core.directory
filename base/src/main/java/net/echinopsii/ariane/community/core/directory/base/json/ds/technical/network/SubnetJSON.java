@@ -74,7 +74,7 @@ public class SubnetJSON {
         jgenerator.writeNumberField(SUBNET_MAREA_ID, ((subnet.getRarea()!=null)?subnet.getRarea().getId():-1));
 
         jgenerator.writeArrayFieldStart(SUBNET_IPADDRESSES_ID);
-        for (IPAddress ipAddress : subnet.getIpAddress())
+        for (IPAddress ipAddress : subnet.getIpAddresses())
             jgenerator.writeNumber(ipAddress.getId());
         jgenerator.writeEndArray();
 
