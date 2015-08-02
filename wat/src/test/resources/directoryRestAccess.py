@@ -2297,6 +2297,102 @@ newFakeCompId = r.json().get("CompanyID")
 # 'companyOSTypesID': [1,2],
 # 'companyApplicationsID': [2]}
 
+payload = '{"osTypeName":"fake osType name", "osTypeArchitecture":"fake architecture"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload": payload})
+fakeosTypeID = r.json().get('osTypeID')
+#200()
+# pprint(r.json())
+# {'osTypeArchitecture': 'fake architecture',
+#  'osTypeCompanyID': -1,
+#  'osTypeID': 2,
+#  'osTypeName': 'fake osType name',
+#  'osTypeOSInstancesID': [],
+#  'osTypeVersion': 0}
+
+payload = '{"osTypeID": ' + str(fakeosTypeID) + ',"osTypeName": "New Fake osType name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'fake architecture',
+#  'osTypeCompanyID': -1,
+#  'osTypeID': 2,
+#  'osTypeName': 'New Fake osType name',
+#  'osTypeOSInstancesID': [],
+#  'osTypeVersion': 1}
+
+payload = '{"osTypeID": ' + str(fakeosTypeID) + ',"osTypeArchitecture": "updated fake architecture"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'updated fake architecture',
+#  'osTypeCompanyID': -1,
+#  'osTypeID': 2,
+#  'osTypeName': 'New Fake osType name',
+#  'osTypeOSInstancesID': [],
+#  'osTypeVersion': 2}
+
+payload = '{"osTypeID": ' + str(fakeosTypeID) + ',"osTypeOSInstancesID": [2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'updated fake architecture',
+#  'osTypeCompanyID': -1,
+#  'osTypeID': 2,
+#  'osTypeName': 'New Fake osType name',
+#  'osTypeOSInstancesID': [2],
+#  'osTypeVersion': 2}
+
+payload = '{"osTypeID": ' + str(fakeosTypeID) + ',"osTypeCompanyID": 1}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'updated fake architecture',
+#  'osTypeCompanyID': 1,
+#  'osTypeID': 2,
+#  'osTypeName': 'New Fake osType name',
+#  'osTypeOSInstancesID': [2],
+#  'osTypeVersion': 3}
+
+payload = '{"osTypeName":"fake osType name2", "osTypeArchitecture":"fake architecture2",' \
+          ' "osTypeOSInstancesID": [2], "osTypeCompanyID": 1}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload":payload})
+newfakeosTypeID = r.json().get("osTypeID")
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'fake architecture2',
+#  'osTypeCompanyID': 1,
+#  'osTypeID': 4,
+#  'osTypeName': 'fake osType name2',
+#  'osTypeOSInstancesID': [2],
+#  'osTypeVersion': 0}
+
+#--------------------------------------------------------------
+
+payload = '{"osTypeID": '+ str(newfakeosTypeID)+ ',"osTypeName":"fake osType name3",' \
+                                                 ' "osTypeArchitecture":"fake architecture3", ' \
+                                                 '"osTypeOSInstancesID": [3], "osTypeCompanyID": 2}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload":payload})
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'fake architecture3',
+#  'osTypeCompanyID': 2,
+#  'osTypeID': 4,
+#  'osTypeName': 'fake osType name3',
+#  'osTypeOSInstancesID': [3],
+#  'osTypeVersion': 1}
+
+payload = '{"osTypeID": '+ str(3)+ ',"osTypeName":"new fake osType name2",' \
+                                   ' "osTypeArchitecture":"new fake architecture2", "osTypeOSInstancesID": []}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload":payload})
+#200
+# pprint(r.text)
+# {'osTypeArchitecture': 'new fake architecture2',
+#  'osTypeCompanyID': -1,
+#  'osTypeID': 4,
+#  'osTypeName': 'new fake osType name2',
+#  'osTypeOSInstancesID': [],
+#  'osTypeVersion': 1}
+
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/update/name',
           params={'id': solID, 'name': 'Solaris OS'})
 r.status_code
