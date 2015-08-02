@@ -18,7 +18,6 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
-import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.ApplicationJSON;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
@@ -357,6 +356,7 @@ public class RoutingAreaEndpoint {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating routing area " + payload + " : " + t.getMessage()).build();
                 }
             } else{
+                em.close();
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
