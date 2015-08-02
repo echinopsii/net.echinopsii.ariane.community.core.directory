@@ -440,11 +440,11 @@ public class SubnetEndpoint {
     }
 
     @POST
-    public Response postApplication(@QueryParam("payload") String payload) throws IOException {
+    public Response postSubnet(@QueryParam("payload") String payload) throws IOException {
 
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] create/update application : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
-        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgApp:create") ||
+        log.debug("[{}-{}] create/update Subnet : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwSubnet:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             JSONFriendlySubnet jsonFriendlySubnet = SubnetJSON.JSON2Subnet(payload);
@@ -469,13 +469,13 @@ public class SubnetEndpoint {
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating application " + payload + " : " + t.getMessage()).build();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating subnet " + payload + " : " + t.getMessage()).build();
                 }
             } else{
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
-            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create applications. Contact your administrator.").build();
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create subnets. Contact your administrator.").build();
         }
     }
 
