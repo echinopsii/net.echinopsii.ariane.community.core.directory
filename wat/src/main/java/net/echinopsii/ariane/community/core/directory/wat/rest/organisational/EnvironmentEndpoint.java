@@ -322,6 +322,7 @@ public class EnvironmentEndpoint {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating environment " + payload + " : " + t.getMessage()).build();
                 }
             } else{
+                em.close();
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {

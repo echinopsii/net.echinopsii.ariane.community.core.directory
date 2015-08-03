@@ -41,9 +41,16 @@ public class RoutingArea implements Serializable
     public static String ROUTING_AREA_MAN_TYPE = "MAN";
     @Transient
     public static String ROUTING_AREA_WAN_TYPE = "WAN";
+    @Transient
+    public static String ROUTING_AREA_VIRT_TYPE = "VIRT";
+    @Transient
+    public static String ROUTING_AREA_VPN_TYPE = "VPN";
 
     public static boolean isValidType(String type) {
-        return (type!=null && (type.equals(ROUTING_AREA_LAN_TYPE) || type.equals(ROUTING_AREA_MAN_TYPE) || type.equals(ROUTING_AREA_WAN_TYPE)));
+        return (type!=null && (type.equals(ROUTING_AREA_LAN_TYPE) || type.equals(ROUTING_AREA_MAN_TYPE) ||
+                type.equals(ROUTING_AREA_WAN_TYPE) || type.equals(ROUTING_AREA_VIRT_TYPE)) ||
+                type.equals(ROUTING_AREA_VPN_TYPE)
+        );
     }
 
     public static List<String> getTypeList() {
@@ -51,6 +58,8 @@ public class RoutingArea implements Serializable
         ret.add(ROUTING_AREA_LAN_TYPE);
         ret.add(ROUTING_AREA_MAN_TYPE);
         ret.add(ROUTING_AREA_WAN_TYPE);
+        ret.add(ROUTING_AREA_VIRT_TYPE);
+        ret.add(ROUTING_AREA_VPN_TYPE);
         return ret;
     }
 
