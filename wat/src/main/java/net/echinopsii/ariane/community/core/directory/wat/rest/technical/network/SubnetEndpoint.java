@@ -156,7 +156,7 @@ public class SubnetEndpoint {
                     entity.setRarea(routingArea);
                     routingArea.getSubnets().add(entity);
                 } else {
-                    commonRestResponse.setErrorMessage("Fail to create Subnet. Reason : provided Routing Area ID " + jsonFriendlySubnet.getSubnetRoutingAreaID() +" was not found.");
+                    commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided Routing Area ID " + jsonFriendlySubnet.getSubnetRoutingAreaID() +" was not found.");
                     return commonRestResponse;
                 }
             }
