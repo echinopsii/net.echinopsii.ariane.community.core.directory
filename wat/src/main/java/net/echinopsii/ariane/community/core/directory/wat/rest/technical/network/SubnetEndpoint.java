@@ -472,6 +472,7 @@ public class SubnetEndpoint {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating subnet " + payload + " : " + t.getMessage()).build();
                 }
             } else{
+                em.close();
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
