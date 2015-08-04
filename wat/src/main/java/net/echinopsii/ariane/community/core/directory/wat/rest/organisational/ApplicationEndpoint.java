@@ -375,6 +375,7 @@ public class ApplicationEndpoint {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating application " + payload + " : " + t.getMessage()).build();
                 }
             } else{
+                em.close();
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {

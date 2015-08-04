@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-        <!-- General information -->
-{% block attributes %}
+
+    <!-- General information -->
+    {%- block attributes %}
     <groupId>{{ groupId }}</groupId>
     <artifactId>{{ artifactId }}</artifactId>
     <version>{{ version }}</version>
     <name>Ariane Community Core Directory Parent</name>
     <packaging>{{ packaging }}</packaging>
-{% endblock %}
-{% block modules %}
+    {% endblock %}
+    {% block modules -%}
     <modules>
-        {%- for mod in modules %}
+        {% for mod in modules -%}
         <module>{{mod.name}}</module>
         {% endfor -%}
     </modules>
-{% endblock %}
-<repositories>
+    {% endblock %}
+    <repositories>
         <repository>
             <id>nexus.echinopsii.net</id>
             <name>echinopsii.net repository</name>
@@ -72,22 +73,20 @@
         <version.war.plugin>2.1.1</version.war.plugin>
         <version.ipojo.plugin>1.11.0</version.ipojo.plugin>
 
-{% block dependencies -%}
-    <!-- Ariane module dependencies -->
-    {% for d in dependencies -%}
-    {% if d.module.type == 'none' %}
+        {% block dependencies -%}
+        <!-- Ariane module dependencies -->
+        {% for d in dependencies -%}
+        {% if d.module.type == 'none' -%}
         <version.net.echinopsii.ariane.{{ d.module.name }}>{{ d.version }}</version.net.echinopsii.ariane.{{ d.module.name }}>
         <version.net.echinopsii.ariane.{{ d.module.name }}.min>{{ d.version_min }} </version.net.echinopsii.ariane.{{ d.module.name }}.min>
         <version.net.echinopsii.ariane.{{ d.module.name }}.max>{{ d.version_max }} </version.net.echinopsii.ariane.{{ d.module.name }}.max>
-    {% else %}
+        {% else -%}
         <version.net.echinopsii.ariane.{{ d.module.type}}.{{ d.module.name }}>{{ d.version }}</version.net.echinopsii.ariane.{{ d.module.type}}.{{ d.module.name }}>
         <version.net.echinopsii.ariane.{{ d.module.type}}.{{ d.module.name }}.min>{{ d.version_min }}</version.net.echinopsii.ariane.{{ d.module.type}}.{{ d.module.name }}.min>
         <version.net.echinopsii.ariane.{{ d.module.type}}.{{ d.module.name }}.max>{{ d.version_max }}</version.net.echinopsii.ariane.{{ d.module.type}}.{{ d.module.name }}.max>
-    {% endif %}
-    {%- endfor %}
-{%- endblock %}
-
-
+        {% endif -%}
+        {%- endfor %}
+        {%- endblock %}
         <!-- Dependencies versions-->
         <version.com.fasterxml.jackson>2.1.2</version.com.fasterxml.jackson>
         <version.commons.fileupload>1.3</version.commons.fileupload>

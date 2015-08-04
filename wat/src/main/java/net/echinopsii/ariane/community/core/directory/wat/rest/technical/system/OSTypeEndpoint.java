@@ -24,6 +24,7 @@ import net.echinopsii.ariane.community.core.directory.base.model.technical.syste
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.system.OSTypeJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.CompanyEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -37,7 +38,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.technical.system.OSTypeJSON.JSONFriendlyOSType;
 
 /**
  *
@@ -86,6 +90,104 @@ public class OSTypeEndpoint {
             entity = null;
         }
         return entity;
+    }
+
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyOSType jsonFriendlyOSType) {
+        OSType entity = null;
+        CommonRestResponse commonRestResponse = new CommonRestResponse();
+
+        if(jsonFriendlyOSType.getOsTypeID() !=0)
+            entity = findOSTypeById(em, jsonFriendlyOSType.getOsTypeID());
+        if(entity == null && jsonFriendlyOSType.getOsTypeID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided OSType ID " + jsonFriendlyOSType.getOsTypeID() +" was not found.");
+            return commonRestResponse;
+        }
+        if(entity == null){
+            if(jsonFriendlyOSType.getOsTypeName() != null){
+                entity = findOSTypeByName(em, jsonFriendlyOSType.getOsTypeName());
+            }
+        }
+        if(entity != null) {
+            if (jsonFriendlyOSType.getOsTypeName() !=null) {
+                entity.setName(jsonFriendlyOSType.getOsTypeName());
+            }
+            if (jsonFriendlyOSType.getOsTypeArchitecture() != null) {
+                entity.setArchitecture(jsonFriendlyOSType.getOsTypeArchitecture());
+            }
+            if (jsonFriendlyOSType.getOsTypeCompanyID() != 0) {
+                Company company = CompanyEndpoint.findCompanyById(em, jsonFriendlyOSType.getOsTypeCompanyID());
+                if (company != null) {
+                    if (entity.getCompany() != null)
+                        entity.getCompany().getOsTypes().remove(entity);
+                    entity.setCompany(company);
+                    company.getOsTypes().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create OSType. Reason : provided Company ID " + jsonFriendlyOSType.getOsTypeCompanyID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if(jsonFriendlyOSType.getOsTypeOSInstancesID() != null) {
+                if (!jsonFriendlyOSType.getOsTypeOSInstancesID().isEmpty()) {
+                    for (OSInstance osInstance : entity.getOsInstances()) {
+                        if (!jsonFriendlyOSType.getOsTypeOSInstancesID().contains(osInstance.getId())) {
+                            entity.getOsInstances().remove(osInstance);
+                            osInstance.setOsType(null);
+                        }
+                    }
+                    for (Long osiId : jsonFriendlyOSType.getOsTypeOSInstancesID()) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                        if (osInstance != null) {
+                            if (!entity.getOsInstances().contains(osInstance)) {
+                                entity.getOsInstances().add(osInstance);
+                                osInstance.setOsType(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update Application. Reason : provided OS Instance ID " + osiId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (OSInstance osInstance: entity.getOsInstances()) {
+                        entity.getOsInstances().remove(osInstance);
+                        osInstance.setOsType(entity);
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        } else {
+            entity = new OSType();
+            entity.setNameR(jsonFriendlyOSType.getOsTypeName()).setArchitectureR(jsonFriendlyOSType.getOsTypeArchitecture());
+            if (jsonFriendlyOSType.getOsTypeCompanyID() != 0) {
+                Company company = CompanyEndpoint.findCompanyById(em, jsonFriendlyOSType.getOsTypeCompanyID());
+                if (company != null) {
+                    if (entity.getCompany() != null)
+                        entity.getCompany().getOsTypes().remove(entity);
+                    entity.setCompany(company);
+                    company.getOsTypes().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create OSType. Reason : provided Company ID " + jsonFriendlyOSType.getOsTypeCompanyID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if(jsonFriendlyOSType.getOsTypeOSInstancesID() != null) {
+                if (!jsonFriendlyOSType.getOsTypeOSInstancesID().isEmpty()) {
+                    for (Long osiId : jsonFriendlyOSType.getOsTypeOSInstancesID()) {
+                        OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiId);
+                        if (osInstance != null) {
+                            if (!entity.getOsInstances().contains(osInstance)) {
+                                entity.getOsInstances().add(osInstance);
+                                osInstance.setOsType(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update OSType. Reason : provided OS Instance ID " + osiId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        }
+        return commonRestResponse;
     }
 
     @GET
@@ -205,6 +307,47 @@ public class OSTypeEndpoint {
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or architecture are not defined. You must define one of these parameters.").build();
+        }
+    }
+
+    @POST
+    public Response postOSType(@QueryParam("payload") String payload) throws IOException {
+
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] create/update OSType : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiSysOst:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            JSONFriendlyOSType jsonFriendlyOSType = OSTypeJSON.JSON2OSType(payload);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyOSType);
+            OSType entity = (OSType) commonRestResponse.getDeserializedObject();
+            if (entity != null) {
+                try {
+                    em.getTransaction().begin();
+                    if (entity.getId() == null){
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } else {
+                        em.merge(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    }
+                    Response ret = osTypeToJSON(entity);
+                    em.close();
+                    return ret;
+                } catch (Throwable t) {
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                    em.close();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating osType " + payload + " : " + t.getMessage()).build();
+                }
+            } else{
+                em.close();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create ostypes. Contact your administrator.").build();
         }
     }
 

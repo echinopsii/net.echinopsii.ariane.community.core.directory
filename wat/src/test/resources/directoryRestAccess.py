@@ -22,7 +22,7 @@ r.status_code
 # 'applicationCompanyID': 1,
 # 'applicationDescription': 'Multicast bus for business applications',
 # 'applicationID': 1,
-#                   'applicationName': 'Tibco RendezVous',
+# 'applicationName': 'Tibco RendezVous',
 #                   'applicationOSInstancesID': [2, 3, 4, 5],
 #                   'applicationShortName': 'TibcoRV',
 #                   'applicationTeamID': 2,
@@ -226,7 +226,7 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications',
 # 'applicationTeamID': -1,
 # 'applicationVersion': -1}
 
-payload = '{"applicationID": ' + str(fakeID) + ', "applicationColorCode": "de28de"}'
+payl0oad = '{"applicationID": ' + str(fakeID) + ', "applicationColorCode": "de28de"}'
 r = s.post(srv_url + 'ariane/rest/directories/common/organisation/applications', params={"payload": payload})
 #200
 # pprint(r.json())
@@ -1057,7 +1057,7 @@ r.status_code
 devilDCID = r.json().get('datacenterID')
 
 payload = '{"datacenterName":"fake datacenter name", "datacenterAddress": "Fake address", "datacenterZipCode": 422101, "datacenterTown":"Fake town", "datacenterCountry":"fake country", "datacenterGPSLat": 5.295366, "datacenterGPSLng": -52.582179, "datacenterDescription":"This is fake datacenter"}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 fakeDcID = r.json().get('datacenterID')
 print(r.text)
 input()
@@ -1077,8 +1077,8 @@ input()
 # 'datacenterZipCode': 422101}
 
 
-payload = '{"datacenterID": '+ str(fakeDcID) +',"datacenterName": "New Fake datacenter name"}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(fakeDcID) + ',"datacenterName": "New Fake datacenter name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -1097,8 +1097,8 @@ input()
 # 'datacenterZipCode': 422101}
 
 
-payload = '{"datacenterID": '+ str(fakeDcID) +',"datacenterDescription": "updated Description"}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(fakeDcID) + ',"datacenterDescription": "updated Description"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -1117,8 +1117,8 @@ input()
 # 'datacenterZipCode': 422101}
 
 
-payload = '{"datacenterID": '+ str(fakeDcID) +',"datacenterTown": "new datacenter town"}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(fakeDcID) + ',"datacenterTown": "new datacenter town"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -1136,8 +1136,8 @@ input()
 # 'datacenterVersion': 0,
 # 'datacenterZipCode': 422101}
 
-payload = '{"datacenterID": '+ str(fakeDcID) +',"datacenterAddress": "new datacenter address"}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(fakeDcID) + ',"datacenterAddress": "new datacenter address"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -1155,8 +1155,8 @@ input()
 # 'datacenterVersion': 0,
 # 'datacenterZipCode': 422101}
 
-payload = '{"datacenterID": '+ str(fakeDcID) +',"datacenterZipCode": 422111}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(fakeDcID) + ',"datacenterZipCode": 422111}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -1174,8 +1174,8 @@ input()
 # 'datacenterVersion': 0,
 # 'datacenterZipCode': 422111}
 
-payload = '{"datacenterID": '+ str(fakeDcID) +',"datacenterCountry": "new fake country"}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(fakeDcID) + ',"datacenterCountry": "new fake country"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -1193,8 +1193,8 @@ input()
 # 'datacenterVersion': 0,
 # 'datacenterZipCode': 422111}
 
-payload = '{"datacenterID": '+ str(fakeDcID) +',"datacenterGPSLng": -51.60}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(fakeDcID) + ',"datacenterGPSLng": -51.60}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -1212,8 +1212,8 @@ input()
 # 'datacenterVersion': 0,
 # 'datacenterZipCode': 422111}
 
-payload = '{"datacenterID": '+ str(fakeDcID) +',"datacenterGPSLat": 6.22}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(fakeDcID) + ',"datacenterGPSLat": 6.22}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -1396,6 +1396,136 @@ r.status_code
 # 'routingAreaType': 'LAN',
 # 'routingAreaVersion': 0}
 devilRareaID = r.json().get("routingAreaID")
+
+payload = '{"routingAreaName":"fake routingArea name", "routingAreaMulticast": "NOLIMIT", "routingAreaType": "LAN",' \
+          ' "routingAreaDescription":"This is fake routingArea"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+fakerAreaID = r.json().get('routingAreaID')
+#200
+#pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'This is fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 0}
+
+
+payload = '{"routingAreaID": ' + str(fakerAreaID) + ',"routingAreaName": "New Fake routingArea name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'This is fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'New fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 1}
+
+
+payload = '{"routingAreaID": ' + str(fakerAreaID) + ',"routingAreaDescription": "updated Description"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 2}
+
+
+payload = '{"routingAreaID": ' + str(fakerAreaID) + ',"routingAreaType": "WAN"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 3}
+
+payload = '{"routingAreaID": ' + str(fakerAreaID) + ',"routingAreaMulticast": "LIMT"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 4}
+
+payload = '{"routingAreaID": ' + str(fakerAreaID) + ',"routingAreaDatacentersID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [1],
+# 'routingAreaDescription': 'updated description',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 5}
+
+payload = '{"routingAreaName":"fake routingArea name2", "routingAreaMulticast": "NOLIMIT", "routingAreaType": "WAN",' \
+          ' "routingAreaDescription":"This is fake routingArea", "routingAreaDatacentersID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+newfakerAreaID = r.json().get("routingAreaID")
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [1],
+# 'routingAreaDescription': 'This is fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'NOLIMIT',
+# 'routingAreaName': 'fake routingArea name2',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'WAN',
+# 'routingAreaVersion': 0}
+
+payload = '{"routingAreaID": ' + str(newfakerAreaID) + ',"routingAreaName":"fake routingArea name3",' \
+                                                       ' "routingAreaMulticast": "LIMIT", "routingAreaType": "LAN",' \
+                                                       ' "routingAreaDescription":"This is updated fake routingArea",' \
+                                                       ' "routingAreaDatacentersID": [2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [2],
+# 'routingAreaDescription': 'This is updated fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name3',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 1}
+
+payload = '{"routingAreaID": ' + str(newfakerAreaID) + ',"routingAreaName":"fake routingArea name3",' \
+                                                       ' "routingAreaMulticast": "LIMIT", "routingAreaType": "LAN",' \
+                                                       ' "routingAreaDescription":"This is updated fake routingArea",' \
+                                                       ' "routingAreaDatacentersID": []}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas', params={"payload": payload})
+#200
+# pprint(r.json())
+#{'routingAreaDatacentersID': [],
+# 'routingAreaDescription': 'This is updated fake routingArea',
+# 'routingAreaID': 1,
+# 'routingAreaMulticast': 'LIMIT',
+# 'routingAreaName': 'fake routingArea name3',
+# 'routingAreaSubnetsID': [],
+# 'routingAreaType': 'LAN',
+# 'routingAreaVersion': 2}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/routingareas/create',
           params={'name': "devilsMindMAN", 'description': "666 mind", 'type': "MAN", 'multicast': "TOTO"})
@@ -1848,8 +1978,8 @@ r.status_code
 #200
 
 
-payload = '{"datacenterID": '+ str(fakeDcID) +',"datacenterRoutingAreasID": [1]}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(fakeDcID) + ',"datacenterRoutingAreasID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -1867,8 +1997,8 @@ input()
 # 'datacenterVersion': 0,
 # 'datacenterZipCode': 422111}
 
-payload = '{"datacenterID": '+ str(fakeDcID) +',"datacenterSubnetsID": [1]}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(fakeDcID) + ',"datacenterSubnetsID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -1886,8 +2016,9 @@ input()
 # 'datacenterVersion': 0,
 # 'datacenterZipCode': 422111}
 
-payload = '{"datacenterID": '+ str(newfakeDcID)+ ',"datacenterName":"new fake datacenter2 name", "datacenterAddress": "new Fake address2", "datacenterZipCode": 422103, "datacenterTown":"new Fake town2", "datacenterCountry":"new fake country2", "datacenterGPSLat": 7.295366, "datacenterGPSLng": -54.582179, "datacenterDescription":"This is new fake datacenter2", "datacenterRoutingAreasID": [2], "datacenterSubnetsID": [1,2]}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(
+    newfakeDcID) + ',"datacenterName":"new fake datacenter2 name", "datacenterAddress": "new Fake address2", "datacenterZipCode": 422103, "datacenterTown":"new Fake town2", "datacenterCountry":"new fake country2", "datacenterGPSLat": 7.295366, "datacenterGPSLng": -54.582179, "datacenterDescription":"This is new fake datacenter2", "datacenterRoutingAreasID": [2], "datacenterSubnetsID": [1,2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -1906,8 +2037,9 @@ input()
 # 'datacenterZipCode': 422103}
 
 
-payload = '{"datacenterID": '+ str(newfakeDcID)+ ',"datacenterName":"new fake datacenter2 name", "datacenterAddress": "new Fake address2", "datacenterZipCode": 422103, "datacenterTown":"new Fake town2", "datacenterCountry":"new fake country2", "datacenterGPSLat": 7.295366, "datacenterGPSLng": -54.582179, "datacenterDescription":"This is new fake datacenter2", "datacenterRoutingAreasID": [], "datacenterSubnetsID": []}'
-r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload":payload})
+payload = '{"datacenterID": ' + str(
+    newfakeDcID) + ',"datacenterName":"new fake datacenter2 name", "datacenterAddress": "new Fake address2", "datacenterZipCode": 422103, "datacenterTown":"new Fake town2", "datacenterCountry":"new fake country2", "datacenterGPSLat": 7.295366, "datacenterGPSLng": -54.582179, "datacenterDescription":"This is new fake datacenter2", "datacenterRoutingAreasID": [], "datacenterSubnetsID": []}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters', params={"payload": payload})
 print(r.text)
 input()
 #200
@@ -2077,6 +2209,89 @@ r.status_code
 #     "ipAddressSubnetID": 2
 #}
 
+payload = '{"ipAddressIPA":"123.123.48.122", "ipAddressFQDN": "fakeFQDN",' \
+          ' "ipAddressSubnetID": 1}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
+fakeipAddressID = r.json().get('ipAddressID')
+#200()
+# pprint(r.json())
+# {'ipAddressFQDN': 'fakeFQDN',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.122',
+#  'ipAddressOSInstanceID': -1,
+#  'ipAddressSubnetID': 1,
+#  'ipAddressVersion': 0}
+
+payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressIPA": "123.123.48.130"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'ipAddressFQDN': 'fakeFQDN',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.130',
+#  'ipAddressOSInstanceID': -1,
+#  'ipAddressSubnetID': 1,
+#  'ipAddressVersion': 1}
+
+payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressFQDN": "Fake FQDN2"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'ipAddressFQDN': 'Fake FQDN2',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.130',
+#  'ipAddressOSInstanceID': -1,
+#  'ipAddressSubnetID': 1,
+#  'ipAddressVersion': 2}
+
+payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressSubnetID": 2}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'ipAddressFQDN': 'Fake FQDN2',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.130',
+#  'ipAddressOSInstanceID': -1,
+#  'ipAddressSubnetID': 2,
+#  'ipAddressVersion': 3}
+
+
+payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressOSInstanceID": 2}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'ipAddressFQDN': 'Fake FQDN2',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.130',
+#  'ipAddressOSInstanceID': 2,
+#  'ipAddressSubnetID': 2,
+#  'ipAddressVersion': 4}
+
+payload = '{"ipAddressIPA":"123.123.48.123", "ipAddressFQDN": "fakeFQDN2", "ipAddressSubnetID": 1,' \
+          ' "ipAddressOSInstanceID": 2}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
+fakeipAddressID = r.json().get('ipAddressID')
+#200()
+# pprint(r.json())
+# {'ipAddressFQDN': 'fakeFQDN2',
+#  'ipAddressID': 26,
+#  'ipAddressIPA': '123.123.48.123',
+#  'ipAddressOSInstanceID': 2,
+#  'ipAddressSubnetID': 1,
+#  'ipAddressVersion': 0}
+
+payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressIPA":"123.123.48.123",' \
+                                                      ' "ipAddressFQDN": "fakeFQDN3", ' \
+                                                      '"ipAddressSubnetID": 1, "ipAddressOSInstanceID": 3}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
+#200()
+# pprint(r.json())
+# {'ipAddressFQDN': 'fakeFQDN3',
+#  'ipAddressID': 26,
+#  'ipAddressIPA': '123.123.48.123',
+#  'ipAddressOSInstanceID': 3,
+#  'ipAddressSubnetID': 1,
+#  'ipAddressVersion': 1}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes')
 r.status_code
@@ -2164,6 +2379,102 @@ newFakeCompId = r.json().get("CompanyID")
 # 'companyName': 'New Fake Comp name',
 # 'companyOSTypesID': [1,2],
 # 'companyApplicationsID': [2]}
+
+payload = '{"osTypeName":"fake osType name", "osTypeArchitecture":"fake architecture"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload": payload})
+fakeosTypeID = r.json().get('osTypeID')
+#200()
+# pprint(r.json())
+# {'osTypeArchitecture': 'fake architecture',
+#  'osTypeCompanyID': -1,
+#  'osTypeID': 2,
+#  'osTypeName': 'fake osType name',
+#  'osTypeOSInstancesID': [],
+#  'osTypeVersion': 0}
+
+payload = '{"osTypeID": ' + str(fakeosTypeID) + ',"osTypeName": "New Fake osType name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'fake architecture',
+#  'osTypeCompanyID': -1,
+#  'osTypeID': 2,
+#  'osTypeName': 'New Fake osType name',
+#  'osTypeOSInstancesID': [],
+#  'osTypeVersion': 1}
+
+payload = '{"osTypeID": ' + str(fakeosTypeID) + ',"osTypeArchitecture": "updated fake architecture"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'updated fake architecture',
+#  'osTypeCompanyID': -1,
+#  'osTypeID': 2,
+#  'osTypeName': 'New Fake osType name',
+#  'osTypeOSInstancesID': [],
+#  'osTypeVersion': 2}
+
+payload = '{"osTypeID": ' + str(fakeosTypeID) + ',"osTypeOSInstancesID": [2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'updated fake architecture',
+#  'osTypeCompanyID': -1,
+#  'osTypeID': 2,
+#  'osTypeName': 'New Fake osType name',
+#  'osTypeOSInstancesID': [2],
+#  'osTypeVersion': 2}
+
+payload = '{"osTypeID": ' + str(fakeosTypeID) + ',"osTypeCompanyID": 1}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'updated fake architecture',
+#  'osTypeCompanyID': 1,
+#  'osTypeID': 2,
+#  'osTypeName': 'New Fake osType name',
+#  'osTypeOSInstancesID': [2],
+#  'osTypeVersion': 3}
+
+payload = '{"osTypeName":"fake osType name2", "osTypeArchitecture":"fake architecture2",' \
+          ' "osTypeOSInstancesID": [2], "osTypeCompanyID": 1}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload":payload})
+newfakeosTypeID = r.json().get("osTypeID")
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'fake architecture2',
+#  'osTypeCompanyID': 1,
+#  'osTypeID': 4,
+#  'osTypeName': 'fake osType name2',
+#  'osTypeOSInstancesID': [2],
+#  'osTypeVersion': 0}
+
+#--------------------------------------------------------------
+
+payload = '{"osTypeID": '+ str(newfakeosTypeID)+ ',"osTypeName":"fake osType name3",' \
+                                                 ' "osTypeArchitecture":"fake architecture3", ' \
+                                                 '"osTypeOSInstancesID": [3], "osTypeCompanyID": 2}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload":payload})
+#200
+# pprint(r.json())
+# {'osTypeArchitecture': 'fake architecture3',
+#  'osTypeCompanyID': 2,
+#  'osTypeID': 4,
+#  'osTypeName': 'fake osType name3',
+#  'osTypeOSInstancesID': [3],
+#  'osTypeVersion': 1}
+
+payload = '{"osTypeID": '+ str(newfakeosTypeID)+ ',"osTypeName":"new fake osType name2",' \
+                                   ' "osTypeArchitecture":"new fake architecture2", "osTypeOSInstancesID": []}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload":payload})
+#200
+# pprint(r.text)
+# {'osTypeArchitecture': 'new fake architecture2',
+#  'osTypeCompanyID': -1,
+#  'osTypeID': 4,
+#  'osTypeName': 'new fake osType name2',
+#  'osTypeOSInstancesID': [],
+#  'osTypeVersion': 1}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes/update/name',
           params={'id': solID, 'name': 'Solaris OS'})
@@ -2528,7 +2839,7 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments',
 # 'environmentVersion': 0}
 
 payload = '{"environmentName": "New fake environment2 name", "environmentColorCode":"054d34", environmentDescription": "updated for environment2", "environmentOSInstancesID": [1,2]}'
-r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload":payload})
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload": payload})
 newfakeEnvID = r.json().get("environmentID")
 #200
 # pprint(r.json())
@@ -2539,8 +2850,9 @@ newfakeEnvID = r.json().get("environmentID")
 # 'environmentOSInstancesID': [1,2],
 # 'environmentVersion': 0}
 
-payload = '{"environmentID": '+ str(newfakeEnvID)+ ',"environmentName": "New updated fake environment name","environmentDescription": "new updated for environment2", "environmentColorCode": "054d35", "environmentOSInstancesID": [2]}'
-r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload":payload})
+payload = '{"environmentID": ' + str(
+    newfakeEnvID) + ',"environmentName": "New updated fake environment name","environmentDescription": "new updated for environment2", "environmentColorCode": "054d35", "environmentOSInstancesID": [2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload": payload})
 #200
 # pprint(r.json())
 #{'environmentColorCode': '054d35',
@@ -2551,8 +2863,9 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments',
 # 'environmentVersion': 0}
 
 
-payload = '{"environmentID": '+ str(newfakeEnvID)+ ',"environmentName": "New updated fake environment name","environmentDescription": "new updated for environment2", "environmentColorCode": "054d35", "environmentOSTypesID": []}'
-r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload":payload})
+payload = '{"environmentID": ' + str(
+    newfakeEnvID) + ',"environmentName": "New updated fake environment name","environmentDescription": "new updated for environment2", "environmentColorCode": "054d35", "environmentOSTypesID": []}'
+r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments', params={"payload": payload})
 #200
 # pprint(r.json())
 #{'environmentColorCode': '054d35',

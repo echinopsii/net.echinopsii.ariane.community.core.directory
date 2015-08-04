@@ -22,6 +22,8 @@ package net.echinopsii.ariane.community.core.directory.base.json.ds.technical.ne
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 
@@ -75,5 +77,69 @@ public class IPAddressJSON {
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
         jgenerator.close();
+    }
+
+    public static class JSONFriendlyIPAddress {
+        private long ipAddressID;
+        private long ipAddressVersion;
+        private String ipAddressIPA;
+        private String ipAddressFQDN;
+        private long ipAddressSubnetID;
+        private long ipAddressOSInstanceID;
+
+        public long getIpAddressOSInstanceID() {
+            return ipAddressOSInstanceID;
+        }
+
+        public void setIpAddressOSInstanceID(long ipAddressOSInstanceID) {
+            this.ipAddressOSInstanceID = ipAddressOSInstanceID;
+        }
+
+        public long getIpAddressSubnetID() {
+            return ipAddressSubnetID;
+        }
+
+        public void setIpAddressSubnetID(long ipAddressSubnetID) {
+            this.ipAddressSubnetID = ipAddressSubnetID;
+        }
+
+        public String getIpAddressFQDN() {
+            return ipAddressFQDN;
+        }
+
+        public void setIpAddressFQDN(String ipAddressFQDN) {
+            this.ipAddressFQDN = ipAddressFQDN;
+        }
+
+        public String getIpAddressIPA() {
+            return ipAddressIPA;
+        }
+
+        public void setIpAddressIPA(String ipAddressIPA) {
+            this.ipAddressIPA = ipAddressIPA;
+        }
+
+        public long getIpAddressVersion() {
+            return ipAddressVersion;
+        }
+
+        public void setIpAddressVersion(long ipAddressVersion) {
+            this.ipAddressVersion = ipAddressVersion;
+        }
+
+        public long getIpAddressID() {
+            return ipAddressID;
+        }
+
+        public void setIpAddressID(long ipAddressID) {
+            this.ipAddressID = ipAddressID;
+        }
+    }
+
+    public final static JSONFriendlyIPAddress JSON2IPAddress(String payload) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        JSONFriendlyIPAddress jsonFriendlyIPAddress = mapper.readValue(payload, JSONFriendlyIPAddress.class);
+        return jsonFriendlyIPAddress;
     }
 }
