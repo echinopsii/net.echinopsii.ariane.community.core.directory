@@ -28,6 +28,7 @@ import net.echinopsii.ariane.community.core.directory.base.model.technical.syste
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.system.OSInstanceJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
+import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.ApplicationEndpoint;
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.EnvironmentEndpoint;
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.TeamEndpoint;
@@ -45,7 +46,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
+
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.technical.system.OSInstanceJSON.JSONFriendlyOSInstance;
 
 /**
  *
@@ -94,6 +98,347 @@ public class OSInstanceEndpoint {
             entity = null;
         }
         return entity;
+    }
+
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyOSInstance jsonFriendlyOSInstance) {
+        OSInstance entity = null;
+        CommonRestResponse commonRestResponse = new CommonRestResponse();
+
+        if(jsonFriendlyOSInstance.getOsInstanceID() !=0)
+            entity = findOSInstanceById(em, jsonFriendlyOSInstance.getOsInstanceID());
+        if(entity == null && jsonFriendlyOSInstance.getOsInstanceID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided OS Instance ID " + jsonFriendlyOSInstance.getOsInstanceID() +" was not found.");
+            return commonRestResponse;
+        }
+        if(entity == null){
+            if(jsonFriendlyOSInstance.getOsInstanceName() != null){
+                entity = findOSInstanceByName(em, jsonFriendlyOSInstance.getOsInstanceName());
+            }
+        }
+        if(entity != null) {
+            if (jsonFriendlyOSInstance.getOsInstanceName() !=null) {
+                entity.setName(jsonFriendlyOSInstance.getOsInstanceName());
+            }
+            if (jsonFriendlyOSInstance.getOsInstanceDescription() != null) {
+                entity.setDescription(jsonFriendlyOSInstance.getOsInstanceDescription());
+            }
+            if (jsonFriendlyOSInstance.getOsInstanceAdminGateURI() != null) {
+                entity.setAdminGateURI(jsonFriendlyOSInstance.getOsInstanceAdminGateURI());
+            }
+            if (jsonFriendlyOSInstance.getOsInstanceEmbeddingOSInstanceID() != 0) {
+                OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, jsonFriendlyOSInstance.getOsInstanceEmbeddingOSInstanceID());
+                if (osInstance != null) {
+                    if (entity.getEmbeddingOSInstance() != null)
+                        entity.getEmbeddingOSInstance().getEmbeddedOSInstances().remove(entity);
+                    osInstance.getEmbeddedOSInstances().add(entity);
+                    entity.setEmbeddingOSInstance(osInstance);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to update OS Instance. Reason : provided Embedding OS Instance ID " + jsonFriendlyOSInstance.getOsInstanceEmbeddingOSInstanceID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if (jsonFriendlyOSInstance.getOsInstanceOSTypeID() != 0) {
+                OSType osType = OSTypeEndpoint.findOSTypeById(em, jsonFriendlyOSInstance.getOsInstanceOSTypeID());
+                if (osType != null) {
+                    if (entity.getOsType() != null)
+                        entity.getOsType().getOsInstances().remove(entity);
+                    entity.setOsType(osType);
+                    osType.getOsInstances().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to update OS Instance. Reason : provided OSType ID " + jsonFriendlyOSInstance.getOsInstanceOSTypeID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceSubnetsID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceSubnetsID().isEmpty()) {
+                    for (Subnet subnet : entity.getNetworkSubnets()) {
+                        if (!jsonFriendlyOSInstance.getOsInstanceSubnetsID().contains(subnet.getId())) {
+                            entity.getNetworkSubnets().remove(subnet);
+                            subnet.getOsInstances().remove(entity);
+                        }
+                    }
+                    for (Long subnetId : jsonFriendlyOSInstance.getOsInstanceSubnetsID()) {
+                        Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetId);
+                        if (subnet != null) {
+                            if (!entity.getNetworkSubnets().contains(subnet)) {
+                                entity.getNetworkSubnets().add(subnet);
+                                subnet.getOsInstances().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update OS Instance. Reason : provided Subnet ID " + subnetId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (Subnet subnet: entity.getNetworkSubnets()) {
+                        entity.getNetworkSubnets().remove(subnet);
+                        subnet.getOsInstances().remove(entity);
+                    }
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceApplicationsID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceApplicationsID().isEmpty()) {
+                    for (Application application: entity.getApplications()) {
+                        if (!jsonFriendlyOSInstance.getOsInstanceApplicationsID().contains(application.getId())) {
+                            entity.getApplications().remove(application);
+                            application.getOsInstances().remove(entity);
+                        }
+                    }
+                    for (Long appId : jsonFriendlyOSInstance.getOsInstanceApplicationsID()) {
+                        Application application = ApplicationEndpoint.findApplicationById(em, appId);
+                        if (application != null) {
+                            if (!entity.getApplications().contains(application)) {
+                                entity.getApplications().add(application);
+                                application.getOsInstances().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update OS Instance. Reason : provided Application ID " + appId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (Application application: entity.getApplications()) {
+                        entity.getApplications().remove(application);
+                        application.getOsInstances().remove(entity);
+                    }
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceEnvironmentsID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceEnvironmentsID().isEmpty()) {
+                    for (Environment environment: entity.getEnvironments()) {
+                        if (!jsonFriendlyOSInstance.getOsInstanceEnvironmentsID().contains(environment.getId())) {
+                            entity.getEnvironments().remove(environment);
+                            environment.getOsInstances().remove(entity);
+                        }
+                    }
+                    for (Long envId : jsonFriendlyOSInstance.getOsInstanceEnvironmentsID()) {
+                        Environment environment = EnvironmentEndpoint.findEnvironmentByID(em, envId);
+                        if (environment != null) {
+                            if (!entity.getEnvironments().contains(environment)) {
+                                entity.getEnvironments().add(environment);
+                                environment.getOsInstances().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update OS Instance. Reason : provided Environment ID " + envId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (Environment environment: entity.getEnvironments()) {
+                        entity.getEnvironments().remove(environment);
+                        environment.getOsInstances().remove(entity);
+                    }
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceIPAddressesID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceIPAddressesID().isEmpty()) {
+                    for (IPAddress ipAddress: entity.getIpAddresses()) {
+                        if (!jsonFriendlyOSInstance.getOsInstanceIPAddressesID().contains(ipAddress.getId())) {
+                            entity.getIpAddresses().remove(ipAddress);
+                            ipAddress.setOsInstance(null);
+                        }
+                    }
+                    for (Long ipaId : jsonFriendlyOSInstance.getOsInstanceIPAddressesID()) {
+                        IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, ipaId);
+                        if (ipAddress != null) {
+                            if (!entity.getIpAddresses().contains(ipAddress)) {
+                                entity.getIpAddresses().add(ipAddress);
+                                ipAddress.setOsInstance(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update OS Instance. Reason : provided IP Address ID " + ipaId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (IPAddress ipAddress: entity.getIpAddresses()) {
+                        entity.getIpAddresses().remove(ipAddress);
+                        ipAddress.setOsInstance(null);
+                    }
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceTeamsID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceTeamsID().isEmpty()) {
+                    for (Team team: entity.getTeams()) {
+                        if (!jsonFriendlyOSInstance.getOsInstanceTeamsID().contains(team.getId())) {
+                            entity.getTeams().remove(team);
+                            team.getOsInstances().remove(entity);
+                        }
+                    }
+                    for (Long teamId : jsonFriendlyOSInstance.getOsInstanceTeamsID()) {
+                        Team team = TeamEndpoint.findTeamById(em, teamId);
+                        if (team != null) {
+                            if (!entity.getTeams().contains(team)) {
+                                entity.getTeams().add(team);
+                                team.getOsInstances().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update OS Instance. Reason : provided Team ID " + teamId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (Team team : entity.getTeams()) {
+                        entity.getTeams().remove(team);
+                        team.getOsInstances().remove(entity);
+                    }
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID().isEmpty()) {
+                    for (OSInstance embeddedOSI : entity.getEmbeddedOSInstances()) {
+                        if (!jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID().contains(embeddedOSI.getId())) {
+                            embeddedOSI.setEmbeddingOSInstance(null);
+                            entity.getEmbeddedOSInstances().remove(entity);
+                        }
+                    }
+                    for (Long embId : jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID()) {
+                        OSInstance embeddedOSI = OSInstanceEndpoint.findOSInstanceById(em, embId);
+                        if (embeddedOSI != null) {
+                            if (!entity.getEmbeddedOSInstances().contains(embeddedOSI)){
+                                entity.getEmbeddedOSInstances().add(embeddedOSI);
+                                embeddedOSI.setEmbeddingOSInstance(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to update OS Instance. Reason : provided Embedded OS Instance ID " + embId +" was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                } else {
+                    for (OSInstance embeddedOSI: entity.getEmbeddedOSInstances()) {
+                        entity.getEmbeddedOSInstances().remove(embeddedOSI);
+                        embeddedOSI.setEmbeddingOSInstance(null);
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        } else {
+            entity = new OSInstance();
+            entity.setNameR(jsonFriendlyOSInstance.getOsInstanceName()).setAdminGateURIR(jsonFriendlyOSInstance.getOsInstanceAdminGateURI())
+                  .setDescriptionR(jsonFriendlyOSInstance.getOsInstanceDescription());
+            if (jsonFriendlyOSInstance.getOsInstanceEmbeddingOSInstanceID() != 0) {
+                OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, jsonFriendlyOSInstance.getOsInstanceEmbeddingOSInstanceID());
+                if (osInstance != null) {
+                    if (entity.getEmbeddingOSInstance() != null)
+                        entity.getEmbeddingOSInstance().getEmbeddedOSInstances().remove(entity);
+                    osInstance.getEmbeddedOSInstances().add(entity);
+                    entity.setEmbeddingOSInstance(osInstance);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Embedding OS Instance ID " + jsonFriendlyOSInstance.getOsInstanceEmbeddingOSInstanceID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if (jsonFriendlyOSInstance.getOsInstanceOSTypeID() != 0) {
+                OSType osType = OSTypeEndpoint.findOSTypeById(em, jsonFriendlyOSInstance.getOsInstanceOSTypeID());
+                if (osType != null) {
+                    if (entity.getOsType() != null)
+                        entity.getOsType().getOsInstances().remove(entity);
+                    entity.setOsType(osType);
+                    osType.getOsInstances().add(entity);
+                } else {
+                    commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided OSType ID " + jsonFriendlyOSInstance.getOsInstanceOSTypeID() +" was not found.");
+                    return commonRestResponse;
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceSubnetsID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceSubnetsID().isEmpty()) {
+                    for (Long subnetId : jsonFriendlyOSInstance.getOsInstanceSubnetsID()) {
+                        Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetId);
+                        if (subnet != null) {
+                            if (!entity.getNetworkSubnets().contains(subnet)) {
+                                entity.getNetworkSubnets().add(subnet);
+                                subnet.getOsInstances().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Subnet ID " + subnetId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceEnvironmentsID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceEnvironmentsID().isEmpty()) {
+                    for (Long envId : jsonFriendlyOSInstance.getOsInstanceEnvironmentsID()) {
+                        Environment environment = EnvironmentEndpoint.findEnvironmentByID(em, envId);
+                        if (environment != null) {
+                            if (!entity.getEnvironments().contains(environment)) {
+                                entity.getEnvironments().add(environment);
+                                environment.getOsInstances().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Environment ID " + envId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceApplicationsID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceApplicationsID().isEmpty()) {
+                    for (Long appId : jsonFriendlyOSInstance.getOsInstanceApplicationsID()) {
+                        Application application = ApplicationEndpoint.findApplicationById(em, appId);
+                        if (application != null) {
+                            if (!entity.getApplications().contains(application)) {
+                                entity.getApplications().add(application);
+                                application.getOsInstances().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Application ID " + appId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceTeamsID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceTeamsID().isEmpty()) {
+                    for (Long teamId : jsonFriendlyOSInstance.getOsInstanceTeamsID()) {
+                        Team team = TeamEndpoint.findTeamById(em, teamId);
+                        if (team != null) {
+                            if (!entity.getTeams().contains(team)) {
+                                entity.getTeams().add(team);
+                                team.getOsInstances().add(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Team ID " + teamId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceIPAddressesID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceIPAddressesID().isEmpty()) {
+                    for (Long ipaId : jsonFriendlyOSInstance.getOsInstanceIPAddressesID()) {
+                        IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, ipaId);
+                        if (ipAddress != null) {
+                            if (!entity.getIpAddresses().contains(ipAddress)) {
+                                entity.getIpAddresses().add(ipAddress);
+                                ipAddress.setOsInstance(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided IPAddress ID " + ipaId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            if(jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID().isEmpty()) {
+                    for (Long embeddedId : jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID()) {
+                        OSInstance embeddedOSI = OSInstanceEndpoint.findOSInstanceById(em, embeddedId);
+                        if (embeddedOSI != null) {
+                            if (!entity.getEmbeddedOSInstances().contains(embeddedOSI)) {
+                                entity.getEmbeddedOSInstances().add(embeddedOSI);
+                                embeddedOSI.setEmbeddingOSInstance(entity);
+                            }
+                        } else {
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Embedded OS Instance ID " + embeddedId + " was not found.");
+                            return commonRestResponse;
+                        }
+                    }
+                }
+            }
+            commonRestResponse.setDeserializedObject(entity);
+        }
+        return commonRestResponse;
     }
 
     @GET
@@ -212,6 +557,47 @@ public class OSInstanceEndpoint {
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or adminGateURI are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @POST
+    public Response postOSInstance(@QueryParam("payload") String payload) throws IOException {
+
+        Subject subject = SecurityUtils.getSubject();
+        log.debug("[{}-{}] create/update OS Instance : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiSysOsi:create") ||
+                subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
+            em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+            JSONFriendlyOSInstance jsonFriendlyOSInstance = OSInstanceJSON.JSON2OSInstance(payload);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyOSInstance);
+            OSInstance entity = (OSInstance) commonRestResponse.getDeserializedObject();
+            if (entity != null) {
+                try {
+                    em.getTransaction().begin();
+                    if (entity.getId() == null){
+                        em.persist(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    } else {
+                        em.merge(entity);
+                        em.flush();
+                        em.getTransaction().commit();
+                    }
+                    Response ret = osInstanceToJSON(entity);
+                    em.close();
+                    return ret;
+                } catch (Throwable t) {
+                    if (em.getTransaction().isActive())
+                        em.getTransaction().rollback();
+                    em.close();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating OS Instance " + payload + " : " + t.getMessage()).build();
+                }
+            } else{
+                em.close();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
+            }
+        } else {
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create OsInstances. Contact your administrator.").build();
         }
     }
 

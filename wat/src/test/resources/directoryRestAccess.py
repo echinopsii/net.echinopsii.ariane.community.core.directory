@@ -26,7 +26,7 @@ r.status_code
 # 'applicationOSInstancesID': [2, 3, 4, 5],
 # 'applicationShortName': 'TibcoRV',
 # 'applicationTeamID': 2,
-#                   'applicationVersion': 9},
+# 'applicationVersion': 9},
 #                  {'applicationColorCode': '5e647a',
 #                   'applicationCompanyID': 2,
 #                   'applicationDescription': 'Linux hypervisor for virtualisation',
@@ -3076,6 +3076,296 @@ r = s.post(srv_url + 'ariane/rest/directories/common/organisation/environments',
 #200
 # pprint(r.json())
 # Request Error : provided Environment ID 50 was not found.
+
+payload = '{"osInstanceName":"fake osInstance name", "osInstanceAdminGateURI": "Fake URI", ' \
+          '"osInstanceDescription": "This is fake osInstance"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+fakeosInstanceID = r.json().get('osInstanceID')
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'Fake URI',
+#  'osInstanceApplicationsID': [],
+#  'osInstanceDescription': 'This is fake osInstance',
+#  'osInstanceEmbeddedOSInstancesID': [],
+#  'osInstanceEmbeddingOSInstanceID': -1,
+#  'osInstanceEnvironmentsID': [],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'fake osInstance name',
+#  'osInstanceOSTypeID': -1,
+#  'osInstanceSubnetsID': [],
+#  'osInstanceTeamsID': [],
+#  'osInstanceVersion': 0}
+
+
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceName": "New Fake osInstance name"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'Fake URI',
+#  'osInstanceApplicationsID': [],
+#  'osInstanceDescription': 'This is fake osInstance',
+#  'osInstanceEmbeddedOSInstancesID': [],
+#  'osInstanceEmbeddingOSInstanceID': -1,
+#  'osInstanceEnvironmentsID': [],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': -1,
+#  'osInstanceSubnetsID': [],
+#  'osInstanceTeamsID': [],
+#  'osInstanceVersion': 1}
+
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceDescription": "updated Description"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'Fake URI',
+#  'osInstanceApplicationsID': [],
+#  'osInstanceDescription': 'updated Description',
+#  'osInstanceEmbeddedOSInstancesID': [],
+#  'osInstanceEmbeddingOSInstanceID': -1,
+#  'osInstanceEnvironmentsID': [],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': -1,
+#  'osInstanceSubnetsID': [],
+#  'osInstanceTeamsID': [],
+#  'osInstanceVersion': 2}
+
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceAdminGateURI": "updated URI"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'updated URI',
+#  'osInstanceApplicationsID': [],
+#  'osInstanceDescription': 'updated Description',
+#  'osInstanceEmbeddedOSInstancesID': [],
+#  'osInstanceEmbeddingOSInstanceID': -1,
+#  'osInstanceEnvironmentsID': [],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': -1,
+#  'osInstanceSubnetsID': [],
+#  'osInstanceTeamsID': [],
+#  'osInstanceVersion': 3}
+
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceOSTypeID": 1}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'updated URI',
+#  'osInstanceApplicationsID': [],
+#  'osInstanceDescription': 'updated Description',
+#  'osInstanceEmbeddedOSInstancesID': [],
+#  'osInstanceEmbeddingOSInstanceID': -1,
+#  'osInstanceEnvironmentsID': [],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': 1,
+#  'osInstanceSubnetsID': [],
+#  'osInstanceTeamsID': [],
+#  'osInstanceVersion': 4}
+
+
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceEmbeddingOSInstanceID": 2}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'updated URI',
+#  'osInstanceApplicationsID': [],
+#  'osInstanceDescription': 'updated Description',
+#  'osInstanceEmbeddedOSInstancesID': [],
+#  'osInstanceEmbeddingOSInstanceID': 2,
+#  'osInstanceEnvironmentsID': [],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': 1,
+#  'osInstanceSubnetsID': [],
+#  'osInstanceTeamsID': [],
+#  'osInstanceVersion': 5}
+
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceSubnetsID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'updated URI',
+#  'osInstanceApplicationsID': [],
+#  'osInstanceDescription': 'updated Description',
+#  'osInstanceEmbeddedOSInstancesID': [],
+#  'osInstanceEmbeddingOSInstanceID': 2,
+#  'osInstanceEnvironmentsID': [],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': 1,
+#  'osInstanceSubnetsID': [1],
+#  'osInstanceTeamsID': [],
+#  'osInstanceVersion': 5}
+
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceEmbeddedOSInstancesID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'updated URI',
+#  'osInstanceApplicationsID': [],
+#  'osInstanceDescription': 'updated Description',
+#  'osInstanceEmbeddedOSInstancesID': [1],
+#  'osInstanceEmbeddingOSInstanceID': 2,
+#  'osInstanceEnvironmentsID': [],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': 1,
+#  'osInstanceSubnetsID': [1],
+#  'osInstanceTeamsID': [],
+#  'osInstanceVersion': 5}
+
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceApplicationsID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'updated URI',
+#  'osInstanceApplicationsID': [1],
+#  'osInstanceDescription': 'updated Description',
+#  'osInstanceEmbeddedOSInstancesID': [1],
+#  'osInstanceEmbeddingOSInstanceID': 2,
+#  'osInstanceEnvironmentsID': [],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': 1,
+#  'osInstanceSubnetsID': [1],
+#  'osInstanceTeamsID': [],
+#  'osInstanceVersion': 5}
+
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceTeamsID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'updated URI',
+#  'osInstanceApplicationsID': [1],
+#  'osInstanceDescription': 'updated Description',
+#  'osInstanceEmbeddedOSInstancesID': [1],
+#  'osInstanceEmbeddingOSInstanceID': 2,
+#  'osInstanceEnvironmentsID': [],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': 1,
+#  'osInstanceSubnetsID': [1],
+#  'osInstanceTeamsID': [1],
+#  'osInstanceVersion': 5}
+
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceEnvironmentsID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'updated URI',
+#  'osInstanceApplicationsID': [1],
+#  'osInstanceDescription': 'updated Description',
+#  'osInstanceEmbeddedOSInstancesID': [1],
+#  'osInstanceEmbeddingOSInstanceID': 2,
+#  'osInstanceEnvironmentsID': [1],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': 1,
+#  'osInstanceSubnetsID': [1],
+#  'osInstanceTeamsID': [1],
+#  'osInstanceVersion': 5}
+
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceIPAddressesID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'updated URI',
+#  'osInstanceApplicationsID': [1],
+#  'osInstanceDescription': 'updated Description',
+#  'osInstanceEmbeddedOSInstancesID': [1],
+#  'osInstanceEmbeddingOSInstanceID': 2,
+#  'osInstanceEnvironmentsID': [1],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [1],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': 1,
+#  'osInstanceSubnetsID': [1],
+#  'osInstanceTeamsID': [1],
+#  'osInstanceVersion': 5}
+
+payload = '{"osInstanceName":"fake osInstance name2", "osInstanceAdminGateURI": "Fake URI2", ' \
+          '"osInstanceDescription": "This is fake osInstance2", "osInstanceOSTypeID": 1,' \
+          ' "osInstanceEmbeddingOSInstanceID": 2, "osInstanceSubnetsID": [3], "osInstanceTeamsID": [1],' \
+          ' "osInstanceEnvironmentsID": [1], "osInstanceApplicationsID": [1], "osInstanceEmbeddedOSInstancesID": [1],' \
+          ' "osInstanceIPAddressesID": [2]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+newfakeosInstanceID = r.json().get("osInstanceID")
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'Fake URI2',
+#  'osInstanceApplicationsID': [1],
+#  'osInstanceDescription': 'This is fake osInstance2',
+#  'osInstanceEmbeddedOSInstancesID': [],
+#  'osInstanceEmbeddingOSInstanceID': 2,
+#  'osInstanceEnvironmentsID': [1],
+#  'osInstanceID': 4,
+#  'osInstanceIPAddressesID': [2],
+#  'osInstanceName': 'fake osInstance name2',
+#  'osInstanceOSTypeID': 1,
+#  'osInstanceSubnetsID': [3],
+#  'osInstanceTeamsID': [1],
+#  'osInstanceVersion': 0}
+
+payload = '{"osInstanceID": ' + str(
+    newfakeosInstanceID) + ',"osInstanceName":"fake osInstance name3", "osInstanceAdminGateURI": "Fake URI3", ' \
+                           '"osInstanceDescription": "This is fake osInstance3", "osInstanceOSTypeID": 2, ' \
+                           '"osInstanceEmbeddingOSInstanceID": 2, "osInstanceSubnetsID": [3,4],' \
+                           ' "osInstanceTeamsID": [1,4], "osInstanceEnvironmentsID": [1,3],' \
+                           ' "osInstanceApplicationsID": [3], "osInstanceEmbeddedOSInstancesID": [2],' \
+                           ' "osInstanceIPAddressesID": [3]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'Fake URI3',
+#  'osInstanceApplicationsID': [3],
+#  'osInstanceDescription': 'This is fake osInstance3',
+#  'osInstanceEmbeddedOSInstancesID': [],
+#  'osInstanceEmbeddingOSInstanceID': 2,
+#  'osInstanceEnvironmentsID': [1, 3],
+#  'osInstanceID': 4,
+#  'osInstanceIPAddressesID': [3],
+#  'osInstanceName': 'fake osInstance name3',
+#  'osInstanceOSTypeID': 2,
+#  'osInstanceSubnetsID': [3, 4],
+#  'osInstanceTeamsID': [1, 4],
+#  'osInstanceVersion': 1}
+
+payload = '{"osInstanceID": ' + str(
+    newfakeosInstanceID) + ',"osInstanceName":"fake osInstance name2", "osInstanceAdminGateURI": "Fake URI2",' \
+                           ' "osInstanceDescription": "This is fake osInstance2", "osInstanceOSTypeID": 2,' \
+                           ' "osInstanceEmbeddingOSInstanceID": 2, "osInstanceSubnetsID": [], "osInstanceTeamsID": [],' \
+                           ' "osInstanceEnvironmentsID": [], "osInstanceApplicationsID": [],' \
+                           ' "osInstanceEmbeddedOSInstancesID": [], "osInstanceIPAddressesID": []}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'Fake URI2',
+#  'osInstanceApplicationsID': [],
+#  'osInstanceDescription': 'This is fake osInstance2',
+#  'osInstanceEmbeddedOSInstancesID': [],
+#  'osInstanceEmbeddingOSInstanceID': 2,
+#  'osInstanceEnvironmentsID': [],
+#  'osInstanceID': 4,
+#  'osInstanceIPAddressesID': [],
+#  'osInstanceName': 'fake osInstance name2',
+#  'osInstanceOSTypeID': 2,
+#  'osInstanceSubnetsID': [],
+#  'osInstanceTeamsID': [],
+#  'osInstanceVersion': 2}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/name',
           params={'id': fakeOSID, 'name': 'fakeOs1'})
