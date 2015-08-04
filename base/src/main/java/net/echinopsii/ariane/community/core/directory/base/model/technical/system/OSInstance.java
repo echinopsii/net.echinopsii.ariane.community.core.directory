@@ -59,7 +59,7 @@ public class OSInstance implements Serializable {
     private String description;
 
     @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
-    private Set<Subnet> networkSubnets;
+    private Set<Subnet> networkSubnets = new HashSet<Subnet>();
 
     @OneToMany(mappedBy = "osInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)

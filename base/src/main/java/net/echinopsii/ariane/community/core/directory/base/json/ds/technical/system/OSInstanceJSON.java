@@ -124,7 +124,7 @@ public class OSInstanceJSON {
         private long osInstanceEmbeddingOSInstanceID;
         private long osInstanceOSTypeID;
         private List<Long> osInstanceSubnetsID;
-        private List<Long> osInstanceEmbeddedOSInstanceID;
+        private List<Long> osInstanceEmbeddedOSInstancesID;
         private List<Long> osInstanceApplicationsID;
         private List<Long> osInstanceTeamsID;
         private List<Long> osInstanceEnvironmentsID;
@@ -162,12 +162,12 @@ public class OSInstanceJSON {
             this.osInstanceApplicationsID = osInstanceApplicationsID;
         }
 
-        public List<Long> getOsInstanceEmbeddedOSInstanceID() {
-            return osInstanceEmbeddedOSInstanceID;
+        public List<Long> getOsInstanceEmbeddedOSInstancesID() {
+            return osInstanceEmbeddedOSInstancesID;
         }
 
-        public void setOsInstanceEmbeddedOSInstanceID(List<Long> osInstanceEmbeddedOSInstanceID) {
-            this.osInstanceEmbeddedOSInstanceID = osInstanceEmbeddedOSInstanceID;
+        public void setOsInstanceEmbeddedOSInstancesID(List<Long> osInstanceEmbeddedOSInstancesID) {
+            this.osInstanceEmbeddedOSInstancesID = osInstanceEmbeddedOSInstancesID;
         }
 
         public List<Long> getOsInstanceSubnetsID() {

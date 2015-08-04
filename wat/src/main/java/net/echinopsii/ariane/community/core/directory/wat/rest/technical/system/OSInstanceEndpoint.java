@@ -284,15 +284,15 @@ public class OSInstanceEndpoint {
                     }
                 }
             }
-            if(jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstanceID() != null) {
-                if (!jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstanceID().isEmpty()) {
+            if(jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID().isEmpty()) {
                     for (OSInstance embeddedOSI : entity.getEmbeddedOSInstances()) {
-                        if (!jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstanceID().contains(embeddedOSI.getId())) {
+                        if (!jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID().contains(embeddedOSI.getId())) {
                             embeddedOSI.setEmbeddingOSInstance(null);
                             entity.getEmbeddedOSInstances().remove(entity);
                         }
                     }
-                    for (Long embId : jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstanceID()) {
+                    for (Long embId : jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID()) {
                         OSInstance embeddedOSI = OSInstanceEndpoint.findOSInstanceById(em, embId);
                         if (embeddedOSI != null) {
                             if (!entity.getEmbeddedOSInstances().contains(embeddedOSI)){
@@ -350,7 +350,7 @@ public class OSInstanceEndpoint {
                                 subnet.getOsInstances().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Subnet ID " + subnetId +  " was not found.");
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Subnet ID " + subnetId + " was not found.");
                             return commonRestResponse;
                         }
                     }
@@ -366,7 +366,7 @@ public class OSInstanceEndpoint {
                                 environment.getOsInstances().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Environment ID " + envId +  " was not found.");
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Environment ID " + envId + " was not found.");
                             return commonRestResponse;
                         }
                     }
@@ -382,7 +382,7 @@ public class OSInstanceEndpoint {
                                 application.getOsInstances().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Application ID " + appId +  " was not found.");
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Application ID " + appId + " was not found.");
                             return commonRestResponse;
                         }
                     }
@@ -398,7 +398,7 @@ public class OSInstanceEndpoint {
                                 team.getOsInstances().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Team ID " + teamId +  " was not found.");
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Team ID " + teamId + " was not found.");
                             return commonRestResponse;
                         }
                     }
@@ -414,15 +414,15 @@ public class OSInstanceEndpoint {
                                 ipAddress.setOsInstance(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided IPAddress ID " + ipaId +  " was not found.");
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided IPAddress ID " + ipaId + " was not found.");
                             return commonRestResponse;
                         }
                     }
                 }
             }
-            if(jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstanceID() != null) {
-                if (!jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstanceID().isEmpty()) {
-                    for (Long embeddedId : jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstanceID()) {
+            if(jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID().isEmpty()) {
+                    for (Long embeddedId : jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID()) {
                         OSInstance embeddedOSI = OSInstanceEndpoint.findOSInstanceById(em, embeddedId);
                         if (embeddedOSI != null) {
                             if (!entity.getEmbeddedOSInstances().contains(embeddedOSI)) {
@@ -430,7 +430,7 @@ public class OSInstanceEndpoint {
                                 embeddedOSI.setEmbeddingOSInstance(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Embedded OS Instance ID " + embeddedId +  " was not found.");
+                            commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided Embedded OS Instance ID " + embeddedId + " was not found.");
                             return commonRestResponse;
                         }
                     }
