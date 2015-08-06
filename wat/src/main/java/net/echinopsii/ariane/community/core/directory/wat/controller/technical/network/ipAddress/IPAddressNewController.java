@@ -23,6 +23,7 @@ package net.echinopsii.ariane.community.core.directory.wat.controller.technical.
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import org.slf4j.Logger;
@@ -130,11 +131,34 @@ public class IPAddressNewController implements Serializable {
     }
 
     /**
+     * synchronize this.rosinstance from DB
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
+    private void syncOSInstance() throws NotSupportedException, SystemException {
+        OSInstance rosInstance = null;
+        for (OSInstance osInstance: OSInstancesListController.getAll()) {
+            if (osInstance.getName().equals(this.rOsInstance)) {
+                osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                rosInstance = osInstance;
+                break;
+            }
+        }
+
+        if (rosInstance!=null) {
+            this.rosinstance= rosInstance;
+            log.debug("Synced OS Instance : {} {}", new Object[]{this.rosinstance.getId(), this.rosinstance.getName()});
+        }
+    }
+
+    /**
      * save a new subnet thanks data provided through UI form
      */
     public void save() {
         try {
             syncSubnet();
+            syncOSInstance();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,

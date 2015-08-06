@@ -21,6 +21,17 @@
                                itemLabel="#{rsubnet.name} - #{rsubnet.subnetIP}/#{rsubnet.subnetMask}" itemValue="#{rsubnet.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>
+
+        <h:outputText value="OS Instances" styleClass="arianeDialogLabel"/>
+        <h:panelGroup>
+            <p:commandLink onclick="osInstanceCreateDialog.show()">
+                <h:outputText value=" create new osInstance"/>
+            </p:commandLink><br/>
+            <h:selectOneMenu label="Select the osInstance type" value="#{ipAddressNewController.rOsInstance}" required="true" style="width:68.5%">
+                <f:selectItems value="#{OSInstancesListController.getAll()}"  var="rosi"
+                               itemLabel="#{rosi.name}" itemValue="#{rosi.name}"/>
+            </h:selectOneMenu>
+        </h:panelGroup>
     </h:panelGrid>
     <script type="application/javascript">
         //<![CDATA[
