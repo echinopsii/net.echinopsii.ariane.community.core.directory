@@ -302,7 +302,7 @@ public class IPAddressListController implements Serializable {
         CriteriaBuilder        builder  = em.getCriteriaBuilder();
         CriteriaQuery<IPAddress> criteria = builder.createQuery(IPAddress.class);
         Root<IPAddress>       root     = criteria.from(IPAddress.class);
-        criteria.select(root).where(builder.isNull(root.get("osInstances"))).orderBy(builder.asc(root.get("ipAddress")));
+        criteria.select(root).where(builder.isNull(root.get("osInstance"))).orderBy(builder.asc(root.get("ipAddress")));
 
         List<IPAddress> ret = em.createQuery(criteria).getResultList();
         em.close();
@@ -324,7 +324,7 @@ public class IPAddressListController implements Serializable {
         CriteriaBuilder        builder  = em.getCriteriaBuilder();
         CriteriaQuery<IPAddress> criteria = builder.createQuery(IPAddress.class);
         Root<IPAddress>       root     = criteria.from(IPAddress.class);
-        criteria.select(root).where(builder.isNull(root.get("osInstances"))).where(builder.equal(root.get("networkSubnet"), subnet)).orderBy(builder.asc(root.get("ipAddress")));
+        criteria.select(root).where(builder.isNull(root.get("osInstance"))).where(builder.equal(root.get("networkSubnet"), subnet)).orderBy(builder.asc(root.get("ipAddress")));
 
         List<IPAddress> ret = em.createQuery(criteria).getResultList();
         em.close();

@@ -21,6 +21,8 @@ package net.echinopsii.ariane.community.core.directory.base.json.ds.technical.sy
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSType;
@@ -29,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Our own object to JSON tools as :
@@ -37,12 +40,12 @@ import java.util.Iterator;
  */
 public class OSTypeJSON {
 
-    public final static String OST_ID           = "osTypeID";
-    public final static String OST_VERSION      = "osTypeVersion";
-    public final static String OST_NAME         = "osTypeName";
+    public final static String OST_ID = "osTypeID";
+    public final static String OST_VERSION = "osTypeVersion";
+    public final static String OST_NAME = "osTypeName";
     public final static String OST_ARCHITECTURE = "osTypeArchitecture";
-    public final static String OST_CMP_ID       = "osTypeCompanyID";
-    public final static String OST_OSI_ID       = "osTypeOSInstancesID";
+    public final static String OST_CMP_ID = "osTypeCompanyID";
+    public final static String OST_OSI_ID = "osTypeOSInstancesID";
 
 
     public final static void osType2JSON(OSType osType, JsonGenerator jgenerator) throws IOException {
@@ -51,7 +54,7 @@ public class OSTypeJSON {
         jgenerator.writeNumberField(OST_VERSION, osType.getVersion());
         jgenerator.writeStringField(OST_NAME, osType.getName());
         jgenerator.writeStringField(OST_ARCHITECTURE, osType.getArchitecture());
-        jgenerator.writeNumberField(OST_CMP_ID, ((osType.getCompany()!=null) ? osType.getCompany().getId():-1));
+        jgenerator.writeNumberField(OST_CMP_ID, ((osType.getCompany() != null) ? osType.getCompany().getId() : -1));
         jgenerator.writeArrayFieldStart(OST_OSI_ID);
         for (OSInstance osi : osType.getOsInstances())
             jgenerator.writeNumber(osi.getId());
@@ -77,5 +80,69 @@ public class OSTypeJSON {
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
         jgenerator.close();
+    }
+
+    public static class JSONFriendlyOSType {
+        private long osTypeID;
+        private long osTypeVersion;
+        private String osTypeName;
+        private String osTypeArchitecture;
+        private long osTypeCompanyID;
+        private List<Long> osTypeOSInstancesID;
+
+        public List<Long> getOsTypeOSInstancesID() {
+            return osTypeOSInstancesID;
+        }
+
+        public void setOsTypeOSInstancesID(List<Long> osTypeOSInstancesID) {
+            this.osTypeOSInstancesID = osTypeOSInstancesID;
+        }
+
+        public long getOsTypeCompanyID() {
+            return osTypeCompanyID;
+        }
+
+        public void setOsTypeCompanyID(long osTypeCompanyID) {
+            this.osTypeCompanyID = osTypeCompanyID;
+        }
+
+        public String getOsTypeArchitecture() {
+            return osTypeArchitecture;
+        }
+
+        public void setOsTypeArchitecture(String osTypeArchitecture) {
+            this.osTypeArchitecture = osTypeArchitecture;
+        }
+
+        public String getOsTypeName() {
+            return osTypeName;
+        }
+
+        public void setOsTypeName(String osTypeName) {
+            this.osTypeName = osTypeName;
+        }
+
+        public long getOsTypeVersion() {
+            return osTypeVersion;
+        }
+
+        public void setOsTypeVersion(long osTypeVersion) {
+            this.osTypeVersion = osTypeVersion;
+        }
+
+        public long getOsTypeID() {
+            return osTypeID;
+        }
+
+        public void setOsTypeID(long osTypeID) {
+            this.osTypeID = osTypeID;
+        }
+    }
+
+    public final static JSONFriendlyOSType JSON2OSType(String payload) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        JSONFriendlyOSType jsonFriendlyOSType = mapper.readValue(payload, JSONFriendlyOSType.class);
+        return jsonFriendlyOSType;
     }
 }

@@ -21,6 +21,8 @@ package net.echinopsii.ariane.community.core.directory.base.json.ds.technical.sy
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Application;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
@@ -33,6 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Our own object to JSON tools as :
@@ -110,5 +113,132 @@ public class OSInstanceJSON {
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();
         jgenerator.close();
+    }
+
+    public static class JSONFriendlyOSInstance {
+        private long osInstanceID;
+        private long osInstanceVersion;
+        private String osInstanceName;
+        private String osInstanceAdminGateURI;
+        private String osInstanceDescription;
+        private long osInstanceEmbeddingOSInstanceID;
+        private long osInstanceOSTypeID;
+        private List<Long> osInstanceSubnetsID;
+        private List<Long> osInstanceEmbeddedOSInstancesID;
+        private List<Long> osInstanceApplicationsID;
+        private List<Long> osInstanceTeamsID;
+        private List<Long> osInstanceEnvironmentsID;
+        private List<Long> osInstanceIPAddressesID;
+
+        public List<Long> getOsInstanceIPAddressesID() {
+            return osInstanceIPAddressesID;
+        }
+
+        public void setOsInstanceIPAddressesID(List<Long> osInstanceIPAddressesID) {
+            this.osInstanceIPAddressesID = osInstanceIPAddressesID;
+        }
+
+        public List<Long> getOsInstanceEnvironmentsID() {
+            return osInstanceEnvironmentsID;
+        }
+
+        public void setOsInstanceEnvironmentsID(List<Long> osInstanceEnvironmentsID) {
+            this.osInstanceEnvironmentsID = osInstanceEnvironmentsID;
+        }
+
+        public List<Long> getOsInstanceTeamsID() {
+            return osInstanceTeamsID;
+        }
+
+        public void setOsInstanceTeamsID(List<Long> osInstanceTeamsID) {
+            this.osInstanceTeamsID = osInstanceTeamsID;
+        }
+
+        public List<Long> getOsInstanceApplicationsID() {
+            return osInstanceApplicationsID;
+        }
+
+        public void setOsInstanceApplicationsID(List<Long> osInstanceApplicationsID) {
+            this.osInstanceApplicationsID = osInstanceApplicationsID;
+        }
+
+        public List<Long> getOsInstanceEmbeddedOSInstancesID() {
+            return osInstanceEmbeddedOSInstancesID;
+        }
+
+        public void setOsInstanceEmbeddedOSInstancesID(List<Long> osInstanceEmbeddedOSInstancesID) {
+            this.osInstanceEmbeddedOSInstancesID = osInstanceEmbeddedOSInstancesID;
+        }
+
+        public List<Long> getOsInstanceSubnetsID() {
+            return osInstanceSubnetsID;
+        }
+
+        public void setOsInstanceSubnetsID(List<Long> osInstanceSubnetsID) {
+            this.osInstanceSubnetsID = osInstanceSubnetsID;
+        }
+
+        public long getOsInstanceOSTypeID() {
+            return osInstanceOSTypeID;
+        }
+
+        public void setOsInstanceOSTypeID(long osInstanceOSTypeID) {
+            this.osInstanceOSTypeID = osInstanceOSTypeID;
+        }
+
+        public long getOsInstanceEmbeddingOSInstanceID() {
+            return osInstanceEmbeddingOSInstanceID;
+        }
+
+        public void setOsInstanceEmbeddingOSInstanceID(long osInstanceEmbeddingOSInstanceID) {
+            this.osInstanceEmbeddingOSInstanceID = osInstanceEmbeddingOSInstanceID;
+        }
+
+        public String getOsInstanceDescription() {
+            return osInstanceDescription;
+        }
+
+        public void setOsInstanceDescription(String osInstanceDescription) {
+            this.osInstanceDescription = osInstanceDescription;
+        }
+
+        public String getOsInstanceAdminGateURI() {
+            return osInstanceAdminGateURI;
+        }
+
+        public void setOsInstanceAdminGateURI(String osInstanceAdminGateURI) {
+            this.osInstanceAdminGateURI = osInstanceAdminGateURI;
+        }
+
+        public String getOsInstanceName() {
+            return osInstanceName;
+        }
+
+        public void setOsInstanceName(String osInstanceName) {
+            this.osInstanceName = osInstanceName;
+        }
+
+        public long getOsInstanceVersion() {
+            return osInstanceVersion;
+        }
+
+        public void setOsInstanceVersion(long osInstanceVersion) {
+            this.osInstanceVersion = osInstanceVersion;
+        }
+
+        public long getOsInstanceID() {
+            return osInstanceID;
+        }
+
+        public void setOsInstanceID(long osInstanceID) {
+            this.osInstanceID = osInstanceID;
+        }
+    }
+
+    public final static JSONFriendlyOSInstance JSON2OSInstance(String payload) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        JSONFriendlyOSInstance jsonFriendlyOSInstance = mapper.readValue(payload, JSONFriendlyOSInstance.class);
+        return jsonFriendlyOSInstance;
     }
 }
