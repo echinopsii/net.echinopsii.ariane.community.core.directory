@@ -9,14 +9,14 @@
     <version>{{ version }}</version>
     <name>Ariane Community Core Directory Parent</name>
     <packaging>{{ packaging }}</packaging>
-    {% endblock %}
+{% endblock %}
     {% block modules -%}
     <modules>
         {% for mod in modules -%}
         <module>{{mod.name}}</module>
         {% endfor -%}
     </modules>
-    {% endblock %}
+{% endblock %}
     <repositories>
         <repository>
             <id>nexus.echinopsii.net</id>
@@ -85,8 +85,8 @@
         <version.net.echinopsii.ariane.{{ d.module.type}}.{{ d.module.name }}.min>{{ d.version_min }}</version.net.echinopsii.ariane.{{ d.module.type}}.{{ d.module.name }}.min>
         <version.net.echinopsii.ariane.{{ d.module.type}}.{{ d.module.name }}.max>{{ d.version_max }}</version.net.echinopsii.ariane.{{ d.module.type}}.{{ d.module.name }}.max>
         {% endif -%}
-        {%- endfor %}
-        {%- endblock %}
+{%- endfor -%}
+        {% endblock -%}
         <!-- Dependencies versions-->
         <version.com.fasterxml.jackson>2.1.2</version.com.fasterxml.jackson>
         <version.commons.fileupload>1.3</version.commons.fileupload>
