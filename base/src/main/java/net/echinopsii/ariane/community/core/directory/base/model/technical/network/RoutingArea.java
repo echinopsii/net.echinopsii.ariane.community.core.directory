@@ -36,6 +36,8 @@ import java.util.Set;
 public class RoutingArea implements Serializable
 {
     @Transient
+    public static String ROUTING_AREA_DMZ_TYPE = "DMZ";
+    @Transient
     public static String ROUTING_AREA_LAN_TYPE = "LAN";
     @Transient
     public static String ROUTING_AREA_MAN_TYPE = "MAN";
