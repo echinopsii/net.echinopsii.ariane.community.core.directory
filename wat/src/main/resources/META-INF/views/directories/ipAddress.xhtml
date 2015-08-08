@@ -79,7 +79,7 @@
                         <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
                             <p:inplace label="#{ipAddressListController.getIPAddressOSInstanceName(ipa)}" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{ipAddressListController.changedOSInstance[ipa.id]}">
-                                    <f:selectItems value="#{OSInstancesListController.getAll()}"  var="osi"
+                                    <f:selectItems value="#{OSInstancesListController.getAllOSIFromSubnet(ipa.networkSubnet)}"  var="osi"
                                                    itemLabel="#{osi.name}" itemValue="#{osi.name}"/>
                                 </h:selectOneMenu>
                                 <p:ajax event="save" listener="#{ipAddressListController.syncRosInstance(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages"/>
