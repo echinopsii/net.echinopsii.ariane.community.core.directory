@@ -35,6 +35,8 @@ import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import javax.transaction.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class provide stuff to create and save a new subnet from the UI form
@@ -59,6 +61,8 @@ public class IPAddressNewController implements Serializable {
 
     private String rOsInstance = "";
     private OSInstance rosinstance;
+
+    private List<OSInstance> osiList = new ArrayList<OSInstance>();
 
     public String getIpAddress() {
         return ipAddress;
@@ -108,6 +112,14 @@ public class IPAddressNewController implements Serializable {
         this.fqdn = fqdn;
     }
 
+    public List<OSInstance> getOsiList() {
+        return osiList;
+    }
+
+    public void setOsiList(List<OSInstance> osiList) {
+        this.osiList = osiList;
+    }
+
     /**
      * synchronize this.rsubnet from DB
      *
@@ -149,6 +161,20 @@ public class IPAddressNewController implements Serializable {
         if (rosInstance!=null) {
             this.rosinstance= rosInstance;
             log.debug("Synced OS Instance : {} {}", new Object[]{this.rosinstance.getId(), this.rosinstance.getName()});
+        }
+    }
+
+    public void handleSelectedSubnets() {
+        Subnet subnetObj = null;
+        for (Subnet subnet : SubnetsListController.getAll()) {
+            if (subnet.getName().equals(rSubnet)) {
+                subnetObj = subnet;
+                break;
+            }
+        }
+        this.osiList.clear();
+        if(subnetObj!=null) {
+            this.osiList = OSInstancesListController.getAllOSIFromSubnet(subnetObj);
         }
     }
 

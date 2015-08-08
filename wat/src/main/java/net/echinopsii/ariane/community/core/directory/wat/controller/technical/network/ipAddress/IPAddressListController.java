@@ -330,6 +330,5 @@ public class IPAddressListController implements Serializable {
         List<IPAddress> ret = em.createQuery(criteria).getResultList();
         em.close();
         return ret;
-
     }
 }
