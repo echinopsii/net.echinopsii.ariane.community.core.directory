@@ -24,16 +24,16 @@
             </h:selectOneMenu>
         </h:panelGroup>
 
-        <h:outputText value="OS Instances" styleClass="arianeDialogLabel"/>
-        <h:panelGroup id="osInst">
-            <c:if test="#{ipAddressNewController.osiList.size() gt 0}">
-            <h:selectOneMenu label="Select the osInstance type" value="#{ipAddressNewController.rOsInstance}" required="true" style="width:68.5%">
+        <c:if test="#{ipAddressNewController.osiList.size() gt 0}">
+            <h:outputText value="OS Instances" styleClass="arianeDialogLabel"/>
+            <h:panelGroup id="osInst">
+                <h:selectOneMenu label="Select the osInstance type" value="#{ipAddressNewController.rOsInstance}" required="true" style="width:68.5%">
                 <f:selectItems value="#{ipAddressNewController.osiList}"  var="rosi"
                                itemLabel="#{rosi.name}" itemValue="#{rosi.name}"/>
                 <p:ajax listener="#{ipAddressNewController.handleSelectedSubnets}"></p:ajax>
             </h:selectOneMenu>
-            </c:if>
-        </h:panelGroup>
+            </h:panelGroup>
+        </c:if>
     </h:panelGrid>
     <script type="application/javascript">
         //<![CDATA[
