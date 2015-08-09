@@ -143,18 +143,6 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new osInstance" widgetVar="osInstanceCreateDialog"
-                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
-                <h:form id="createOSInstanceDialogForm">
-                    <ui:insert name="createOSInstance" >
-                        <ui:include src="/templates/osInstanceNewForm.xhtml" />
-                    </ui:insert>
-                    <p:commandButton value="Save this osInstance" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
-                                     actionListener="#{osInstanceNewController.save}" oncomplete="osInstanceCreateDialog.hide();"
-                                     update=":createIPAddressDialogForm:ipAddressNewGrid,:ipAddressTableForm:ipAddressTable,:ipAddressTableForm:ipAddressTableMessages"/>
-                </h:form>
-            </p:dialog>
-
             <p:dialog styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new IP Address" widgetVar="ipAddressCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createIPAddressDialogForm">
