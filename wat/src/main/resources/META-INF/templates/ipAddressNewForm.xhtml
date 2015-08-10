@@ -2,7 +2,8 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 <ui:composition>
     <h:panelGrid id="ipAddressNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
         <h:outputText value="IP Address" styleClass="arianeDialogLabel"/>
@@ -17,10 +18,28 @@
                 <h:outputText value=" create new subnet"/>
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the subnet type" value="#{ipAddressNewController.rSubnet}" required="true" style="width:68.5%">
+                <p:ajax listener="#{ipAddressNewController.handleSelectedSubnets}" update=":createIPAddressDialogForm:osInst, :createIPAddressDialogForm:osTitle"></p:ajax>
                 <f:selectItems value="#{subnetsListController.getAll()}"  var="rsubnet"
                                itemLabel="#{rsubnet.name} - #{rsubnet.subnetIP}/#{rsubnet.subnetMask}" itemValue="#{rsubnet.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>
+
+        <c:choose>
+        <c:when test="#{ipAddressNewController.osiList.size() gt 0}">
+            <h:outputText id="osTitle" value="OS Instances" styleClass="arianeDialogLabel"/>
+            <h:panelGroup id="osInst">
+                <h:selectOneMenu label="Select the osInstance type" value="#{ipAddressNewController.rOsInstance}" required="true" style="width:68.5%">
+                <f:selectItems value="#{ipAddressNewController.osiList}"  var="rosi"
+                               itemLabel="#{rosi.name}" itemValue="#{rosi.name}"/>
+                <p:ajax listener="#{ipAddressNewController.handleSelectedSubnets}"></p:ajax>
+            </h:selectOneMenu>
+            </h:panelGroup>
+        </c:when>
+        <c:otherwise>
+            <h:outputText id="osTitle"></h:outputText>
+            <h:panelGroup id="osInst"></h:panelGroup>
+        </c:otherwise>
+        </c:choose>
     </h:panelGrid>
     <script type="application/javascript">
         //<![CDATA[

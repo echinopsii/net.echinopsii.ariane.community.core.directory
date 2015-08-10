@@ -23,6 +23,7 @@ package net.echinopsii.ariane.community.core.directory.wat.controller.technical.
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import org.slf4j.Logger;
@@ -34,6 +35,8 @@ import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import javax.transaction.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class provide stuff to create and save a new subnet from the UI form
@@ -58,6 +61,8 @@ public class IPAddressNewController implements Serializable {
 
     private String rOsInstance = "";
     private OSInstance rosinstance;
+
+    private List<OSInstance> osiList = new ArrayList<OSInstance>();
 
     public String getIpAddress() {
         return ipAddress;
@@ -107,6 +112,14 @@ public class IPAddressNewController implements Serializable {
         this.fqdn = fqdn;
     }
 
+    public List<OSInstance> getOsiList() {
+        return osiList;
+    }
+
+    public void setOsiList(List<OSInstance> osiList) {
+        this.osiList = osiList;
+    }
+
     /**
      * synchronize this.rsubnet from DB
      *
@@ -130,11 +143,48 @@ public class IPAddressNewController implements Serializable {
     }
 
     /**
+     * synchronize this.rosinstance from DB
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
+    private void syncOSInstance() throws NotSupportedException, SystemException {
+        OSInstance rosInstance = null;
+        for (OSInstance osInstance: OSInstancesListController.getAll()) {
+            if (osInstance.getName().equals(this.rOsInstance)) {
+                osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                rosInstance = osInstance;
+                break;
+            }
+        }
+
+        if (rosInstance!=null) {
+            this.rosinstance= rosInstance;
+            log.debug("Synced OS Instance : {} {}", new Object[]{this.rosinstance.getId(), this.rosinstance.getName()});
+        }
+    }
+
+    public void handleSelectedSubnets() {
+        Subnet subnetObj = null;
+        for (Subnet subnet : SubnetsListController.getAll()) {
+            if (subnet.getName().equals(rSubnet)) {
+                subnetObj = subnet;
+                break;
+            }
+        }
+        this.osiList.clear();
+        if(subnetObj!=null) {
+            this.osiList = OSInstancesListController.getAllOSIFromSubnet(subnetObj);
+        }
+    }
+
+    /**
      * save a new subnet thanks data provided through UI form
      */
     public void save() {
         try {
             syncSubnet();
+            syncOSInstance();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,

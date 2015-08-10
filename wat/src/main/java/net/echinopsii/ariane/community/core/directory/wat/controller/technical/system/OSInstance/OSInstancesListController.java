@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -932,5 +933,25 @@ public class OSInstancesListController implements Serializable{
         list.add(0, new OSInstance().setNameR("Select OS instance"));
         em.close();
         return list;
+    }
+
+    public static List<OSInstance> getAllOSIFromSubnet(Subnet subnet){
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        log.debug("Get all OS Instances from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                new Object[]{
+                        (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                });
+
+        Query q  = em.createQuery("SELECT DISTINCT l FROM OSInstance l LEFT JOIN FETCH l.networkSubnets S where S.id=:subnetId ORDER BY l.id",OSInstance.class);
+        q.setParameter("subnetId", subnet.getId());
+        List<OSInstance> ret = q.getResultList();
+        em.close();
+        return ret;
     }
 }
