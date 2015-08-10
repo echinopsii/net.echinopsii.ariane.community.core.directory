@@ -9,7 +9,7 @@
         <p:inputText id="niName" label="Name" required="true" value="#{niCardNewController.name}"/>
 
         <h:outputText value="MAC Address" styleClass="arianeDialogLabel"/>
-        <p:inputText id="nicMacId" label="MAC Address" value="#{niCardNewController.macAddress}"/>
+        <p:inputText id="nicMacId" label="MAC Address" value="#{niCardNewController.macAddress}" onblur="validate()"/>
 
         <h:outputText value="Duplex" styleClass="arianeDialogLabel"/>
         <p:inputText id="nicDuplex" label="Duplex" value="#{niCardNewController.duplex}"/>
@@ -26,10 +26,24 @@
                 <h:outputText value=" create new ip Address"/>
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the ipAddress type" value="#{niCardNewController.rIPAddress}" required="true" style="width:68.5%">
-                <f:selectItems value="#{ipAddressListController.getAll()}"  var="ipa"
+                <f:selectItems value="#{ipAddressListController.getAllIPAddress()}"  var="ipa"
                                itemLabel="#{ipa.ipAddress}" itemValue="#{ipa.ipAddress}"/>
             </h:selectOneMenu>
         </h:panelGroup>
     </h:panelGrid>
+    <script type="application/javascript">
+        //<![CDATA[
+        function validate() {
+            var macId = document.getElementById("createNICardDialogForm:nicMacId");
+            var MacFormat = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
+            var isValid = MacFormat.test(macId.value);
+            if(isValid) {
+                macId.style.borderColor = "black";
+            }else{
+                macId.style.borderColor = "red";
+            }
+        }
+        //]]>
+    </script>
 </ui:composition>
 </html>

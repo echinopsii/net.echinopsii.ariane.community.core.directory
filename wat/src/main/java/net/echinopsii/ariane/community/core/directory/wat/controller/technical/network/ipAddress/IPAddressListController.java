@@ -310,6 +310,28 @@ public class IPAddressListController implements Serializable {
         return ret;
     }
 
+    public static List<IPAddress> getAllIPAddress() {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        log.debug("Get all IP Addresses from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                new Object[]{
+                        (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                });
+        CriteriaBuilder        builder  = em.getCriteriaBuilder();
+        CriteriaQuery<IPAddress> criteria = builder.createQuery(IPAddress.class);
+        Root<IPAddress>       root     = criteria.from(IPAddress.class);
+        criteria.select(root).orderBy(builder.asc(root.get("ipAddress")));
+
+        List<IPAddress> ret = em.createQuery(criteria).getResultList();
+        em.close();
+        return ret;
+    }
+
     public static List<IPAddress> getAllFromSubnet(Subnet subnet){
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         log.debug("Get all IP Addresses from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",

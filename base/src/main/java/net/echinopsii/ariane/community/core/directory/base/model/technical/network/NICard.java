@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @XmlRootElement
-@Table(name="NICard", uniqueConstraints = @UniqueConstraint(columnNames = {"macAddress"}))
+@Table(name="niCard", uniqueConstraints = @UniqueConstraint(columnNames = {"macAddress"}))
 public class NICard {
     private static final Logger log = LoggerFactory.getLogger(NICard.class);
 
