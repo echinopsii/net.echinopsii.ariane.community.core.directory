@@ -35,6 +35,11 @@
                         <h:outputText value="#{nic.macAddress}" />
                     </p:column>
 
+
+                    <p:column headerText="OS Instance">
+                        <h:outputText value="#{nic.rosInstance.name}" />
+                    </p:column>
+
                     <p:column headerText="IPAddress">
                         <h:outputText value="#{nic.ripAddress.ipAddress}" />
                     </p:column>
@@ -90,13 +95,26 @@
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwNICard:update')}">
                                 <p:inplace label="#{niCardsListController.getNICardIPAddress(nic)}" effectSpeed="fast" editor="true">
                                     <h:selectOneMenu value="#{niCardsListController.changedIPAddress[nic.id]}">
-                                        <f:selectItems value="#{ipAddressListController.getAll()}"  var="ipa"
+                                        <f:selectItems value="#{OSInstancesListController.getAllIPAddresses(nic.rosInstance)}"  var="ipa"
                                                        itemLabel="#{ipa.ipAddress}" itemValue="#{ipa.ipAddress}"/>
                                     </h:selectOneMenu>
                                     <p:ajax event="save" listener="#{niCardsListController.syncRIPAddress(nic)}" update="@form,:niCardTableForm:niCardTableMessages"/>
                                 </p:inplace>
                             </h:form>
                             <h:outputText value="#{niCardsListController.getNICardIPAddress(nic)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwNICard:update'))}"/>
+
+
+                            <h:outputText value="OS Instance: " styleClass="arianeDialogLabel"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwNICard:update')}">
+                                <p:inplace label="#{niCardsListController.getNICardOSInstance(nic)}" effectSpeed="fast" editor="true">
+                                    <h:selectOneMenu value="#{niCardsListController.changedOSInstance[nic.id]}">
+                                        <f:selectItems value="#{OSInstancesListController.getAll()}"  var="osi"
+                                                       itemLabel="#{osi.name}" itemValue="#{osi.name}"/>
+                                    </h:selectOneMenu>
+                                    <p:ajax event="save" listener="#{niCardsListController.syncROSInstance(nic)}" update="@form,:niCardTableForm:niCardTableMessages"/>
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{niCardsListController.getNICardOSInstance(nic)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwNICard:update'))}"/>
                         </h:panelGrid>
 
                     </p:rowExpansion>
@@ -142,6 +160,18 @@
                 </h:form>
             </p:dialog>
 
+            <p:dialog styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new OS Instance" widgetVar="osInstanceCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
+                <h:form id="createOSInstanceDialogForm">
+                    <ui:insert name="createOSInstance" >
+                        <ui:include src="/templates/osInstanceNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this OS Instance" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                                     actionListener="#{osInstanceNewController.save}" oncomplete="osInstanceCreateDialog.hide();"
+                                     update=":createNICardDialogForm:niCardNewGrid,:niCardTableForm:niCardTableMessages,:niCardTableForm:niCardTable"/>
+                </h:form>
+            </p:dialog>
+
             <p:dialog styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new IP Address" widgetVar="ipAddressCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createIPAddressDialogForm">
@@ -153,7 +183,6 @@
                                      update=":createNICardDialogForm:niCardNewGrid,:niCardTableForm:niCardTableMessages,:niCardTableForm:niCardTable"/>
                 </h:form>
             </p:dialog>
-
 
             <p:dialog styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new NIC" widgetVar="niCardCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">

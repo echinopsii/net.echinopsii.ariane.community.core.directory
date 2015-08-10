@@ -22,7 +22,9 @@ package net.echinopsii.ariane.community.core.directory.wat.controller.technical.
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,8 @@ import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import javax.transaction.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class provide stuff to create and save a new NICard from the UI form
@@ -57,6 +61,35 @@ public class NICardNewController implements Serializable {
 
     private String rIPAddress = "";
     private IPAddress ripAddress;
+
+    private String rOsInstance = "";
+    private OSInstance rosInstance;
+
+    private List<IPAddress> ipaList = new ArrayList<IPAddress>();
+
+    public List<IPAddress> getIpaList() {
+        return ipaList;
+    }
+
+    public void setIpaList(List<IPAddress> ipaList) {
+        this.ipaList = ipaList;
+    }
+
+    public OSInstance getRosInstance() {
+        return rosInstance;
+    }
+
+    public void setRosInstance(OSInstance rosInstance) {
+        this.rosInstance = rosInstance;
+    }
+
+    public String getrOsInstance() {
+        return rOsInstance;
+    }
+
+    public void setrOsInstance(String rOsInstance) {
+        this.rOsInstance = rOsInstance;
+    }
 
     public IPAddress getRipAddress() {
         return ripAddress;
@@ -130,12 +163,43 @@ public class NICardNewController implements Serializable {
         }
     }
 
+    private void syncOSInstance() throws NotSupportedException, SystemException {
+        OSInstance rOsInstance = null;
+        for (OSInstance osInstance : OSInstancesListController.getAll()) {
+            if (osInstance.getName().equals(this.rOsInstance)) {
+                osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                rOsInstance = osInstance;
+                break;
+            }
+        }
+
+        if (rOsInstance != null) {
+            this.rosInstance = rOsInstance;
+            log.debug("Synced OS Instances : {} {}", new Object[]{this.rosInstance.getId(), this.rosInstance.getName()});
+        }
+    }
+
+    public void handleSelectedOSInstance() {
+        OSInstance osInstanceObj = null;
+        for (OSInstance osInstance : OSInstancesListController.getAll()) {
+            if (osInstance.getName().equals(rOsInstance)) {
+                osInstanceObj = osInstance;
+                break;
+            }
+        }
+        this.ipaList.clear();
+        if(osInstanceObj!=null) {
+            this.ipaList = OSInstancesListController.getAllIPAddresses(osInstanceObj);
+        }
+    }
+
     /**
      * save a new nicard data provided through UI form
      */
     public void save() {
         try {
             syncIPAddress();
+            syncOSInstance();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -148,6 +212,7 @@ public class NICardNewController implements Serializable {
         niCard.setName(name);
         niCard.setDuplex(duplex);
         niCard.setRipAddress(ripAddress);
+        niCard.setRosInstance(rosInstance);
         niCard.setMacAddress(macAddress);
         niCard.setMtu(mtu);
         niCard.setSpeed(speed);

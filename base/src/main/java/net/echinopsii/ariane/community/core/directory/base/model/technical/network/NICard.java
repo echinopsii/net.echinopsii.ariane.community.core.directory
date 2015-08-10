@@ -19,6 +19,7 @@
  */
 package net.echinopsii.ariane.community.core.directory.base.model.technical.network;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @XmlRootElement
-@Table(name="NICard", uniqueConstraints = @UniqueConstraint(columnNames = {"macAddress"}))
+@Table(name="niCard", uniqueConstraints = @UniqueConstraint(columnNames = {"macAddress"}))
 public class NICard {
     private static final Logger log = LoggerFactory.getLogger(NICard.class);
 
@@ -60,6 +61,23 @@ public class NICard {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn
     private IPAddress ripAddress;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn
+    private OSInstance rosInstance;
+
+    public OSInstance getRosInstance() {
+        return rosInstance;
+    }
+
+    public void setRosInstance(OSInstance osInstance) {
+        this.rosInstance = osInstance;
+    }
+
+    public NICard setOsInstanceR(OSInstance osInstance){
+        this.rosInstance = osInstance;
+        return this;
+    }
 
     public IPAddress getRipAddress() {
         return ripAddress;
@@ -201,6 +219,6 @@ public class NICard {
 
     public NICard clone() {
         return new NICard().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setIpAddressR(this.ripAddress).
-                setDuplexR(this.duplex).setMacAddressR(this.macAddress).setMtuR(this.mtu).setSpeedR(this.speed);
+                setDuplexR(this.duplex).setMacAddressR(this.macAddress).setMtuR(this.mtu).setSpeedR(this.speed).setOsInstanceR(this.rosInstance);
     }
 }
