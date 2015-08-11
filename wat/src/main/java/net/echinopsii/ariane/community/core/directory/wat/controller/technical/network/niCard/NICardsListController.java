@@ -65,100 +65,70 @@ public class NICardsListController implements Serializable {
         this.lazyModel = lazyModel;
     }
 
-    public void onRowToggle(ToggleEvent event) {
-        log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
-        IPAddress eventIPAddress = ((IPAddress) event.getData());
-        if (event.getVisibility().toString().equals("HIDDEN")) {
-            changedSubnet.remove(eventIPAddress.getId());
-            changedOSInstance.remove(eventIPAddress.getId());
-        } else {
-            changedSubnet.put(eventIPAddress.getId(), "");
-            changedOSInstance.put(eventIPAddress.getId(), "");
-        }
-    }
-
-    /**
-     * check entered subnet and IPAddress are compatiable or not
-     * before update
-     *
-     * @param ipAddress bean UI is working on
-     */
-    public void update(IPAddress ipAddress) {
+    public void update(NICard niCard) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-
-        Boolean isValid = ipAddress.isValid();
-        Boolean isBindToSubnet = ipAddress.isBindToSubnet();
-
-        if(isValid && !isBindToSubnet) {
+        try {
             em.getTransaction().begin();
-            IPAddress ipAddressToUpdate = em.find(ipAddress.getClass(), ipAddress.getId());
-            ipAddressToUpdate.setFqdnR(ipAddress.getFqdn()).
-                    setIpAddressR(ipAddress.getIpAddress()).setNetworkSubnetR(ipAddress.getNetworkSubnet()).
-                    setOsInstancesR(ipAddress.getOsInstance());
+            niCard = em.find(niCard.getClass(), niCard.getId()).setDuplexR(niCard.getDuplex()).setMacAddressR(niCard.getMacAddress())
+                    .setMtuR(niCard.getMtu()).setNameR(niCard.getName()).setSpeedR(niCard.getSpeed());
             em.flush();
             em.getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                    "IP Address updated successfully !",
-                    "IP Address: " + ipAddress.getIpAddress());
+                    "Network Interface card updated successfully !",
+                    "NICard name : " + niCard.getName());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-        } else {
-            if (!isValid) {
-                log.debug("Bad IP Address definition !");
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "Throwable raised while updating IP Address " + ipAddress.getIpAddress() + " !",
-                        "Throwable message : Bad IP Address " + ipAddress.getIpAddress() + " - " + ipAddress.getNetworkSubnet().getSubnetIP());
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            } else {
-                log.debug("IP Address is already bind to subnet !");
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "Throwable raised while creating IP Address " + ipAddress.getIpAddress() + " !",
-                        "Throwable message : IP Address is already bind to subnet " + ipAddress.getIpAddress());
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Throwable raised while updating network interface card " + niCard.getName() + " !",
+                    "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if(em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
-        em.close();
     }
 
     /**
-     * Remove selected IPAddress
+     * Remove selected NICard
      */
     public void delete() {
-        log.debug("Remove selected IP Address !");
-        for (IPAddress ipAddress2BeRemoved : selectedIPAddressList) {
+        log.debug("Remove selected NICard !");
+        for (NICard niCard2BeRemoved : selectedNICardList) {
             EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             try {
                 em.getTransaction().begin();
-                ipAddress2BeRemoved = em.find(ipAddress2BeRemoved.getClass(), ipAddress2BeRemoved.getId());
-                if (ipAddress2BeRemoved.getNetworkSubnet()!=null) ipAddress2BeRemoved.getNetworkSubnet().getIpAddresses().remove(ipAddress2BeRemoved);
-                if (ipAddress2BeRemoved.getOsInstance()!=null) ipAddress2BeRemoved.getOsInstance().getIpAddresses().remove(ipAddress2BeRemoved);
-                em.remove(ipAddress2BeRemoved);
+                niCard2BeRemoved = em.find(niCard2BeRemoved.getClass(), niCard2BeRemoved.getId());
+                em.remove(niCard2BeRemoved);
                 em.flush();
                 em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "IP Address deleted successfully !",
-                        "IP Address name : " + ipAddress2BeRemoved.getIpAddress());
+                        "Network interface card deleted successfully !",
+                        "NICard name : " + niCard2BeRemoved.getName());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
             } catch (Throwable t) {
                 log.debug("Throwable catched !");
                 t.printStackTrace();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "Throwable raised while deleting IP Address " + ipAddress2BeRemoved.getIpAddress() + " !",
+                        "Throwable raised while deleting NICard " + niCard2BeRemoved.getName() + " !",
                         "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
             } finally {
                 em.close();
             }
         }
-        selectedIPAddressList =null;
+        selectedNICardList = null;
     }
 
     /**
-     * Get All IPAddresses from DB
-     * @return List of IPAddress
+     * Get All NICard from DB
+     * @return List of NICards
      */
-    public static List<IPAddress> getAll() {
+    public static List<NICard> getAll() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-        log.debug("Get all IP Addresses from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+        log.debug("Get all NICards from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
                 new Object[]{
                         (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
                         (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
@@ -169,33 +139,11 @@ public class NICardsListController implements Serializable {
                         (Thread.currentThread().getStackTrace().length>6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
                 });
         CriteriaBuilder        builder  = em.getCriteriaBuilder();
-        CriteriaQuery<IPAddress> criteria = builder.createQuery(IPAddress.class);
-        Root<IPAddress>       root     = criteria.from(IPAddress.class);
-        criteria.select(root).where(builder.isNull(root.get("osInstance"))).orderBy(builder.asc(root.get("ipAddress")));
+        CriteriaQuery<NICard> criteria = builder.createQuery(NICard.class);
+        Root<NICard>       root     = criteria.from(NICard.class);
+        criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        List<IPAddress> ret = em.createQuery(criteria).getResultList();
-        em.close();
-        return ret;
-    }
-
-    public static List<IPAddress> getAllFromSubnet(Subnet subnet){
-        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-        log.debug("Get all IP Addresses from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
-                new Object[]{
-                        (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
-                        (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
-                        (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
-                        (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
-                        (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
-                        (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
-                        (Thread.currentThread().getStackTrace().length>6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
-                });
-        CriteriaBuilder        builder  = em.getCriteriaBuilder();
-        CriteriaQuery<IPAddress> criteria = builder.createQuery(IPAddress.class);
-        Root<IPAddress>       root     = criteria.from(IPAddress.class);
-        criteria.select(root).where(builder.isNull(root.get("osInstance"))).where(builder.equal(root.get("networkSubnet"), subnet)).orderBy(builder.asc(root.get("ipAddress")));
-
-        List<IPAddress> ret = em.createQuery(criteria).getResultList();
+        List<NICard> ret = em.createQuery(criteria).getResultList();
         em.close();
         return ret;
     }

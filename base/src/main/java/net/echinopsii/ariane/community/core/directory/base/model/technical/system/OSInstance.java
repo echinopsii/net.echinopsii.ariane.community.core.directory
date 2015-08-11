@@ -67,6 +67,7 @@ public class OSInstance implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private OSInstance embeddingOSInstance;
+
     @OneToMany(mappedBy = "embeddingOSInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<OSInstance> embeddedOSInstances = new HashSet<OSInstance>();
