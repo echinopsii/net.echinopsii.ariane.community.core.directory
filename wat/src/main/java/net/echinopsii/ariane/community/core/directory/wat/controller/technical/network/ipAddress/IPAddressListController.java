@@ -225,7 +225,8 @@ public class IPAddressListController implements Serializable {
             em.getTransaction().begin();
             IPAddress ipAddressToUpdate = em.find(ipAddress.getClass(), ipAddress.getId());
             ipAddressToUpdate.setFqdnR(ipAddress.getFqdn()).
-                              setIpAddressR(ipAddress.getIpAddress()).setNetworkSubnetR(ipAddress.getNetworkSubnet());
+                              setIpAddressR(ipAddress.getIpAddress()).setNetworkSubnetR(ipAddress.getNetworkSubnet()).
+                              setOsInstancesR(ipAddress.getOsInstance());
             em.flush();
             em.getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -329,6 +330,5 @@ public class IPAddressListController implements Serializable {
         List<IPAddress> ret = em.createQuery(criteria).getResultList();
         em.close();
         return ret;
-
     }
 }
