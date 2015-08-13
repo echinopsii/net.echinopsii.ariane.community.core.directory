@@ -11,11 +11,11 @@
 <artifact type="configuration" name="net.echinopsii.ariane.community.core.DirectoryJPAProviderManagedService"/>
 {%- endblock -%}
 {% block bundle %}
-        {% for s in submodules -%}
-        {%- if module.type == 'none' %}
-        <artifact type="bundle" name="net.echinopsii.ariane.community.{{module.name}}.{{s.name}}" version="[{{vmin}},{{vmax}})"/>
-        {%- else -%}
-        <artifact type="bundle" name="net.echinopsii.ariane.community.core.{{module.name}}.{{s.name}}" version="[{{vmin}},{{vmax}})"/>
-        {% endif -%}
-        {%- endfor %}
-{% endblock %}
+    {% for s in submodules -%}
+    {%- if module.type == 'none' %}
+    <artifact type="bundle" name="net.echinopsii.ariane.community.{{module.name}}.{{s.name}}" version="[{{vmin}},{{vmax}})"/>
+    {%- else -%}
+    <artifact type="bundle" name="net.echinopsii.ariane.community.core.{{module.name}}.{{s.name}}" version="[{{vmin}},{{vmax}})"/>
+    {% endif -%}
+{% endfor -%}
+{% endblock -%}
