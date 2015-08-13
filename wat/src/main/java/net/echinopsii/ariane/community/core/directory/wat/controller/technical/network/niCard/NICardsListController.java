@@ -20,6 +20,7 @@
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import org.primefaces.event.ToggleEvent;
@@ -49,6 +50,8 @@ public class NICardsListController implements Serializable {
 
     private NICard[] selectedNICardList;
 
+    private HashMap<Long, String> changedIPAddress = new HashMap<Long, String>();
+
     public NICard[] getSelectedNICardList() {
         return selectedNICardList;
     }
@@ -63,6 +66,66 @@ public class NICardsListController implements Serializable {
 
     public void setLazyModel(LazyDataModel<NICard> lazyModel) {
         this.lazyModel = lazyModel;
+    }
+
+    public HashMap<Long, String> getChangedIPAddress() {
+        return changedIPAddress;
+    }
+
+    public void setChangedIPAddress(HashMap<Long, String> changedIPAddress) {
+        this.changedIPAddress = changedIPAddress;
+    }
+
+    public void syncRIPAddress(NICard niCard) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        niCard = em.find(niCard.getClass(), niCard.getId());
+        IPAddress ipAddress = null;
+        for (IPAddress ipAddressLoop : IPAddressListController.getAll()) {
+            if (ipAddressLoop.getIpAddress().equals(changedIPAddress.get(niCard.getId()))) {
+                ipAddress = ipAddressLoop;
+                break;
+            }
+        }
+        if (ipAddress != null) {
+            try {
+                em.getTransaction().begin();
+                em.flush();
+                em.getTransaction().commit();
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "NICard updated successfully !",
+                        "NiCard : " + niCard.getName());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            } catch (Throwable t) {
+                log.debug("Throwable catched !");
+                t.printStackTrace();
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Throwable raised while updating NICard " + ipAddress.getIpAddress() + " !",
+                        "Throwable message : " + t.getMessage());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+            } finally {
+                em.close();
+            }
+        }
+    }
+
+    public String getNICardIPAddress(NICard niCard) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        niCard = em.find(niCard.getClass(), niCard.getId());
+        String mipAddress = (niCard.getRipAddress()!=null) ? niCard.getRipAddress().getIpAddress() : "None";
+        em.close();
+        return mipAddress;
+    }
+
+    public void onRowToggle(ToggleEvent event) {
+        log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
+        NICard  eventniCard = ((NICard) event.getData());
+        if (event.getVisibility().toString().equals("HIDDEN")) {
+            changedIPAddress.remove(eventniCard.getId());
+        } else {
+            changedIPAddress.put(eventniCard.getId(), "");
+        }
     }
 
     public void update(NICard niCard) {

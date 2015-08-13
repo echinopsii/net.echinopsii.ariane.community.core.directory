@@ -1,0 +1,35 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<ui:composition>
+    <h:panelGrid id="niCardNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
+        <h:outputText value="Name" styleClass="arianeDialogLabel"/>
+        <p:inputText id="niName" label="Name" required="true" value="#{niCardNewController.name}"/>
+
+        <h:outputText value="MAC Address" styleClass="arianeDialogLabel"/>
+        <p:inputText id="nicMacId" label="MAC Address" value="#{niCardNewController.macAddress}"/>
+
+        <h:outputText value="Duplex" styleClass="arianeDialogLabel"/>
+        <p:inputText id="nicDuplex" label="Duplex" value="#{niCardNewController.duplex}"/>
+
+        <h:outputText value="Speed" styleClass="arianeDialogLabel"/>
+        <p:inputText id="nicSpeed" label="Speed" value="#{niCardNewController.speed}"/>
+
+        <h:outputText value="MTU" styleClass="arianeDialogLabel"/>
+        <p:inputText id="nicMtu" label="MTU" value="#{niCardNewController.mtu}"/>
+
+        <h:outputText value="IP Addresses" styleClass="arianeDialogLabel"/>
+        <h:panelGroup>
+            <p:commandLink onclick="ipAddressCreateDialog.show()">
+                <h:outputText value=" create new ip Address"/>
+            </p:commandLink><br/>
+            <h:selectOneMenu label="Select the ipAddress type" value="#{niCardNewController.rIPAddress}" required="true" style="width:68.5%">
+                <f:selectItems value="#{ipAddressListController.getAll()}"  var="ipa"
+                               itemLabel="#{ipa.ipAddress}" itemValue="#{ipa.ipAddress}"/>
+            </h:selectOneMenu>
+        </h:panelGroup>
+    </h:panelGrid>
+</ui:composition>
+</html>

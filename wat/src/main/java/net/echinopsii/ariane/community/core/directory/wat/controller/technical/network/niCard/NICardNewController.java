@@ -147,7 +147,7 @@ public class NICardNewController implements Serializable {
         NICard niCard = new NICard();
         niCard.setName(name);
         niCard.setDuplex(duplex);
-        niCard.setIpAddress(ripAddress);
+        niCard.setRipAddress(ripAddress);
         niCard.setMacAddress(macAddress);
         niCard.setMtu(mtu);
         niCard.setSpeed(speed);

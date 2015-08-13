@@ -59,18 +59,18 @@ public class NICard {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn
-    private IPAddress ipAddress;
+    private IPAddress ripAddress;
 
-    public IPAddress getIpAddress() {
-        return ipAddress;
+    public IPAddress getRipAddress() {
+        return ripAddress;
     }
 
-    public void setIpAddress(IPAddress ipAddress) {
-        this.ipAddress = ipAddress;
+    public void setRipAddress(IPAddress ipAddress) {
+        this.ripAddress = ipAddress;
     }
 
     public NICard setIpAddressR(IPAddress ipAddress){
-        this.ipAddress = ipAddress;
+        this.ripAddress = ipAddress;
         return this;
     }
 
@@ -200,7 +200,7 @@ public class NICard {
     }
 
     public NICard clone() {
-        return new NICard().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setIpAddressR(this.ipAddress).
+        return new NICard().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setIpAddressR(this.ripAddress).
                 setDuplexR(this.duplex).setMacAddressR(this.macAddress).setMtuR(this.mtu).setSpeedR(this.speed);
     }
 }
