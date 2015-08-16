@@ -173,11 +173,14 @@ CREATE TABLE IF NOT EXISTS `niCard` (
   `speed` int(11) DEFAULT NULL,
   `version` int(11) DEFAULT NULL,
   `ripAddress_id` bigint(20) DEFAULT NULL,
+  `rosInstance_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_nirl2gepej8whx0gm2w65r1fv` (`macAddress`),
-  KEY `FK_nryj9avbeyd48kaf3a16p2afm` (`ripAddress_id`),
-  CONSTRAINT `FK_nryj9avbeyd48kaf3a16p2afm` FOREIGN KEY (`ripAddress_id`) REFERENCES `ipaddress` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `UK_1491al4gj9v1f25y15kryfer7` (`macAddress`),
+  KEY `FK_mgeuv29q2f7upop0lq2jma1fv` (`ripAddress_id`),
+  KEY `FK_2pwy48wp8jek3p8yr46kt905u` (`rosInstance_id`),
+  CONSTRAINT `FK_2pwy48wp8jek3p8yr46kt905u` FOREIGN KEY (`rosInstance_id`) REFERENCES `osInstance` (`id`),
+  CONSTRAINT `FK_mgeuv29q2f7upop0lq2jma1fv` FOREIGN KEY (`ripAddress_id`) REFERENCES `ipaddress` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `application`
