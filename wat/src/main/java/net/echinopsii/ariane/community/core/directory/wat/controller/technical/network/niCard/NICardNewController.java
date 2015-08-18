@@ -149,7 +149,7 @@ public class NICardNewController implements Serializable {
 
     private void syncIPAddress() throws NotSupportedException, SystemException {
         IPAddress ripAddress= null;
-        for (IPAddress ipAddress : IPAddressListController.getAll()) {
+        for (IPAddress ipAddress : IPAddressListController.getAllIPAddress()) {
             if (ipAddress.getIpAddress().equals(this.rIPAddress)) {
                 ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
                 ripAddress = ipAddress;

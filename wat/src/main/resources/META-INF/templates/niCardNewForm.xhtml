@@ -5,7 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:c="http://java.sun.com/jsp/jstl/core">
 <ui:composition>
-    <h:panelGrid id="niCardNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
+    <h:panelGrid id="nicNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
         <h:outputText value="Name" styleClass="arianeDialogLabel"/>
         <p:inputText id="niName" label="Name" required="true" value="#{niCardNewController.name}"/>
 
@@ -27,7 +27,7 @@
                 <h:outputText value=" create new os Instance"/>
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the OS Instance type" value="#{niCardNewController.rOsInstance}" required="true" style="width:68.5%">
-                <p:ajax listener="#{niCardNewController.handleSelectedOSInstance}" update=":createNICardDialogForm:niCardIPA, :createNICardDialogForm:niCardTitle"></p:ajax>
+                <p:ajax listener="#{niCardNewController.handleSelectedOSInstance}" update=":createNicDialogForm:nicIPA, :createNicDialogForm:nicTitle"></p:ajax>
                 <f:selectItems value="#{OSInstancesListController.getAll()}"  var="osi"
                                itemLabel="#{osi.name}" itemValue="#{osi.name}"/>
             </h:selectOneMenu>
@@ -35,8 +35,8 @@
 
         <c:choose>
         <c:when test="#{niCardNewController.ipaList.size() gt 0}">
-        <h:outputText id="niCardTitle" value="IP Addresses" styleClass="arianeDialogLabel"/>
-        <h:panelGroup id="niCardIPA">
+        <h:outputText id="nicTitle" value="IP Address" styleClass="arianeDialogLabel"/>
+        <h:panelGroup id="nicIPA">
             <p:commandLink onclick="ipAddressCreateDialog.show()">
                 <h:outputText value=" create new ip Address"/>
             </p:commandLink><br/>
@@ -48,15 +48,19 @@
         </h:panelGroup>
         </c:when>
         <c:otherwise>
-            <h:outputText id="niCardTitle"></h:outputText>
-            <h:panelGroup id="niCardIPA"></h:panelGroup>
+            <h:outputText id="nicTitle" value="IP Address" styleClass="arianeDialogLabel"/>
+            <h:panelGroup id="nicIPA">
+                <p:commandLink onclick="ipAddressCreateDialog.show()">
+                    <h:outputText value=" create new ip Address"/>
+                </p:commandLink><br/>
+            </h:panelGroup>
         </c:otherwise>
         </c:choose>
     </h:panelGrid>
     <script type="application/javascript">
         //<![CDATA[
         function validate() {
-            var macId = document.getElementById("createNICardDialogForm:nicMacId");
+            var macId = document.getElementById("createNicDialogForm:nicMacId");
             var MacFormat = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
             var isValid = MacFormat.test(macId.value);
             if(isValid) {
