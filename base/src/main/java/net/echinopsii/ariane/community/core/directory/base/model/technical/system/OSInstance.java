@@ -22,6 +22,7 @@ import net.echinopsii.ariane.community.core.directory.base.model.organisational.
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Team;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -64,6 +65,10 @@ public class OSInstance implements Serializable {
     @OneToMany(mappedBy = "osInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<IPAddress> ipAddresses = new HashSet<IPAddress>();
+
+    @OneToMany(mappedBy = "rosInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<NICard> niCards = new HashSet<NICard>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     private OSInstance embeddingOSInstance;
@@ -202,6 +207,18 @@ public class OSInstance implements Serializable {
         return this;
     }
 
+    public Set<NICard> getNiCards() {
+        return niCards;
+    }
+
+    public void setNiCards(Set<NICard> niCards) {
+        this.niCards = niCards;
+    }
+
+    public OSInstance setNiCardsR(Set<NICard> niCards){
+        this.niCards = niCards;
+        return this;
+    }
 
     public Set<IPAddress> getIpAddresses() {
         return ipAddresses;
@@ -297,7 +314,8 @@ public class OSInstance implements Serializable {
     public OSInstance clone() {
         return new OSInstance().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setAdminGateURIR(this.adminGateURI).setOsTypeR(this.osType).
                    setApplicationsR(new HashSet<Application>(this.applications)).setEmbeddedOSInstancesR(new HashSet<OSInstance>(this.embeddedOSInstances)).setEmbeddingOSInstanceR(this.embeddingOSInstance).
-                   setEnvironementsR(new HashSet<Environment>(this.environments)).setNetworkSubnetsR(new HashSet<Subnet>(networkSubnets)).setIpAddressR(new HashSet<IPAddress>(ipAddresses)).setTeamsR(new HashSet<Team>(this.teams));
+                   setEnvironementsR(new HashSet<Environment>(this.environments)).setNetworkSubnetsR(new HashSet<Subnet>(networkSubnets)).setIpAddressR(new HashSet<IPAddress>(ipAddresses)).setTeamsR(new HashSet<Team>(this.teams))
+                   .setNiCardsR(new HashSet<NICard>(this.niCards));
     }
 
     public final static String OSI_MAPPING_PROPERTIES = "Server";
