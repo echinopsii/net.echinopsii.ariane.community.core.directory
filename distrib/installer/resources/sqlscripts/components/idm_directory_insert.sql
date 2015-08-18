@@ -8,6 +8,7 @@ INSERT IGNORE INTO `resource` (description, resourceName, version) VALUES
   ('Directory common IT network datacenter','dirComITiNtwDC',1),
     ('Directory common IT network subnet','dirComITiNtwSubnet',1),
     ('Directory common IT network ipaddress','dirComITiNtwIPAddress',1),
+    ('Directory common IT network interface card','dirComITiNtwNICard',1),
     ('Directory common IT system OS instance','dirComITiSysOsi',1),
     ('Directory common IT system OS type','dirComITiSysOst',1),
     ('Directory common organisation application','dirComOrgApp',1),
@@ -60,6 +61,14 @@ SELECT 'can remove Directory common IT network ipaddress', 'dirComITiNtwIPAddres
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
 SELECT 'can update Directory common IT network ipaddress', 'dirComITiNtwIPAddress:update', 1, id FROM resource WHERE resourceName='dirComITiNtwIPAddress';
 
+INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
+SELECT 'can display Directory common IT network interface card', 'dirComITiNtwNICard:display', 1, id FROM resource WHERE resourceName='dirComITiNtwNICard';
+INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
+SELECT 'can create Directory common IT network interface card', 'dirComITiNtwNICard:create', 1, id FROM resource WHERE resourceName='dirComITiNtwNICard';
+INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
+SELECT 'can remove Directory common IT network interface card', 'dirComITiNtwNICard:remove', 1, id FROM resource WHERE resourceName='dirComITiNtwNICard';
+INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
+SELECT 'can update Directory common IT network interface card', 'dirComITiNtwNICard:update', 1, id FROM resource WHERE resourceName='dirComITiNtwNICard';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
 SELECT 'can display Directory common IT system OS instance', 'dirComITiSysOsi:display', 1, id FROM resource WHERE resourceName='dirComITiSysOsi';
@@ -159,6 +168,15 @@ INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
 SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwIPAddress' AND p.permissionName='dirComITiNtwIPAddress:remove';
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
 SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwIPAddress' AND p.permissionName='dirComITiNtwIPAddress:update';
+
+INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwNICard' AND p.permissionName='dirComITiNtwNICard:display';
+INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwNICard' AND p.permissionName='dirComITiNtwNICard:create';
+INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwNICard' AND p.permissionName='dirComITiNtwNICard:remove';
+INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
+SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiNtwNICard' AND p.permissionName='dirComITiNtwNICard:update';
 
 INSERT IGNORE INTO `resource_permission` (resource_id, permissions_id)
 SELECT r.id, p.id FROM resource AS r, permission AS p WHERE r.resourceName='dirComITiSysOsi' AND p.permissionName='dirComITiSysOsi:display';
@@ -326,6 +344,36 @@ INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:update' AND r.roleName='sysadmin';
 
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:display' AND r.roleName='Jedi';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:display' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:display' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:display' AND r.roleName='ntwreviewer';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:display' AND r.roleName='sysreviwer';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:create' AND r.roleName='Jedi';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:create' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:create' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:remove' AND r.roleName='Jedi';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:remove' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:remove' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:update' AND r.roleName='Jedi';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:update' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
+SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:update' AND r.roleName='sysadmin';
+
+
+INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `permission_role` (permission_id, roles_id)
 SELECT p.id, r.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:display' AND r.roleName='sysadmin';
@@ -486,6 +534,15 @@ INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:update' AND r.roleName='Jedi';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:display' AND r.roleName='Jedi';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:create' AND r.roleName='Jedi';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:remove' AND r.roleName='Jedi';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:update' AND r.roleName='Jedi';
+
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:display' AND r.roleName='Jedi';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiSysOsi:create' AND r.roleName='Jedi';
@@ -577,6 +634,15 @@ INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:update' AND r.roleName='ntwadmin';
 
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:display' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:create' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:remove' AND r.roleName='ntwadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:update' AND r.roleName='ntwadmin';
+
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:display' AND r.roleName='sysadmin';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:create' AND r.roleName='sysadmin';
@@ -588,6 +654,21 @@ INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:display' AND r.roleName='ntwreviewer';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwIPAddress:display' AND r.roleName='sysreviewer';
+
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:display' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:create' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:remove' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:update' AND r.roleName='sysadmin';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:display' AND r.roleName='ntwreviewer';
+INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
+SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwNICard:display' AND r.roleName='sysreviewer';
+
+
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComITiNtwDC:display' AND r.roleName='ntwreviewer';
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)

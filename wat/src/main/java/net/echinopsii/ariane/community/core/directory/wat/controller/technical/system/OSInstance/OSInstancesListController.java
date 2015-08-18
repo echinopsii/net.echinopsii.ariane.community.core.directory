@@ -905,6 +905,18 @@ public class OSInstancesListController implements Serializable{
     }
 
 
+    public static List<IPAddress> getAllIPAddresses(OSInstance osInstance){
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        osInstance = em.find(osInstance.getClass(), osInstance.getId());
+        List<IPAddress> ret = new ArrayList<IPAddress>();
+
+        for (IPAddress ipAddress: osInstance.getIpAddresses()){
+            ret.add(ipAddress);
+        }
+        em.close();
+        return ret;
+    }
+
     /**
      * Get all OS Instances from the db + select string
      *
