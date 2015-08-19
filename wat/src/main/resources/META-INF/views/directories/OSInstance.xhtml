@@ -221,7 +221,7 @@
 
                     <h:outputText value="NICs : "  styleClass="arianeDialogLabel"/>
                     <h:form>
-                        <p:dataTable value="#{directoryViewUtils.asList(osi,'niCards')}" var="nic" styleClass="ui-widget-content grid" rowKey="#{ipa.id}"
+                        <p:dataTable value="#{directoryViewUtils.asList(osi,'niCards')}" var="nic" styleClass="ui-widget-content grid" rowKey="#{nic.id}"
                                      rows="5" paginator="true" selection="#{OSInstancesListController.removedNICards[osi.id]}" selectionMode="multiple">
                             <p:column headerText="NICs" sortBy="#{nic.macAddress}" filterBy="#{nic.macAddress}">
                                 <h:outputText id="nicMAC" value="#{nic.macAddress}"/>
@@ -234,7 +234,7 @@
                                     <p:inplace label="Select NICs to bind" effectSpeed="fast" editor="true">
                                         <h:selectOneMenu value="#{OSInstancesListController.addedNICards[osi.id]}">
                                             <f:selectItems value="#{niCardsListController.getAll()}" var="nic_"
-                                                           itemLabel="#{nic_.macAddress} - #{nic_.macAddress}" itemValue="#{nic_.macAddress}"/>
+                                                           itemLabel="#{nic_.macAddress}" itemValue="#{nic_.macAddress}"/>
                                         </h:selectOneMenu>
                                         <p:ajax event="save" listener="#{OSInstancesListController.syncAddedNICards(osi)}"
                                                 update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
