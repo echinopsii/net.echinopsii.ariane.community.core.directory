@@ -40,6 +40,17 @@
             <h:panelGroup id="osInst"></h:panelGroup>
         </c:otherwise>
         </c:choose>
+
+        <h:outputText value="NICs" styleClass="arianeDialogLabel"/>
+        <h:panelGroup>
+            <p:commandLink onclick="niCardCreateDialog.show()">
+                <h:outputText value=" create new nic"/>
+            </p:commandLink><br/>
+            <h:selectOneMenu label="Select the nic type" value="#{ipAddressNewController.rNiCard}" required="true" style="width:68.5%">
+                <f:selectItems value="#{niCardsListController.getAll()}"  var="nic"
+                               itemLabel="#{nic.macAddress}" itemValue="#{nic.macAddress}"/>
+            </h:selectOneMenu>
+        </h:panelGroup>
     </h:panelGrid>
     <script type="application/javascript">
         //<![CDATA[

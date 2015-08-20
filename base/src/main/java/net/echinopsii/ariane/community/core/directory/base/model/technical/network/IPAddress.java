@@ -64,6 +64,10 @@ public class IPAddress implements Serializable {
     @JoinColumn
     private OSInstance osInstance;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn
+    private NICard niCard;
+
     public Long getId() {
         return this.id;
     }
@@ -77,6 +81,18 @@ public class IPAddress implements Serializable {
         return this;
     }
 
+    public NICard getNiCard() {
+        return niCard;
+    }
+
+    public void setNiCard(NICard niCard) {
+        this.niCard = niCard;
+    }
+
+    public IPAddress setNiCardR(NICard niCard){
+        this.niCard = niCard;
+        return this;
+    }
     public int getVersion() {
         return this.version;
     }
@@ -177,7 +193,7 @@ public class IPAddress implements Serializable {
 
     public IPAddress clone() {
         return new IPAddress().setIdR(this.id).setVersionR(this.version).setFqdnR(this.fqdn).setIpAddressR(this.ipAddress).
-                               setNetworkSubnetR(this.networkSubnet).setOsInstancesR(this.osInstance);
+                               setNetworkSubnetR(this.networkSubnet).setOsInstancesR(this.osInstance).setNiCardR(this.niCard);
     }
 
     public final static String SUBNET_SUBNET_MAPPING_FIELD = "networkSubnet";
