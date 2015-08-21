@@ -270,4 +270,30 @@ public class NICardsListController implements Serializable {
         em.close();
         return ret;
     }
+
+    /**
+     * Get All NICard from DB
+     * @return List of NICards
+     */
+    public static List<NICard> getAllUnlinked() {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        log.debug("Get all NICards from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                new Object[]{
+                        (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length>6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                });
+        CriteriaBuilder        builder  = em.getCriteriaBuilder();
+        CriteriaQuery<NICard> criteria = builder.createQuery(NICard.class);
+        Root<NICard>       root     = criteria.from(NICard.class);
+        criteria.select(root).where(builder.isNull(root.get("rosInstance"))).orderBy(builder.asc(root.get("name")));
+
+        List<NICard> ret = em.createQuery(criteria).getResultList();
+        em.close();
+        return ret;
+    }
 }
