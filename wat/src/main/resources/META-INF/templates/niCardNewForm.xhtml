@@ -28,7 +28,7 @@
             </p:commandLink><br/>
             <h:selectOneMenu label="Select the OS Instance type" value="#{niCardNewController.rOsInstance}" required="true" style="width:68.5%">
                 <p:ajax listener="#{niCardNewController.handleSelectedOSInstance}" update=":createNicDialogForm:nicIPA, :createNicDialogForm:nicTitle"></p:ajax>
-                <f:selectItems value="#{OSInstancesListController.getAll()}"  var="osi"
+                <f:selectItems value="#{OSInstancesListController.getAllForSelector()}"  var="osi"
                                itemLabel="#{osi.name}" itemValue="#{osi.name}"/>
             </h:selectOneMenu>
         </h:panelGroup>

@@ -19,7 +19,9 @@
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard.NICardsListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.controller.organisational.application.ApplicationsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.organisational.environment.EnvironmentsListController;
@@ -79,6 +81,9 @@ public class OSInstanceNewController implements Serializable{
     private Set<IPAddress>  ipaddresses    = new HashSet<IPAddress>();
 
     private List<IPAddress> iplist = new ArrayList<IPAddress>();
+
+    private List<String> niCardsToBind = new ArrayList<String>();
+    private Set<NICard>  niCards = new HashSet<NICard>();
 
     private List<String>     envsToBind = new ArrayList<String>();
     private Set<Environment> envs       = new HashSet<Environment>();
@@ -261,6 +266,42 @@ public class OSInstanceNewController implements Serializable{
             }
        }
     }
+
+    public Set<NICard> getNiCards() {
+        return niCards;
+    }
+
+    public void setNiCards(Set<NICard> niCards) {
+        this.niCards = niCards;
+    }
+
+    public List<String> getNiCardsToBind() {
+        return niCardsToBind;
+    }
+
+    public void setNiCardsToBind(List<String> niCardsToBind) {
+        this.niCardsToBind = niCardsToBind;
+    }
+
+    /**
+     * populate niCards through nicardsToBind list provided through UI form
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
+    private void bindSelectedNICards() throws NotSupportedException, SystemException {
+        for (NICard niCard : NICardsListController.getAll()) {
+            for (String niCardToBind: niCardsToBind){
+                if (niCard.getMacAddress().equals(niCardToBind)) {
+                    niCard = em.find(niCard.getClass(), niCard.getId());
+                    this.niCards.add(niCard);
+                    log.debug("Synced NICs: {} {}", new Object[]{niCard.getId(), niCard.getMacAddress()});
+                    break;
+                }
+            }
+        }
+    }
+
     public List<String> getEnvsToBind() {
         return envsToBind;
     }
@@ -394,6 +435,7 @@ public class OSInstanceNewController implements Serializable{
             bindSelectedTeams();
             bindSelectedApps();
             bindSelectedIPAddresses();
+            bindSelectedNICards();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -411,6 +453,7 @@ public class OSInstanceNewController implements Serializable{
         osInstance.setEmbeddingOSInstance(embingOSI);
         osInstance.setNetworkSubnets(subnets);
         osInstance.setIpAddresses(ipaddresses);
+        osInstance.setNiCards(niCards);
         osInstance.setEnvironments(envs);
         osInstance.setTeams(teams);
         osInstance.setApplications(apps);
@@ -438,6 +481,10 @@ public class OSInstanceNewController implements Serializable{
             for (IPAddress ipAddress : this.ipaddresses) {
                 ipAddress.setOsInstance(osInstance);
                 em.merge(ipAddress);
+            }
+            for (NICard niCard : this.niCards) {
+                niCard.setRosInstance(osInstance);
+                em.merge(niCard);
             }
 
             if (embingOSI!=null) {embingOSI.getEmbeddedOSInstances().add(osInstance); em.merge(embingOSI);}
