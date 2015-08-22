@@ -72,7 +72,7 @@
                     </h:panelGroup>
                 </h:panelGroup>
 
-                <h:panelGroup style="display: block; padding-bottom: 93% !important;">
+                <h:panelGroup>
                     <h:outputText value="Subnets" styleClass="arianeDialogLabel"/><br/>
                     <h:panelGroup>
                         <p:commandLink onclick="subnetCreateDialog.show()">
@@ -104,6 +104,19 @@
                             <p:selectManyMenu style="width:100%; height: 100px;">
                             </p:selectManyMenu>
                         </c:if>
+                    </h:panelGroup>
+
+                    <h:outputText value="NICs" styleClass="arianeDialogLabel"/><br/>
+                    <h:panelGroup id="osInstNIC">
+                        <p:commandLink onclick="nicCreateDialog.show()">
+                            <h:outputText value=" create new nics"/>
+                        </p:commandLink><br/>
+                        <h:form>
+                            <p:selectManyMenu id="osInstNICSelect" value="#{OSInstanceNewController.niCardsToBind}" style="width:100%;height:100px">
+                                <f:selectItems value="#{niCardsListController.getAllUnlinked()}"  var="nic"
+                                               itemLabel="#{nic.macAddress}" itemValue="#{nic.macAddress}"/>
+                            </p:selectManyMenu>
+                        </h:form>
                     </h:panelGroup>
                 </h:panelGroup>
             </h:panelGrid>
