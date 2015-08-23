@@ -47,6 +47,7 @@ public class NICard {
     private String macAddress;
 
     @Column(name = "name")
+    @NotNull
     private String name;
 
     @Column(name = "duplex")
