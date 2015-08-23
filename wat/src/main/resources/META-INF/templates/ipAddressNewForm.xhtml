@@ -31,13 +31,33 @@
                 <h:selectOneMenu label="Select the osInstance type" value="#{ipAddressNewController.rOsInstance}" required="true" style="width:68.5%">
                 <f:selectItems value="#{ipAddressNewController.osiList}"  var="rosi"
                                itemLabel="#{rosi.name}" itemValue="#{rosi.name}"/>
-                <p:ajax listener="#{ipAddressNewController.handleSelectedSubnets}"></p:ajax>
+                <p:ajax listener="#{ipAddressNewController.handleSelectedSubnets}" update=":createIPAddressDialogForm:nicInst, :createIPAddressDialogForm:nicTitle"></p:ajax>
             </h:selectOneMenu>
             </h:panelGroup>
         </c:when>
         <c:otherwise>
             <h:outputText id="osTitle"></h:outputText>
             <h:panelGroup id="osInst"></h:panelGroup>
+        </c:otherwise>
+        </c:choose>
+
+        <c:choose>
+        <c:when test="#{ipAddressNewController.nicList.size() gt 0}">
+        <h:outputText id="nicTitle" value="NICs" styleClass="arianeDialogLabel"/>
+        <h:panelGroup id="nicInst">
+            <p:commandLink onclick="niCardCreateDialog.show()">
+                <h:outputText value=" create new nic"/>
+            </p:commandLink><br/>
+            <h:selectOneMenu label="Select the nic type" value="#{ipAddressNewController.rNiCard}" required="true" style="width:68.5%">
+                <f:selectItems value="#{ipAddressNewController.nicList}"  var="nic"
+                               itemLabel="#{nic.macAddress}" itemValue="#{nic.macAddress}"/>
+                <p:ajax listener="#{ipAddressNewController.handleSelectedOSInstance}"></p:ajax>
+            </h:selectOneMenu>
+        </h:panelGroup>
+        </c:when>
+        <c:otherwise>
+            <h:outputText id="nicTitle"></h:outputText>
+            <h:panelGroup id="nicInst"></h:panelGroup>
         </c:otherwise>
         </c:choose>
     </h:panelGrid>

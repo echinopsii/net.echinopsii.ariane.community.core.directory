@@ -20,7 +20,9 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard.NICardsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
@@ -56,8 +58,18 @@ public class IPAddressListController implements Serializable {
 
     private HashMap<Long, String> changedOSInstance = new HashMap<Long, String>();
 
+    private HashMap<Long, String> changedNICard = new HashMap<Long, String>();
+
     public LazyDataModel<IPAddress> getLazyModel() {
         return lazyModel;
+    }
+
+    public HashMap<Long, String> getChangedNICard() {
+        return changedNICard;
+    }
+
+    public void setChangedNICard(HashMap<Long, String> changedNICard) {
+        this.changedNICard = changedNICard;
     }
 
     public IPAddress[] getSelectedIPAddressList() {
@@ -197,15 +209,70 @@ public class IPAddressListController implements Serializable {
         return mOSInstanceName;
     }
 
+    public void syncRNICard(IPAddress ipAddress) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            boolean noRNICard = true;
+            ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
+            for (NICard niCard : NICardsListController.getAll()) {
+                if (niCard.getMacAddress().equals(changedNICard.get(ipAddress.getId()))) {
+                    em.getTransaction().begin();
+                    niCard = em.find(niCard.getClass(), niCard.getId());
+                    ipAddress.setNiCard(niCard);
+                    niCard.setRipAddress(ipAddress);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "IP Address updated successfully !",
+                            "IP Address: " + ipAddress.getIpAddress());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    noRNICard = false;
+                    break;
+                }
+            }
+            if (noRNICard) {
+                em.getTransaction().begin();
+                ipAddress.setNiCard(null);
+                em.flush();
+                em.getTransaction().commit();
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "IP Address updated successfully !",
+                        "IP Address : " + ipAddress.getIpAddress());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Throwable raised while updating IP Address " + ipAddress.getIpAddress() + " !",
+                    "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
+    public String getIPAddressNICardName(IPAddress ipAddress) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
+        String mNICardName = (ipAddress.getNiCard()!=null) ? ipAddress.getNiCard().getMacAddress() : "None";
+        em.close();
+        return mNICardName;
+    }
+
     public void onRowToggle(ToggleEvent event) {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
         IPAddress eventIPAddress = ((IPAddress) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
             changedSubnet.remove(eventIPAddress.getId());
             changedOSInstance.remove(eventIPAddress.getId());
+            changedNICard.remove(eventIPAddress.getId());
         } else {
             changedSubnet.put(eventIPAddress.getId(), "");
             changedOSInstance.put(eventIPAddress.getId(), "");
+            changedNICard.put(eventIPAddress.getId(), "");
         }
     }
 
@@ -226,7 +293,7 @@ public class IPAddressListController implements Serializable {
             IPAddress ipAddressToUpdate = em.find(ipAddress.getClass(), ipAddress.getId());
             ipAddressToUpdate.setFqdnR(ipAddress.getFqdn()).
                               setIpAddressR(ipAddress.getIpAddress()).setNetworkSubnetR(ipAddress.getNetworkSubnet()).
-                              setOsInstancesR(ipAddress.getOsInstance());
+                              setOsInstancesR(ipAddress.getOsInstance()).setNiCardR(ipAddress.getNiCard());
             em.flush();
             em.getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
