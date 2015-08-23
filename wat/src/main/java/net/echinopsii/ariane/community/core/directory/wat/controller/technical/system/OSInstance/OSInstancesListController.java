@@ -1019,6 +1019,18 @@ public class OSInstancesListController implements Serializable{
         return ret;
     }
 
+    public static List<NICard> getAllNICards(OSInstance osInstance){
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        osInstance = em.find(osInstance.getClass(), osInstance.getId());
+        List<NICard> ret = new ArrayList<NICard>();
+
+        for (NICard niCard: osInstance.getNiCards()){
+            ret.add(niCard);
+        }
+        em.close();
+        return ret;
+    }
+
     /**
      * Get all OS Instances from the db + select string
      *

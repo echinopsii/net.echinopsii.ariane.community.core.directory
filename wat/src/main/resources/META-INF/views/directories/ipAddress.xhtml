@@ -94,7 +94,7 @@
                         <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
                             <p:inplace label="#{ipAddressListController.getIPAddressNICardName(ipa)}" effectSpeed="fast" editor="true">
                                 <h:selectOneMenu value="#{ipAddressListController.changedNICard[ipa.id]}">
-                                    <f:selectItems value="#{niCardsListController.getAll()}"  var="nic"
+                                    <f:selectItems value="#{OSInstancesListController.getAllNICards(ipa.osInstance)}"  var="nic"
                                                    itemLabel="#{nic.macAddress}" itemValue="#{nic.macAddress}"/>
                                 </h:selectOneMenu>
                                 <p:ajax event="save" listener="#{ipAddressListController.syncRNICard(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages"/>

@@ -67,6 +67,17 @@ public class IPAddressNewController implements Serializable {
     private String rNiCard = "";
     private NICard niCard;
 
+    private List<OSInstance> osiList = new ArrayList<OSInstance>();
+    private List<NICard> nicList = new ArrayList<NICard>();
+
+    public List<NICard> getNicList() {
+        return nicList;
+    }
+
+    public void setNicList(List<NICard> nicList) {
+        this.nicList = nicList;
+    }
+
     public NICard getNiCard() {
         return niCard;
     }
@@ -82,8 +93,6 @@ public class IPAddressNewController implements Serializable {
     public void setrNiCard(String rNiCard) {
         this.rNiCard = rNiCard;
     }
-
-    private List<OSInstance> osiList = new ArrayList<OSInstance>();
 
     public String getIpAddress() {
         return ipAddress;
@@ -218,6 +227,23 @@ public class IPAddressNewController implements Serializable {
         this.osiList.clear();
         if(subnetObj!=null) {
             this.osiList = OSInstancesListController.getAllOSIFromSubnet(subnetObj);
+            handleSelectedOSInstance();
+        }
+    }
+
+    public void handleSelectedOSInstance() {
+        OSInstance osInstanceObj = null;
+        if(this.rOsInstance != "") {
+            for (OSInstance osInstance : OSInstancesListController.getAll()) {
+                if (osInstance.getName().equals(rOsInstance)) {
+                    osInstanceObj = osInstance;
+                    break;
+                }
+            }
+            this.nicList.clear();
+            if (osInstanceObj != null) {
+                this.nicList = OSInstancesListController.getAllNICards(osInstanceObj);
+            }
         }
     }
 
