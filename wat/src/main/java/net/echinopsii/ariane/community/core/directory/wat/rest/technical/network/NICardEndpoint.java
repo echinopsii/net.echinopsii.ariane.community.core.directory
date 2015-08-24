@@ -134,7 +134,7 @@ public class NICardEndpoint {
                     commonRestResponse.setErrorMessage("Fail to create NIC. Reason : provided OS Instance ID " + jsonFriendlyNICard.getNiCardOSInstanceID() + " was not found.");
                     return commonRestResponse;
                 }
-            }/*
+            }
             if (jsonFriendlyNICard.getNiCardIPAddressID() != 0) {
                 IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, jsonFriendlyNICard.getNiCardIPAddressID());
                 if (ipAddress != null) {
@@ -146,7 +146,7 @@ public class NICardEndpoint {
                     commonRestResponse.setErrorMessage("Fail to update NIC. Reason : provided IPAddress ID " + jsonFriendlyNICard.getNiCardIPAddressID() + " was not found.");
                     return commonRestResponse;
                 }
-            }*/
+            }
             commonRestResponse.setDeserializedObject(entity);
         } else {
             entity = new NICard();
@@ -164,7 +164,7 @@ public class NICardEndpoint {
                     return commonRestResponse;
                 }
             }
-            /*if (jsonFriendlyNICard.getNiCardIPAddressID() != 0) {
+            if (jsonFriendlyNICard.getNiCardIPAddressID() != 0) {
                 IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, jsonFriendlyNICard.getNiCardIPAddressID());
                 if (ipAddress != null) {
                     if (entity.getRipAddress() != null)
@@ -175,7 +175,7 @@ public class NICardEndpoint {
                     commonRestResponse.setErrorMessage("Fail to update NIC. Reason : provided IPAddress ID " + jsonFriendlyNICard.getNiCardIPAddressID() + " was not found.");
                     return commonRestResponse;
                 }
-            }*/
+            }
             commonRestResponse.setDeserializedObject(entity);
         }
         return commonRestResponse;
@@ -546,7 +546,6 @@ public class NICardEndpoint {
         }
     }
 
-/*
     @GET
     @Path("/update/ipAddress")
     public Response updateNICardIPAddres(@QueryParam("id") Long id, @QueryParam("ipAddressID") Long ipAddressID) {
@@ -590,7 +589,6 @@ public class NICardEndpoint {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ipAddress are not defined. You must define these parameters.").build();
         }
     }
-*/
 
     @GET
     @Path("/update/osInstance")
