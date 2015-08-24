@@ -72,7 +72,6 @@
                             net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress;version=${project.version},
-                            net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSType;version=${project.version},
