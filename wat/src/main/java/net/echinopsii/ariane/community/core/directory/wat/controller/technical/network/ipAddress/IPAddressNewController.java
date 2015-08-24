@@ -21,7 +21,9 @@
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard.NICardsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
@@ -62,7 +64,35 @@ public class IPAddressNewController implements Serializable {
     private String rOsInstance = "";
     private OSInstance rosinstance;
 
+    private String rNiCard = "";
+    private NICard niCard;
+
     private List<OSInstance> osiList = new ArrayList<OSInstance>();
+    private List<NICard> nicList = new ArrayList<NICard>();
+
+    public List<NICard> getNicList() {
+        return nicList;
+    }
+
+    public void setNicList(List<NICard> nicList) {
+        this.nicList = nicList;
+    }
+
+    public NICard getNiCard() {
+        return niCard;
+    }
+
+    public void setNiCard(NICard niCard) {
+        this.niCard = niCard;
+    }
+
+    public String getrNiCard() {
+        return rNiCard;
+    }
+
+    public void setrNiCard(String rNiCard) {
+        this.rNiCard = rNiCard;
+    }
 
     public String getIpAddress() {
         return ipAddress;
@@ -164,6 +194,28 @@ public class IPAddressNewController implements Serializable {
         }
     }
 
+    /**
+     * synchronize this.niCard from DB
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
+    private void syncNICard() throws NotSupportedException, SystemException {
+        NICard rNiCard = null;
+        for (NICard niCard1: NICardsListController.getAll()) {
+            if (niCard1.getMacAddress().equals(this.rNiCard)) {
+                niCard1 = em.find(niCard1.getClass(), niCard1.getId());
+                rNiCard = niCard1;
+                break;
+            }
+        }
+
+        if (rNiCard!=null) {
+            this.niCard = rNiCard;
+            log.debug("Synced NIC : {} {}", new Object[]{this.niCard.getId(), this.niCard.getName()});
+        }
+    }
+
     public void handleSelectedSubnets() {
         Subnet subnetObj = null;
         for (Subnet subnet : SubnetsListController.getAll()) {
@@ -175,6 +227,23 @@ public class IPAddressNewController implements Serializable {
         this.osiList.clear();
         if(subnetObj!=null) {
             this.osiList = OSInstancesListController.getAllOSIFromSubnet(subnetObj);
+            handleSelectedOSInstance();
+        }
+    }
+
+    public void handleSelectedOSInstance() {
+        OSInstance osInstanceObj = null;
+        if(this.rOsInstance != "") {
+            for (OSInstance osInstance : OSInstancesListController.getAll()) {
+                if (osInstance.getName().equals(rOsInstance)) {
+                    osInstanceObj = osInstance;
+                    break;
+                }
+            }
+            this.nicList.clear();
+            if (osInstanceObj != null) {
+                this.nicList = OSInstancesListController.getAllNICards(osInstanceObj);
+            }
         }
     }
 
@@ -185,6 +254,7 @@ public class IPAddressNewController implements Serializable {
         try {
             syncSubnet();
             syncOSInstance();
+            syncNICard();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -199,6 +269,7 @@ public class IPAddressNewController implements Serializable {
         newIPAddress.setFqdn(this.fqdn);
         newIPAddress.setNetworkSubnet(this.rsubnet);
         newIPAddress.setOsInstance(this.rosinstance);
+        newIPAddress.setNiCard(this.niCard);
 
         Boolean isBindToSubnet = newIPAddress.isBindToSubnet();
         Boolean isValid = newIPAddress.isValid();
@@ -214,6 +285,10 @@ public class IPAddressNewController implements Serializable {
                 if (rosinstance != null) {
                     rosinstance.getIpAddresses().add(newIPAddress);
                     em.merge(rosinstance);
+                }
+                if (niCard != null) {
+                    niCard.setRipAddress(newIPAddress);
+                    em.merge(niCard);
                 }
 
                 em.flush();
