@@ -27,8 +27,8 @@ r.status_code
 # 'applicationShortName': 'TibcoRV',
 # 'applicationTeamID': 2,
 # 'applicationVersion': 9},
-#                  {'applicationColorCode': '5e647a',
-#                   'applicationCompanyID': 2,
+# {'applicationColorCode': '5e647a',
+# 'applicationCompanyID': 2,
 #                   'applicationDescription': 'Linux hypervisor for virtualisation',
 #                   'applicationID': 2,
 #                   'applicationName': 'QEMU-KVM',
@@ -4264,6 +4264,223 @@ r.status_code
 #     "ipAddressOSInstancesID": 1,
 #     "ipAddressSubnetID": 2
 #}
+
+
+nicParams = {'name': "fake NIC", "macAddress": "00:00:00:00:00:10"}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard/create', params=nicParams)
+r.status_code
+fakeNICID = r.json().get('nicardID')
+#200
+# pprint(r.json())
+# {'niCardDuplex': None,
+#  'niCardID': 13,
+#  'niCardIPAddressID': -1,
+#  'niCardMacAddress': '00:00:00:00:00:10',
+#  'niCardMtu': 0,
+#  'niCardName': 'fake NIC',
+#  'niCardOSInstanceID': -1,
+#  'niCardSpeed': 0,
+#  'niCardVersion': 0}
+
+nicParams = {'id': fakeNICID}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard/get', params=nicParams)
+r.status_code
+#200
+# pprint(r.json())
+# {'niCardDuplex': None,
+#  'niCardID': 13,
+#  'niCardIPAddressID': -1,
+#  'niCardMacAddress': '00:00:00:00:00:10',
+#  'niCardMtu': 0,
+#  'niCardName': 'fake NIC',
+#  'niCardOSInstanceID': -1,
+#  'niCardSpeed': 0,
+#  'niCardVersion': 0}
+
+nicParams = {'id': fakeNICID, 'macAddress': '00:00:00:00:00:12'}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard/update/macAddress', params=nicParams)
+r.status_code
+#200
+
+nicParams = {'id': fakeNICID, 'name': 'fake name'}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard/update/macAddress', params=nicParams)
+r.status_code
+#200
+
+
+nicParams = {'id': fakeNICID, 'speed': '20'}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard/update/speed', params=nicParams)
+r.status_code
+#200
+
+nicParams = {'id': fakeNICID, 'duplex': 'fake duplex'}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard/update/duplex', params=nicParams)
+r.status_code
+#200
+
+
+nicParams = {'id': fakeNICID, 'mtu': '40'}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard/update/mtu', params=nicParams)
+r.status_code
+#200
+
+
+nicParams = {'id': fakeNICID, 'osInstanceID': fakeOSID}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard/update/osInstance', params=nicParams)
+r.status_code
+#200
+
+
+nicParams = {'id': fakeNICID, 'ipAddressID': fakeipAddressID}
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard/update/ipAddress', params=nicParams)
+r.status_code
+#200
+
+payload = '{"niCardMacAddress":"00:00:00:00:00:05", "niCardName": "fakeNIC"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard', params={"payload": payload})
+fakeniCardID = r.json().get('niCardID')
+#200()
+# pprint(r.json())
+# {'niCardDuplex': None,
+#  'niCardID': 10,
+#  'niCardIPAddressID': -1,
+#  'niCardMacAddress': '00:00:00:00:00:05',
+#  'niCardMtu': 0,
+#  'niCardName': 'FakeNIC',
+#  'niCardOSInstanceID': -1,
+#  'niCardSpeed': 0,
+#  'niCardVersion': 0}
+
+payload = '{"niCardID": ' + str(fakeniCardID) + ',"niCardName": "FakeNIC2"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'niCardDuplex': None,
+#  'niCardID': 10,
+#  'niCardIPAddressID': -1,
+#  'niCardMacAddress': '00:00:00:00:00:05',
+#  'niCardMtu': 0,
+#  'niCardName': 'FakeNIC2',
+#  'niCardOSInstanceID': -1,
+#  'niCardSpeed': 0,
+#  'niCardVersion': 1}
+
+payload = '{"niCardID": ' + str(fakeniCardID) + ',"niCardMacAddress": "00:00:00:00:00:06"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard', params={"payload": payload})
+# 200
+# pprint(r.json())
+# {'niCardDuplex': None,
+#  'niCardID': 10,
+#  'niCardIPAddressID': -1,
+#  'niCardMacAddress': '00:00:00:00:00:06',
+#  'niCardMtu': 0,
+#  'niCardName': 'FakeNIC2',
+#  'niCardOSInstanceID': -1,
+#  'niCardSpeed': 0,
+#  'niCardVersion': 2}
+
+payload = '{"niCardID": ' + str(fakeniCardID) + ',"niCardDuplex": "Fake NIC duplex"}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'niCardDuplex': 'Fake NIC duplex',
+#  'niCardID': 10,
+#  'niCardIPAddressID': -1,
+#  'niCardMacAddress': '00:00:00:00:00:06',
+#  'niCardMtu': 0,
+#  'niCardName': 'FakeNIC2',
+#  'niCardOSInstanceID': -1,
+#  'niCardSpeed': 20,
+#  'niCardVersion': 3}
+
+payload = '{"niCardID": ' + str(fakeniCardID) + ',"niCardSpeed": 20}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'niCardDuplex': 'Fake NIC duplex',
+#  'niCardID': 10,
+#  'niCardIPAddressID': -1,
+#  'niCardMacAddress': '00:00:00:00:00:06',
+#  'niCardMtu': 0,
+#  'niCardName': 'FakeNIC2',
+#  'niCardOSInstanceID': -1,
+#  'niCardSpeed': 20,
+#  'niCardVersion': 4}
+
+payload = '{"niCardID": ' + str(fakeniCardID) + ',"niCardMtu": 40}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'niCardDuplex': 'Fake NIC duplex',
+#  'niCardID': 10,
+#  'niCardIPAddressID': -1,
+#  'niCardMacAddress': '00:00:00:00:00:06',
+#  'niCardMtu': 0,
+#  'niCardName': 'FakeNIC2',
+#  'niCardOSInstanceID': -1,
+#  'niCardSpeed': 40,
+#  'niCardVersion': 5}
+
+payload = '{"niCardID": ' + str(fakeniCardID) + ',"niCardOSInstanceID": 3}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard', params={"payload": payload})
+#200()
+# pprint(r.json())
+# {'niCardDuplex': 'Fake NIC duplex',
+#  'niCardID': 10,
+#  'niCardIPAddressID': -1,
+#  'niCardMacAddress': '00:00:00:00:00:06',
+#  'niCardMtu': 0,
+#  'niCardName': 'FakeNIC2',
+#  'niCardOSInstanceID': 3,
+#  'niCardSpeed': 0,
+#  'niCardVersion': 6}
+
+payload = '{"niCardID": ' + str(fakeniCardID) + ', "niCardIPAddressID": 14}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard', params={"payload": payload})
+#200()
+# pprint(r.json())
+# {'niCardDuplex': 'Fake NIC duplex',
+#  'niCardID': 10,
+#  'niCardIPAddressID': 14,
+#  'niCardMacAddress': '00:00:00:00:00:06',
+#  'niCardMtu': 0,
+#  'niCardName': 'FakeNIC2',
+#  'niCardOSInstanceID': 3,
+#  'niCardSpeed': 0,
+#  'niCardVersion': 7}
+
+payload = '{"niCardName":"fake NICard name2", "niCardMacAddress":"00:00:00:00:00:07", "niCardSpeed": 20,' \
+          ' "niCardMtu": 20, "niCardDuplex": "fake duplex", "niCardOSInstanceID" : 14, "niCardIPAddressID": 14}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard', params={"payload": payload})
+newfakenicardID = r.json().get("niCardID")
+#200
+# pprint(r.json())
+# {'niCardDuplex': 'fake duplex',
+#  'niCardID': 12,
+#  'niCardIPAddressID': 14,
+#  'niCardMacAddress': '00:00:00:00:00:07',
+#  'niCardMtu': 20,
+#  'niCardName': 'fake NICard name2',
+#  'niCardOSInstanceID': 14,
+#  'niCardSpeed': 20,
+#  'niCardVersion': 0}
+
+payload = '{"niCardID": ' + str(
+    12) + ',"niCardName":"fake NICard name3", "niCardMacAddress":"00:00:00:00:00:08", "niCardSpeed": 30,' \
+          ' "niCardMtu": 30, "niCardDuplex": "fake duplex2", "niCardOSInstanceID" : 10, "niCardIPAddressID": 10}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/ostypes', params={"payload": payload})
+#200
+# pprint(r.json())
+# pprint(r.json())
+# {'niCardDuplex': 'fake duplex2',
+#  'niCardID': 12,
+#  'niCardIPAddressID': 10,
+#  'niCardMacAddress': '00:00:00:00:00:08',
+#  'niCardMtu': 30,
+#  'niCardName': 'fake NICard name3',
+#  'niCardOSInstanceID': 10,
+#  'niCardSpeed': 30,
+#  'niCardVersion': 1}
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/delete', params={'id': fakeOSID})
 r.status_code
