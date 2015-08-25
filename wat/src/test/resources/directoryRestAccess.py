@@ -2447,8 +2447,20 @@ r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAd
 #  'ipAddressSubnetID': 2,
 #  'ipAddressVersion': 4}
 
+payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressNICardID": 2}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'ipAddressFQDN': 'Fake FQDN2',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.130',
+#  'ipAddressOSInstanceID': 2,
+#  'ipAddressNICardID': 2,
+#  'ipAddressSubnetID': 2,
+#  'ipAddressVersion': 4}
+
 payload = '{"ipAddressIPA":"123.123.48.123", "ipAddressFQDN": "fakeFQDN2", "ipAddressSubnetID": 1,' \
-          ' "ipAddressOSInstanceID": 2}'
+          ' "ipAddressOSInstanceID": 2, "ipAddressNICardID": 1}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
 fakeipAddressID = r.json().get('ipAddressID')
 #200()
@@ -2457,12 +2469,14 @@ fakeipAddressID = r.json().get('ipAddressID')
 #  'ipAddressID': 26,
 #  'ipAddressIPA': '123.123.48.123',
 #  'ipAddressOSInstanceID': 2,
+#  'ipAddressNICardID': 1,
 #  'ipAddressSubnetID': 1,
 #  'ipAddressVersion': 0}
 
 payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressIPA":"123.123.48.123",' \
                                                       ' "ipAddressFQDN": "fakeFQDN3", ' \
-                                                      '"ipAddressSubnetID": 1, "ipAddressOSInstanceID": 3}'
+                                                      '"ipAddressSubnetID": 1, "ipAddressOSInstanceID": 3,' \
+                                                      ' "ipAddressNICardID": 2}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
 #200()
 # pprint(r.json())
@@ -2470,6 +2484,7 @@ r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAd
 #  'ipAddressID': 26,
 #  'ipAddressIPA': '123.123.48.123',
 #  'ipAddressOSInstanceID': 3,
+#  'ipAddressNICardID': 2,
 #  'ipAddressSubnetID': 1,
 #  'ipAddressVersion': 1}
 
@@ -4335,6 +4350,18 @@ nicParams = {'id': fakeNICID, 'ipAddressID': fakeipAddressID}
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard/update/ipAddress', params=nicParams)
 r.status_code
 #200
+
+payload = '{"ipAddressID": ' + str(fakeipAddressID) + ',"ipAddressNICardID": '+ str(fakeNICID)+'}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/ipAddress', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'ipAddressFQDN': 'Fake FQDN2',
+#  'ipAddressID': 25,
+#  'ipAddressIPA': '123.123.48.130',
+#  'ipAddressOSInstanceID': 2,
+#  'ipAddressNICardID': 2,
+#  'ipAddressSubnetID': 2,
+#  'ipAddressVersion': 4}
 
 payload = '{"niCardMacAddress":"00:00:00:00:00:05", "niCardName": "fakeNIC"}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard', params={"payload": payload})
