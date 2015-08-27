@@ -3312,11 +3312,30 @@ r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osins
 #  'osInstanceTeamsID': [1],
 #  'osInstanceVersion': 5}
 
+payload = '{"osInstanceID": ' + str(fakeosInstanceID) + ',"osInstanceNICardsID": [1]}'
+r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
+#200
+# pprint(r.json())
+# {'osInstanceAdminGateURI': 'updated URI',
+#  'osInstanceApplicationsID': [1],
+#  'osInstanceDescription': 'updated Description',
+#  'osInstanceEmbeddedOSInstancesID': [1],
+#  'osInstanceEmbeddingOSInstanceID': 2,
+#  'osInstanceEnvironmentsID': [1],
+#  'osInstanceID': 3,
+#  'osInstanceIPAddressesID': [1],
+#  'osInstanceNICardsID': [1],
+#  'osInstanceName': 'New Fake osInstance name',
+#  'osInstanceOSTypeID': 1,
+#  'osInstanceSubnetsID': [1],
+#  'osInstanceTeamsID': [1],
+#  'osInstanceVersion': 5}
+
 payload = '{"osInstanceName":"fake osInstance name2", "osInstanceAdminGateURI": "Fake URI2", ' \
           '"osInstanceDescription": "This is fake osInstance2", "osInstanceOSTypeID": 1,' \
           ' "osInstanceEmbeddingOSInstanceID": 2, "osInstanceSubnetsID": [3], "osInstanceTeamsID": [1],' \
           ' "osInstanceEnvironmentsID": [1], "osInstanceApplicationsID": [1], "osInstanceEmbeddedOSInstancesID": [1],' \
-          ' "osInstanceIPAddressesID": [2]}'
+          ' "osInstanceIPAddressesID": [2], "osInstanceNICardsID":[1]}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
 newfakeosInstanceID = r.json().get("osInstanceID")
 #200
@@ -3329,6 +3348,7 @@ newfakeosInstanceID = r.json().get("osInstanceID")
 #  'osInstanceEnvironmentsID': [1],
 #  'osInstanceID': 4,
 #  'osInstanceIPAddressesID': [2],
+#  'osInstanceNICardsID' : [2],
 #  'osInstanceName': 'fake osInstance name2',
 #  'osInstanceOSTypeID': 1,
 #  'osInstanceSubnetsID': [3],
@@ -3341,7 +3361,7 @@ payload = '{"osInstanceID": ' + str(
                            '"osInstanceEmbeddingOSInstanceID": 2, "osInstanceSubnetsID": [3,4],' \
                            ' "osInstanceTeamsID": [1,4], "osInstanceEnvironmentsID": [1,3],' \
                            ' "osInstanceApplicationsID": [3], "osInstanceEmbeddedOSInstancesID": [2],' \
-                           ' "osInstanceIPAddressesID": [3]}'
+                           ' "osInstanceIPAddressesID": [3], "osInstanceNICardsID": [3]}'
 r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances', params={"payload": payload})
 #200
 # pprint(r.json())
@@ -3353,6 +3373,7 @@ r = s.post(srv_url + 'ariane/rest/directories/common/infrastructure/system/osins
 #  'osInstanceEnvironmentsID': [1, 3],
 #  'osInstanceID': 4,
 #  'osInstanceIPAddressesID': [3],
+#  'osInstanceNICardsID' : [3],
 #  'osInstanceName': 'fake osInstance name3',
 #  'osInstanceOSTypeID': 2,
 #  'osInstanceSubnetsID': [3, 4],
@@ -4296,6 +4317,10 @@ fakeNICID = r.json().get('nicardID')
 #  'niCardOSInstanceID': -1,
 #  'niCardSpeed': 0,
 #  'niCardVersion': 0}
+
+r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/system/osinstances/update/nicards/add',
+          params={'id': fakeOSID, 'niCardID': fakeNICID})
+r.status_code
 
 nicParams = {'id': fakeNICID}
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/niCard/get', params=nicParams)
