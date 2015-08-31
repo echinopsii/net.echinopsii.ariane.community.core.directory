@@ -1,0 +1,75 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+    <h:panelGrid id="nicNewGrid" columns="1" cellpadding="3" styleClass="ui-widget-content grid arianeDialogGrid">
+        <h:outputText value="Name" styleClass="arianeDialogLabel"/>
+        <p:inputText id="niName" label="Name" required="true" value="#{niCardNewController.name}"/>
+
+        <h:outputText value="MAC Address" styleClass="arianeDialogLabel"/>
+        <p:inputText id="nicMacId" label="MAC Address" value="#{niCardNewController.macAddress}" onblur="validate()"/>
+
+        <h:outputText value="Duplex" styleClass="arianeDialogLabel"/>
+        <p:inputText id="nicDuplex" label="Duplex" value="#{niCardNewController.duplex}"/>
+
+        <h:outputText value="Speed" styleClass="arianeDialogLabel"/>
+        <p:inputText id="nicSpeed" label="Speed" value="#{niCardNewController.speed}"/>
+
+        <h:outputText value="MTU" styleClass="arianeDialogLabel"/>
+        <p:inputText id="nicMtu" label="MTU" value="#{niCardNewController.mtu}"/>
+
+        <h:outputText value="OS Instance" styleClass="arianeDialogLabel"/>
+        <h:panelGroup>
+            <p:commandLink onclick="osInstanceCreateDialog.show()">
+                <h:outputText value=" create new os Instance"/>
+            </p:commandLink><br/>
+            <h:selectOneMenu label="Select the OS Instance type" value="#{niCardNewController.rOsInstance}" required="true" style="width:68.5%">
+                <p:ajax listener="#{niCardNewController.handleSelectedOSInstance}" update=":createNicDialogForm:nicIPA, :createNicDialogForm:nicTitle"></p:ajax>
+                <f:selectItems value="#{OSInstancesListController.getAllForSelector()}"  var="osi"
+                               itemLabel="#{osi.name}" itemValue="#{osi.name}"/>
+            </h:selectOneMenu>
+        </h:panelGroup>
+
+        <c:choose>
+        <c:when test="#{niCardNewController.ipaList.size() gt 0}">
+        <h:outputText id="nicTitle" value="IP Address" styleClass="arianeDialogLabel"/>
+        <h:panelGroup id="nicIPA">
+            <p:commandLink onclick="ipAddressCreateDialog.show()">
+                <h:outputText value=" create new ip Address"/>
+            </p:commandLink><br/>
+            <h:selectOneMenu label="Select the ipAddress type" value="#{niCardNewController.rIPAddress}" required="true" style="width:68.5%">
+                <f:selectItems value="#{niCardNewController.ipaList}"  var="ipa"
+                               itemLabel="#{ipa.ipAddress}" itemValue="#{ipa.ipAddress}"/>
+                <p:ajax listener="#{niCardNewController.handleSelectedOSInstance}"></p:ajax>
+            </h:selectOneMenu>
+        </h:panelGroup>
+        </c:when>
+        <c:otherwise>
+            <h:outputText id="nicTitle" value="IP Address" styleClass="arianeDialogLabel"/>
+            <h:panelGroup id="nicIPA">
+                <p:commandLink onclick="ipAddressCreateDialog.show()">
+                    <h:outputText value=" create new ip Address"/>
+                </p:commandLink><br/>
+            </h:panelGroup>
+        </c:otherwise>
+        </c:choose>
+    </h:panelGrid>
+    <script type="application/javascript">
+        //<![CDATA[
+        function validate() {
+            var macId = document.getElementById("createNicDialogForm:nicMacId");
+            var MacFormat = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
+            var isValid = MacFormat.test(macId.value);
+            if(isValid) {
+                macId.style.borderColor = "black";
+            }else{
+                macId.style.borderColor = "red";
+            }
+        }
+        //]]>
+    </script>
+</ui:composition>
+</html>

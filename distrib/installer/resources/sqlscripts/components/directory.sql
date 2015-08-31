@@ -161,6 +161,28 @@ CREATE TABLE IF NOT EXISTS `ipaddress` (
 ALTER TABLE`ipaddress` CHANGE `osInstances_id` `osInstance_id` bigint(20);
 
 --
+--  Table structure for table `niCard`
+--
+
+CREATE TABLE IF NOT EXISTS `niCard` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `duplex` varchar(255) DEFAULT NULL,
+  `macAddress` varchar(255) NOT NULL,
+  `mtu` int(11) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `speed` int(11) DEFAULT NULL,
+  `version` int(11) DEFAULT NULL,
+  `ripAddress_id` bigint(20) DEFAULT NULL,
+  `rosInstance_id` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_1491al4gj9v1f25y15kryfer7` (`macAddress`),
+  KEY `FK_mgeuv29q2f7upop0lq2jma1fv` (`ripAddress_id`),
+  KEY `FK_2pwy48wp8jek3p8yr46kt905u` (`rosInstance_id`),
+  CONSTRAINT `FK_2pwy48wp8jek3p8yr46kt905u` FOREIGN KEY (`rosInstance_id`) REFERENCES `osInstance` (`id`),
+  CONSTRAINT `FK_mgeuv29q2f7upop0lq2jma1fv` FOREIGN KEY (`ripAddress_id`) REFERENCES `ipaddress` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+
+--
 -- Table structure for table `application`
 --
 

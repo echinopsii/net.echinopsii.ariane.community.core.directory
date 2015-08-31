@@ -219,6 +219,34 @@
                         </p:dataTable>
                     </h:form>
 
+                    <h:outputText value="NICs : "  styleClass="arianeDialogLabel"/>
+                    <h:form>
+                        <p:dataTable value="#{directoryViewUtils.asList(osi,'niCards')}" var="nic" styleClass="ui-widget-content grid" rowKey="#{nic.id}"
+                                     rows="5" paginator="true" selection="#{OSInstancesListController.removedNICards[osi.id]}" selectionMode="multiple">
+                            <p:column headerText="NICs" sortBy="#{nic.macAddress}" filterBy="#{nic.macAddress}">
+                                <h:outputText id="nicMAC" value="#{nic.macAddress}"/>
+                            </p:column>
+                            <p:column headerText="Name" sortBy="#{nic.name}" filterBy="#{nic.name}">
+                                <h:outputText id="nicName" value="#{nic.name}"/>
+                            </p:column>
+                            <c:if test="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
+                                <f:facet name="footer">
+                                    <p:inplace label="Select NICs to bind" effectSpeed="fast" editor="true">
+                                        <h:selectOneMenu value="#{OSInstancesListController.addedNICards[osi.id]}">
+                                            <f:selectItems value="#{niCardsListController.getAllUnlinked()}" var="nic_"
+                                                           itemLabel="#{nic_.macAddress}" itemValue="#{nic_.macAddress}"/>
+                                        </h:selectOneMenu>
+                                        <p:ajax event="save" listener="#{OSInstancesListController.syncAddedNICards(osi)}"
+                                                update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
+                                    </p:inplace>
+                                    <p:commandButton value="Unbind selected NICs" icon="ui-icon-closethick"
+                                                     process="@form" actionListener="#{OSInstancesListController.syncRemovedNICards(osi)}"
+                                                     update="@form,:osInstanceTableForm:osInstanceTableMessages,:createOSInstanceDialogForm:osInstanceNewTabView"/>
+                                </f:facet>
+                            </c:if>
+                        </p:dataTable>
+                    </h:form>
+
                     <h:outputText value="Embedding OS Instance : " styleClass="arianeDialogLabel"/>
                     <h:form rendered="#{arianeidm:hasPermission('dirComITiSysOsi:update')}">
                         <p:inplace label="#{OSInstancesListController.getOSInstanceEmbeddingOSI(osi)}" effectSpeed="fast" editor="true">
@@ -408,6 +436,18 @@
                     </ui:insert>
                     <p:commandButton value="Save this ipAddress" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{ipAddressNewController.save}" oncomplete="ipAddressCreateDialog.hide();"
+                                     update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTableMessages"/>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new NICs" widgetVar="nicCreateDialog"
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
+                <h:form id="createNicDialogForm">
+                    <ui:insert name="createNIC" >
+                        <ui:include src="/templates/niCardNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this nic" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                                     actionListener="#{niCardNewController.save}" oncomplete="nicCreateDialog.hide();"
                                      update=":createOSInstanceDialogForm:osInstanceNewTabView,:osInstanceTableForm:osInstanceTableMessages"/>
                 </h:form>
             </p:dialog>

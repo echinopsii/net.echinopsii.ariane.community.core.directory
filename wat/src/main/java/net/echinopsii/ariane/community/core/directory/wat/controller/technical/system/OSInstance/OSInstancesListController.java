@@ -19,7 +19,9 @@
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard.NICardsListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.controller.organisational.application.ApplicationsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.organisational.environment.EnvironmentsListController;
@@ -70,6 +72,9 @@ public class OSInstancesListController implements Serializable{
 
     private HashMap<Long,String>       addedIPAddress    = new HashMap<Long, String>();
     private HashMap<Long,List<IPAddress>> removedIPAddresses = new HashMap<Long, List<IPAddress>>();
+
+    private HashMap<Long,String>       addedNICards = new HashMap<Long, String>();
+    private HashMap<Long,List<NICard>> removedNICards = new HashMap<Long, List<NICard>>();
 
     private HashMap<Long,String>            addedEnv    = new HashMap<Long, String>();
     private HashMap<Long,List<Environment>> removedEnvs = new HashMap<Long, List<Environment>>();
@@ -368,6 +373,97 @@ public class OSInstancesListController implements Serializable{
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                                                        "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
+    public HashMap<Long, String> getAddedNICards() {
+        return addedNICards;
+    }
+
+    public void setAddedNICards(HashMap<Long, String> addedNICards) {
+        this.addedNICards = addedNICards;
+    }
+
+    /**
+     * Synchronize added niCards into an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncAddedNICards(OSInstance osInstance) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            for (NICard niCard : NICardsListController.getAll())
+                if (niCard.getMacAddress().equals(this.addedNICards.get(osInstance.getId()))) {
+                    em.getTransaction().begin();
+                    osInstance = em.find(osInstance.getClass(), osInstance.getId());
+                    niCard = em.find(niCard.getClass(), niCard.getId());
+                    osInstance.getNiCards().add(niCard);
+                    if (niCard.getRosInstance()!=null)
+                        niCard.getRosInstance().getNiCards().remove(niCard);
+                    niCard.setRosInstance(osInstance);
+                    em.flush();
+                    em.getTransaction().commit();
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "OS Instance updated successfully !",
+                            "OS Instance name : " + osInstance.getName());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    break;
+                }
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                    "Throwable message : " + t.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
+    public HashMap<Long, List<NICard>> getRemovedNICards() {
+        return removedNICards;
+    }
+
+    public void setRemovedNICards(HashMap<Long, List<NICard>> removedNICards) {
+        this.removedNICards = removedNICards;
+    }
+
+    /**
+     * Synchronize removed niCard from an OS instance to database
+     *
+     * @param osInstance bean UI is working on
+     */
+    public void syncRemovedNICards(OSInstance osInstance) {
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        try {
+            em.getTransaction().begin();
+            osInstance = em.find(osInstance.getClass(), osInstance.getId());
+            List<NICard> niCards = this.removedNICards.get(osInstance.getId());
+            for (NICard niCard : niCards) {
+                niCard = em.find(niCard.getClass(), niCard.getId());
+                osInstance.getNiCards().remove(niCard);
+                niCard.setRosInstance(null);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    "OS Instance updated successfully !",
+                    "OS Instance name : " + osInstance.getName());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Throwable t) {
+            log.debug("Throwable catched !");
+            t.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Throwable raised while updating OS Instance " + osInstance.getName() + " !",
+                    "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();
@@ -755,6 +851,8 @@ public class OSInstancesListController implements Serializable{
             removedSubnets.remove(osInstance.getId());
             addedIPAddress.remove(osInstance.getId());
             removedIPAddresses.remove(osInstance.getId());
+            addedNICards.remove(osInstance.getId());
+            removedNICards.remove(osInstance.getId());
             addedEmbeddedOSI.remove(osInstance.getId());
             removedEmbeddedOSI.remove(osInstance.getId());
             addedEnv.remove(osInstance.getId());
@@ -770,6 +868,8 @@ public class OSInstancesListController implements Serializable{
             removedSubnets.put(osInstance.getId(), new ArrayList<Subnet>());
             addedIPAddress.put(osInstance.getId(), "");
             removedIPAddresses.put(osInstance.getId(), new ArrayList<IPAddress>());
+            addedNICards.put(osInstance.getId(), "");
+            removedNICards.put(osInstance.getId(), new ArrayList<NICard>());
             addedEmbeddedOSI.put(osInstance.getId(),"");
             removedEmbeddedOSI.put(osInstance.getId(),new ArrayList<OSInstance>());
             addedEnv.put(osInstance.getId(),"");
@@ -838,6 +938,8 @@ public class OSInstancesListController implements Serializable{
                     application.getOsInstances().remove(osInstance);
                 for (Team team: osInstance.getTeams())
                     team.getOsInstances().remove(osInstance);
+                for (NICard niCard : osInstance.getNiCards())
+                    niCard.setRosInstance(null);
                 em.remove(osInstance);
                 em.flush();
                 em.getTransaction().commit();
@@ -904,6 +1006,30 @@ public class OSInstancesListController implements Serializable{
         return ret;
     }
 
+
+    public static List<IPAddress> getAllIPAddresses(OSInstance osInstance){
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        osInstance = em.find(osInstance.getClass(), osInstance.getId());
+        List<IPAddress> ret = new ArrayList<IPAddress>();
+
+        for (IPAddress ipAddress: osInstance.getIpAddresses()){
+            ret.add(ipAddress);
+        }
+        em.close();
+        return ret;
+    }
+
+    public static List<NICard> getAllNICards(OSInstance osInstance){
+        EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+        osInstance = em.find(osInstance.getClass(), osInstance.getId());
+        List<NICard> ret = new ArrayList<NICard>();
+
+        for (NICard niCard: osInstance.getNiCards()){
+            ret.add(niCard);
+        }
+        em.close();
+        return ret;
+    }
 
     /**
      * Get all OS Instances from the db + select string

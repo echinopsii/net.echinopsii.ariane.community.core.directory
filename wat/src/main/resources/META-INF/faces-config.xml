@@ -96,7 +96,6 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
-
     <managed-bean>
         <managed-bean-name>ipAddressNewController</managed-bean-name>
         <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressNewController</managed-bean-class>
@@ -105,6 +104,17 @@
     <managed-bean>
         <managed-bean-name>ipAddressListController</managed-bean-name>
         <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressListController</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>niCardNewController</managed-bean-name>
+        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard.NICardNewController</managed-bean-class>
+        <managed-bean-scope>view</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>niCardsListController</managed-bean-name>
+        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard.NICardsListController</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
