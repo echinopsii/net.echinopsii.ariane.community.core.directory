@@ -199,11 +199,11 @@ public class RoutingArea implements Serializable
     }
 
     public void setMulticast(String multicast) {
-        this.multicast = new String(multicast);
+        this.multicast = multicast;
     }
 
     public RoutingArea setMulticastR(String multicast) {
-        this.multicast = new String(multicast);
+        this.multicast = multicast;
         return this;
     }
 
