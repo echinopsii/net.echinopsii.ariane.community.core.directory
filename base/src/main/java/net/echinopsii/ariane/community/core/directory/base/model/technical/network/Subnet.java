@@ -255,12 +255,12 @@ public class Subnet implements Serializable
     }
 
     public final static String SUBNET_MAPPING_PROPERTIES = "Network";
-    public final static String SUBNET_RARE_MAPPING_FIELD = "rarea";
-    public final static String SUBNET_MLTC_MAPPING_FIELD = "multicast";
-    public final static String SUBNET_TYPE_MAPPING_FIELD = "type";
-    public final static String SUBNET_NAME_MAPPING_FIELD = "lan";
-    public final static String SUBNET_IPAD_MAPPING_FIELD = "subnetip";
-    public final static String SUBNET_MASK_MAPPING_FIELD = "subnetmask";
+    public final static String SUBNET_RARE_MAPPING_FIELD = "raname";
+    public final static String SUBNET_MLTC_MAPPING_FIELD = "ramulticast";
+    public final static String SUBNET_TYPE_MAPPING_FIELD = "ratype";
+    public final static String SUBNET_NAME_MAPPING_FIELD = "sname";
+    public final static String SUBNET_IPAD_MAPPING_FIELD = "sip";
+    public final static String SUBNET_MASK_MAPPING_FIELD = "smask";
 
     public HashMap<String,Object> toMappingProperties() {
         HashMap<String,Object> ret = new HashMap<String,Object>();

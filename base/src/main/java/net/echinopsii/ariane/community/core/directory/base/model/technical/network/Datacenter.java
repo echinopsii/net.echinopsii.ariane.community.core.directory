@@ -295,7 +295,7 @@ public class Datacenter implements Serializable
     }
 
     public  final static String DC_MAPPING_PROPERTIES = "Datacenter";
-    private final static String DC_NAME_MAPPING_FIELD = "dc";
+    private final static String DC_NAME_MAPPING_FIELD = "pname";
     private final static String DC_ADDR_MAPPING_FIELD = "address";
     private final static String DC_TOWN_MAPPING_FIELD = "town";
     private final static String DC_CNTY_MAPPING_FIELD = "country";
