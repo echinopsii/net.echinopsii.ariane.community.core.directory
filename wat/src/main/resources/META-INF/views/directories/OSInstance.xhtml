@@ -464,13 +464,13 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new datacenter" widgetVar="dcCreateDialog"
+            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new location" widgetVar="dcCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="creatDCDialogForm">
                     <ui:insert name="createMulticastArea" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                    <p:commandButton value="Save this location" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
                                      update=":createSubnetDialogForm:subnetNewGrid,:createRareaDialogForm:rareaNewGrid,:osInstanceTableForm:osInstanceTableMessages"/>
                 </h:form>

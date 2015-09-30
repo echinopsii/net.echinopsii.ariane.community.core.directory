@@ -1,6 +1,6 @@
 /**
  * Directory wat
- * Directories Datacenter PrimeFaces Lazy Model
+ * Directories Location PrimeFaces Lazy Model
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter;
+package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location;
 
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
@@ -37,12 +37,12 @@ import java.util.*;
 /**
  * This class provide lazy loading stuff for our datacenter PrimeFaces datatable implementation
  */
-public class DatacenterLazyModel extends LazyDataModel<Datacenter> {
+public class LocationLazyModel extends LazyDataModel<Location> {
 
-    private static final Logger log = LoggerFactory.getLogger(DatacenterLazyModel.class);
+    private static final Logger log = LoggerFactory.getLogger(LocationLazyModel.class);
 
     private int              rowCount  ;
-    private List<Datacenter> pageItems ;
+    private List<Location> pageItems ;
 
     /**
      * Add search predicate to the JPA query
@@ -52,7 +52,7 @@ public class DatacenterLazyModel extends LazyDataModel<Datacenter> {
      * @param filters the provided filters
      * @return the generated JPA predicate
      */
-    private Predicate[] getSearchPredicates(EntityManager entityManager, Root<Datacenter> root, Map<String,String> filters) {
+    private Predicate[] getSearchPredicates(EntityManager entityManager, Root<Location> root, Map<String,String> filters) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         List<Predicate> predicatesList = new ArrayList<Predicate>();
 
@@ -81,17 +81,17 @@ public class DatacenterLazyModel extends LazyDataModel<Datacenter> {
 
         // Populate this.count
         CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
-        Root<Datacenter> root = countCriteria.from(Datacenter.class);
+        Root<Location> root = countCriteria.from(Location.class);
         countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(entityManager,root,filters));
         this.rowCount = (int) (long) entityManager.createQuery(countCriteria).getSingleResult();
 
         // Populate this.pageItems
-        CriteriaQuery<Datacenter> criteria = builder.createQuery(Datacenter.class);
-        root = criteria.from(Datacenter.class);
+        CriteriaQuery<Location> criteria = builder.createQuery(Location.class);
+        root = criteria.from(Location.class);
         criteria.select(root).where(getSearchPredicates(entityManager,root,filters));
         if (sortOrder!=null && sortField!=null)
             criteria.orderBy(sortOrder.toString().equals("DESCENDING") ? builder.desc(root.get(sortField)) : builder.asc(root.get(sortField)));
-        TypedQuery<Datacenter> query = entityManager.createQuery(criteria);
+        TypedQuery<Location> query = entityManager.createQuery(criteria);
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
@@ -105,24 +105,24 @@ public class DatacenterLazyModel extends LazyDataModel<Datacenter> {
      * @return datacenter object according to provided datacenter id
      */
     @Override
-    public Datacenter getRowData(String rowKey) {
-        for(Datacenter datacenter : pageItems) {
-            if(datacenter.getId().equals(rowKey))
-                return datacenter;
+    public Location getRowData(String rowKey) {
+        for(Location location : pageItems) {
+            if(location.getId().equals(rowKey))
+                return location;
         }
         return null;
     }
 
     /**
-     * Return the datacenter id assigned to a table row
+     * Return the location id assigned to a table row
      *
-     * @param datacenter the row datacenter
+     * @param location the row location
      *
-     * @return the datacenter id
+     * @return the location id
      */
     @Override
-    public Object getRowKey(Datacenter datacenter) {
-        return datacenter.getId();
+    public Object getRowKey(Location location) {
+        return location.getId();
     }
 
     /**
@@ -137,7 +137,7 @@ public class DatacenterLazyModel extends LazyDataModel<Datacenter> {
      * @return queried datacenters list
      */
     @Override
-    public List<Datacenter> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,String> filters) {
+    public List<Location> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,String> filters) {
         this.setPageSize(pageSize);
         paginate(first,sortField,sortOrder,filters);
         this.setRowCount(rowCount);

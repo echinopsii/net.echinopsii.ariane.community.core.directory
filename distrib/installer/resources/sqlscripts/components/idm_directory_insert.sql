@@ -5,7 +5,7 @@
 LOCK TABLES `resource` WRITE;
 INSERT IGNORE INTO `resource` (description, resourceName, version) VALUES
   ('Directory common IT network routing area','dirComITiNtwRarea',1),
-  ('Directory common IT network datacenter','dirComITiNtwDC',1),
+  ('Directory common IT network location','dirComITiNtwDC',1),
     ('Directory common IT network subnet','dirComITiNtwSubnet',1),
     ('Directory common IT network ipaddress','dirComITiNtwIPAddress',1),
     ('Directory common IT network interface card','dirComITiNtwNICard',1),
@@ -25,13 +25,13 @@ UNLOCK TABLES;
 
 LOCK TABLES `permission` WRITE,`resource` WRITE;
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can display Directory common IT network datacenter', 'dirComITiNtwDC:display', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
+SELECT 'can display Directory common IT network location', 'dirComITiNtwDC:display', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can create Directory common IT network datacenter', 'dirComITiNtwDC:create', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
+SELECT 'can create Directory common IT network location', 'dirComITiNtwDC:create', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can remove Directory common IT network datacenter', 'dirComITiNtwDC:remove', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
+SELECT 'can remove Directory common IT network location', 'dirComITiNtwDC:remove', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
-SELECT 'can update Directory common IT network datacenter', 'dirComITiNtwDC:update', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
+SELECT 'can update Directory common IT network location', 'dirComITiNtwDC:update', 1, id FROM resource WHERE resourceName='dirComITiNtwDC';
 
 INSERT IGNORE INTO `permission` (description, permissionName, version, resource_id)
 SELECT 'can display Directory common IT network routing area', 'dirComITiNtwRarea:display', 1, id FROM resource WHERE resourceName='dirComITiNtwRarea';

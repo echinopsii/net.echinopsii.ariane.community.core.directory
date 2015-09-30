@@ -202,7 +202,7 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                         addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                         addDisplayPermission("dirComITiNtwDC:display").addDisplayPermission("dirComITiNtwRarea:display");
             technicalTreeMenuEntity.addChildTreeMenuEntity(networkTreeMenuEntity);
-            networkTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("datacenterTreeID").setValue("Datacenter").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("arianeico-datacenter-ariane").
+            networkTreeMenuEntity.addChildTreeMenuEntity(new TreeMenuEntity().setId("datacenterTreeID").setValue("Location").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("arianeico-datacenter-ariane").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/datacenter.jsf").
                                                                               setDescription("Your datacenters definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                               addDisplayPermission("dirComITiNtwDC:display")).

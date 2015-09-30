@@ -13,10 +13,10 @@ CREATE TABLE IF NOT EXISTS  `company` (
 
 
 --
--- Table structure for table `datacenter`
+-- Table structure for table `location`
 --
 
-CREATE TABLE IF NOT EXISTS `datacenter` (
+CREATE TABLE IF NOT EXISTS `location` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `address` varchar(255) DEFAULT NULL,
   `country` varchar(255) DEFAULT NULL,
@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS `datacenter_routingArea` (
   `routingAreas_id` bigint(20) NOT NULL,
   PRIMARY KEY (`datacenters_id`,`routingAreas_id`),
   KEY `FK_4265wup5gxmnvhoyqij45r6jy` (`routingAreas_id`),
-  CONSTRAINT `FK_1nsal1wsgs28gt1eajihrcf00` FOREIGN KEY (`datacenters_id`) REFERENCES `datacenter` (`id`),
+  CONSTRAINT `FK_1nsal1wsgs28gt1eajihrcf00` FOREIGN KEY (`datacenters_id`) REFERENCES `location` (`id`),
   CONSTRAINT `FK_4265wup5gxmnvhoyqij45r6jy` FOREIGN KEY (`routingAreas_id`) REFERENCES `routingArea` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -241,7 +241,7 @@ CREATE TABLE IF NOT EXISTS `datacenter_subnet` (
   `subnets_id` bigint(20) NOT NULL,
   PRIMARY KEY (`datacenters_id`,`subnets_id`),
   KEY `FK_ox4s9k211m26hfxhgac07sxuf` (`subnets_id`),
-  CONSTRAINT `FK_teoerm0ymwvlbuq4mu3qkxbn3` FOREIGN KEY (`datacenters_id`) REFERENCES `datacenter` (`id`),
+  CONSTRAINT `FK_teoerm0ymwvlbuq4mu3qkxbn3` FOREIGN KEY (`datacenters_id`) REFERENCES `location` (`id`),
   CONSTRAINT `FK_ox4s9k211m26hfxhgac07sxuf` FOREIGN KEY (`subnets_id`) REFERENCES `subnet` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

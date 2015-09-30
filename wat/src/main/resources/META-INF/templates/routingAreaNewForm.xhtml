@@ -11,7 +11,7 @@
         <h:outputText value="Datacenters" styleClass="arianeDialogLabel"/>
         <h:panelGroup>
             <p:commandLink onclick="dcCreateDialog.show()">
-                <h:outputText value=" create new datacenter"/>
+                <h:outputText value=" create new location"/>
             </p:commandLink><br/>
             <p:selectManyMenu id="rAreaBasic" value="#{routingAreaNewController.datacentersToBind}" style="width:66%;height:100px">
                 <f:selectItems value="#{datacentersListController.getAll()}"  var="dc"

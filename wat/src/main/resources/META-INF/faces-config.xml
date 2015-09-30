@@ -76,12 +76,12 @@
 
     <managed-bean>
         <managed-bean-name>datacenterNewController</managed-bean-name>
-        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter.DatacenterNewController</managed-bean-class>
+        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location.LocationNewController</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
     <managed-bean>
         <managed-bean-name>datacentersListController</managed-bean-name>
-        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter.DatacentersListController</managed-bean-class>
+        <managed-bean-class>net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location.LocationsListController</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 

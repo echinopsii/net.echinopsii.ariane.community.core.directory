@@ -1,7 +1,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition>
     <h:panelGrid id="dcNewView" columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
         <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa arianeDialogPanelGrid-td" style="padding-bottom: 17%">
@@ -16,7 +17,12 @@
             <h:outputText value="Country" styleClass="arianeDialogLabel"/>
             <p:inputText id="newDCcountry" label="Country" required="true" value="#{datacenterNewController.country}" onblur="GetLocation()"/>
             <h:outputText value="Description" styleClass="arianeDialogLabel"/>
+            <h:selectOneMenu label="Select the location type" value="#{datacenterNewController.type}" style="width:68.5%">
+                <f:selectItems value="#{datacentersListController.getAllLocationTypesForSelector()}"  var="dcT"
+                               itemLabel="#{dcT}" itemValue="#{dcT}"/>
+            </h:selectOneMenu>
             <p:inputTextarea styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.description}"/>
+            <h:outputText value="Type" styleClass="arianeDialogLabel"/>
         </h:panelGrid>
         <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
             <h:panelGrid id="newDCgeoGmap" style="float:right;width:300px;height:300px"/>

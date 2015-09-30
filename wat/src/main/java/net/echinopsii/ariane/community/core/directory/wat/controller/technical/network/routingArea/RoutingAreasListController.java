@@ -19,11 +19,11 @@
 
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location.LocationsListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.LazyDataModel;
@@ -54,7 +54,7 @@ public class RoutingAreasListController implements Serializable {
     private RoutingArea[] selectedRareaList;
 
     private HashMap<Long,String>           addedDC    = new HashMap<Long, String>();
-    private HashMap<Long,List<Datacenter>> removedDCs = new HashMap<Long, List<Datacenter>>();
+    private HashMap<Long,List<Location>> removedDCs = new HashMap<Long, List<Location>>();
 
     private HashMap<Long,String>       addedSubnet    = new HashMap<Long, String>();
     private HashMap<Long,List<Subnet>> removedSubnets = new HashMap<Long, List<Subnet>>();
@@ -185,12 +185,12 @@ public class RoutingAreasListController implements Serializable {
     public void syncAddedDC(RoutingArea rarea) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
-            for (Datacenter dc: DatacentersListController.getAll()) {
+            for (Location dc: LocationsListController.getAll()) {
                 if (dc.getName().equals(this.addedDC.get(rarea.getId()))) {
                     em.getTransaction().begin();
                     rarea = em.find(rarea.getClass(), rarea.getId());
                     dc = em.find(dc.getClass(), dc.getId());
-                    rarea.getDatacenters().add(dc);
+                    rarea.getLocations().add(dc);
                     dc.getRoutingAreas().add(rarea);
                     em.flush();
                     em.getTransaction().commit();
@@ -215,11 +215,11 @@ public class RoutingAreasListController implements Serializable {
         }
     }
 
-    public HashMap<Long, List<Datacenter>> getRemovedDCs() {
+    public HashMap<Long, List<Location>> getRemovedDCs() {
         return removedDCs;
     }
 
-    public void setRemovedDCs(HashMap<Long, List<Datacenter>> removedDCs) {
+    public void setRemovedDCs(HashMap<Long, List<Location>> removedDCs) {
         this.removedDCs = removedDCs;
     }
 
@@ -233,10 +233,10 @@ public class RoutingAreasListController implements Serializable {
         try {
             em.getTransaction().begin();
             rarea = em.find(rarea.getClass(), rarea.getId());
-            List<Datacenter> dcs2beRM = this.removedDCs.get(rarea.getId());
-            for (Datacenter dc2beRM : dcs2beRM) {
+            List<Location> dcs2beRM = this.removedDCs.get(rarea.getId());
+            for (Location dc2beRM : dcs2beRM) {
                 dc2beRM = em.find(dc2beRM.getClass(), dc2beRM.getId());
-                rarea.getDatacenters().remove(dc2beRM);
+                rarea.getLocations().remove(dc2beRM);
                 dc2beRM.getRoutingAreas().remove(rarea);
             }
             em.flush();
@@ -277,7 +277,7 @@ public class RoutingAreasListController implements Serializable {
             removedSubnets.remove(eventRarea.getId());
         } else {
             addedDC.put(eventRarea.getId(), "");
-            removedDCs.put(eventRarea.getId(), new ArrayList<Datacenter>());
+            removedDCs.put(eventRarea.getId(), new ArrayList<Location>());
             addedSubnet.put(eventRarea.getId(), "");
             removedSubnets.put(eventRarea.getId(), new ArrayList<Subnet>());
         }
@@ -328,7 +328,7 @@ public class RoutingAreasListController implements Serializable {
                 em.getTransaction().begin();
                 for (Subnet subnet : rarea2BeRemoved.getSubnets())
                     subnet.setRarea(null);
-                for (Datacenter dc : rarea2BeRemoved.getDatacenters())
+                for (Location dc : rarea2BeRemoved.getLocations())
                     dc.getRoutingAreas().remove(rarea2BeRemoved);
                 em.remove(rarea2BeRemoved);
                 em.flush();

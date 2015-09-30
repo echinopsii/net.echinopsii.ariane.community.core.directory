@@ -99,7 +99,7 @@
 
                             <h:outputText value="Datacenters : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(subnet,'datacenters')}" var="dc" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{dc.id}"
+                                <p:dataTable value="#{directoryViewUtils.asList(subnet,'locations')}" var="dc" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{dc.id}"
                                              rows="5" paginator="true" selection="#{subnetsListController.removedDCs[subnet.id]}" selectionMode="multiple">
                                     <p:column headerText="Name" sortBy="#{dc.name}" filterBy="#{dc.name}">
                                         <h:outputText id="dcitemName" value="#{dc.name}"/>
@@ -115,7 +115,7 @@
                                     </p:column>
                                     <c:if test="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
                                         <f:facet name="footer">
-                                            <p:inplace label="Select datacenter to bind" effectSpeed="fast" editor="true">
+                                            <p:inplace label="Select location to bind" effectSpeed="fast" editor="true">
                                                 <h:selectOneMenu value="#{subnetsListController.addedDC[subnet.id]}">
                                                     <f:selectItems value="#{datacentersListController.getAll()}" var="dc_"
                                                                    itemLabel="#{dc_.name}" itemValue="#{dc_.name}"/>
@@ -123,7 +123,7 @@
                                                 <p:ajax event="save" listener="#{subnetsListController.syncAddedDC(subnet)}"
                                                         update="@form,:subnetTableForm:subnetTableMessages"/>
                                             </p:inplace>
-                                            <p:commandButton value="Unbind selected datacenter" icon="ui-icon-closethick"
+                                            <p:commandButton value="Unbind selected location" icon="ui-icon-closethick"
                                                              process="@form" actionListener="#{subnetsListController.syncRemovedDCs(subnet)}"
                                                              update="@form,:subnetTableForm:subnetTableMessages"/>
                                         </f:facet>
@@ -202,7 +202,7 @@
                             <h:outputText value="#{selectedSubnet.name}"/>
 
                             <h:outputText value="Datacenters : " styleClass="arianeDialogLabel"/>
-                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'datacenters')}" var="dcR"
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'locations')}" var="dcR"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
                                     <h:outputText id="dc2ritemName" value="#{dcR.name}"/>
@@ -275,13 +275,13 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new datacenter" widgetVar="dcCreateDialog"
+            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new location" widgetVar="dcCreateDialog"
                       width="700" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createDCDialogForm">
                     <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                    <p:commandButton value="Save this location" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
                                      update=":createSubnetDialogForm:subnetNewGrid,:subnetTableForm:subnetTableMessages"/>
                 </h:form>

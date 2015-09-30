@@ -18,14 +18,12 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet;
 
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location.LocationsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea.RoutingAreasListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import org.primefaces.event.ToggleEvent;
@@ -60,7 +58,7 @@ public class SubnetsListController implements Serializable {
     private HashMap<Long, String> changedRarea = new HashMap<Long, String>();
 
     private HashMap<Long,String>           addedDC    = new HashMap<Long, String>();
-    private HashMap<Long,List<Datacenter>> removedDCs = new HashMap<Long, List<Datacenter>>();
+    private HashMap<Long,List<Location>> removedDCs = new HashMap<Long, List<Location>>();
 
     private HashMap<Long,String>           addedOSI    = new HashMap<Long, String>();
     private HashMap<Long,List<OSInstance>> removedOSIs = new HashMap<Long, List<OSInstance>>();
@@ -160,12 +158,12 @@ public class SubnetsListController implements Serializable {
     public void syncAddedDC(Subnet subnet) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
-            for (Datacenter dc: DatacentersListController.getAll()) {
+            for (Location dc: LocationsListController.getAll()) {
                 if (dc.getName().equals(this.addedDC.get(subnet.getId()))) {
                     em.getTransaction().begin();
                     dc = em.find(dc.getClass(), dc.getId());
                     subnet = em.find(subnet.getClass(), subnet.getId());
-                    subnet.getDatacenters().add(dc);
+                    subnet.getLocations().add(dc);
                     dc.getSubnets().add(subnet);
                     em.flush();
                     em.getTransaction().commit();
@@ -190,11 +188,11 @@ public class SubnetsListController implements Serializable {
         }
     }
 
-    public HashMap<Long, List<Datacenter>> getRemovedDCs() {
+    public HashMap<Long, List<Location>> getRemovedDCs() {
         return removedDCs;
     }
 
-    public void setRemovedDCs(HashMap<Long, List<Datacenter>> removedDCs) {
+    public void setRemovedDCs(HashMap<Long, List<Location>> removedDCs) {
         this.removedDCs = removedDCs;
     }
 
@@ -208,11 +206,11 @@ public class SubnetsListController implements Serializable {
         try {
             em.getTransaction().begin();
             subnet = em.find(subnet.getClass(), subnet.getId());
-            List<Datacenter> dcs2beRM = this.removedDCs.get(subnet.getId());
+            List<Location> dcs2beRM = this.removedDCs.get(subnet.getId());
             log.debug("syncRemovedDCs:{} ", new Object[]{dcs2beRM});
-            for (Datacenter dc2beRM : dcs2beRM) {
+            for (Location dc2beRM : dcs2beRM) {
                 dc2beRM = em.find(dc2beRM.getClass(),dc2beRM.getId());
-                subnet.getDatacenters().remove(dc2beRM);
+                subnet.getLocations().remove(dc2beRM);
                 dc2beRM.getSubnets().remove(subnet);
             }
             em.flush();
@@ -347,7 +345,7 @@ public class SubnetsListController implements Serializable {
             changedSubnetType.put(eventSubnet.getId(), "");
             changedRarea.put(eventSubnet.getId(), "");
             addedDC.put(eventSubnet.getId(), "");
-            removedDCs.put(eventSubnet.getId(), new ArrayList<Datacenter>());
+            removedDCs.put(eventSubnet.getId(), new ArrayList<Location>());
             addedOSI.put(eventSubnet.getId(), "");
             removedOSIs.put(eventSubnet.getId(),new ArrayList<OSInstance>());
         }
@@ -396,7 +394,7 @@ public class SubnetsListController implements Serializable {
                 subnet2BeRemoved = em.find(subnet2BeRemoved.getClass(), subnet2BeRemoved.getId());
                 if (subnet2BeRemoved.getRarea()!=null)
                     subnet2BeRemoved.getRarea().getSubnets().remove(subnet2BeRemoved);
-                for (Datacenter dc : subnet2BeRemoved.getDatacenters())
+                for (Location dc : subnet2BeRemoved.getLocations())
                     dc.getSubnets().remove(subnet2BeRemoved);
                 em.remove(subnet2BeRemoved);
                 em.flush();

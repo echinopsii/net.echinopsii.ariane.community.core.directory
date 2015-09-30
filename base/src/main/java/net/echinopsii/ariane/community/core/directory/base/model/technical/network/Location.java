@@ -27,17 +27,31 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @XmlRootElement
-@Table(name="datacenter", uniqueConstraints = @UniqueConstraint(columnNames = {"dcName"}))
-public class Datacenter implements Serializable
+@Table(name="location", uniqueConstraints = @UniqueConstraint(columnNames = {"Name"}))
+public class Location implements Serializable
 {
 
-    private static final Logger log = LoggerFactory.getLogger(Datacenter.class);
+    private static final Logger log = LoggerFactory.getLogger(Location.class);
+
+    @Transient
+    public static String LOCATION_DATACENTER_TYPE = "DATACENTER";
+    @Transient
+    public static String LOCATION_OFFICE_TYPE = "OFFICE";
+
+    public static boolean isValidType(String type) {
+        return (type!=null && (type.equals(LOCATION_DATACENTER_TYPE) || type.equals(LOCATION_OFFICE_TYPE) ));
+    }
+
+    public static List<String> getTypeList() {
+        ArrayList<String> ret = new ArrayList<>();
+        ret.add(LOCATION_DATACENTER_TYPE);
+        ret.add(LOCATION_OFFICE_TYPE);
+        return ret;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -48,7 +62,7 @@ public class Datacenter implements Serializable
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="dcName",unique=true,nullable=false)
+    @Column(name="Name",unique=true,nullable=false)
     @NotNull
     private String name;
 
@@ -79,6 +93,10 @@ public class Datacenter implements Serializable
     @Column
     private String description;
 
+    @Column(nullable=false)
+    @NotNull
+    private String type;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<Subnet> subnets = new HashSet<Subnet>();
@@ -86,6 +104,14 @@ public class Datacenter implements Serializable
     @ManyToMany(fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<RoutingArea> routingAreas = new HashSet<RoutingArea>();
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public Long getId() {
         return this.id;
@@ -95,7 +121,7 @@ public class Datacenter implements Serializable
         this.id = id;
     }
 
-    public Datacenter setIdR(final Long id) {
+    public Location setIdR(final Long id) {
         this.id = id;
         return this;
     }
@@ -108,7 +134,7 @@ public class Datacenter implements Serializable
         this.version = version;
     }
 
-    public Datacenter setVersionR(final int version) {
+    public Location setVersionR(final int version) {
         this.version = version;
         return this;
     }
@@ -125,7 +151,7 @@ public class Datacenter implements Serializable
             return false;
         }
         if (id != null) {
-            return id.equals(((Datacenter) that).id);
+            return id.equals(((Location) that).id);
         }
         return super.equals(that);
     }
@@ -142,7 +168,7 @@ public class Datacenter implements Serializable
         return this.name;
     }
 
-    public Datacenter setNameR(final String name) {
+    public Location setNameR(final String name) {
         this.name = name;
         return this;
     }
@@ -160,7 +186,7 @@ public class Datacenter implements Serializable
         this.address = address;
     }
 
-    public Datacenter setAddressR(final String address) {
+    public Location setAddressR(final String address) {
         this.address = address;
         return this;
     }
@@ -173,7 +199,7 @@ public class Datacenter implements Serializable
         this.zipCode = zipCode;
     }
 
-    public Datacenter setZipCodeR(Long zipCode) {
+    public Location setZipCodeR(Long zipCode) {
         this.zipCode = zipCode;
         return this;
     }
@@ -186,7 +212,7 @@ public class Datacenter implements Serializable
         this.town = town;
     }
 
-    public Datacenter setTownR(final String town) {
+    public Location setTownR(final String town) {
         this.town = town;
         return this;
     }
@@ -199,7 +225,7 @@ public class Datacenter implements Serializable
         this.country = country;
     }
 
-    public Datacenter setCountryR(final String country) {
+    public Location setCountryR(final String country) {
         this.country = country;
         return this;
     }
@@ -212,7 +238,7 @@ public class Datacenter implements Serializable
         this.gpsLatitude = gpsLatitude;
     }
 
-    public Datacenter setGpsLatitudeR(final double gpsLatitude) {
+    public Location setGpsLatitudeR(final double gpsLatitude) {
         this.gpsLatitude = gpsLatitude;
         return this;
     }
@@ -225,7 +251,7 @@ public class Datacenter implements Serializable
         this.gpsLongitude = gpsLongitude;
     }
 
-    public Datacenter setGpsLongitudeR(final double gpsLongitude) {
+    public Location setGpsLongitudeR(final double gpsLongitude) {
         this.gpsLongitude = gpsLongitude;
         return this;
     }
@@ -238,7 +264,7 @@ public class Datacenter implements Serializable
         this.description = description;
     }
 
-    public Datacenter setDescriptionR(final String description) {
+    public Location setDescriptionR(final String description) {
         this.description = description;
         return this;
     }
@@ -269,7 +295,7 @@ public class Datacenter implements Serializable
         this.subnets = subnets;
     }
 
-    public Datacenter setSubnetsR(final Set<Subnet> subnets) {
+    public Location setSubnetsR(final Set<Subnet> subnets) {
         this.subnets = subnets;
         return this;
     }
@@ -282,19 +308,19 @@ public class Datacenter implements Serializable
         this.routingAreas = routingAreas;
     }
 
-    public Datacenter setMulticastAreasR(final Set<RoutingArea> routingAreas) {
+    public Location setMulticastAreasR(final Set<RoutingArea> routingAreas) {
         this.routingAreas = routingAreas;
         return this;
     }
 
     @Override
-    public Datacenter clone() throws CloneNotSupportedException {
-        return new Datacenter().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setAddressR(this.address).setZipCodeR(this.zipCode).setTownR(this.town).
+    public Location clone() throws CloneNotSupportedException {
+        return new Location().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setAddressR(this.address).setZipCodeR(this.zipCode).setTownR(this.town).
                                 setCountryR(this.country).setDescriptionR(this.description).setGpsLatitudeR(this.gpsLatitude).setGpsLongitudeR(this.gpsLongitude).
                                 setSubnetsR(new HashSet<Subnet>(this.subnets)).setMulticastAreasR(new HashSet<RoutingArea>(this.routingAreas));
     }
 
-    public  final static String DC_MAPPING_PROPERTIES = "Datacenter";
+    public  final static String DC_MAPPING_PROPERTIES = "Location";
     private final static String DC_NAME_MAPPING_FIELD = "pname";
     private final static String DC_ADDR_MAPPING_FIELD = "address";
     private final static String DC_TOWN_MAPPING_FIELD = "town";

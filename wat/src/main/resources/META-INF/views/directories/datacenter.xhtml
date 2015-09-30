@@ -13,12 +13,12 @@
 
             <h:form id="datacenterTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="dcTableMessages" showDetail="true" />
-                <p:dataTable id="datacenterTable" styleClass="arianeTableRow" var="datacenter" value="#{datacentersListController.lazyModel}"
-                             selectionMode="multiple" selection="#{datacentersListController.selectedDCList}" rowKey="#{datacenter.id}"
+                <p:dataTable id="datacenterTable" styleClass="arianeTableRow" var="location" value="#{datacentersListController.lazyModel}"
+                             selectionMode="multiple" selection="#{datacentersListController.selectedDCList}" rowKey="#{location.id}"
                              paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                              rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
                     <f:facet name="header">
-                        Datacenters
+                        Locations
                     </f:facet>
 
                     <p:ajax event="rowToggle" listener="#{datacentersListController.onRowToggle}" />
@@ -27,28 +27,28 @@
                         <p:rowToggler/>
                     </p:column>
 
-                    <p:column headerText="Name" sortBy="#{datacenter.name}" filterBy="#{datacenter.name}">
-                        <h:outputText value="#{datacenter.name}" />
+                    <p:column headerText="Name" sortBy="#{location.name}" filterBy="#{location.name}">
+                        <h:outputText value="#{location.name}" />
                     </p:column>
 
-                    <p:column headerText="Description" sortBy="#{datacenter.description}" filterBy="#{datacenter.description}">
-                        <h:outputText value="#{datacenter.description}" />
+                    <p:column headerText="Description" sortBy="#{location.description}" filterBy="#{location.description}">
+                        <h:outputText value="#{location.description}" />
                     </p:column>
 
-                    <p:column headerText="Address" sortBy="#{datacenter.address}" filterBy="#{datacenter.address}">
-                        <h:outputText value="#{datacenter.address}" />
+                    <p:column headerText="Address" sortBy="#{location.address}" filterBy="#{location.address}">
+                        <h:outputText value="#{location.address}" />
                     </p:column>
 
-                    <p:column headerText="Zip Code" sortBy="#{datacenter.zipCode}">
-                        <h:outputText value="#{datacenter.zipCode}" />
+                    <p:column headerText="Zip Code" sortBy="#{location.zipCode}">
+                        <h:outputText value="#{location.zipCode}" />
                     </p:column>
 
-                    <p:column headerText="Town" sortBy="#{datacenter.town}" filterBy="#{datacenter.town}">
-                        <h:outputText value="#{datacenter.town}" />
+                    <p:column headerText="Town" sortBy="#{location.town}" filterBy="#{location.town}">
+                        <h:outputText value="#{location.town}" />
                     </p:column>
 
-                    <p:column headerText="Country" sortBy="#{datacenter.country}" filterBy="#{datacenter.country}">
-                        <h:outputText value="#{datacenter.country}" />
+                    <p:column headerText="Country" sortBy="#{location.country}" filterBy="#{location.country}">
+                        <h:outputText value="#{location.country}" />
                     </p:column>
 
                     <p:rowExpansion>
@@ -56,79 +56,79 @@
                             <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{datacenter.name}"/>
-                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                    <p:inputText required="true" label="text" value="#{location.name}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(location)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.name}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{location.name}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputTextarea required="true" label="text" value="#{datacenter.description}"/>
-                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                    <p:inputTextarea required="true" label="text" value="#{location.description}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(location)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.description}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{location.description}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Address : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputTextarea required="true" label="text" value="#{datacenter.address}"/>
-                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                    <p:inputTextarea required="true" label="text" value="#{location.address}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(location)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.address}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{location.address}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Zip Code : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{datacenter.zipCode}"/>
-                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                    <p:inputText required="true" label="text" value="#{location.zipCode}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(location)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.zipCode}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{location.zipCode}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Town : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{datacenter.town}"/>
-                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                    <p:inputText required="true" label="text" value="#{location.town}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(location)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.town}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{location.town}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Country : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{datacenter.country}"/>
-                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                    <p:inputText required="true" label="text" value="#{location.country}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(location)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.country}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{location.country}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="GPS latitude : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{datacenter.gpsLatitude}"/>
-                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                    <p:inputText required="true" label="text" value="#{location.gpsLatitude}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(location)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.gpsLatitude}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{location.gpsLatitude}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="GPS longitude : " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                 <p:inplace editor="true">
-                                    <p:inputText required="true" label="text" value="#{datacenter.gpsLongitude}"/>
-                                    <p:ajax event="save" listener="#{datacentersListController.update(datacenter)}" update="@form,:datacenterTableForm:dcTableMessages" />
+                                    <p:inputText required="true" label="text" value="#{location.gpsLongitude}"/>
+                                    <p:ajax event="save" listener="#{datacentersListController.update(location)}" update="@form,:datacenterTableForm:dcTableMessages" />
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{datacenter.gpsLongitude}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
+                            <h:outputText value="#{location.gpsLongitude}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwDC:update'))}"/>
 
                             <h:outputText value="Routing Areas : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(datacenter,'routingAreas')}" var="_rarea" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{_rarea.id}"
-                                             rows="5" paginator="true" selection="#{datacentersListController.removedRareas[datacenter.id]}" selectionMode="multiple">
+                                <p:dataTable value="#{directoryViewUtils.asList(location,'routingAreas')}" var="_rarea" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{_rarea.id}"
+                                             rows="5" paginator="true" selection="#{datacentersListController.removedRareas[location.id]}" selectionMode="multiple">
                                     <p:column headerText="Name" sortBy="#{_rarea.name}" filterBy="#{_rarea.name}">
                                         <h:outputText id="mareaName" value="#{_rarea.name}"/>
                                     </p:column>
@@ -138,15 +138,15 @@
                                     <c:if test="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select routing area to bind" effectSpeed="fast" editor="true">
-                                                <h:selectOneMenu value="#{datacentersListController.addedRArea[datacenter.id]}">
+                                                <h:selectOneMenu value="#{datacentersListController.addedRArea[location.id]}">
                                                     <f:selectItems value="#{routingAreasListController.getAll()}" var="rarea_"
                                                                    itemLabel="#{rarea_.name}" itemValue="#{rarea_.name}"/>
                                                 </h:selectOneMenu>
-                                                <p:ajax event="save" listener="#{datacentersListController.syncAddedRArea(datacenter)}"
+                                                <p:ajax event="save" listener="#{datacentersListController.syncAddedRArea(location)}"
                                                         update="@form,:datacenterTableForm:dcTableMessages"/>
                                             </p:inplace>
                                             <p:commandButton value="Unbind selected routing area" icon="ui-icon-closethick"
-                                                             process="@form" actionListener="#{datacentersListController.syncRemovedRAreas(datacenter)}"
+                                                             process="@form" actionListener="#{datacentersListController.syncRemovedRAreas(location)}"
                                                              update="@form,:datacenterTableForm:dcTableMessages"/>
                                         </f:facet>
                                     </c:if>
@@ -156,8 +156,8 @@
 
                             <h:outputText value="Subnets : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(datacenter,'subnets')}" var="_subnet" styleClass="ui-widget-content grid" rowKey="#{_subnet.id}"
-                                             rows="5" paginator="true" selection="#{datacentersListController.removedSubnets[datacenter.id]}" selectionMode="multiple">
+                                <p:dataTable value="#{directoryViewUtils.asList(location,'subnets')}" var="_subnet" styleClass="ui-widget-content grid" rowKey="#{_subnet.id}"
+                                             rows="5" paginator="true" selection="#{datacentersListController.removedSubnets[location.id]}" selectionMode="multiple">
                                     <p:column headerText="Name" sortBy="#{_subnet.name}" filterBy="#{_subnet.name}">
                                         <h:outputText id="subnetName" value="#{_subnet.name}"/>
                                     </p:column>
@@ -170,15 +170,15 @@
                                     <c:if test="#{arianeidm:hasPermission('dirComITiNtwDC:update')}">
                                         <f:facet name="footer">
                                             <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
-                                                <h:selectOneMenu value="#{datacentersListController.addedSubnet[datacenter.id]}">
+                                                <h:selectOneMenu value="#{datacentersListController.addedSubnet[location.id]}">
                                                     <f:selectItems value="#{subnetsListController.getAll()}" var="subnet_"
                                                                    itemLabel="#{subnet_.name}" itemValue="#{subnet_.name}"/>
                                                 </h:selectOneMenu>
-                                                <p:ajax event="save" listener="#{datacentersListController.syncAddedSubnet(datacenter)}"
+                                                <p:ajax event="save" listener="#{datacentersListController.syncAddedSubnet(location)}"
                                                         update="@form,:datacenterTableForm:dcTableMessages"/>
                                             </p:inplace>
                                             <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
-                                                             process="@form" actionListener="#{datacentersListController.syncRemovedSubnets(datacenter)}"
+                                                             process="@form" actionListener="#{datacentersListController.syncRemovedSubnets(location)}"
                                                              update="@form,:datacenterTableForm:dcTableMessages"/>
                                         </f:facet>
                                     </c:if>
@@ -187,8 +187,8 @@
                         </h:panelGrid>
                     </p:rowExpansion>
                     <f:facet name="footer">
-                        <p:commandButton value="Create datacenter" icon="ui-icon-disk" onclick="dcCreateDialog.show()"  rendered="#{arianeidm:hasPermission('dirComITiNtwDC:create')}"/>
-                        <p:commandButton value="Remove selected datacenter" icon="ui-icon-closethick" onclick="dcRemoveDialog.show()"
+                        <p:commandButton value="Create location" icon="ui-icon-disk" onclick="dcCreateDialog.show()"  rendered="#{arianeidm:hasPermission('dirComITiNtwDC:create')}"/>
+                        <p:commandButton value="Remove selected location" icon="ui-icon-closethick" onclick="dcRemoveDialog.show()"
                                          update=":removeDCDialogForm:display" rendered="#{arianeidm:hasPermission('dirComITiNtwDC:remove')}"/>
                         <p:commandButton value="Refresh table" id="dcUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
                                          update=":datacenterTableForm:datacenterTable"/>
@@ -199,7 +199,7 @@
             <p:dialog styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="dcRemoveDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="removeDCDialogForm">
-                    <h:outputText value="Are you sure you want delete following datacenter ?" styleClass="arianeDialogLabel text-marginForMessage"/><br/>
+                    <h:outputText value="Are you sure you want delete following location ?" styleClass="arianeDialogLabel text-marginForMessage"/><br/>
                     <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{datacentersListController.delete}" oncomplete="dcRemoveDialog.hide();"
                                      update=":datacenterTableForm:datacenterTable,:datacenterTableForm:dcTableMessages"/>
@@ -242,13 +242,13 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new datacenter" widgetVar="dcCreateDialog"
+            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new location" widgetVar="dcCreateDialog"
                       width="700" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createDCDialogForm">
                     <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                    <p:commandButton value="Save this location" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
                                      update=":datacenterTableForm:datacenterTable,:datacenterTableForm:dcTableMessages"/>
                 </h:form>

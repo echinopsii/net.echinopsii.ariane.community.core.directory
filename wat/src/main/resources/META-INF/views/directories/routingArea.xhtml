@@ -90,7 +90,7 @@
 
                             <h:outputText value="Datacenters : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(rarea,'datacenters')}" var="dc" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{dc.id}"
+                                <p:dataTable value="#{directoryViewUtils.asList(rarea,'locations')}" var="dc" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{dc.id}"
                                              rows="5" paginator="true" selection="#{routingAreasListController.removedDCs[rarea.id]}" selectionMode="multiple">
                                     <p:column headerText="Name" sortBy="#{dc.name}" filterBy="#{dc.name}">
                                         <h:outputText id="dcName" value="#{dc.name}"/>
@@ -185,7 +185,7 @@
                             <h:outputText value="#{selectedRarea.name}"/>
 
                             <h:outputText value="Datacenters : " styleClass="arianeDialogLabel"/>
-                            <p:dataTable  value="#{directoryViewUtils.asList(selectedRarea,'datacenters')}" var="_item"
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedRarea,'locations')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
                                     <h:outputText id="rdcName" value="#{_item.name}"/>
@@ -235,13 +235,13 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new datacenter" widgetVar="dcCreateDialog"
+            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new location" widgetVar="dcCreateDialog"
                       width="700" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createDCDialogForm">
                     <ui:insert name="createDatacenter" >
                         <ui:include src="/templates/dcNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                    <p:commandButton value="Save this location" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
                                      actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
                                      update=":createRareaDialogForm:rareaNewGrid,:rareaTableForm:rareaTableMessages"/>
                 </h:form>

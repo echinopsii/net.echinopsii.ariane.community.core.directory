@@ -1,6 +1,6 @@
 /**
  * Directory wat
- * Directories Datacenter Create Controller
+ * Directories Location Create Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter;
+package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,15 +33,15 @@ import javax.faces.component.UIComponent;
 /**
  * This class provide stuff to create and save a new datacenter from the UI form
  */
-public class DatacenterNewController implements Serializable {
+public class LocationNewController implements Serializable {
 
 
     private UIComponent warningMsg;
-    public DatacenterNewController(){
+    public LocationNewController(){
         FacesContext.getCurrentInstance().addMessage("warningMsg", new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning! Unable to reach google maps services", ""));
     }
     private static final long serialVersionUID = 1L;
-    private static final Logger log = LoggerFactory.getLogger(DatacentersListController.class);
+    private static final Logger log = LoggerFactory.getLogger(LocationsListController.class);
 
     private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
@@ -59,6 +59,15 @@ public class DatacenterNewController implements Serializable {
     private String country;
     private double gpsLatitude;
     private double gpsLongitude;
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getName() {
         return name;
@@ -127,31 +136,32 @@ public class DatacenterNewController implements Serializable {
      * save a new datacenter thanks data provided through UI form
      */
     public void save() {
-        Datacenter newDatacenter = new Datacenter();
-        newDatacenter.setName(name);
-        newDatacenter.setDescription(description);
-        newDatacenter.setAddress(address);
-        newDatacenter.setZipCode(zipCode);
-        newDatacenter.setTown(town);
-        newDatacenter.setCountry(country);
-        newDatacenter.setGpsLatitudeR(gpsLatitude);
-        newDatacenter.setGpsLongitude(gpsLongitude);
+        Location newLocation = new Location();
+        newLocation.setName(name);
+        newLocation.setDescription(description);
+        newLocation.setAddress(address);
+        newLocation.setZipCode(zipCode);
+        newLocation.setTown(town);
+        newLocation.setCountry(country);
+        newLocation.setGpsLatitudeR(gpsLatitude);
+        newLocation.setGpsLongitude(gpsLongitude);
+        newLocation.setType(type);
 
         try {
             em.getTransaction().begin();
-            em.persist(newDatacenter);
+            em.persist(newLocation);
             em.flush();
             em.getTransaction().commit();
             log.debug("Save new datacenter {} !", new Object[]{name});
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                       "Datacenter created successfully !",
-                                                       "Datacenter name : " + newDatacenter.getName());
+                                                       "Location created successfully !",
+                                                       "Location name : " + newLocation.getName());
             FacesContext.getCurrentInstance().addMessage(null, msg);
         } catch (Throwable t) {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while creating datacenter " + newDatacenter.getName() + " !",
+                                                       "Throwable raised while creating datacenter " + newLocation.getName() + " !",
                                                        "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
