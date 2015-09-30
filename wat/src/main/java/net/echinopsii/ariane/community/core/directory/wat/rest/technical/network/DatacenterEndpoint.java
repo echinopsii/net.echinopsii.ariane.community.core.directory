@@ -1,6 +1,6 @@
 /**
  * Directory wat
- * Datacenter REST endpoint
+ * Location REST endpoint
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
@@ -50,7 +50,7 @@ public class DatacenterEndpoint {
     private static final Logger log = LoggerFactory.getLogger(DatacenterEndpoint.class);
     private EntityManager em;
 
-    public static Response datacenterToJSON(Datacenter entity) {
+    public static Response datacenterToJSON(Location entity) {
         Response ret = null;
         String result;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -67,10 +67,10 @@ public class DatacenterEndpoint {
         return ret;
     }
 
-    public static Datacenter findDatacenterById(EntityManager em, long id) {
-        TypedQuery<Datacenter> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas WHERE d.id = :entityId ORDER BY d.id", Datacenter.class);
+    public static Location findDatacenterById(EntityManager em, long id) {
+        TypedQuery<Location> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas WHERE d.id = :entityId ORDER BY d.id", Location.class);
         findByIdQuery.setParameter("entityId", id);
-        Datacenter entity;
+        Location entity;
         try {
             entity = findByIdQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -79,10 +79,10 @@ public class DatacenterEndpoint {
         return entity;
     }
 
-    public static Datacenter findDatacenterByName(EntityManager em, String name) {
-        TypedQuery<Datacenter> findByNameQuery = em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas WHERE d.name = :entityName ORDER BY d.name", Datacenter.class);
+    public static Location findDatacenterByName(EntityManager em, String name) {
+        TypedQuery<Location> findByNameQuery = em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas WHERE d.name = :entityName ORDER BY d.name", Location.class);
         findByNameQuery.setParameter("entityName", name);
-        Datacenter entity;
+        Location entity;
         try {
             entity = findByNameQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -92,13 +92,13 @@ public class DatacenterEndpoint {
     }
 
     public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyDatacenter jsonFriendlyDatacenter) {
-        Datacenter entity = null;
+        Location entity = null;
         CommonRestResponse commonRestResponse = new CommonRestResponse();
 
         if(jsonFriendlyDatacenter.getDatacenterID() !=0)
             entity = findDatacenterById(em, jsonFriendlyDatacenter.getDatacenterID());
         if(entity == null && jsonFriendlyDatacenter.getDatacenterID()!=0){
-            commonRestResponse.setErrorMessage("Request Error : provided Datacenter ID " + jsonFriendlyDatacenter.getDatacenterID() +" was not found.");
+            commonRestResponse.setErrorMessage("Request Error : provided Location ID " + jsonFriendlyDatacenter.getDatacenterID() +" was not found.");
             return commonRestResponse;
         }
         if(entity == null){
@@ -133,7 +133,7 @@ public class DatacenterEndpoint {
                     for (RoutingArea routingArea : entity.getRoutingAreas()) {
                         if (!jsonFriendlyDatacenter.getDatacenterRoutingAreasID().contains(routingArea.getId())) {
                             entity.getRoutingAreas().remove(routingArea);
-                            routingArea.getDatacenters().remove(entity);
+                            routingArea.getLocations().remove(entity);
                         }
                     }
                     for (Long routingId : jsonFriendlyDatacenter.getDatacenterRoutingAreasID()) {
@@ -141,7 +141,7 @@ public class DatacenterEndpoint {
                         if (routingArea != null) {
                             if (!entity.getRoutingAreas().contains(routingArea)) {
                                 entity.getRoutingAreas().add(routingArea);
-                                routingArea.getDatacenters().add(entity);
+                                routingArea.getLocations().add(entity);
                             }
                         } else {
                             commonRestResponse.setErrorMessage("Fail to update Datacenters. Reason : provided RoutingArea ID " + routingId +" was not found.");
@@ -151,7 +151,7 @@ public class DatacenterEndpoint {
                 } else {
                     for (RoutingArea routingArea : entity.getRoutingAreas()) {
                         entity.getRoutingAreas().remove(routingArea);
-                        routingArea.getDatacenters().remove(entity);
+                        routingArea.getLocations().remove(entity);
                     }
                 }
             }
@@ -160,7 +160,7 @@ public class DatacenterEndpoint {
                     for (Subnet subnet: entity.getSubnets()) {
                         if (!jsonFriendlyDatacenter.getDatacenterSubnetsID().contains(subnet.getId())) {
                             entity.getSubnets().remove(subnet);
-                            subnet.getDatacenters().remove(entity);
+                            subnet.getLocations().remove(entity);
                         }
                     }
                     for (Long subnetId : jsonFriendlyDatacenter.getDatacenterSubnetsID()) {
@@ -168,7 +168,7 @@ public class DatacenterEndpoint {
                         if (subnet != null) {
                             if (!entity.getSubnets().contains(subnet)) {
                                 entity.getSubnets().add(subnet);
-                                subnet.getDatacenters().add(entity);
+                                subnet.getLocations().add(entity);
                             }
                         } else {
                             commonRestResponse.setErrorMessage("Fail to update Datacenters. Reason : provided Subnet ID " + subnetId +" was not found.");
@@ -178,13 +178,13 @@ public class DatacenterEndpoint {
                 } else {
                     for (Subnet subnet : entity.getSubnets()) {
                         entity.getSubnets().remove(subnet);
-                        subnet.getDatacenters().remove(entity);
+                        subnet.getLocations().remove(entity);
                     }
                 }
             }
             commonRestResponse.setDeserializedObject(entity);
         } else {
-            entity = new Datacenter();
+            entity = new Location();
             entity.setNameR(jsonFriendlyDatacenter.getDatacenterName()).setCountryR(jsonFriendlyDatacenter.getDatacenterCountry()).setDescriptionR(jsonFriendlyDatacenter.getDatacenterDescription()).
                    setGpsLatitudeR(jsonFriendlyDatacenter.getDatacenterGPSLat()).setGpsLongitudeR(jsonFriendlyDatacenter.getDatacenterGPSLat()).
                     setTownR(jsonFriendlyDatacenter.getDatacenterTown()).setZipCodeR(jsonFriendlyDatacenter.getDatacenterZipCode()).setAddressR(jsonFriendlyDatacenter.getDatacenterAddress());
@@ -196,7 +196,7 @@ public class DatacenterEndpoint {
                         if (routingArea != null) {
                             if (!entity.getRoutingAreas().contains(routingArea)) {
                                 entity.getRoutingAreas().add(routingArea);
-                                routingArea.getDatacenters().add(entity);
+                                routingArea.getLocations().add(entity);
                             }
                         } else {
                             commonRestResponse.setErrorMessage("Fail to create Datacenters. Reason : provided RoutingArea ID " + routingId +" was not found.");
@@ -212,7 +212,7 @@ public class DatacenterEndpoint {
                         if (subnet != null) {
                             if (!entity.getSubnets().contains(subnet)) {
                                 entity.getSubnets().add(subnet);
-                                subnet.getDatacenters().add(entity);
+                                subnet.getLocations().add(entity);
                             }
                         } else {
                             commonRestResponse.setErrorMessage("Fail to create Datacenters. Reason : provided Subnet ID " + subnetId +" was not found.");
@@ -235,7 +235,7 @@ public class DatacenterEndpoint {
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            Datacenter entity = findDatacenterById(em, id);
+            Location entity = findDatacenterById(em, id);
             if (entity == null) {
                 em.close();
                 return Response.status(Status.NOT_FOUND).build();
@@ -257,7 +257,7 @@ public class DatacenterEndpoint {
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            final HashSet<Datacenter> results = new HashSet(em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas ORDER BY d.id", Datacenter.class).getResultList());
+            final HashSet<Location> results = new HashSet(em.createQuery("SELECT DISTINCT d FROM Datacenter d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas ORDER BY d.id", Location.class).getResultList());
 
             Response ret = null;
             String result;
@@ -292,7 +292,7 @@ public class DatacenterEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Datacenter entity = findDatacenterByName(em, name);
+                Location entity = findDatacenterByName(em, name);
                 if (entity == null) {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
@@ -321,9 +321,9 @@ public class DatacenterEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Datacenter entity = findDatacenterByName(em, name);
+                Location entity = findDatacenterByName(em, name);
                 if (entity==null) {
-                    entity = new Datacenter().setNameR(name).setAddressR(address).setZipCodeR(zipCode).setTownR(town).setCountryR(country).setGpsLatitudeR(gpsLat).setGpsLongitudeR(gpsLng).
+                    entity = new Location().setNameR(name).setAddressR(address).setZipCodeR(zipCode).setTownR(town).setCountryR(country).setGpsLatitudeR(gpsLat).setGpsLongitudeR(gpsLng).
                                      setDescriptionR(description);
                     try {
                         em.getTransaction().begin();
@@ -351,13 +351,13 @@ public class DatacenterEndpoint {
     @POST
     public Response postDatacenter(@QueryParam("payload") String payload) throws IOException {
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] create/update Datacenter : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
+        log.debug("[{}-{}] create/update Location : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwDC:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             JSONFriendlyDatacenter jsonFriendlyDatacenter = DatacenterJSON.JSON2Datacenter(payload);
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyDatacenter);
-            Datacenter entity = (Datacenter) commonRestResponse.getDeserializedObject();
+            Location entity = (Location) commonRestResponse.getDeserializedObject();
             if (entity != null) {
                 try {
                     em.getTransaction().begin();
@@ -397,18 +397,18 @@ public class DatacenterEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Datacenter entity = findDatacenterById(em, id);
+                Location entity = findDatacenterById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
                         for (Subnet subnet: entity.getSubnets())
-                            subnet.getDatacenters().remove(entity);
+                            subnet.getLocations().remove(entity);
                         for (RoutingArea marea :entity.getRoutingAreas())
-                            marea.getDatacenters().remove(entity);
+                            marea.getLocations().remove(entity);
                         em.remove(entity);
                         em.getTransaction().commit();
                         em.close();
-                        return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully deleted").build();
+                        return Response.status(Status.OK).entity("Location " + id + " has been successfully deleted").build();
                     } catch (Throwable t) {
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
@@ -437,13 +437,13 @@ public class DatacenterEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Datacenter entity = findDatacenterById(em, id);
+                Location entity = findDatacenterById(em, id);
                 if (entity != null) {
                     em.getTransaction().begin();
                     entity.setName(name);
                     em.getTransaction().commit();
                     em.close();
-                    return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated with name " + name).build();
+                    return Response.status(Status.OK).entity("Location " + id + " has been successfully updated with name " + name).build();
                 } else {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
@@ -468,14 +468,14 @@ public class DatacenterEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Datacenter entity = findDatacenterById(em, id);
+                Location entity = findDatacenterById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
                         entity.setAddressR(address).setZipCodeR(zipCode).setTownR(town).setCountryR(country);
                         em.getTransaction().commit();
                         em.close();
-                        return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated with full address " + address + " " + zipCode + " " +
+                        return Response.status(Status.OK).entity("Location " + id + " has been successfully updated with full address " + address + " " + zipCode + " " +
                                                                  town + " " + country).build();
                     } catch (Throwable t) {
                         if(em.getTransaction().isActive())
@@ -507,13 +507,13 @@ public class DatacenterEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Datacenter entity = findDatacenterById(em, id);
+                Location entity = findDatacenterById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
                         entity.setGpsLatitudeR(gpsLat).setGpsLongitude(gpsLng);
                         em.getTransaction().commit();
-                        return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated with gps coord (" + gpsLat + "," + gpsLng + ")").build();
+                        return Response.status(Status.OK).entity("Location " + id + " has been successfully updated with gps coord (" + gpsLat + "," + gpsLng + ")").build();
                     } catch (Throwable t) {
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
@@ -543,13 +543,13 @@ public class DatacenterEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Datacenter entity = findDatacenterById(em, id);
+                Location entity = findDatacenterById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
                         entity.setDescriptionR(description);
                         em.getTransaction().commit();
-                        return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated with description " + description).build();
+                        return Response.status(Status.OK).entity("Location " + id + " has been successfully updated with description " + description).build();
                     } catch (Throwable t) {
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
@@ -578,17 +578,17 @@ public class DatacenterEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Datacenter entity = findDatacenterById(em, id);
+                Location entity = findDatacenterById(em, id);
                 if (entity != null) {
                     Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetID);
                     if (subnet!=null) {
                         try {
                             em.getTransaction().begin();
-                            subnet.getDatacenters().add(entity);
+                            subnet.getLocations().add(entity);
                             entity.getSubnets().add(subnet);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by adding subnet " + subnetID).build();
+                            return Response.status(Status.OK).entity("Location " + id + " has been successfully updated by adding subnet " + subnetID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -601,7 +601,7 @@ public class DatacenterEndpoint {
                     }
                 } else {
                     em.close();
-                    return Response.status(Status.NOT_FOUND).entity("Datacenter " + id + " not found.").build();
+                    return Response.status(Status.NOT_FOUND).entity("Location " + id + " not found.").build();
                 }
             } else {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
@@ -621,17 +621,17 @@ public class DatacenterEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Datacenter entity = findDatacenterById(em, id);
+                Location entity = findDatacenterById(em, id);
                 if (entity != null) {
                     Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetID);
                     if (subnet!=null) {
                         try {
                             em.getTransaction().begin();
-                            subnet.getDatacenters().remove(entity);
+                            subnet.getLocations().remove(entity);
                             entity.getSubnets().remove(subnet);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by deleting subnet " + subnetID).build();
+                            return Response.status(Status.OK).entity("Location " + id + " has been successfully updated by deleting subnet " + subnetID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -644,7 +644,7 @@ public class DatacenterEndpoint {
                     }
                 } else {
                     em.close();
-                    return Response.status(Status.NOT_FOUND).entity("Datacenter " + id + " not found.").build();
+                    return Response.status(Status.NOT_FOUND).entity("Location " + id + " not found.").build();
                 }
             } else {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
@@ -664,17 +664,17 @@ public class DatacenterEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Datacenter entity = findDatacenterById(em, id);
+                Location entity = findDatacenterById(em, id);
                 if (entity != null) {
                     RoutingArea rarea = RoutingAreaEndpoint.findRoutingAreaById(em, rareaID);
                     if (rarea!=null) {
                         try {
                             em.getTransaction().begin();
-                            rarea.getDatacenters().add(entity);
+                            rarea.getLocations().add(entity);
                             entity.getRoutingAreas().add(rarea);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by adding routing area " + rareaID).build();
+                            return Response.status(Status.OK).entity("Location " + id + " has been successfully updated by adding routing area " + rareaID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -687,7 +687,7 @@ public class DatacenterEndpoint {
                     }
                 } else {
                     em.close();
-                    return Response.status(Status.NOT_FOUND).entity("Datacenter " + id + " not found.").build();
+                    return Response.status(Status.NOT_FOUND).entity("Location " + id + " not found.").build();
                 }
             } else {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
@@ -707,17 +707,17 @@ public class DatacenterEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Datacenter entity = findDatacenterById(em, id);
+                Location entity = findDatacenterById(em, id);
                 if (entity != null) {
                     RoutingArea marea = RoutingAreaEndpoint.findRoutingAreaById(em, mareaID);
                     if (marea!=null) {
                         try {
                             em.getTransaction().begin();
-                            marea.getDatacenters().remove(entity);
+                            marea.getLocations().remove(entity);
                             entity.getRoutingAreas().remove(marea);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Datacenter " + id + " has been successfully updated by deleting routing area " + mareaID).build();
+                            return Response.status(Status.OK).entity("Location " + id + " has been successfully updated by deleting routing area " + mareaID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -730,7 +730,7 @@ public class DatacenterEndpoint {
                     }
                 } else {
                     em.close();
-                    return Response.status(Status.NOT_FOUND).entity("Datacenter " + id + " not found.").build();
+                    return Response.status(Status.NOT_FOUND).entity("Location " + id + " not found.").build();
                 }
             } else {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();

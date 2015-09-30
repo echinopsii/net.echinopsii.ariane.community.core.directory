@@ -1,0 +1,277 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:arianeidm="http://echinopsii.net/ariane/idm">
+<ui:composition template="/templates/directoryLayout.xhtml">
+    <ui:define name="directoryContent">
+        <ui:fragment rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:display')}">
+
+            <h:form id="locationTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
+                <p:growl id="locTableMessages" showDetail="true" />
+                <p:dataTable id="locationTable" styleClass="arianeTableRow" var="location" value="#{locationsListController.lazyModel}"
+                             selectionMode="multiple" selection="#{locationsListController.selectedLOCList}" rowKey="#{location.id}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
+                    <f:facet name="header">
+                        Locations
+                    </f:facet>
+
+                    <p:ajax event="rowToggle" listener="#{locationsListController.onRowToggle}" />
+
+                    <p:column style="width:2%">
+                        <p:rowToggler/>
+                    </p:column>
+
+                    <p:column headerText="Name" sortBy="#{location.name}" filterBy="#{location.name}">
+                        <h:outputText value="#{location.name}" />
+                    </p:column>
+
+                    <p:column headerText="Description" sortBy="#{location.description}" filterBy="#{location.description}">
+                        <h:outputText value="#{location.description}" />
+                    </p:column>
+
+                    <p:column headerText="Address" sortBy="#{location.address}" filterBy="#{location.address}">
+                        <h:outputText value="#{location.address}" />
+                    </p:column>
+
+                    <p:column headerText="Zip Code" sortBy="#{location.zipCode}">
+                        <h:outputText value="#{location.zipCode}" />
+                    </p:column>
+
+                    <p:column headerText="Type" sortBy="#{location.type}">
+                        <h:outputText value="#{location.type}" />
+                    </p:column>
+
+                    <p:column headerText="Town" sortBy="#{location.town}" filterBy="#{location.town}">
+                        <h:outputText value="#{location.town}" />
+                    </p:column>
+
+                    <p:column headerText="Country" sortBy="#{location.country}" filterBy="#{location.country}">
+                        <h:outputText value="#{location.country}" />
+                    </p:column>
+
+                    <p:rowExpansion>
+                        <h:panelGrid columns="2" columnClasses="colStyle10,colStyle90" cellpadding="5"  styleClass="arianeEmbeddedGrid">
+                            <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{location.name}"/>
+                                    <p:ajax event="save" listener="#{locationsListController.update(location)}" update="@form,:locationTableForm:locTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{location.name}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwLOC:update'))}"/>
+
+                            <h:outputText value="Description : " styleClass="arianeDialogLabel"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputTextarea required="true" label="text" value="#{location.description}"/>
+                                    <p:ajax event="save" listener="#{locationsListController.update(location)}" update="@form,:locationTableForm:locTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{location.description}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwLOC:update'))}"/>
+
+                            <h:outputText value="Address : " styleClass="arianeDialogLabel"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputTextarea required="true" label="text" value="#{location.address}"/>
+                                    <p:ajax event="save" listener="#{locationsListController.update(location)}" update="@form,:locationTableForm:locTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{location.address}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwLOC:update'))}"/>
+
+                            <h:outputText value="Zip Code : " styleClass="arianeDialogLabel"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{location.zipCode}"/>
+                                    <p:ajax event="save" listener="#{locationsListController.update(location)}" update="@form,:locationTableForm:locTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{location.zipCode}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwLOC:update'))}"/>
+
+                            <h:outputText value="Type : " styleClass="arianeDialogLabel"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:update')}">
+                                <p:inplace label="#{location.type}" effectSpeed="fast" editor="true">
+                                    <h:selectOneMenu value="#{location.type}">
+                                        <f:selectItems value="#{locationsListController.getAllLocationTypesForSelector()}"  var="locT"
+                                                       itemLabel="#{locT}" itemValue="#{locT}"/>
+                                    </h:selectOneMenu>
+                                    <p:ajax event="save" listener="#{locationsListController.update(location)}"
+                                            update="@form,:locationTableForm:locTableMessages"/>
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{location.type}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwLOC:update'))}"/>
+
+                            <h:outputText value="Town : " styleClass="arianeDialogLabel"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{location.town}"/>
+                                    <p:ajax event="save" listener="#{locationsListController.update(location)}" update="@form,:locationTableForm:locTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{location.town}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwLOC:update'))}"/>
+
+                            <h:outputText value="Country : " styleClass="arianeDialogLabel"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{location.country}"/>
+                                    <p:ajax event="save" listener="#{locationsListController.update(location)}" update="@form,:locationTableForm:locTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{location.country}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwLOC:update'))}"/>
+
+                            <h:outputText value="GPS latitude : " styleClass="arianeDialogLabel"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{location.gpsLatitude}"/>
+                                    <p:ajax event="save" listener="#{locationsListController.update(location)}" update="@form,:locationTableForm:locTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{location.gpsLatitude}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwLOC:update'))}"/>
+
+                            <h:outputText value="GPS longitude : " styleClass="arianeDialogLabel"/>
+                            <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:update')}">
+                                <p:inplace editor="true">
+                                    <p:inputText required="true" label="text" value="#{location.gpsLongitude}"/>
+                                    <p:ajax event="save" listener="#{locationsListController.update(location)}" update="@form,:locationTableForm:locTableMessages" />
+                                </p:inplace>
+                            </h:form>
+                            <h:outputText value="#{location.gpsLongitude}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwLOC:update'))}"/>
+
+                            <h:outputText value="Routing Areas : " styleClass="arianeDialogLabel"/>
+                            <h:form>
+                                <p:dataTable value="#{directoryViewUtils.asList(location,'routingAreas')}" var="_rarea" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{_rarea.id}"
+                                             rows="5" paginator="true" selection="#{locationsListController.removedRareas[location.id]}" selectionMode="multiple">
+                                    <p:column headerText="Name" sortBy="#{_rarea.name}" filterBy="#{_rarea.name}">
+                                        <h:outputText id="mareaName" value="#{_rarea.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Description" sortBy="#{_rarea.description}" filterBy="#{_rarea.description}">
+                                        <h:outputText id="mareaDescription" value="#{_rarea.description}"/>
+                                    </p:column>
+                                    <c:if test="#{arianeidm:hasPermission('dirComITiNtwLOC:update')}">
+                                        <f:facet name="footer">
+                                            <p:inplace label="Select routing area to bind" effectSpeed="fast" editor="true">
+                                                <h:selectOneMenu value="#{locationsListController.addedRArea[location.id]}">
+                                                    <f:selectItems value="#{routingAreasListController.getAll()}" var="rarea_"
+                                                                   itemLabel="#{rarea_.name}" itemValue="#{rarea_.name}"/>
+                                                </h:selectOneMenu>
+                                                <p:ajax event="save" listener="#{locationsListController.syncAddedRArea(location)}"
+                                                        update="@form,:locationTableForm:locTableMessages"/>
+                                            </p:inplace>
+                                            <p:commandButton value="Unbind selected routing area" icon="ui-icon-closethick"
+                                                             process="@form" actionListener="#{locationsListController.syncRemovedRAreas(location)}"
+                                                             update="@form,:locationTableForm:locTableMessages"/>
+                                        </f:facet>
+                                    </c:if>
+                                </p:dataTable>
+                            </h:form>
+
+
+                            <h:outputText value="Subnets : " styleClass="arianeDialogLabel"/>
+                            <h:form>
+                                <p:dataTable value="#{directoryViewUtils.asList(location,'subnets')}" var="_subnet" styleClass="ui-widget-content grid" rowKey="#{_subnet.id}"
+                                             rows="5" paginator="true" selection="#{locationsListController.removedSubnets[location.id]}" selectionMode="multiple">
+                                    <p:column headerText="Name" sortBy="#{_subnet.name}" filterBy="#{_subnet.name}">
+                                        <h:outputText id="subnetName" value="#{_subnet.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Subnet IP" sortBy="#{_subnet.subnetip}" filterBy="#{_subnet.subnetip}">
+                                        <h:outputText id="subnetSubnetIP" value="#{_subnet.subnetIP}"/>
+                                    </p:column>
+                                    <p:column headerText="Subnet Mask" sortBy="#{_subnet.subnetmask}" filterBy="#{_subnet.subnetmask}">
+                                        <h:outputText id="subnetSubnetMask" value="#{_subnet.subnetMask}"/>
+                                    </p:column>
+                                    <c:if test="#{arianeidm:hasPermission('dirComITiNtwLOC:update')}">
+                                        <f:facet name="footer">
+                                            <p:inplace label="Select subnet to bind" effectSpeed="fast" editor="true">
+                                                <h:selectOneMenu value="#{locationsListController.addedSubnet[location.id]}">
+                                                    <f:selectItems value="#{subnetsListController.getAll()}" var="subnet_"
+                                                                   itemLabel="#{subnet_.name}" itemValue="#{subnet_.name}"/>
+                                                </h:selectOneMenu>
+                                                <p:ajax event="save" listener="#{locationsListController.syncAddedSubnet(location)}"
+                                                        update="@form,:locationTableForm:locTableMessages"/>
+                                            </p:inplace>
+                                            <p:commandButton value="Unbind selected subnet" icon="ui-icon-closethick"
+                                                             process="@form" actionListener="#{locationsListController.syncRemovedSubnets(location)}"
+                                                             update="@form,:locationTableForm:locTableMessages"/>
+                                        </f:facet>
+                                    </c:if>
+                                </p:dataTable>
+                            </h:form>
+                        </h:panelGrid>
+                    </p:rowExpansion>
+                    <f:facet name="footer">
+                        <p:commandButton value="Create location" icon="ui-icon-disk" onclick="locCreateDialog.show()"  rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:create')}"/>
+                        <p:commandButton value="Remove selected location" icon="ui-icon-closethick" onclick="locRemoveDialog.show()"
+                                         update=":removeLOCDialogForm:display" rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:remove')}"/>
+                        <p:commandButton value="Refresh table" id="locUpdate" icon="icon-refresh" styleClass="ui-priority-primary icon-large"
+                                         update=":locationTableForm:locationTable"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+
+            <p:dialog styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Confirm your remove order !" widgetVar="locRemoveDialog"
+                      width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
+                <h:form id="removeLOCDialogForm">
+                    <h:outputText value="Are you sure you want delete following location ?" styleClass="arianeDialogLabel text-marginForMessage"/><br/>
+                    <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                                     actionListener="#{locationsListController.delete}" oncomplete="locRemoveDialog.hide();"
+                                     update=":locationTableForm:locationTable,:locationTableForm:locTableMessages"/>
+                    <p:commandButton value="No" styleClass="arianeDialogButtonNo" icon="ui-icon-close" onclick="locRemoveDialog.hide();"/>
+                    <p:separator/>
+                    <p:dataList id="display"
+                                value="#{locationsListController.selectedLOCList}"
+                                var="selectedLOC" type="definition">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
+                            <h:outputText value="#{selectedLOC.name}"/>
+
+                            <h:outputText value="Routing areas : " styleClass="arianeDialogLabel"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedLOC,'routingAreas')}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="Name">
+                                    <h:outputText id="rraName" value="#{_item.name}"/>
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText id="itemDescription" value="#{_item.description}"/>
+                                </p:column>
+                            </p:dataTable>
+
+                            <h:outputText value="Subnets : " styleClass="arianeDialogLabel"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedLOC,'subnets')}" var="_item"
+                                          rows="5" paginator="true">
+                                <p:column headerText="Name">
+                                    <h:outputText id="rsubnetName" value="#{_item.name}"/>
+                                </p:column>
+                                <p:column headerText="Subnet IP">
+                                    <h:outputText id="itemSubnetIP" value="#{_item.subnetIP}"/>
+                                </p:column>
+                                <p:column headerText="Subnet Mask">
+                                    <h:outputText id="itemSubnetMask" value="#{_item.subnetMask}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <p:separator/>
+                    </p:dataList>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new location" widgetVar="locCreateDialog"
+                      width="700" showEffect="fade" hideEffect="explode" closeOnEscape="true">
+                <h:form id="createLOCDialogForm">
+                    <ui:insert name="createDatacenter" >
+                        <ui:include src="/templates/locNewForm.xhtml" />
+                    </ui:insert>
+                    <p:commandButton value="Save this location" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                                     actionListener="#{locationNewController.save}" oncomplete="locCreateDialog.hide();"
+                                     update=":locationTableForm:locationTable,:locationTableForm:locTableMessages"/>
+                </h:form>
+            </p:dialog>
+
+        </ui:fragment>
+    </ui:define>
+</ui:composition>
+</html>

@@ -68,7 +68,7 @@ public class Subnet implements Serializable
 
     @ManyToMany(mappedBy = "subnets", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private Set<Datacenter> datacenters = new HashSet<Datacenter>();
+    private Set<Location> locations = new HashSet<Location>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
@@ -209,16 +209,16 @@ public class Subnet implements Serializable
         return this;
     }
 
-    public Set<Datacenter> getDatacenters() {
-        return this.datacenters;
+    public Set<Location> getLocations() {
+        return this.locations;
     }
 
-    public void setDatacenters(final Set<Datacenter> datacenters) {
-        this.datacenters = datacenters;
+    public void setLocations(final Set<Location> locations) {
+        this.locations = locations;
     }
 
-    public Subnet setDatacentersR(final Set<Datacenter> datacenters) {
-        this.datacenters = datacenters;
+    public Subnet setLocationsR(final Set<Location> locations) {
+        this.locations = locations;
         return this;
     }
 
@@ -250,7 +250,7 @@ public class Subnet implements Serializable
 
     public Subnet clone() {
         return new Subnet().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setSubnetIPR(this.subnetIP).
-                       setSubnetMaskR(this.subnetMask).setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setRareaR(this.rarea).
+                       setSubnetMaskR(this.subnetMask).setLocationsR(new HashSet<Location>(this.locations)).setRareaR(this.rarea).
                        setOsInstancesR(new HashSet<OSInstance>(this.osInstances)).setIpAddressR(new HashSet<IPAddress>(this.ipAddresses));
     }
 

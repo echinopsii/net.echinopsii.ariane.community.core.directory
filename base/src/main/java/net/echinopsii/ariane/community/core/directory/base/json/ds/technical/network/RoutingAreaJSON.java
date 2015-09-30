@@ -24,7 +24,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 
@@ -63,7 +63,7 @@ public class RoutingAreaJSON {
             jgenerator.writeNumber(subnet.getId());
         jgenerator.writeEndArray();
         jgenerator.writeArrayFieldStart(RAREA_DC_ID);
-        for (Datacenter dc : routingArea.getDatacenters())
+        for (Location dc : routingArea.getLocations())
             jgenerator.writeNumber(dc.getId());
         jgenerator.writeEndArray();
         jgenerator.writeEndObject();

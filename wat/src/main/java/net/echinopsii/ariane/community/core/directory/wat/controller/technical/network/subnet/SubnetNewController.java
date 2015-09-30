@@ -20,10 +20,10 @@
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location.LocationsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea.RoutingAreasListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +65,8 @@ public class SubnetNewController implements Serializable {
     private String rArea = "";
     private RoutingArea rarea;
 
-    private List<String>    datacentersToBind = new ArrayList<String>();
-    private Set<Datacenter> datacenters       = new HashSet<Datacenter>();
+    private List<String> locationsToBind = new ArrayList<String>();
+    private Set<Location> locations = new HashSet<Location>();
 
     public EntityManager getEm() {
         return em;
@@ -142,35 +142,35 @@ public class SubnetNewController implements Serializable {
         }
     }
 
-    public List<String> getDatacentersToBind() {
-        return datacentersToBind;
+    public List<String> getLocationsToBind() {
+        return locationsToBind;
     }
 
-    public void setDatacentersToBind(List<String> datacentersToBind) {
-        this.datacentersToBind = datacentersToBind;
+    public void setLocationsToBind(List<String> locationsToBind) {
+        this.locationsToBind = locationsToBind;
     }
 
-    public Set<Datacenter> getDatacenters() {
-        return datacenters;
+    public Set<Location> getLocations() {
+        return locations;
     }
 
-    public void setDatacenters(Set<Datacenter> datacenters) {
-        this.datacenters = datacenters;
+    public void setLocations(Set<Location> locations) {
+        this.locations = locations;
     }
 
     /**
-     * populate datacenters list through datacentersToBind list provided through UI form
+     * populate locations list through locationsToBind list provided through UI form
      *
      * @throws NotSupportedException
      * @throws SystemException
      */
-    private void bindSelectedDatacenters() throws NotSupportedException, SystemException {
-        for (Datacenter dc: DatacentersListController.getAll()) {
-            for (String dcToBind : datacentersToBind)
-                if (dc.getName().equals(dcToBind)) {
-                    dc = em.find(dc.getClass(), dc.getId());
-                    this.datacenters.add(dc);
-                    log.debug("Synced datacenter : {} {}", new Object[]{dc.getId(), dc.getName()});
+    private void bindSelectedLocations() throws NotSupportedException, SystemException {
+        for (Location loc: LocationsListController.getAll()) {
+            for (String locToBind : locationsToBind)
+                if (loc.getName().equals(locToBind)) {
+                    loc = em.find(loc.getClass(), loc.getId());
+                    this.locations.add(loc);
+                    log.debug("Synced location : {} {}", new Object[]{loc.getId(), loc.getName()});
                     break;
                 }
         }
@@ -182,7 +182,7 @@ public class SubnetNewController implements Serializable {
     public void save() {
         try {
             syncRoutingArea();
-            bindSelectedDatacenters();
+            bindSelectedLocations();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -198,18 +198,18 @@ public class SubnetNewController implements Serializable {
         newSubnet.setSubnetIP(subnetIP);
         newSubnet.setSubnetMask(subnetMask);
         newSubnet.setRarea(rarea);
-        newSubnet.setDatacenters(this.datacenters);
+        newSubnet.setLocations(this.locations);
 
         try {
             em.getTransaction().begin();
             em.persist(newSubnet);
-            if (this.datacenters.size()!=0)
-                for (Datacenter dc: this.datacenters) {
-                    dc.getSubnets().add(newSubnet);
-                    em.merge(dc);
+            if (this.locations.size()!=0)
+                for (Location loc: this.locations) {
+                    loc.getSubnets().add(newSubnet);
+                    em.merge(loc);
                     if (rarea !=null) {
-                        if (!rarea.getDatacenters().contains(dc)) {
-                            rarea.getDatacenters().add(dc);
+                        if (!rarea.getLocations().contains(loc)) {
+                            rarea.getLocations().add(loc);
                         }
                     }
                 }

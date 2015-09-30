@@ -1,31 +1,37 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition>
-    <h:panelGrid id="dcNewView" columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
+    <h:panelGrid id="locNewView" columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
         <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa arianeDialogPanelGrid-td" style="padding-bottom: 17%">
             <h:outputText value="Name" styleClass="arianeDialogLabel"/>
-            <p:inputText id="newDCname" label="Name" required="true" value="#{datacenterNewController.name}"/>
+            <p:inputText id="newLOCname" label="Name" required="true" value="#{locationNewController.name}"/>
             <h:outputText value="Address" styleClass="arianeDialogLabel"/>
-            <p:inputTextarea id="newDCaddress" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.address}"/>
+            <p:inputTextarea id="newLOCaddress" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{locationNewController.address}"/>
             <h:outputText value="Zip Code" styleClass="arianeDialogLabel"/>
-            <p:inputText id="newDCzipCode" label="ZipCode" required="true" value="#{datacenterNewController.zipCode}"/>
+            <p:inputText id="newLOCzipCode" label="ZipCode" required="true" value="#{locationNewController.zipCode}"/>
             <h:outputText value="Town" styleClass="arianeDialogLabel"/>
-            <p:inputText id="newDCtown" label="Town" required="true" value="#{datacenterNewController.town}"/>
+            <p:inputText id="newLOCtown" label="Town" required="true" value="#{locationNewController.town}"/>
             <h:outputText value="Country" styleClass="arianeDialogLabel"/>
-            <p:inputText id="newDCcountry" label="Country" required="true" value="#{datacenterNewController.country}" onblur="GetLocation()"/>
+            <p:inputText id="newLOCcountry" label="Country" required="true" value="#{locationNewController.country}" onblur="GetLocation()"/>
+            <h:outputText value="Type" styleClass="arianeDialogLabel"/>
+            <h:selectOneMenu label="Select the location type" value="#{locationNewController.type}" style="width:68.5%">
+                <f:selectItems value="#{locationsListController.getAllLocationTypesForSelector()}"  var="locT"
+                               itemLabel="#{locT}" itemValue="#{locT}"/>
+            </h:selectOneMenu>
             <h:outputText value="Description" styleClass="arianeDialogLabel"/>
-            <p:inputTextarea styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{datacenterNewController.description}"/>
+            <p:inputTextarea styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{locationNewController.description}"/>
         </h:panelGrid>
         <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
-            <h:panelGrid id="newDCgeoGmap" style="float:right;width:300px;height:300px"/>
+            <h:panelGrid id="newLOCgeoGmap" style="float:right;width:300px;height:300px"/>
             <p:messages for="warningMsg" id="warningMsg" /><br/>
             <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
                 <h:outputText id="outLat" value="Latitude" style="display: block" styleClass="arianeDialogLabel"/>
-                <p:inputText type="hidden" id="newDCgpsLatitude" value="#{datacenterNewController.gpsLatitude}" />
+                <p:inputText type="hidden" id="newLOCgpsLatitude" value="#{locationNewController.gpsLatitude}" />
                 <h:outputText id="outLang" value="Longitude" style="display: block" styleClass="arianeDialogLabel"/>
-                <p:inputText type="hidden" id="newDCgpsLongitude" value="#{datacenterNewController.gpsLongitude}" />
+                <p:inputText type="hidden" id="newLOCgpsLongitude" value="#{locationNewController.gpsLongitude}" />
             </h:panelGrid>
         </h:panelGrid>
     </h:panelGrid>
@@ -33,20 +39,20 @@
     <script type="application/javascript">
         var geocoder;
         var map, marker;
-        var addresstxtarea = document.getElementById("createDCDialogForm:newDCaddress");
-        var town = document.getElementById("createDCDialogForm:newDCtown");
-        var country = document.getElementById("createDCDialogForm:newDCcountry");
-        var zipCode = document.getElementById("createDCDialogForm:newDCzipCode");
-        var gpsLatitude = document.getElementById("createDCDialogForm:newDCgpsLatitude");
-        var gpsLongitude = document.getElementById("createDCDialogForm:newDCgpsLongitude");
+        var addresstxtarea = document.getElementById("createLOCDialogForm:newLOCaddress");
+        var town = document.getElementById("createLOCDialogForm:newLOCtown");
+        var country = document.getElementById("createLOCDialogForm:newLOCcountry");
+        var zipCode = document.getElementById("createLOCDialogForm:newLOCzipCode");
+        var gpsLatitude = document.getElementById("createLOCDialogForm:newLOCgpsLatitude");
+        var gpsLongitude = document.getElementById("createLOCDialogForm:newLOCgpsLongitude");
 
         function initialize() {
             try {
-                var geoGmap = document.getElementById('createDCDialogForm:newDCgeoGmap');
+                var geoGmap = document.getElementById('createLOCDialogForm:newLOCgeoGmap');
                 geocoder = new google.maps.Geocoder();
-                var outLat = document.getElementById('createDCDialogForm:outLat');
-                var outLang = document.getElementById('createDCDialogForm:outLang');
-                var warningMsg = document.getElementById('createDCDialogForm:warningMsg');
+                var outLat = document.getElementById('createLOCDialogForm:outLat');
+                var outLang = document.getElementById('createLOCDialogForm:outLang');
+                var warningMsg = document.getElementById('createLOCDialogForm:warningMsg');
                 outLat.style.display = "none";
                 outLang.style.display = "none";
                 if (warningMsg) {

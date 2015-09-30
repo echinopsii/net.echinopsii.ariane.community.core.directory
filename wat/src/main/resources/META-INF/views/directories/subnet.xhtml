@@ -97,34 +97,37 @@
                             </h:form>
                             <h:outputText value="#{subnetsListController.getSubnetRareaName(subnet)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwSubnet:update'))}"/>
 
-                            <h:outputText value="Datacenters : " styleClass="arianeDialogLabel"/>
+                            <h:outputText value="Locations : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(subnet,'datacenters')}" var="dc" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{dc.id}"
-                                             rows="5" paginator="true" selection="#{subnetsListController.removedDCs[subnet.id]}" selectionMode="multiple">
-                                    <p:column headerText="Name" sortBy="#{dc.name}" filterBy="#{dc.name}">
-                                        <h:outputText id="dcitemName" value="#{dc.name}"/>
+                                <p:dataTable value="#{directoryViewUtils.asList(subnet,'locations')}" var="loc" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{loc.id}"
+                                             rows="5" paginator="true" selection="#{subnetsListController.removedLOCs[subnet.id]}" selectionMode="multiple">
+                                    <p:column headerText="Name" sortBy="#{loc.name}" filterBy="#{loc.name}">
+                                        <h:outputText id="locitemName" value="#{loc.name}"/>
                                     </p:column>
-                                    <p:column headerText="Description" sortBy="#{dc.description}" filterBy="#{dc.description}">
-                                        <h:outputText id="dcitemDescription" value="#{dc.description}"/>
+                                    <p:column headerText="Description" sortBy="#{loc.description}" filterBy="#{loc.description}">
+                                        <h:outputText id="locitemDescription" value="#{loc.description}"/>
                                     </p:column>
-                                    <p:column headerText="Town" sortBy="#{dc.town}" filterBy="#{dc.town}">
-                                        <h:outputText id="dcitemTown" value="#{dc.town}"/>
+                                    <p:column headerText="Town" sortBy="#{loc.town}" filterBy="#{loc.town}">
+                                        <h:outputText id="locitemTown" value="#{loc.town}"/>
                                     </p:column>
-                                    <p:column headerText="Country" sortBy="#{dc.country}" filterBy="#{dc.country}">
-                                        <h:outputText id="dcitemCountry" value="#{dc.country}"/>
+                                    <p:column headerText="Country" sortBy="#{loc.country}" filterBy="#{loc.country}">
+                                        <h:outputText id="locitemCountry" value="#{loc.country}"/>
+                                    </p:column>
+                                    <p:column headerText="Type" sortBy="#{loc.type}" filterBy="#{loc.type}">
+                                        <h:outputText id="locitemType" value="#{loc.type}"/>
                                     </p:column>
                                     <c:if test="#{arianeidm:hasPermission('dirComITiNtwSubnet:update')}">
                                         <f:facet name="footer">
-                                            <p:inplace label="Select datacenter to bind" effectSpeed="fast" editor="true">
-                                                <h:selectOneMenu value="#{subnetsListController.addedDC[subnet.id]}">
-                                                    <f:selectItems value="#{datacentersListController.getAll()}" var="dc_"
-                                                                   itemLabel="#{dc_.name}" itemValue="#{dc_.name}"/>
+                                            <p:inplace label="Select location to bind" effectSpeed="fast" editor="true">
+                                                <h:selectOneMenu value="#{subnetsListController.addedLOC[subnet.id]}">
+                                                    <f:selectItems value="#{locationsListController.getAll()}" var="loc_"
+                                                                   itemLabel="#{loc_.name}" itemValue="#{loc_.name}"/>
                                                 </h:selectOneMenu>
-                                                <p:ajax event="save" listener="#{subnetsListController.syncAddedDC(subnet)}"
+                                                <p:ajax event="save" listener="#{subnetsListController.syncAddedLOC(subnet)}"
                                                         update="@form,:subnetTableForm:subnetTableMessages"/>
                                             </p:inplace>
-                                            <p:commandButton value="Unbind selected datacenter" icon="ui-icon-closethick"
-                                                             process="@form" actionListener="#{subnetsListController.syncRemovedDCs(subnet)}"
+                                            <p:commandButton value="Unbind selected location" icon="ui-icon-closethick"
+                                                             process="@form" actionListener="#{subnetsListController.syncRemovedLOCs(subnet)}"
                                                              update="@form,:subnetTableForm:subnetTableMessages"/>
                                         </f:facet>
                                     </c:if>
@@ -201,20 +204,20 @@
                             <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                             <h:outputText value="#{selectedSubnet.name}"/>
 
-                            <h:outputText value="Datacenters : " styleClass="arianeDialogLabel"/>
-                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'datacenters')}" var="dcR"
+                            <h:outputText value="Locations : " styleClass="arianeDialogLabel"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedSubnet,'locations')}" var="locR"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
-                                    <h:outputText id="dc2ritemName" value="#{dcR.name}"/>
+                                    <h:outputText id="loc2ritemName" value="#{locR.name}"/>
                                 </p:column>
                                 <p:column headerText="Description">
-                                    <h:outputText id="dc2ritemDescription" value="#{dcR.description}"/>
+                                    <h:outputText id="loc2ritemDescription" value="#{locR.description}"/>
                                 </p:column>
                                 <p:column headerText="Town">
-                                    <h:outputText id="itemTown" value="#{dcR.town}"/>
+                                    <h:outputText id="itemTown" value="#{locR.town}"/>
                                 </p:column>
                                 <p:column headerText="Country">
-                                    <h:outputText id="itemCountry" value="#{dcR.country}"/>
+                                    <h:outputText id="itemCountry" value="#{locR.country}"/>
                                 </p:column>
                             </p:dataTable>
 
@@ -275,14 +278,14 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new datacenter" widgetVar="dcCreateDialog"
+            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new location" widgetVar="locCreateDialog"
                       width="700" showEffect="fade" hideEffect="explode" closeOnEscape="true">
-                <h:form id="createDCDialogForm">
-                    <ui:insert name="createDatacenter" >
-                        <ui:include src="/templates/dcNewForm.xhtml" />
+                <h:form id="createLOCDialogForm">
+                    <ui:insert name="createLocation" >
+                        <ui:include src="/templates/locNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
-                                     actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
+                    <p:commandButton value="Save this location" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                                     actionListener="#{locationNewController.save}" oncomplete="locCreateDialog.hide();"
                                      update=":createSubnetDialogForm:subnetNewGrid,:subnetTableForm:subnetTableMessages"/>
                 </h:form>
             </p:dialog>
