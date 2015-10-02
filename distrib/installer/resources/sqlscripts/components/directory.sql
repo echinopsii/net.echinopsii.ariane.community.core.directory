@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `location` (
   `gpsLongitude` DOUBLE       NOT NULL,
   `Name`         VARCHAR(255) NOT NULL,
   `town`         VARCHAR(255) NOT NULL,
-  `type`         VARCHAR(255) NOT NULL,
+  `type`         VARCHAR(255) DEFAULT NULL,
   `version`      INT(11) DEFAULT NULL,
   `zipCode`      BIGINT(20)   NOT NULL,
   PRIMARY KEY (`id`),

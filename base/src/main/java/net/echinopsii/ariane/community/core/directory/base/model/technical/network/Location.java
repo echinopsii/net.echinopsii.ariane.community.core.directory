@@ -93,8 +93,7 @@ public class Location implements Serializable
     @Column
     private String description;
 
-    @Column(nullable=false)
-    @NotNull
+    @Column
     private String type;
 
     @ManyToMany(fetch = FetchType.LAZY)

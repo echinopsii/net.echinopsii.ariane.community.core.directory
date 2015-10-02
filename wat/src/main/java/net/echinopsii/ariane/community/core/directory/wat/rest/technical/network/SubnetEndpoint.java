@@ -73,7 +73,7 @@ public class SubnetEndpoint {
     }
 
     public static Subnet findSubnetById(EntityManager em, long id) {
-        TypedQuery<Subnet> findByIdQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.rarea WHERE l.id = :entityId ORDER BY l.id", Subnet.class);
+        TypedQuery<Subnet> findByIdQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.locations LEFT JOIN FETCH l.rarea WHERE l.id = :entityId ORDER BY l.id", Subnet.class);
         findByIdQuery.setParameter("entityId", id);
         Subnet entity;
         try {
@@ -85,7 +85,7 @@ public class SubnetEndpoint {
     }
 
     public static Subnet findSubnetByName(EntityManager em, String name) {
-        TypedQuery<Subnet> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.rarea WHERE l.name = :entityName ORDER BY l.name", Subnet.class);
+        TypedQuery<Subnet> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.locations LEFT JOIN FETCH l.rarea WHERE l.name = :entityName ORDER BY l.name", Subnet.class);
         findByNameQuery.setParameter("entityName", name);
         Subnet entity;
         try {
@@ -340,7 +340,7 @@ public class SubnetEndpoint {
         if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwSubnet:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            final HashSet<Subnet> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.rarea ORDER BY l.id", Subnet.class).getResultList());
+            final HashSet<Subnet> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.locations LEFT JOIN FETCH l.rarea ORDER BY l.id", Subnet.class).getResultList());
 
             Response ret = null;
             String result;

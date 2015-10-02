@@ -68,7 +68,7 @@ public class RoutingAreaEndpoint {
     }
 
     public static RoutingArea findRoutingAreaById(EntityManager em, long id) {
-        TypedQuery<RoutingArea> findByIdQuery = em.createQuery("SELECT DISTINCT m FROM RoutingArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters WHERE m.id = :entityId ORDER BY m.id", RoutingArea.class);
+        TypedQuery<RoutingArea> findByIdQuery = em.createQuery("SELECT DISTINCT m FROM RoutingArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.locations WHERE m.id = :entityId ORDER BY m.id", RoutingArea.class);
         findByIdQuery.setParameter("entityId", id);
         RoutingArea entity;
         try {
@@ -80,7 +80,7 @@ public class RoutingAreaEndpoint {
     }
 
     public static RoutingArea findRoutingAreaByName(EntityManager em, String name) {
-        TypedQuery<RoutingArea> findByNameQuery = em.createQuery("SELECT DISTINCT m FROM RoutingArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters WHERE m.name = :entityName ORDER BY m.name", RoutingArea.class);
+        TypedQuery<RoutingArea> findByNameQuery = em.createQuery("SELECT DISTINCT m FROM RoutingArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.locations WHERE m.name = :entityName ORDER BY m.name", RoutingArea.class);
         findByNameQuery.setParameter("entityName", name);
         RoutingArea entity;
         try {
@@ -201,7 +201,7 @@ public class RoutingAreaEndpoint {
         if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwRarea:display") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            final HashSet<RoutingArea> results = new HashSet(em.createQuery("SELECT DISTINCT m FROM RoutingArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.datacenters ORDER BY m.id", RoutingArea.class).getResultList());
+            final HashSet<RoutingArea> results = new HashSet(em.createQuery("SELECT DISTINCT m FROM RoutingArea m LEFT JOIN FETCH m.subnets LEFT JOIN FETCH m.locations ORDER BY m.id", RoutingArea.class).getResultList());
 
             Response ret = null;
             String result;
