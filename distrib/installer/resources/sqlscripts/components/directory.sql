@@ -287,3 +287,16 @@ CREATE TABLE IF NOT EXISTS `team_osInstance` (
   CONSTRAINT `FK_cc24sbfxytin2iajw2lggn65m` FOREIGN KEY (`teams_id`) REFERENCES `team` (`id`),
   CONSTRAINT `FK_4bcdvjduli9spkl0m1q26cwr1` FOREIGN KEY (`osInstances_id`) REFERENCES `osInstance` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO location (id, address, country, description, gpsLatitude, gpsLongitude, Name, town, type, version, zipCode)
+  SELECT id, address, country, description, gpsLatitude, gpsLongitude, dcName, town, 'DATACENTER', version, zipCode FROM
+  datacenter data
+  WHERE NOT EXISTS(SELECT id FROM location loc WHERE loc.id = data.id);
+
+INSERT INTO location_routingArea (locations_id, routingAreas_id)
+  SELECT datacenters_id, routingAreas_id FROM datacenter_routingArea data
+  WHERE NOT EXISTS (SELECT locations_id FROM location_routingArea loc WHERE loc.locations_id = data.datacenters_id);
+
+INSERT INTO location_subnet (locations_id, subnets_id)
+  SELECT datacenters_id, subnets_id FROM datacenter_subnet data
+  WHERE NOT EXISTS (SELECT locations_id FROM location_subnet loc WHERE loc.locations_id = data.datacenters_id);
