@@ -283,9 +283,14 @@ CREATE TABLE IF NOT EXISTS `team_osInstance` (
   CONSTRAINT `FK_4bcdvjduli9spkl0m1q26cwr1` FOREIGN KEY (`osInstances_id`) REFERENCES `osInstance` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+--
+-- Procedure to migrate data from datacenter to Location
+--
+
 DELIMITER $$
 DROP PROCEDURE IF EXISTS `datacenter` $$
-CREATE PROCEDURE `location`()
+CREATE PROCEDURE `migrateDatacenterToLocation`()
   BEGIN
     DECLARE FoundCount INT;
 
@@ -293,26 +298,38 @@ CREATE PROCEDURE `location`()
     FROM information_schema.tables
     WHERE table_schema = 'ariane_directory'
           AND table_name = 'datacenter';
+
     IF FoundCount = 1 THEN
-      SET @sql = CONCAT('DELETE FROM ',db,'.',tb,' WHERE id=1');
+      SET @sql = CONCAT('INSERT INTO location (id, address, country, description, gpsLatitude, gpsLongitude, Name, town,type, version, zipCode) SELECT id, address, country, description, gpsLatitude, gpsLongitude, dcName, town, ''DATACENTER'', version, zipCode FROM datacenter');
       PREPARE stmt FROM @sql;
       EXECUTE stmt;
       DEALLOCATE PREPARE stmt;
+
+      SET @sql = CONCAT('INSERT INTO location_routingArea (locations_id, routingAreas_id) SELECT datacenters_id, routingAreas_id FROM datacenter_routingArea');
+      PREPARE stmt FROM @sql;
+      EXECUTE stmt;
+      DEALLOCATE PREPARE stmt;
+
+      SET @sql = CONCAT('INSERT INTO location_subnet (locations_id, subnets_id) SELECT datacenters_id, subnets_id FROM datacenter_subnet');
+      PREPARE stmt FROM @sql;
+      EXECUTE stmt;
+      DEALLOCATE PREPARE stmt;
+
+      SET FOREIGN_KEY_CHECKS=0;
+      DROP TABLE IF EXISTS  datacenter;
+      DROP TABLE IF EXISTS  datacenter_routingArea;
+      DROP TABLE IF EXISTS  datacenter_subnet;
+      SET FOREIGN_KEY_CHECKS=1;
+
     END IF;
-
   END $$
-
 DELIMITER ;
 
-INSERT INTO location (id, address, country, description, gpsLatitude, gpsLongitude, Name, town, type, version, zipCode)
-  SELECT id, address, country, description, gpsLatitude, gpsLongitude, dcName, town, 'DATACENTER', version, zipCode FROM
-  datacenter data
-  WHERE NOT EXISTS(SELECT id FROM location loc WHERE loc.id = data.id);
 
-INSERT INTO location_routingArea (locations_id, routingAreas_id)
-  SELECT datacenters_id, routingAreas_id FROM datacenter_routingArea data
-  WHERE NOT EXISTS (SELECT locations_id FROM location_routingArea loc WHERE loc.locations_id = data.datacenters_id);
+call migrateDatacenterToLocation();
 
-INSERT INTO location_subnet (locations_id, subnets_id)
-  SELECT datacenters_id, subnets_id FROM datacenter_subnet data
-  WHERE NOT EXISTS (SELECT locations_id FROM location_subnet loc WHERE loc.locations_id = data.datacenters_id);
+--
+-- Drop Procedure after usage
+--
+
+DROP PROCEDURE IF EXISTS migrateDatacenterToLocation;
