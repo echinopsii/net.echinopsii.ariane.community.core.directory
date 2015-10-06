@@ -18,7 +18,6 @@ INSERT IGNORE INTO `resource` (description, resourceName, version) VALUES
 UNLOCK TABLES;
 
 
-
 --
 -- Dumping data for table `permission`
 --
@@ -748,3 +747,11 @@ SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirCom
 INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:display' AND r.roleName='orgreviewer';
 UNLOCK TABLES;
+
+
+DELETE resource.*, permission.*, resource_permission.*, permission_role.*, role_permission.* FROM resource, permission,
+ resource_permission, permission_role, role_permission WHERE resource.id=permission.resource_id AND
+ resource.id=resource_permission.resource_id AND resource_permission.permissions_id=permission_role.permission_id
+ AND permission_role.permission_id=role_permission.permissions_id AND resource.resourceName='dirComITiNtwDC';
+
+DROP TABLE IF EXISTS datacenter, datacenter_routingArea, datacenter_subnet;
