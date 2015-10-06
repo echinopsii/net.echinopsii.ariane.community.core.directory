@@ -89,7 +89,6 @@ public class TeamJSON {
 
     public static class JSONFriendlyTeam {
         private long teamID;
-        private long teamVersion;
         private String teamName;
         private String teamDescription;
         private String teamColorCode;
@@ -134,14 +133,6 @@ public class TeamJSON {
 
         public void setTeamName(String teamName) {
             this.teamName = teamName;
-        }
-
-        public long getTeamVersion() {
-            return teamVersion;
-        }
-
-        public void setTeamVersion(long teamVersion) {
-            this.teamVersion = teamVersion;
         }
 
         public long getTeamID() {
