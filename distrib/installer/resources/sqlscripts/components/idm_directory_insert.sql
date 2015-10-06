@@ -749,9 +749,10 @@ SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirCom
 UNLOCK TABLES;
 
 
-DELETE resource.*, permission.*, resource_permission.*, permission_role.*, role_permission.* FROM resource, permission,
- resource_permission, permission_role, role_permission WHERE resource.id=permission.resource_id AND
- resource.id=resource_permission.resource_id AND resource_permission.permissions_id=permission_role.permission_id
- AND permission_role.permission_id=role_permission.permissions_id AND resource.resourceName='dirComITiNtwDC';
-
-DROP TABLE IF EXISTS datacenter, datacenter_routingArea, datacenter_subnet;
+DELETE resource.*, permission.*, resource_permission.*, permission_role.*, role_permission.*
+ FROM resource, permission, resource_permission, permission_role, role_permission
+ WHERE resource.id=permission.resource_id AND
+ resource.id=resource_permission.resource_id AND
+ resource_permission.permissions_id=permission_role.permission_id AND
+ permission_role.permission_id=role_permission.permissions_id AND
+ resource.resourceName='dirComITiNtwDC';

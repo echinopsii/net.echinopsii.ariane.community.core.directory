@@ -289,7 +289,6 @@ CREATE TABLE IF NOT EXISTS `team_osInstance` (
 --
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `datacenter` $$
 CREATE PROCEDURE `migrateDatacenterToLocation`()
   BEGIN
     DECLARE FoundCount INT;
