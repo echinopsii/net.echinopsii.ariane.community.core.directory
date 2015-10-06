@@ -84,7 +84,6 @@ public class EnvironmentJSON {
 
     public static class JSONFriendlyEnvironment{
         private long environmentID;
-        private long environmentVersion;
         private String environmentName;
         private String environmentColorCode;
         private String environmentDescription;
@@ -120,14 +119,6 @@ public class EnvironmentJSON {
 
         public void setEnvironmentName(String environmentName) {
             this.environmentName = environmentName;
-        }
-
-        public long getEnvironmentVersion() {
-            return environmentVersion;
-        }
-
-        public void setEnvironmentVersion(long environmentVersion) {
-            this.environmentVersion = environmentVersion;
         }
 
         public long getEnvironmentID() {
