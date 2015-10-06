@@ -748,7 +748,7 @@ INSERT IGNORE INTO `role_permission` (role_id, permissions_id)
 SELECT r.id, p.id FROM permission AS p, role AS r WHERE p.permissionName='dirComOrgTeam:display' AND r.roleName='orgreviewer';
 UNLOCK TABLES;
 
-
+SET FOREIGN_KEY_CHECKS=0;
 DELETE resource.*, permission.*, resource_permission.*, permission_role.*, role_permission.*
  FROM resource, permission, resource_permission, permission_role, role_permission
  WHERE resource.id=permission.resource_id AND
@@ -756,3 +756,4 @@ DELETE resource.*, permission.*, resource_permission.*, permission_role.*, role_
  resource_permission.permissions_id=permission_role.permission_id AND
  permission_role.permission_id=role_permission.permissions_id AND
  resource.resourceName='dirComITiNtwDC';
+SET FOREIGN_KEY_CHECKS=1;
