@@ -114,7 +114,7 @@ public class RoutingArea implements Serializable
 
     @ManyToMany(mappedBy = "routingAreas", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private Set<Datacenter> datacenters = new HashSet<Datacenter>();
+    private Set<Location> locations = new HashSet<Location>();
 
     public Long getId() {
         return this.id;
@@ -243,21 +243,21 @@ public class RoutingArea implements Serializable
         return this;
     }
 
-    public Set<Datacenter> getDatacenters() {
-        return this.datacenters;
+    public Set<Location> getLocations() {
+        return this.locations;
     }
 
-    public void setDatacenters(final Set<Datacenter> datacenters) {
-        this.datacenters = datacenters;
+    public void setLocations(final Set<Location> locations) {
+        this.locations = locations;
     }
 
-    public RoutingArea setDatacentersR(final Set<Datacenter> datacenters) {
-        this.datacenters = datacenters;
+    public RoutingArea setDatacentersR(final Set<Location> locations) {
+        this.locations = locations;
         return this;
     }
 
     public RoutingArea clone() {
         return new RoutingArea().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setMulticastR(this.multicast).
-                                 setTypeR(this.type).setDatacentersR(new HashSet<Datacenter>(this.datacenters)).setSubnetsR(new HashSet<Subnet>(this.subnets));
+                                 setTypeR(this.type).setDatacentersR(new HashSet<Location>(this.locations)).setSubnetsR(new HashSet<Subnet>(this.subnets));
     }
 }

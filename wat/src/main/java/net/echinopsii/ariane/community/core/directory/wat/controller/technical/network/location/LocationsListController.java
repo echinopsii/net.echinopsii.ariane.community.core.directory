@@ -1,6 +1,6 @@
 /**
  * Directory wat
- * Directories Datacenter RUD Controller
+ * Directories Location RUD Controller
  * Copyright (C) 2013 Mathilde Ffrench
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter;
+package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea.RoutingAreasListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import org.primefaces.event.ToggleEvent;
@@ -42,32 +42,32 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * This class provide stuff to display a datacenters list in a PrimeFaces data table, display datacenters, update a datacenter and remove datacenters
+ * This class provide stuff to display a locations list in a PrimeFaces data table, display locations, update a location and remove locations
  */
-public class DatacentersListController implements Serializable {
+public class LocationsListController implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger log = LoggerFactory.getLogger(DatacentersListController.class);
+    private static final Logger log = LoggerFactory.getLogger(LocationsListController.class);
 
-    private LazyDataModel<Datacenter> lazyModel = new DatacenterLazyModel();
-    private Datacenter[]              selectedDCList ;
+    private LazyDataModel<Location> lazyModel = new LocationLazyModel();
+    private Location[] selectedLOCList;
 
-    private HashMap<Long,String>       addedSubnet    = new HashMap<Long, String>();
-    private HashMap<Long,List<Subnet>> removedSubnets = new HashMap<Long, List<Subnet>>();
+    private HashMap<Long, String> addedSubnet = new HashMap<Long, String>();
+    private HashMap<Long, List<Subnet>> removedSubnets = new HashMap<Long, List<Subnet>>();
 
-    private HashMap<Long,String> addedRArea = new HashMap<Long, String>();
-    private HashMap<Long,List<RoutingArea>> removedRareas = new HashMap<Long, List<RoutingArea>>();
+    private HashMap<Long, String> addedRArea = new HashMap<Long, String>();
+    private HashMap<Long, List<RoutingArea>> removedRareas = new HashMap<Long, List<RoutingArea>>();
 
-    public LazyDataModel<Datacenter> getLazyModel() {
+    public LazyDataModel<Location> getLazyModel() {
         return lazyModel;
     }
 
-    public Datacenter[] getSelectedDCList() {
-        return selectedDCList;
+    public Location[] getSelectedLOCList() {
+        return selectedLOCList;
     }
 
-    public void setSelectedDCList(Datacenter[] selectedDCList) {
-        this.selectedDCList = selectedDCList;
+    public void setSelectedLOCList(Location[] selectedLOCList) {
+        this.selectedLOCList = selectedLOCList;
     }
 
     public HashMap<Long, String> getAddedSubnet() {
@@ -79,25 +79,25 @@ public class DatacentersListController implements Serializable {
     }
 
     /**
-     * Synchronize added subnet into a datacenter to database
+     * Synchronize added subnet into a location to database
      *
-     * @param dc bean UI is working on
+     * @param loc bean UI is working on
      */
-    public void syncAddedSubnet(Datacenter dc) {
+    public void syncAddedSubnet(Location loc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             for (Subnet subnet : SubnetsListController.getAll()) {
-                if (subnet.getName().equals(this.addedSubnet.get(dc.getId()))) {
+                if (subnet.getName().equals(this.addedSubnet.get(loc.getId()))) {
                     em.getTransaction().begin();
-                    dc = em.find(dc.getClass(), dc.getId());
+                    loc = em.find(loc.getClass(), loc.getId());
                     subnet = em.find(subnet.getClass(), subnet.getId());
-                    dc.getSubnets().add(subnet);
-                    subnet.getDatacenters().remove(dc);
+                    loc.getSubnets().add(subnet);
+                    subnet.getLocations().remove(loc);
                     em.flush();
                     em.getTransaction().commit();
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                               "Datacenter updated successfully !",
-                                                               "Datacenter name : " + dc.getName());
+                            "Location updated successfully !",
+                            "Location name : " + loc.getName());
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     break;
                 }
@@ -106,8 +106,8 @@ public class DatacentersListController implements Serializable {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updating datacenter " + dc.getName() + " !",
-                                                       "Throwable message : " + t.getMessage());
+                    "Throwable raised while updating location " + loc.getName() + " !",
+                    "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();
@@ -125,33 +125,33 @@ public class DatacentersListController implements Serializable {
     }
 
     /**
-     * Synchronize removed subnet from a datacenter to database
+     * Synchronize removed subnet from a location to database
      *
-     * @param dc bean UI is working on
+     * @param loc bean UI is working on
      */
-    public void syncRemovedSubnets(Datacenter dc) {
+    public void syncRemovedSubnets(Location loc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            dc = em.find(dc.getClass(), dc.getId());
-            List<Subnet> subnets2beRM = this.removedSubnets.get(dc.getId());
+            loc = em.find(loc.getClass(), loc.getId());
+            List<Subnet> subnets2beRM = this.removedSubnets.get(loc.getId());
             for (Subnet subnet2beRM : subnets2beRM) {
                 subnet2beRM = em.find(subnet2beRM.getClass(), subnet2beRM.getId());
-                dc.getSubnets().remove(subnet2beRM);
-                subnet2beRM.getDatacenters().remove(dc);
+                loc.getSubnets().remove(subnet2beRM);
+                subnet2beRM.getLocations().remove(loc);
             }
             em.flush();
             em.getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                       "Datacenter updated successfully !",
-                                                       "Datacenter name : " + dc.getName());
+                    "Location updated successfully !",
+                    "Location name : " + loc.getName());
             FacesContext.getCurrentInstance().addMessage(null, msg);
         } catch (Throwable t) {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updating datacenter " + dc.getName() + " !",
-                                                       "Throwable message : " + t.getMessage());
+                    "Throwable raised while updating location " + loc.getName() + " !",
+                    "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();
@@ -169,25 +169,25 @@ public class DatacentersListController implements Serializable {
     }
 
     /**
-     * Synchronize added routing area into a datacenter to database
+     * Synchronize added routing area into a location to database
      *
-     * @param dc bean UI is working on
+     * @param loc bean UI is working on
      */
-    public void syncAddedRArea(Datacenter dc) {
+    public void syncAddedRArea(Location loc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
-            for (RoutingArea rarea: RoutingAreasListController.getAll()) {
-                if (rarea.getName().equals(this.addedRArea.get(dc.getId()))) {
+            for (RoutingArea rarea : RoutingAreasListController.getAll()) {
+                if (rarea.getName().equals(this.addedRArea.get(loc.getId()))) {
                     em.getTransaction().begin();
-                    dc = em.find(dc.getClass(), dc.getId());
+                    loc = em.find(loc.getClass(), loc.getId());
                     rarea = em.find(rarea.getClass(), rarea.getId());
-                    dc.getRoutingAreas().add(rarea);
-                    rarea.getDatacenters().add(dc);
+                    loc.getRoutingAreas().add(rarea);
+                    rarea.getLocations().add(loc);
                     em.flush();
                     em.getTransaction().commit();
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                               "Datacenter updated successfully !",
-                                                               "Datacenter name : " + dc.getName());
+                            "Location updated successfully !",
+                            "Location name : " + loc.getName());
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     break;
                 }
@@ -196,8 +196,8 @@ public class DatacentersListController implements Serializable {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updating datacenter " + dc.getName() + " !",
-                                                       "Throwable message : " + t.getMessage());
+                    "Throwable raised while updating location " + loc.getName() + " !",
+                    "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();
@@ -215,33 +215,33 @@ public class DatacentersListController implements Serializable {
     }
 
     /**
-     * Synchronize removed routing area from a datacenter to database
+     * Synchronize removed routing area from a location to database
      *
-     * @param dc bean UI is working on
+     * @param loc bean UI is working on
      */
-    public void syncRemovedRAreas(Datacenter dc) {
+    public void syncRemovedRAreas(Location loc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            dc = em.find(dc.getClass(), dc.getId());
-            List<RoutingArea> rareas2beRM = this.removedRareas.get(dc.getId());
+            loc = em.find(loc.getClass(), loc.getId());
+            List<RoutingArea> rareas2beRM = this.removedRareas.get(loc.getId());
             for (RoutingArea rarea2beRM : rareas2beRM) {
                 rarea2beRM = em.find(rarea2beRM.getClass(), rarea2beRM.getId());
-                dc.getRoutingAreas().remove(rarea2beRM);
-                rarea2beRM.getDatacenters().remove(dc);
+                loc.getRoutingAreas().remove(rarea2beRM);
+                rarea2beRM.getLocations().remove(loc);
             }
             em.flush();
             em.getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                       "Datacenter updated successfully !",
-                                                       "Datacenter name : " + dc.getName());
+                    "Location updated successfully !",
+                    "Location name : " + loc.getName());
             FacesContext.getCurrentInstance().addMessage(null, msg);
         } catch (Throwable t) {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updating datacenter " + dc.getName() + " !",
-                                                       "Throwable message : " + t.getMessage());
+                    "Throwable raised while updating location " + loc.getName() + " !",
+                    "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();
@@ -252,15 +252,15 @@ public class DatacentersListController implements Serializable {
 
     /**
      * When a PrimeFaces data table row is toogled init reference into the addedSubnet, removedSubnets, addedRArea, removedRareas lists
-     * with the correct datacenter id <br/>
+     * with the correct location id <br/>
      * When a PrimeFaces data table row is untoogled remove reference from the addedSubnet, removedSubnets, addedRArea, removedRareas lists
-     * with the correct datacenter id <br/>
+     * with the correct location id <br/>
      *
      * @param event provided by the UI through PrimeFaces on a row toggle
      */
     public void onRowToggle(ToggleEvent event) {
         log.debug("Row Toogled : {}", new Object[]{event.getVisibility().toString()});
-        Datacenter eventDc = ((Datacenter) event.getData());
+        Location eventDc = ((Location) event.getData());
         if (event.getVisibility().toString().equals("HIDDEN")) {
             addedSubnet.remove(eventDc.getId());
             removedSubnets.remove(eventDc.getId());
@@ -275,28 +275,31 @@ public class DatacentersListController implements Serializable {
     }
 
     /**
-     * When UI actions an update merge the corresponding datacenter bean with the correct datacenter instance in the DB and save this instance
+     * When UI actions an update merge the corresponding location bean with the correct location instance in the DB and save this instance
      *
-     * @param dc bean UI is working on
+     * @param loc bean UI is working on
      */
-    public void update(Datacenter dc) {
+    public void update(Location loc) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
-            dc = em.find(dc.getClass(), dc.getId()).setNameR(dc.getName()).setDescriptionR(dc.getDescription()).setAddressR(dc.getAddress()).setCountryR(dc.getCountry()).
-                                                    setTownR(dc.getTown()).setGpsLatitudeR(dc.getGpsLatitude()).setGpsLongitudeR(dc.getGpsLongitude()).setZipCodeR(dc.getZipCode());
+            loc = em.find(loc.getClass(), loc.getId()).setNameR(loc.getName()).setDescriptionR(loc.getDescription()).
+                    setAddressR(loc.getAddress()).setCountryR(loc.getCountry()).
+                    setTownR(loc.getTown()).setGpsLatitudeR(loc.getGpsLatitude()).
+                    setGpsLongitudeR(loc.getGpsLongitude()).setZipCodeR(loc.getZipCode()).
+                    setTypeR(loc.getType());
             em.flush();
             em.getTransaction().commit();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                       "Datacenter updated successfully !",
-                                                       "Datacenter name : " + dc.getName());
+                    "Location updated successfully !",
+                    "Location name : " + loc.getName());
             FacesContext.getCurrentInstance().addMessage(null, msg);
         } catch (Throwable t) {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while updating datacenter " + dc.getName() + " !",
-                                                       "Throwable message : " + t.getMessage());
+                    "Throwable raised while updating location " + loc.getName() + " !",
+                    "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();
@@ -306,32 +309,32 @@ public class DatacentersListController implements Serializable {
     }
 
     /**
-     * Remove selected datacenters
+     * Remove selected locations
      */
     public void delete() {
-        log.debug("Remove selected DC !");
-        for (Datacenter dc2BeRemoved: selectedDCList) {
+        log.debug("Remove selected LOC !");
+        for (Location loc2BeRemoved : selectedLOCList) {
             EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             try {
                 em.getTransaction().begin();
-                dc2BeRemoved = em.find(dc2BeRemoved.getClass(), dc2BeRemoved.getId());
-                for (Subnet subnet : dc2BeRemoved.getSubnets())
-                    subnet.getDatacenters().remove(dc2BeRemoved);
-                for (RoutingArea rarea : dc2BeRemoved.getRoutingAreas())
-                    rarea.getDatacenters().remove(dc2BeRemoved);
-                em.remove(dc2BeRemoved);
+                loc2BeRemoved = em.find(loc2BeRemoved.getClass(), loc2BeRemoved.getId());
+                for (Subnet subnet : loc2BeRemoved.getSubnets())
+                    subnet.getLocations().remove(loc2BeRemoved);
+                for (RoutingArea rarea : loc2BeRemoved.getRoutingAreas())
+                    rarea.getLocations().remove(loc2BeRemoved);
+                em.remove(loc2BeRemoved);
                 em.flush();
                 em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                    "Datacenter deleted successfully !",
-                                                    "Datacenter name : " + dc2BeRemoved.getName());
+                        "Location deleted successfully !",
+                        "Location name : " + loc2BeRemoved.getName());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
             } catch (Throwable t) {
                 log.debug("Throwable catched !");
                 t.printStackTrace();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                           "Throwable raised while deleting datacenter " + dc2BeRemoved.getName() + " !",
-                                                           "Throwable message : " + t.getMessage());
+                        "Throwable raised while deleting location " + loc2BeRemoved.getName() + " !",
+                        "Throwable message : " + t.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (em.getTransaction().isActive())
                     em.getTransaction().rollback();
@@ -339,34 +342,40 @@ public class DatacentersListController implements Serializable {
                 em.close();
             }
         }
-        selectedDCList=null;
+        selectedLOCList = null;
     }
 
     /**
-     * Get all datacenters from the db
+     * Get all locations from the db
      *
-     * @return all datacenters from the db
+     * @return all locations from the db
      */
-    public static List<Datacenter> getAll() {
+    public static List<Location> getAll() {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-        log.debug("Get all datacenters from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
-                         new Object[]{
-                                             (Thread.currentThread().getStackTrace().length>0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
-                                             (Thread.currentThread().getStackTrace().length>6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
-                         });
+        log.debug("Get all locations from : \n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}\n\t{}",
+                new Object[]{
+                        (Thread.currentThread().getStackTrace().length > 0) ? Thread.currentThread().getStackTrace()[0].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length > 1) ? Thread.currentThread().getStackTrace()[1].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length > 2) ? Thread.currentThread().getStackTrace()[2].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length > 3) ? Thread.currentThread().getStackTrace()[3].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length > 4) ? Thread.currentThread().getStackTrace()[4].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length > 5) ? Thread.currentThread().getStackTrace()[5].getClassName() : "",
+                        (Thread.currentThread().getStackTrace().length > 6) ? Thread.currentThread().getStackTrace()[6].getClassName() : ""
+                });
 
-        CriteriaBuilder           builder  = em.getCriteriaBuilder();
-        CriteriaQuery<Datacenter> criteria = builder.createQuery(Datacenter.class);
-        Root<Datacenter>          root     = criteria.from(Datacenter.class);
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Location> criteria = builder.createQuery(Location.class);
+        Root<Location> root = criteria.from(Location.class);
         criteria.select(root).orderBy(builder.asc(root.get("name")));
 
-        List<Datacenter> ret = em.createQuery(criteria).getResultList();
+        List<Location> ret = em.createQuery(criteria).getResultList();
         em.close();
         return ret;
+    }
+
+    public static List<String> getAllLocationTypesForSelector() {
+        List<String> locationTypes = Location.getTypeList();
+        locationTypes.add(0, "Select Location Type");
+        return locationTypes;
     }
 }

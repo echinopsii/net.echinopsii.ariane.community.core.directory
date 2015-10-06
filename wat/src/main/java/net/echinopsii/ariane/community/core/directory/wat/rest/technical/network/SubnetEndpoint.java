@@ -18,8 +18,7 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
-import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.EnvironmentJSON;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
@@ -74,7 +73,7 @@ public class SubnetEndpoint {
     }
 
     public static Subnet findSubnetById(EntityManager em, long id) {
-        TypedQuery<Subnet> findByIdQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.rarea WHERE l.id = :entityId ORDER BY l.id", Subnet.class);
+        TypedQuery<Subnet> findByIdQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.locations LEFT JOIN FETCH l.rarea WHERE l.id = :entityId ORDER BY l.id", Subnet.class);
         findByIdQuery.setParameter("entityId", id);
         Subnet entity;
         try {
@@ -86,7 +85,7 @@ public class SubnetEndpoint {
     }
 
     public static Subnet findSubnetByName(EntityManager em, String name) {
-        TypedQuery<Subnet> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.rarea WHERE l.name = :entityName ORDER BY l.name", Subnet.class);
+        TypedQuery<Subnet> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.locations LEFT JOIN FETCH l.rarea WHERE l.name = :entityName ORDER BY l.name", Subnet.class);
         findByNameQuery.setParameter("entityName", name);
         Subnet entity;
         try {
@@ -189,28 +188,28 @@ public class SubnetEndpoint {
             }
             if(jsonFriendlySubnet.getSubnetDatacentersID() != null) {
                 if (!jsonFriendlySubnet.getSubnetDatacentersID().isEmpty()) {
-                    for (Datacenter datacenter : entity.getDatacenters()) {
-                        if (!jsonFriendlySubnet.getSubnetDatacentersID().contains(datacenter.getId())) {
-                            entity.getDatacenters().remove(datacenter);
-                            datacenter.getSubnets().remove(entity);
+                    for (Location location : entity.getLocations()) {
+                        if (!jsonFriendlySubnet.getSubnetDatacentersID().contains(location.getId())) {
+                            entity.getLocations().remove(location);
+                            location.getSubnets().remove(entity);
                         }
                     }
                     for (Long dcId : jsonFriendlySubnet.getSubnetDatacentersID()) {
-                        Datacenter datacenter = DatacenterEndpoint.findDatacenterById(em, dcId);
-                        if (datacenter != null) {
-                            if (!entity.getDatacenters().contains(datacenter)) {
-                                entity.getDatacenters().add(datacenter);
-                                datacenter.getSubnets().add(entity);
+                        Location location = DatacenterEndpoint.findDatacenterById(em, dcId);
+                        if (location != null) {
+                            if (!entity.getLocations().contains(location)) {
+                                entity.getLocations().add(location);
+                                location.getSubnets().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided Datacenter ID " + dcId +" was not found.");
+                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided Location ID " + dcId +" was not found.");
                             return commonRestResponse;
                         }
                     }
                 } else {
-                    for (Datacenter datacenter : entity.getDatacenters()) {
-                        entity.getDatacenters().remove(datacenter);
-                        datacenter.getSubnets().remove(entity);
+                    for (Location location : entity.getLocations()) {
+                        entity.getLocations().remove(location);
+                        location.getSubnets().remove(entity);
                     }
                 }
             }
@@ -277,14 +276,14 @@ public class SubnetEndpoint {
             if(jsonFriendlySubnet.getSubnetDatacentersID() != null) {
                 if (!jsonFriendlySubnet.getSubnetDatacentersID().isEmpty()) {
                     for (Long dcId : jsonFriendlySubnet.getSubnetDatacentersID()) {
-                        Datacenter datacenter = DatacenterEndpoint.findDatacenterById(em, dcId);
-                        if (datacenter != null) {
-                            if (!entity.getDatacenters().contains(datacenter)) {
-                                entity.getDatacenters().add(datacenter);
-                                datacenter.getSubnets().add(entity);
+                        Location location = DatacenterEndpoint.findDatacenterById(em, dcId);
+                        if (location != null) {
+                            if (!entity.getLocations().contains(location)) {
+                                entity.getLocations().add(location);
+                                location.getSubnets().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided Datacenter ID " + dcId + " was not found.");
+                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided Location ID " + dcId + " was not found.");
                             return commonRestResponse;
                         }
                     }
@@ -341,7 +340,7 @@ public class SubnetEndpoint {
         if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwSubnet:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            final HashSet<Subnet> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.datacenters LEFT JOIN FETCH l.rarea ORDER BY l.id", Subnet.class).getResultList());
+            final HashSet<Subnet> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM Subnet l LEFT JOIN FETCH l.osInstances LEFT JOIN FETCH l.locations LEFT JOIN FETCH l.rarea ORDER BY l.id", Subnet.class).getResultList());
 
             Response ret = null;
             String result;
@@ -494,7 +493,7 @@ public class SubnetEndpoint {
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
-                        for (Datacenter dc : entity.getDatacenters())
+                        for (Location dc : entity.getLocations())
                             dc.getSubnets().remove(entity);
                         for (OSInstance osi : entity.getOsInstances())
                             osi.getNetworkSubnets().remove(entity);
@@ -809,15 +808,15 @@ public class SubnetEndpoint {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
                 if (entity!=null) {
-                    Datacenter datacenter = DatacenterEndpoint.findDatacenterById(em, dcID);
-                    if (datacenter!=null) {
+                    Location location = DatacenterEndpoint.findDatacenterById(em, dcID);
+                    if (location !=null) {
                         try {
                             em.getTransaction().begin();
-                            datacenter.getSubnets().add(entity);
-                            entity.getDatacenters().add(datacenter);
+                            location.getSubnets().add(entity);
+                            entity.getLocations().add(location);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by adding datacenter " + dcID).build();
+                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by adding location " + dcID).build();
                         } catch (Throwable t) {
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -826,7 +825,7 @@ public class SubnetEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("Datacenter " + dcID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("Location " + dcID + " not found.").build();
                     }
                 } else {
                     em.close();
@@ -852,15 +851,15 @@ public class SubnetEndpoint {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
                 if (entity!=null) {
-                    Datacenter datacenter = DatacenterEndpoint.findDatacenterById(em, dcID);
-                    if (datacenter!=null) {
+                    Location location = DatacenterEndpoint.findDatacenterById(em, dcID);
+                    if (location !=null) {
                         try {
                             em.getTransaction().begin();
-                            datacenter.getSubnets().remove(entity);
-                            entity.getDatacenters().remove(datacenter);
+                            location.getSubnets().remove(entity);
+                            entity.getLocations().remove(location);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by removing datacenter " + dcID).build();
+                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by removing location " + dcID).build();
                         } catch (Throwable t) {
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -869,7 +868,7 @@ public class SubnetEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("Datacenter " + dcID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("Location " + dcID + " not found.").build();
                     }
                 } else {
                     em.close();

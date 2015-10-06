@@ -8,14 +8,14 @@
         <h:outputText value="Name" styleClass="arianeDialogLabel"/>
         <p:inputText id="rAreaName" label="Name" required="true" value="#{routingAreaNewController.name}"/>
 
-        <h:outputText value="Datacenters" styleClass="arianeDialogLabel"/>
+        <h:outputText value="Locations" styleClass="arianeDialogLabel"/>
         <h:panelGroup>
-            <p:commandLink onclick="dcCreateDialog.show()">
-                <h:outputText value=" create new datacenter"/>
+            <p:commandLink onclick="locCreateDialog.show()">
+                <h:outputText value=" create new location"/>
             </p:commandLink><br/>
-            <p:selectManyMenu id="rAreaBasic" value="#{routingAreaNewController.datacentersToBind}" style="width:66%;height:100px">
-                <f:selectItems value="#{datacentersListController.getAll()}"  var="dc"
-                               itemLabel="#{dc.name}" itemValue="#{dc.name}"/>
+            <p:selectManyMenu id="rAreaBasic" value="#{routingAreaNewController.locationsToBind}" style="width:66%;height:100px">
+                <f:selectItems value="#{locationsListController.getAll()}"  var="loc"
+                               itemLabel="#{loc.name}" itemValue="#{loc.name}"/>
             </p:selectManyMenu>
         </h:panelGroup>
 

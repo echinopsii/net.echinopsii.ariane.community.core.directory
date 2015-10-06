@@ -88,34 +88,37 @@
                             </h:form>
                             <h:outputText value="#{rarea.type}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwRarea:update'))}"/>
 
-                            <h:outputText value="Datacenters : " styleClass="arianeDialogLabel"/>
+                            <h:outputText value="Locations : " styleClass="arianeDialogLabel"/>
                             <h:form>
-                                <p:dataTable value="#{directoryViewUtils.asList(rarea,'datacenters')}" var="dc" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{dc.id}"
-                                             rows="5" paginator="true" selection="#{routingAreasListController.removedDCs[rarea.id]}" selectionMode="multiple">
-                                    <p:column headerText="Name" sortBy="#{dc.name}" filterBy="#{dc.name}">
-                                        <h:outputText id="dcName" value="#{dc.name}"/>
+                                <p:dataTable value="#{directoryViewUtils.asList(rarea,'locations')}" var="loc" styleClass="ui-widget-content grid arianeDataTablePaginator" rowKey="#{loc.id}"
+                                             rows="5" paginator="true" selection="#{routingAreasListController.removedLOCs[rarea.id]}" selectionMode="multiple">
+                                    <p:column headerText="Name" sortBy="#{loc.name}" filterBy="#{loc.name}">
+                                        <h:outputText id="locName" value="#{loc.name}"/>
                                     </p:column>
-                                    <p:column headerText="Description" sortBy="#{dc.description}" filterBy="#{dc.description}">
-                                        <h:outputText id="dcDescription" value="#{dc.description}"/>
+                                    <p:column headerText="Description" sortBy="#{loc.description}" filterBy="#{loc.description}">
+                                        <h:outputText id="locDescription" value="#{loc.description}"/>
                                     </p:column>
-                                    <p:column headerText="Town" sortBy="#{dc.town}" filterBy="#{dc.town}">
-                                        <h:outputText id="dcTown" value="#{dc.town}"/>
+                                    <p:column headerText="Town" sortBy="#{loc.town}" filterBy="#{loc.town}">
+                                        <h:outputText id="locTown" value="#{loc.town}"/>
                                     </p:column>
-                                    <p:column headerText="Country" sortBy="#{dc.country}" filterBy="#{dc.country}">
-                                        <h:outputText id="dcCountry" value="#{dc.country}"/>
+                                    <p:column headerText="Country" sortBy="#{loc.country}" filterBy="#{loc.country}">
+                                        <h:outputText id="locCountry" value="#{loc.country}"/>
+                                    </p:column>
+                                    <p:column headerText="Type" sortBy="#{loc.type}" filterBy="#{loc.type}">
+                                        <h:outputText id="locType" value="#{loc.type}"/>
                                     </p:column>
                                     <c:if test="#{arianeidm:hasPermission('dirComITiNtwRarea:update')}">
                                         <f:facet name="footer">
-                                            <p:inplace label="Select DC to bind" effectSpeed="fast" editor="true">
-                                                <h:selectOneMenu value="#{routingAreasListController.addedDC[rarea.id]}">
-                                                    <f:selectItems value="#{datacentersListController.getAll()}" var="dc_"
-                                                                   itemLabel="#{dc_.name}" itemValue="#{dc_.name}"/>
+                                            <p:inplace label="Select location to bind" effectSpeed="fast" editor="true">
+                                                <h:selectOneMenu value="#{routingAreasListController.addedLOC[rarea.id]}">
+                                                    <f:selectItems value="#{locationsListController.getAll()}" var="loc_"
+                                                                   itemLabel="#{loc_.name}" itemValue="#{loc_.name}"/>
                                                 </h:selectOneMenu>
-                                                <p:ajax event="save" listener="#{routingAreasListController.syncAddedDC(rarea)}"
+                                                <p:ajax event="save" listener="#{routingAreasListController.syncAddedLOC(rarea)}"
                                                         update="@form,:rareaTableForm:rareaTableMessages"/>
                                             </p:inplace>
-                                            <p:commandButton value="Unbind selected DC" icon="ui-icon-closethick"
-                                                             process="@form" actionListener="#{routingAreasListController.syncRemovedDCs(rarea)}"
+                                            <p:commandButton value="Unbind selected location" icon="ui-icon-closethick"
+                                                             process="@form" actionListener="#{routingAreasListController.syncRemovedLOCs(rarea)}"
                                                              update="@form,:rareaTableForm:rareaTableMessages"/>
                                         </f:facet>
                                     </c:if>
@@ -184,20 +187,20 @@
                             <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                             <h:outputText value="#{selectedRarea.name}"/>
 
-                            <h:outputText value="Datacenters : " styleClass="arianeDialogLabel"/>
-                            <p:dataTable  value="#{directoryViewUtils.asList(selectedRarea,'datacenters')}" var="_item"
+                            <h:outputText value="Locations : " styleClass="arianeDialogLabel"/>
+                            <p:dataTable  value="#{directoryViewUtils.asList(selectedRarea,'locations')}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="Name">
-                                    <h:outputText id="rdcName" value="#{_item.name}"/>
+                                    <h:outputText id="rlocName" value="#{_item.name}"/>
                                 </p:column>
                                 <p:column headerText="Description">
-                                    <h:outputText id="rdcDescription" value="#{_item.description}"/>
+                                    <h:outputText id="rlocDescription" value="#{_item.description}"/>
                                 </p:column>
                                 <p:column headerText="Town">
-                                    <h:outputText id="rdcTown" value="#{_item.town}"/>
+                                    <h:outputText id="rlocTown" value="#{_item.town}"/>
                                 </p:column>
                                 <p:column headerText="Country">
-                                    <h:outputText id="rdcCountry" value="#{_item.country}"/>
+                                    <h:outputText id="rlocCountry" value="#{_item.country}"/>
                                 </p:column>
                             </p:dataTable>
 
@@ -235,14 +238,14 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new datacenter" widgetVar="dcCreateDialog"
+            <p:dialog onShow="initialize()" styleClass="arianeDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new location" widgetVar="locCreateDialog"
                       width="700" showEffect="fade" hideEffect="explode" closeOnEscape="true">
-                <h:form id="createDCDialogForm">
-                    <ui:insert name="createDatacenter" >
-                        <ui:include src="/templates/dcNewForm.xhtml" />
+                <h:form id="createLOCDialogForm">
+                    <ui:insert name="createLocation" >
+                        <ui:include src="/templates/locNewForm.xhtml" />
                     </ui:insert>
-                    <p:commandButton value="Save this datacenter" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
-                                     actionListener="#{datacenterNewController.save}" oncomplete="dcCreateDialog.hide();"
+                    <p:commandButton value="Save this location" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
+                                     actionListener="#{locationNewController.save}" oncomplete="locCreateDialog.hide();"
                                      update=":createRareaDialogForm:rareaNewGrid,:rareaTableForm:rareaTableMessages"/>
                 </h:form>
             </p:dialog>

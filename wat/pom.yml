@@ -69,7 +69,7 @@
                             net.echinopsii.ariane.community.core.directory.wat.controller.organisational.company;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.wat.controller.organisational.environment;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.wat.controller.organisational.team;version=${project.version},
-                            net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter;version=${project.version},
+                            net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress;version=${project.version},
                             net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard;version=${project.version},

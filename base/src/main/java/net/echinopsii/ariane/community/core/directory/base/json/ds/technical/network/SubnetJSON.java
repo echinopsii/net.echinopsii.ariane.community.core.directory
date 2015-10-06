@@ -24,8 +24,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.echinopsii.ariane.community.core.directory.base.iPojo.DirectoryTreeMenuRootsRegistryImpl;
-import net.echinopsii.ariane.community.core.directory.base.json.ds.organisational.CompanyJSON;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
@@ -71,7 +70,7 @@ public class SubnetJSON {
         jgenerator.writeEndArray();
 
         jgenerator.writeArrayFieldStart(SUBNET_DATACENTERS_ID);
-        for (Datacenter dc : subnet.getDatacenters())
+        for (Location dc : subnet.getLocations())
             jgenerator.writeNumber(dc.getId());
         jgenerator.writeEndArray();
 

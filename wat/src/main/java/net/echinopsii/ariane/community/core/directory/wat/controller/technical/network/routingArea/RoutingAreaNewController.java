@@ -19,10 +19,10 @@
 
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location.LocationsListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.datacenter.DatacentersListController;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Datacenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +58,8 @@ public class RoutingAreaNewController implements Serializable {
     private String multicast;
     private String type;
 
-    private List<String> datacentersToBind = new ArrayList<String>();
-    private Set<Datacenter> datacenters    = new HashSet<Datacenter>();
+    private List<String> locationsToBind = new ArrayList<String>();
+    private Set<Location> locations = new HashSet<Location>();
 
     public EntityManager getEm() {
         return em;
@@ -97,35 +97,35 @@ public class RoutingAreaNewController implements Serializable {
         this.type = type;
     }
 
-    public List<String> getDatacentersToBind() {
-        return datacentersToBind;
+    public List<String> getLocationsToBind() {
+        return locationsToBind;
     }
 
-    public void setDatacentersToBind(List<String> datacentersToBind) {
-        this.datacentersToBind = datacentersToBind;
+    public void setLocationsToBind(List<String> locationsToBind) {
+        this.locationsToBind = locationsToBind;
     }
 
-    public Set<Datacenter> getDatacenters() {
-        return datacenters;
+    public Set<Location> getLocations() {
+        return locations;
     }
 
-    public void setDatacenters(Set<Datacenter> datacenters) {
-        this.datacenters = datacenters;
+    public void setLocations(Set<Location> locations) {
+        this.locations = locations;
     }
 
     /**
-     * populate datacenters list through datacentersToBind list provided through UI form
+     * populate locations list through locationsToBind list provided through UI form
      *
      * @throws NotSupportedException
      * @throws SystemException
      */
-    private void bindSelectedDatacenters() throws NotSupportedException, SystemException {
-        for (Datacenter dc: DatacentersListController.getAll()) {
-            for (String dcToBind : datacentersToBind)
-                if (dc.getName().equals(dcToBind)) {
-                    dc = em.find(dc.getClass(), dc.getId());
-                    this.datacenters.add(dc);
-                    log.debug("Synced datacenter : {} {}", new Object[]{dc.getId(), dc.getName()});
+    private void bindSelectedLocations() throws NotSupportedException, SystemException {
+        for (Location loc: LocationsListController.getAll()) {
+            for (String locToBind : locationsToBind)
+                if (loc.getName().equals(locToBind)) {
+                    loc = em.find(loc.getClass(), loc.getId());
+                    this.locations.add(loc);
+                    log.debug("Synced location : {} {}", new Object[]{loc.getId(), loc.getName()});
                     break;
                 }
         }
@@ -136,7 +136,7 @@ public class RoutingAreaNewController implements Serializable {
      */
     public void save() {
         try {
-            bindSelectedDatacenters();
+            bindSelectedLocations();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -148,15 +148,15 @@ public class RoutingAreaNewController implements Serializable {
         RoutingArea routingArea = new RoutingArea();
         routingArea.setName(name);
         routingArea.setDescription(description);
-        routingArea.setDatacenters(datacenters);
+        routingArea.setLocations(locations);
         routingArea.setMulticast(multicast);
         routingArea.setType(type);
 
         try {
             em.getTransaction().begin();
             em.persist(routingArea);
-            for (Datacenter dc : routingArea.getDatacenters()) {
-                dc.getRoutingAreas().add(routingArea); em.merge(dc);
+            for (Location loc : routingArea.getLocations()) {
+                loc.getRoutingAreas().add(routingArea); em.merge(loc);
             }
             em.flush();
             em.getTransaction().commit();

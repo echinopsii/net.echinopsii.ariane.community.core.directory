@@ -1236,7 +1236,7 @@ r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datac
 r.status_code
 #200
 r.text
-#'Datacenter 2 has been successfully updated with name Hell (DR)'
+#'Location 2 has been successfully updated with name Hell (DR)'
 
 r = s.get(srv_url + 'ariane/rest/directories/common/infrastructure/network/datacenters/get', params={'id': devilDCID})
 r.status_code

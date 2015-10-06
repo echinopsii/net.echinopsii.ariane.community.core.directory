@@ -16,20 +16,21 @@ CREATE TABLE IF NOT EXISTS  `company` (
 -- Table structure for table `datacenter`
 --
 
-CREATE TABLE IF NOT EXISTS `datacenter` (
+CREATE TABLE IF NOT EXISTS `location` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `address` varchar(255) DEFAULT NULL,
-  `country` varchar(255) DEFAULT NULL,
+  `address` varchar(255) NOT NULL,
+  `country` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `gpsLatitude` double DEFAULT NULL,
-  `gpsLongitude` double DEFAULT NULL,
-  `dcName` varchar(255) DEFAULT NULL,
-  `town` varchar(255) DEFAULT NULL,
+  `gpsLatitude` double NOT NULL,
+  `gpsLongitude` double NOT NULL,
+  `Name` varchar(255) NOT NULL,
+  `town` varchar(255) NOT NULL,
+  `type` varchar(255) DEFAULT NULL,
   `version` int(11) DEFAULT NULL,
-  `zipCode` bigint(20) DEFAULT NULL,
+  `zipCode` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_ktqeqvewddcw7ht07oh2f0bbg` (`dcName`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `UK_gwnrcuk3s0q7j5jo6cao17hn0` (`Name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 --
@@ -41,15 +42,10 @@ CREATE TABLE IF NOT EXISTS `environment` (
   `description` varchar(255) DEFAULT NULL,
   `environmentName` varchar(255) DEFAULT NULL,
   `version` int(11) DEFAULT NULL,
+  `environmentCC` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_j9w5yy2xvayt691yivqxisw5v` (`environmentName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
-
---
--- Alter Table structure for table `environment`
---
-
-ALTER TABLE `environment` ADD `environmentCC` varchar(255) DEFAULT NULL;
 
 --
 -- Table structure for table `routingArea`
@@ -219,31 +215,31 @@ CREATE TABLE IF NOT EXISTS `application_osInstance` (
 
 
 --
--- Table structure for table `datacenter_multicastArea`
+-- Table structure for table `location_routingArea`
 --
 
-CREATE TABLE IF NOT EXISTS `datacenter_routingArea` (
-  `datacenters_id` bigint(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS `location_routingArea` (
+  `locations_id` bigint(20) NOT NULL,
   `routingAreas_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`datacenters_id`,`routingAreas_id`),
-  KEY `FK_4265wup5gxmnvhoyqij45r6jy` (`routingAreas_id`),
-  CONSTRAINT `FK_1nsal1wsgs28gt1eajihrcf00` FOREIGN KEY (`datacenters_id`) REFERENCES `datacenter` (`id`),
-  CONSTRAINT `FK_4265wup5gxmnvhoyqij45r6jy` FOREIGN KEY (`routingAreas_id`) REFERENCES `routingArea` (`id`)
+  PRIMARY KEY (`locations_id`,`routingAreas_id`),
+  KEY `FK_27c15suabg8yab15vn5l9k3as` (`routingAreas_id`),
+  CONSTRAINT `FK_27c15suabg8yab15vn5l9k3as` FOREIGN KEY (`routingAreas_id`) REFERENCES `routingArea` (`id`),
+  CONSTRAINT `FK_5pxtweidw0t7dkmipbqn5cg2m` FOREIGN KEY (`locations_id`) REFERENCES `location` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-
 --
--- Table structure for table `datacenter_subnet`
+-- Table structure for table `location_subnet`
 --
 
-CREATE TABLE IF NOT EXISTS `datacenter_subnet` (
-  `datacenters_id` bigint(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS `location_subnet` (
+  `locations_id` bigint(20) NOT NULL,
   `subnets_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`datacenters_id`,`subnets_id`),
-  KEY `FK_ox4s9k211m26hfxhgac07sxuf` (`subnets_id`),
-  CONSTRAINT `FK_teoerm0ymwvlbuq4mu3qkxbn3` FOREIGN KEY (`datacenters_id`) REFERENCES `datacenter` (`id`),
-  CONSTRAINT `FK_ox4s9k211m26hfxhgac07sxuf` FOREIGN KEY (`subnets_id`) REFERENCES `subnet` (`id`)
+  PRIMARY KEY (`locations_id`,`subnets_id`),
+  KEY `FK_iqpmexlnja85dr94poer8yb68` (`subnets_id`),
+  CONSTRAINT `FK_1oxl0gc930d0rms4vsgsd8nny` FOREIGN KEY (`locations_id`) REFERENCES `location` (`id`),
+  CONSTRAINT `FK_iqpmexlnja85dr94poer8yb68` FOREIGN KEY (`subnets_id`) REFERENCES `subnet` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 
 --
@@ -286,3 +282,53 @@ CREATE TABLE IF NOT EXISTS `team_osInstance` (
   CONSTRAINT `FK_cc24sbfxytin2iajw2lggn65m` FOREIGN KEY (`teams_id`) REFERENCES `team` (`id`),
   CONSTRAINT `FK_4bcdvjduli9spkl0m1q26cwr1` FOREIGN KEY (`osInstances_id`) REFERENCES `osInstance` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+--
+-- Procedure to migrate data from datacenter to Location
+--
+
+DELIMITER $$
+CREATE PROCEDURE `migrateDatacenterToLocation`()
+  BEGIN
+    DECLARE FoundCount INT;
+
+    SELECT COUNT(1) INTO FoundCount
+    FROM information_schema.tables
+    WHERE table_schema = 'ariane_directory'
+          AND table_name = 'datacenter';
+
+    IF FoundCount = 1 THEN
+      SET @sql = CONCAT('INSERT INTO location (id, address, country, description, gpsLatitude, gpsLongitude, Name, town,type, version, zipCode) SELECT id, address, country, description, gpsLatitude, gpsLongitude, dcName, town, ''DATACENTER'', version, zipCode FROM datacenter');
+      PREPARE stmt FROM @sql;
+      EXECUTE stmt;
+      DEALLOCATE PREPARE stmt;
+
+      SET @sql = CONCAT('INSERT INTO location_routingArea (locations_id, routingAreas_id) SELECT datacenters_id, routingAreas_id FROM datacenter_routingArea');
+      PREPARE stmt FROM @sql;
+      EXECUTE stmt;
+      DEALLOCATE PREPARE stmt;
+
+      SET @sql = CONCAT('INSERT INTO location_subnet (locations_id, subnets_id) SELECT datacenters_id, subnets_id FROM datacenter_subnet');
+      PREPARE stmt FROM @sql;
+      EXECUTE stmt;
+      DEALLOCATE PREPARE stmt;
+
+      SET FOREIGN_KEY_CHECKS=0;
+      DROP TABLE IF EXISTS  datacenter;
+      DROP TABLE IF EXISTS  datacenter_routingArea;
+      DROP TABLE IF EXISTS  datacenter_subnet;
+      SET FOREIGN_KEY_CHECKS=1;
+
+    END IF;
+  END $$
+DELIMITER ;
+
+
+call migrateDatacenterToLocation();
+
+--
+-- Drop Procedure after usage
+--
+
+DROP PROCEDURE IF EXISTS migrateDatacenterToLocation;
