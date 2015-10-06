@@ -323,7 +323,7 @@ public class Location implements Serializable
                                 setSubnetsR(new HashSet<Subnet>(this.subnets)).setMulticastAreasR(new HashSet<RoutingArea>(this.routingAreas));
     }
 
-    public  final static String DC_MAPPING_PROPERTIES = "Location";
+    public  final static String DC_MAPPING_PROPERTIES = "Datacenter";
     private final static String DC_NAME_MAPPING_FIELD = "pname";
     private final static String DC_ADDR_MAPPING_FIELD = "address";
     private final static String DC_TOWN_MAPPING_FIELD = "town";

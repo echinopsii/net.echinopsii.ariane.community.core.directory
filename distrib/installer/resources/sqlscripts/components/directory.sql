@@ -42,15 +42,10 @@ CREATE TABLE IF NOT EXISTS `environment` (
   `description` varchar(255) DEFAULT NULL,
   `environmentName` varchar(255) DEFAULT NULL,
   `version` int(11) DEFAULT NULL,
+  `environmentCC` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_j9w5yy2xvayt691yivqxisw5v` (`environmentName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
-
---
--- Alter Table structure for table `environment`
---
-
-ALTER TABLE `environment` ADD `environmentCC` varchar(255) DEFAULT NULL;
 
 --
 -- Table structure for table `routingArea`
@@ -287,6 +282,27 @@ CREATE TABLE IF NOT EXISTS `team_osInstance` (
   CONSTRAINT `FK_cc24sbfxytin2iajw2lggn65m` FOREIGN KEY (`teams_id`) REFERENCES `team` (`id`),
   CONSTRAINT `FK_4bcdvjduli9spkl0m1q26cwr1` FOREIGN KEY (`osInstances_id`) REFERENCES `osInstance` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `datacenter` $$
+CREATE PROCEDURE `location`()
+  BEGIN
+    DECLARE FoundCount INT;
+
+    SELECT COUNT(1) INTO FoundCount
+    FROM information_schema.tables
+    WHERE table_schema = 'ariane_directory'
+          AND table_name = 'datacenter';
+    IF FoundCount = 1 THEN
+      SET @sql = CONCAT('DELETE FROM ',db,'.',tb,' WHERE id=1');
+      PREPARE stmt FROM @sql;
+      EXECUTE stmt;
+      DEALLOCATE PREPARE stmt;
+    END IF;
+
+  END $$
+
+DELIMITER ;
 
 INSERT INTO location (id, address, country, description, gpsLatitude, gpsLongitude, Name, town, type, version, zipCode)
   SELECT id, address, country, description, gpsLatitude, gpsLongitude, dcName, town, 'DATACENTER', version, zipCode FROM
