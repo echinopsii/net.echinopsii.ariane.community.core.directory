@@ -86,7 +86,7 @@ public class DatacenterJSON {
     public final static void manyDatacenters2JSON(HashSet<Location> locations, ByteArrayOutputStream outStream) throws IOException {
         JsonGenerator jgenerator = DirectoryTreeMenuRootsRegistryImpl.getJFactory().createGenerator(outStream, JsonEncoding.UTF8);
         jgenerator.writeStartObject();
-        jgenerator.writeArrayFieldStart("locations");
+        jgenerator.writeArrayFieldStart("datacenters");
         Iterator<Location> iter = locations.iterator();
         while (iter.hasNext()) {
             Location current = iter.next();
