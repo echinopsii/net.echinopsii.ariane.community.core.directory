@@ -48,7 +48,7 @@ public class RoutingAreaJSON {
     public final static String RAREA_MULTICAST = "routingAreaMulticast";
     public final static String RAREA_DESCRIPTION = "routingAreaDescription";
     public final static String RAREA_SUBNETS_ID = "routingAreaSubnetsID";
-    public final static String RAREA_DC_ID = "routingAreaDatacentersID";
+    public final static String RAREA_LOC_ID = "routingAreaLocationsID";
 
     public final static void routingArea2JSON(RoutingArea routingArea, JsonGenerator jgenerator) throws IOException {
         jgenerator.writeStartObject();
@@ -62,7 +62,7 @@ public class RoutingAreaJSON {
         for (Subnet subnet : routingArea.getSubnets())
             jgenerator.writeNumber(subnet.getId());
         jgenerator.writeEndArray();
-        jgenerator.writeArrayFieldStart(RAREA_DC_ID);
+        jgenerator.writeArrayFieldStart(RAREA_LOC_ID);
         for (Location dc : routingArea.getLocations())
             jgenerator.writeNumber(dc.getId());
         jgenerator.writeEndArray();
@@ -97,14 +97,14 @@ public class RoutingAreaJSON {
         private String routingAreaMulticast;
         private String routingAreaDescription;
         private List<Long> routingAreaSubnetsID;
-        private List<Long> routingAreaDatacentersID;
+        private List<Long> routingAreaLocationsID;
 
-        public List<Long> getRoutingAreaDatacentersID() {
-            return routingAreaDatacentersID;
+        public List<Long> getRoutingAreaLocationsID() {
+            return routingAreaLocationsID;
         }
 
-        public void setRoutingAreaDatacentersID(List<Long> routingAreaDatacentersID) {
-            this.routingAreaDatacentersID = routingAreaDatacentersID;
+        public void setRoutingAreaLocationsID(List<Long> routingAreaLocationsID) {
+            this.routingAreaLocationsID = routingAreaLocationsID;
         }
 
         public List<Long> getRoutingAreaSubnetsID() {

@@ -50,7 +50,7 @@ public class SubnetJSON {
     public final static String SUBNET_MASK = "subnetMask";
     public final static String SUBNET_TYPE = "subnetType";
     public final static String SUBNET_OSI_ID = "subnetOSInstancesID";
-    public final static String SUBNET_DATACENTERS_ID = "subnetDatacentersID";
+    public final static String SUBNET_LOCATIONS_ID = "subnetLocationsID";
     public final static String SUBNET_MAREA_ID = "subnetRoutingAreaID";
     public final static String SUBNET_IPADDRESSES_ID = "subnetIPAddressesID";
 
@@ -69,7 +69,7 @@ public class SubnetJSON {
             jgenerator.writeNumber(osi.getId());
         jgenerator.writeEndArray();
 
-        jgenerator.writeArrayFieldStart(SUBNET_DATACENTERS_ID);
+        jgenerator.writeArrayFieldStart(SUBNET_LOCATIONS_ID);
         for (Location dc : subnet.getLocations())
             jgenerator.writeNumber(dc.getId());
         jgenerator.writeEndArray();
@@ -114,15 +114,15 @@ public class SubnetJSON {
         private String subnetMask;
         private long subnetRoutingAreaID;
         private List<Long> subnetOSInstancesID;
-        private List<Long> subnetDatacentersID;
+        private List<Long> subnetLocationsID;
         private List<Long> subnetIPAddressesID;
 
-        public List<Long> getSubnetDatacentersID() {
-            return subnetDatacentersID;
+        public List<Long> getSubnetLocationsID() {
+            return subnetLocationsID;
         }
 
-        public void setSubnetDatacentersID(List<Long> subnetDatacentersID) {
-            this.subnetDatacentersID = subnetDatacentersID;
+        public void setSubnetLocationsID(List<Long> subnetLocationsID) {
+            this.subnetLocationsID = subnetLocationsID;
         }
 
         public List<Long> getSubnetOSInstancesID() {
