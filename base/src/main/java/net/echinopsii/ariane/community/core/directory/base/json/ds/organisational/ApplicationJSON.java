@@ -89,7 +89,6 @@ public class ApplicationJSON {
 
     public static class JSONFriendlyApplication {
         private long applicationID;
-        private long applicationVersion;
         private String applicationName;
         private String applicationShortName;
         private String applicationColorCode;
@@ -116,14 +115,6 @@ public class ApplicationJSON {
 
         public void setApplicationID(long applicationID) {
             this.applicationID = applicationID;
-        }
-
-        public long getApplicationVersion() {
-            return applicationVersion;
-        }
-
-        public void setApplicationVersion(long applicationVersion) {
-            this.applicationVersion = applicationVersion;
         }
 
         public String getApplicationName() {
