@@ -87,7 +87,6 @@ public class CompanyJSON {
 
     public static class JSONFriendlyCompany {
         private long companyID;
-        private long companyVersion;
         private String companyName;
         private String companyDescription;
         private List<Long> companyApplicationsID;
@@ -123,14 +122,6 @@ public class CompanyJSON {
 
         public void setCompanyName(String companyName) {
             this.companyName = companyName;
-        }
-
-        public long getCompanyVersion() {
-            return companyVersion;
-        }
-
-        public void setCompanyVersion(long companyVersion) {
-            this.companyVersion = companyVersion;
         }
 
         public long getCompanyID() {
