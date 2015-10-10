@@ -186,23 +186,23 @@ public class SubnetEndpoint {
                     }
                 }
             }
-            if(jsonFriendlySubnet.getSubnetDatacentersID() != null) {
-                if (!jsonFriendlySubnet.getSubnetDatacentersID().isEmpty()) {
+            if(jsonFriendlySubnet.getSubnetLocationsID() != null) {
+                if (!jsonFriendlySubnet.getSubnetLocationsID().isEmpty()) {
                     for (Location location : entity.getLocations()) {
-                        if (!jsonFriendlySubnet.getSubnetDatacentersID().contains(location.getId())) {
+                        if (!jsonFriendlySubnet.getSubnetLocationsID().contains(location.getId())) {
                             entity.getLocations().remove(location);
                             location.getSubnets().remove(entity);
                         }
                     }
-                    for (Long dcId : jsonFriendlySubnet.getSubnetDatacentersID()) {
-                        Location location = DatacenterEndpoint.findDatacenterById(em, dcId);
+                    for (Long locId : jsonFriendlySubnet.getSubnetLocationsID()) {
+                        Location location = LocationEndpoint.findLocationById(em, locId);
                         if (location != null) {
                             if (!entity.getLocations().contains(location)) {
                                 entity.getLocations().add(location);
                                 location.getSubnets().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided Location ID " + dcId +" was not found.");
+                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided Location ID " + locId +" was not found.");
                             return commonRestResponse;
                         }
                     }
@@ -273,17 +273,17 @@ public class SubnetEndpoint {
                     }
                 }
             }
-            if(jsonFriendlySubnet.getSubnetDatacentersID() != null) {
-                if (!jsonFriendlySubnet.getSubnetDatacentersID().isEmpty()) {
-                    for (Long dcId : jsonFriendlySubnet.getSubnetDatacentersID()) {
-                        Location location = DatacenterEndpoint.findDatacenterById(em, dcId);
+            if(jsonFriendlySubnet.getSubnetLocationsID() != null) {
+                if (!jsonFriendlySubnet.getSubnetLocationsID().isEmpty()) {
+                    for (Long locId : jsonFriendlySubnet.getSubnetLocationsID()) {
+                        Location location = LocationEndpoint.findLocationById(em, locId);
                         if (location != null) {
                             if (!entity.getLocations().contains(location)) {
                                 entity.getLocations().add(location);
                                 location.getSubnets().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided Location ID " + dcId + " was not found.");
+                            commonRestResponse.setErrorMessage("Fail to update Subnet. Reason : provided Location ID " + locId + " was not found.");
                             return commonRestResponse;
                         }
                     }
@@ -493,8 +493,8 @@ public class SubnetEndpoint {
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
-                        for (Location dc : entity.getLocations())
-                            dc.getSubnets().remove(entity);
+                        for (Location loc : entity.getLocations())
+                            loc.getSubnets().remove(entity);
                         for (OSInstance osi : entity.getOsInstances())
                             osi.getNetworkSubnets().remove(entity);
                         if (entity.getRarea()!=null)
@@ -797,18 +797,18 @@ public class SubnetEndpoint {
     }
 
     @GET
-    @Path("/update/datacenters/add")
-    public Response updateSubnetAddDatacenter(@QueryParam("id")Long id, @QueryParam("datacenterID")Long dcID) {
-        if (id!=0 && dcID!=null) {
+    @Path("/update/locations/add")
+    public Response updateSubnetAddLocation(@QueryParam("id") Long id, @QueryParam("locationID") Long locID) {
+        if (id!=0 && locID!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update subnet {} by adding datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, dcID});
+            log.debug("[{}-{}] update subnet {} by adding location : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, locID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
                 if (entity!=null) {
-                    Location location = DatacenterEndpoint.findDatacenterById(em, dcID);
+                    Location location = LocationEndpoint.findLocationById(em, locID);
                     if (location !=null) {
                         try {
                             em.getTransaction().begin();
@@ -816,7 +816,7 @@ public class SubnetEndpoint {
                             entity.getLocations().add(location);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by adding location " + dcID).build();
+                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by adding location " + locID).build();
                         } catch (Throwable t) {
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -825,7 +825,7 @@ public class SubnetEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("Location " + dcID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("Location " + locID + " not found.").build();
                     }
                 } else {
                     em.close();
@@ -840,18 +840,18 @@ public class SubnetEndpoint {
     }
 
     @GET
-    @Path("/update/datacenters/delete")
-    public Response updateSubnetDeleteDatacenter(@QueryParam("id")Long id, @QueryParam("datacenterID")Long dcID) {
-        if (id!=0 && dcID!=null) {
+    @Path("/update/locations/delete")
+    public Response updateSubnetDeleteLocation(@QueryParam("id") Long id, @QueryParam("locationID") Long locID) {
+        if (id!=0 && locID!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update subnet {} by adding datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, dcID});
+            log.debug("[{}-{}] update subnet {} by adding location : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, locID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwSubnet:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Subnet entity = findSubnetById(em, id);
                 if (entity!=null) {
-                    Location location = DatacenterEndpoint.findDatacenterById(em, dcID);
+                    Location location = LocationEndpoint.findLocationById(em, locID);
                     if (location !=null) {
                         try {
                             em.getTransaction().begin();
@@ -859,7 +859,7 @@ public class SubnetEndpoint {
                             entity.getLocations().remove(location);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by removing location " + dcID).build();
+                            return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by removing location " + locID).build();
                         } catch (Throwable t) {
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -868,7 +868,7 @@ public class SubnetEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("Location " + dcID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("Location " + locID + " not found.").build();
                     }
                 } else {
                     em.close();

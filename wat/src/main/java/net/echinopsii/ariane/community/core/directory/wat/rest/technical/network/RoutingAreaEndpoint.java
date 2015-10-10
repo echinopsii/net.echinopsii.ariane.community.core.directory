@@ -119,23 +119,23 @@ public class RoutingAreaEndpoint {
             if (jsonFriendlyRoutingArea.getRoutingAreaDescription() != null) {
                 entity.setDescription(jsonFriendlyRoutingArea.getRoutingAreaDescription());
             }
-            if(jsonFriendlyRoutingArea.getRoutingAreaDatacentersID() != null) {
-                if (!jsonFriendlyRoutingArea.getRoutingAreaDatacentersID().isEmpty()) {
+            if(jsonFriendlyRoutingArea.getRoutingAreaLocationsID() != null) {
+                if (!jsonFriendlyRoutingArea.getRoutingAreaLocationsID().isEmpty()) {
                     for (Location location : entity.getLocations()) {
-                        if (!jsonFriendlyRoutingArea.getRoutingAreaDatacentersID().contains(location.getId())) {
+                        if (!jsonFriendlyRoutingArea.getRoutingAreaLocationsID().contains(location.getId())) {
                             entity.getLocations().remove(location);
                             location.getRoutingAreas().remove(entity);
                         }
                     }
-                    for (Long dcId : jsonFriendlyRoutingArea.getRoutingAreaDatacentersID()) {
-                        Location location = DatacenterEndpoint.findDatacenterById(em, dcId);
+                    for (Long locId : jsonFriendlyRoutingArea.getRoutingAreaLocationsID()) {
+                        Location location = LocationEndpoint.findLocationById(em, locId);
                         if (location != null) {
                             if (!entity.getLocations().contains(location)) {
                                 entity.getLocations().add(location);
                                 location.getRoutingAreas().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to update Routing Area. Reason : provided Location ID " + dcId +" was not found.");
+                            commonRestResponse.setErrorMessage("Fail to update Routing Area. Reason : provided Location ID " + locId +" was not found.");
                             return commonRestResponse;
                         }
                     }
@@ -152,17 +152,17 @@ public class RoutingAreaEndpoint {
             entity.setNameR(jsonFriendlyRoutingArea.getRoutingAreaName()).setDescriptionR(jsonFriendlyRoutingArea.getRoutingAreaDescription())
                   .setMulticastR(jsonFriendlyRoutingArea.getRoutingAreaMulticast()).setTypeR(jsonFriendlyRoutingArea.getRoutingAreaType());
 
-            if(jsonFriendlyRoutingArea.getRoutingAreaDatacentersID() != null) {
-                if (!jsonFriendlyRoutingArea.getRoutingAreaDatacentersID().isEmpty()) {
-                    for (Long dcId : jsonFriendlyRoutingArea.getRoutingAreaDatacentersID()) {
-                        Location location = DatacenterEndpoint.findDatacenterById(em, dcId);
+            if(jsonFriendlyRoutingArea.getRoutingAreaLocationsID() != null) {
+                if (!jsonFriendlyRoutingArea.getRoutingAreaLocationsID().isEmpty()) {
+                    for (Long locId : jsonFriendlyRoutingArea.getRoutingAreaLocationsID()) {
+                        Location location = LocationEndpoint.findLocationById(em, locId);
                         if (location != null) {
                             if (!entity.getLocations().contains(location)) {
                                 entity.getLocations().add(location);
                                 location.getRoutingAreas().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to update Routing area. Reason : provided Location ID " + dcId + " was not found.");
+                            commonRestResponse.setErrorMessage("Fail to update Routing area. Reason : provided Location ID " + locId + " was not found.");
                             return commonRestResponse;
                         }
                     }
@@ -312,7 +312,7 @@ public class RoutingAreaEndpoint {
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
-                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while deleting datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while deleting routing area " + entity.getName() + " : " + t.getMessage()).build();
                     }
                 } else {
                     em.close();
@@ -384,7 +384,7 @@ public class RoutingAreaEndpoint {
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
-                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating routing area " + entity.getName() + " : " + t.getMessage()).build();
                     }
                 } else {
                     em.close();
@@ -416,7 +416,7 @@ public class RoutingAreaEndpoint {
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
-                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating routing area " + entity.getName() + " : " + t.getMessage()).build();
                     }
                 } else {
                     em.close();
@@ -449,7 +449,7 @@ public class RoutingAreaEndpoint {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating routing area " + entity.getName() + " : " + t.getMessage()).build();
                         }
                     } else {
                         em.close();
@@ -484,7 +484,7 @@ public class RoutingAreaEndpoint {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating routing area " + entity.getName() + " : " + t.getMessage()).build();
                         }
                     } else {
                         em.close();
@@ -499,24 +499,24 @@ public class RoutingAreaEndpoint {
     }
 
     @GET
-    @Path("/update/datacenters/add")
-    public Response updateRoutingAreaAddDatacenter(@QueryParam("id") Long id, @QueryParam("datacenterID") Long dcID) {
-        if (id != 0 && dcID != null) {
+    @Path("/update/locations/add")
+    public Response updateRoutingAreaAddLocation(@QueryParam("id") Long id, @QueryParam("locationID") Long locID) {
+        if (id != 0 && locID != null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update routing area {} by adding datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, dcID});
+            log.debug("[{}-{}] update routing area {} by adding location : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, locID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwRarea:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 RoutingArea entity = findRoutingAreaById(em, id);
                 if (entity != null) {
-                    Location location = DatacenterEndpoint.findDatacenterById(em, dcID);
+                    Location location = LocationEndpoint.findLocationById(em, locID);
                     if (location != null) {
                         try {
                             em.getTransaction().begin();
                             location.getRoutingAreas().add(entity);
                             entity.getLocations().add(location);
                             em.getTransaction().commit();
-                            return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated by adding location " + dcID).build();
+                            return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated by adding location " + locID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -525,7 +525,7 @@ public class RoutingAreaEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("Location " + dcID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("Location " + locID + " not found.").build();
                     }
                 } else {
                     em.close();
@@ -534,28 +534,28 @@ public class RoutingAreaEndpoint {
             } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
         } else
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or dcID are not defined. You must define these parameters.").build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or locID are not defined. You must define these parameters.").build();
     }
 
     @GET
-    @Path("/update/datacenters/delete")
-    public Response updateRoutingAreaDeleteDatacenter(@QueryParam("id") Long id, @QueryParam("datacenterID") Long dcID) {
-        if (id != 0 && dcID != null) {
+    @Path("/update/locations/delete")
+    public Response updateRoutingAreaDeleteLocation(@QueryParam("id") Long id, @QueryParam("locationID") Long locID) {
+        if (id != 0 && locID != null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update routing area {} by deleting datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, dcID});
+            log.debug("[{}-{}] update routing area {} by deleting location : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, locID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwRarea:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 RoutingArea entity = findRoutingAreaById(em, id);
                 if (entity != null) {
-                    Location location = DatacenterEndpoint.findDatacenterById(em, dcID);
+                    Location location = LocationEndpoint.findLocationById(em, locID);
                     if (location != null) {
                         try {
                             em.getTransaction().begin();
                             location.getRoutingAreas().remove(entity);
                             entity.getLocations().remove(location);
                             em.getTransaction().commit();
-                            return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated by deleting location " + dcID).build();
+                            return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated by deleting location " + locID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -564,7 +564,7 @@ public class RoutingAreaEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("Location " + dcID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("Location " + locID + " not found.").build();
                     }
                 } else {
                     em.close();
@@ -573,6 +573,6 @@ public class RoutingAreaEndpoint {
             } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
         } else
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or dcID are not defined. You must define these parameters.").build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or locID are not defined. You must define these parameters.").build();
     }
 }

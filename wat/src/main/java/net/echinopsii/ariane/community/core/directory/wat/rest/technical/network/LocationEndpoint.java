@@ -18,11 +18,11 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
+import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.LocationJSON;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
-import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.DatacenterJSON;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
 import org.apache.shiro.SecurityUtils;
@@ -40,22 +40,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 
-import static net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.DatacenterJSON.JSONFriendlyDatacenter;
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.LocationJSON.JSONFriendlyLocation;
 
 /**
  *
  */
-@Path("/directories/common/infrastructure/network/datacenters")
-public class DatacenterEndpoint {
-    private static final Logger log = LoggerFactory.getLogger(DatacenterEndpoint.class);
+@Path("/directories/common/infrastructure/network/locations")
+public class LocationEndpoint {
+    private static final Logger log = LoggerFactory.getLogger(LocationEndpoint.class);
     private EntityManager em;
 
-    public static Response datacenterToJSON(Location entity) {
+    public static Response locationToJSON(Location entity) {
         Response ret = null;
         String result;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         try {
-            DatacenterJSON.oneDatacenter2JSON(entity, outStream);
+            LocationJSON.oneLocation2JSON(entity, outStream);
             result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
             ret = Response.status(Status.OK).entity(result).build();
         } catch (Exception e) {
@@ -67,7 +67,7 @@ public class DatacenterEndpoint {
         return ret;
     }
 
-    public static Location findDatacenterById(EntityManager em, long id) {
+    public static Location findLocationById(EntityManager em, long id) {
         TypedQuery<Location> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Location d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas WHERE d.id = :entityId ORDER BY d.id", Location.class);
         findByIdQuery.setParameter("entityId", id);
         Location entity;
@@ -79,7 +79,7 @@ public class DatacenterEndpoint {
         return entity;
     }
 
-    public static Location findDatacenterByName(EntityManager em, String name) {
+    public static Location findLocationByName(EntityManager em, String name) {
         TypedQuery<Location> findByNameQuery = em.createQuery("SELECT DISTINCT d FROM Location d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas WHERE d.name = :entityName ORDER BY d.name", Location.class);
         findByNameQuery.setParameter("entityName", name);
         Location entity;
@@ -91,52 +91,52 @@ public class DatacenterEndpoint {
         return entity;
     }
 
-    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyDatacenter jsonFriendlyDatacenter) {
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyLocation jsonFriendlyLocation) {
         Location entity = null;
         CommonRestResponse commonRestResponse = new CommonRestResponse();
 
-        if(jsonFriendlyDatacenter.getDatacenterID() !=0)
-            entity = findDatacenterById(em, jsonFriendlyDatacenter.getDatacenterID());
-        if(entity == null && jsonFriendlyDatacenter.getDatacenterID()!=0){
-            commonRestResponse.setErrorMessage("Request Error : provided Location ID " + jsonFriendlyDatacenter.getDatacenterID() +" was not found.");
+        if(jsonFriendlyLocation.getLocationID() !=0)
+            entity = findLocationById(em, jsonFriendlyLocation.getLocationID());
+        if(entity == null && jsonFriendlyLocation.getLocationID()!=0){
+            commonRestResponse.setErrorMessage("Request Error : provided Location ID " + jsonFriendlyLocation.getLocationID() +" was not found.");
             return commonRestResponse;
         }
         if(entity == null){
-            if(jsonFriendlyDatacenter.getDatacenterName() != null){
-                entity = findDatacenterByName(em, jsonFriendlyDatacenter.getDatacenterName());
+            if(jsonFriendlyLocation.getLocationName() != null){
+                entity = findLocationByName(em, jsonFriendlyLocation.getLocationName());
             }
         }
         if(entity != null){
-            if (jsonFriendlyDatacenter.getDatacenterName() !=null) {
-                entity.setName(jsonFriendlyDatacenter.getDatacenterName());
+            if (jsonFriendlyLocation.getLocationName() !=null) {
+                entity.setName(jsonFriendlyLocation.getLocationName());
             }
-            if (jsonFriendlyDatacenter.getDatacenterDescription() != null) {
-                entity.setDescription(jsonFriendlyDatacenter.getDatacenterDescription());
+            if (jsonFriendlyLocation.getLocationDescription() != null) {
+                entity.setDescription(jsonFriendlyLocation.getLocationDescription());
             }
-            if (jsonFriendlyDatacenter.getDatacenterAddress() != null) {
-                entity.setAddress(jsonFriendlyDatacenter.getDatacenterAddress());
+            if (jsonFriendlyLocation.getLocationAddress() != null) {
+                entity.setAddress(jsonFriendlyLocation.getLocationAddress());
             }
-            if (jsonFriendlyDatacenter.getDatacenterCountry() != null) {
-                entity.setCountry(jsonFriendlyDatacenter.getDatacenterCountry());
+            if (jsonFriendlyLocation.getLocationCountry() != null) {
+                entity.setCountry(jsonFriendlyLocation.getLocationCountry());
             }
-            entity.setGpsLatitude(jsonFriendlyDatacenter.getDatacenterGPSLat());
-            entity.setGpsLongitude(jsonFriendlyDatacenter.getDatacenterGPSLng());
+            entity.setGpsLatitude(jsonFriendlyLocation.getLocationGPSLat());
+            entity.setGpsLongitude(jsonFriendlyLocation.getLocationGPSLng());
 
-            if (jsonFriendlyDatacenter.getDatacenterZipCode() != 0) {
-                entity.setZipCode(jsonFriendlyDatacenter.getDatacenterZipCode());
+            if (jsonFriendlyLocation.getLocationZipCode() != 0) {
+                entity.setZipCode(jsonFriendlyLocation.getLocationZipCode());
             }
-            if (jsonFriendlyDatacenter.getDatacenterTown() != null) {
-                entity.setTown(jsonFriendlyDatacenter.getDatacenterTown());
+            if (jsonFriendlyLocation.getLocationTown() != null) {
+                entity.setTown(jsonFriendlyLocation.getLocationTown());
             }
-            if(jsonFriendlyDatacenter.getDatacenterRoutingAreasID() != null) {
-                if (!jsonFriendlyDatacenter.getDatacenterRoutingAreasID().isEmpty()) {
+            if(jsonFriendlyLocation.getLocationRoutingAreasID() != null) {
+                if (!jsonFriendlyLocation.getLocationRoutingAreasID().isEmpty()) {
                     for (RoutingArea routingArea : entity.getRoutingAreas()) {
-                        if (!jsonFriendlyDatacenter.getDatacenterRoutingAreasID().contains(routingArea.getId())) {
+                        if (!jsonFriendlyLocation.getLocationRoutingAreasID().contains(routingArea.getId())) {
                             entity.getRoutingAreas().remove(routingArea);
                             routingArea.getLocations().remove(entity);
                         }
                     }
-                    for (Long routingId : jsonFriendlyDatacenter.getDatacenterRoutingAreasID()) {
+                    for (Long routingId : jsonFriendlyLocation.getLocationRoutingAreasID()) {
                         RoutingArea routingArea = RoutingAreaEndpoint.findRoutingAreaById(em, routingId);
                         if (routingArea != null) {
                             if (!entity.getRoutingAreas().contains(routingArea)) {
@@ -155,15 +155,15 @@ public class DatacenterEndpoint {
                     }
                 }
             }
-            if(jsonFriendlyDatacenter.getDatacenterSubnetsID() != null) {
-                if (!jsonFriendlyDatacenter.getDatacenterSubnetsID().isEmpty()) {
+            if(jsonFriendlyLocation.getLocationSubnetsID() != null) {
+                if (!jsonFriendlyLocation.getLocationSubnetsID().isEmpty()) {
                     for (Subnet subnet: entity.getSubnets()) {
-                        if (!jsonFriendlyDatacenter.getDatacenterSubnetsID().contains(subnet.getId())) {
+                        if (!jsonFriendlyLocation.getLocationSubnetsID().contains(subnet.getId())) {
                             entity.getSubnets().remove(subnet);
                             subnet.getLocations().remove(entity);
                         }
                     }
-                    for (Long subnetId : jsonFriendlyDatacenter.getDatacenterSubnetsID()) {
+                    for (Long subnetId : jsonFriendlyLocation.getLocationSubnetsID()) {
                         Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetId);
                         if (subnet != null) {
                             if (!entity.getSubnets().contains(subnet)) {
@@ -171,7 +171,7 @@ public class DatacenterEndpoint {
                                 subnet.getLocations().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to update Datacenters. Reason : provided Subnet ID " + subnetId +" was not found.");
+                            commonRestResponse.setErrorMessage("Fail to update Locations. Reason : provided Subnet ID " + subnetId +" was not found.");
                             return  commonRestResponse;
                         }
                     }
@@ -185,13 +185,13 @@ public class DatacenterEndpoint {
             commonRestResponse.setDeserializedObject(entity);
         } else {
             entity = new Location();
-            entity.setNameR(jsonFriendlyDatacenter.getDatacenterName()).setCountryR(jsonFriendlyDatacenter.getDatacenterCountry()).setDescriptionR(jsonFriendlyDatacenter.getDatacenterDescription()).
-                   setGpsLatitudeR(jsonFriendlyDatacenter.getDatacenterGPSLat()).setGpsLongitudeR(jsonFriendlyDatacenter.getDatacenterGPSLat()).
-                    setTownR(jsonFriendlyDatacenter.getDatacenterTown()).setZipCodeR(jsonFriendlyDatacenter.getDatacenterZipCode()).setAddressR(jsonFriendlyDatacenter.getDatacenterAddress());
+            entity.setNameR(jsonFriendlyLocation.getLocationName()).setCountryR(jsonFriendlyLocation.getLocationCountry()).setDescriptionR(jsonFriendlyLocation.getLocationDescription()).
+                   setGpsLatitudeR(jsonFriendlyLocation.getLocationGPSLat()).setGpsLongitudeR(jsonFriendlyLocation.getLocationGPSLat()).
+                    setTownR(jsonFriendlyLocation.getLocationTown()).setZipCodeR(jsonFriendlyLocation.getLocationZipCode()).setAddressR(jsonFriendlyLocation.getLocationAddress());
 
-            if (jsonFriendlyDatacenter.getDatacenterRoutingAreasID() != null) {
-                if (!jsonFriendlyDatacenter.getDatacenterRoutingAreasID().isEmpty()) {
-                    for (Long routingId : jsonFriendlyDatacenter.getDatacenterRoutingAreasID()) {
+            if (jsonFriendlyLocation.getLocationRoutingAreasID() != null) {
+                if (!jsonFriendlyLocation.getLocationRoutingAreasID().isEmpty()) {
+                    for (Long routingId : jsonFriendlyLocation.getLocationRoutingAreasID()) {
                         RoutingArea routingArea = RoutingAreaEndpoint.findRoutingAreaById(em, routingId);
                         if (routingArea != null) {
                             if (!entity.getRoutingAreas().contains(routingArea)) {
@@ -199,15 +199,15 @@ public class DatacenterEndpoint {
                                 routingArea.getLocations().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to create Datacenters. Reason : provided RoutingArea ID " + routingId +" was not found.");
+                            commonRestResponse.setErrorMessage("Fail to create Locations. Reason : provided RoutingArea ID " + routingId +" was not found.");
                             return  commonRestResponse;
                         }
                     }
                 }
             }
-            if (jsonFriendlyDatacenter.getDatacenterSubnetsID() != null) {
-                if (!jsonFriendlyDatacenter.getDatacenterSubnetsID().isEmpty()) {
-                    for (Long subnetId : jsonFriendlyDatacenter.getDatacenterSubnetsID()) {
+            if (jsonFriendlyLocation.getLocationSubnetsID() != null) {
+                if (!jsonFriendlyLocation.getLocationSubnetsID().isEmpty()) {
+                    for (Long subnetId : jsonFriendlyLocation.getLocationSubnetsID()) {
                         Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetId);
                         if (subnet != null) {
                             if (!entity.getSubnets().contains(subnet)) {
@@ -215,7 +215,7 @@ public class DatacenterEndpoint {
                                 subnet.getLocations().add(entity);
                             }
                         } else {
-                            commonRestResponse.setErrorMessage("Fail to create Datacenters. Reason : provided Subnet ID " + subnetId +" was not found.");
+                            commonRestResponse.setErrorMessage("Fail to create Locations. Reason : provided Subnet ID " + subnetId +" was not found.");
                             return  commonRestResponse;
                         }
                     }
@@ -228,31 +228,31 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/{id:[0-9][0-9]*}")
-    public Response displayDatacenter(@PathParam("id") Long id) {
+    public Response displayLocation(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] get datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
+        log.debug("[{}-{}] get location : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
         if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwLOC:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            Location entity = findDatacenterById(em, id);
+            Location entity = findLocationById(em, id);
             if (entity == null) {
                 em.close();
                 return Response.status(Status.NOT_FOUND).build();
             }
 
-            Response ret = datacenterToJSON(entity);
+            Response ret = locationToJSON(entity);
             em.close();
             return ret;
         } else {
-            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display datacenters. Contact your administrator.").build();
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display locations. Contact your administrator.").build();
         }
     }
 
     @GET
-    public Response displayAllDatacenters() {
+    public Response displayAllLocations() {
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] get datacenters", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
+        log.debug("[{}-{}] get locations", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
         if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwLOC:display") ||
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
@@ -263,7 +263,7 @@ public class DatacenterEndpoint {
             String result;
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
             try {
-                DatacenterJSON.manyDatacenters2JSON(results, outStream);
+                LocationJSON.manyLocations2JSON(results, outStream);
                 result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
                 ret = Response.status(Status.OK).entity(result).build();
             } catch (Exception e) {
@@ -276,33 +276,33 @@ public class DatacenterEndpoint {
                 return ret;
             }
         } else {
-            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display datacenters. Contact your administrator.").build();
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display locations. Contact your administrator.").build();
         }
     }
 
     @GET
     @Path("/get")
-    public Response getDatacenter(@QueryParam("name")String name, @QueryParam("id")long id) {
+    public Response getLocation(@QueryParam("name") String name, @QueryParam("id") long id) {
         if (id!=0) {
-            return displayDatacenter(id);
+            return displayLocation(id);
         } else if (name != null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] get datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
+            log.debug("[{}-{}] get location : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
             if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwLOC:display") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Location entity = findDatacenterByName(em, name);
+                Location entity = findLocationByName(em, name);
                 if (entity == null) {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
                 }
 
-                Response ret = datacenterToJSON(entity);
+                Response ret = locationToJSON(entity);
                 em.close();
                 return ret;
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display datacenters. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display locations. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
@@ -311,17 +311,17 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/create")
-    public Response createDatacenter(@QueryParam("name")String name, @QueryParam("address")String address, @QueryParam("zipCode")Long zipCode, @QueryParam("town")String town,
-                                     @QueryParam("country")String country, @QueryParam("gpsLatitude")Double gpsLat, @QueryParam("gpsLongitude")Double gpsLng,
-                                     @QueryParam("description")String description) {
+    public Response createLocation(@QueryParam("name") String name, @QueryParam("address") String address, @QueryParam("zipCode") Long zipCode, @QueryParam("town") String town,
+                                   @QueryParam("country") String country, @QueryParam("gpsLatitude") Double gpsLat, @QueryParam("gpsLongitude") Double gpsLng,
+                                   @QueryParam("description") String description) {
         if (name!=null && address!=null && zipCode!=null && town!=null && country!=null && gpsLat!=null && gpsLng!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] create datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
+            log.debug("[{}-{}] create location : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwLOC:create") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Location entity = findDatacenterByName(em, name);
+                Location entity = findLocationByName(em, name);
                 if (entity==null) {
                     entity = new Location().setNameR(name).setAddressR(address).setZipCodeR(zipCode).setTownR(town).setCountryR(country).setGpsLatitudeR(gpsLat).setGpsLongitudeR(gpsLng).
                                      setDescriptionR(description);
@@ -333,14 +333,14 @@ public class DatacenterEndpoint {
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
-                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating location " + entity.getName() + " : " + t.getMessage()).build();
                     }
                 }
-                Response ret = datacenterToJSON(entity);
+                Response ret = locationToJSON(entity);
                 em.close();
                 return ret;
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create datacenters. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create locations. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or address and/or zipCode and/or town and/or country and/or gpsLatitude and/or gpsLongiture" +
@@ -349,14 +349,14 @@ public class DatacenterEndpoint {
     }
 
     @POST
-    public Response postDatacenter(@QueryParam("payload") String payload) throws IOException {
+    public Response postLocation(@QueryParam("payload") String payload) throws IOException {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] create/update Location : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwLOC:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            JSONFriendlyDatacenter jsonFriendlyDatacenter = DatacenterJSON.JSON2Datacenter(payload);
-            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyDatacenter);
+            JSONFriendlyLocation jsonFriendlyLocation = LocationJSON.JSON2Location(payload);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyLocation);
             Location entity = (Location) commonRestResponse.getDeserializedObject();
             if (entity != null) {
                 try {
@@ -370,34 +370,34 @@ public class DatacenterEndpoint {
                         em.flush();
                         em.getTransaction().commit();
                     }
-                    Response ret = datacenterToJSON(entity);
+                    Response ret = locationToJSON(entity);
                     em.close();
                     return ret;
                 } catch (Throwable t) {
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating datacenter " + payload + " : " + t.getMessage()).build();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating location " + payload + " : " + t.getMessage()).build();
                 }
             } else{
                 em.close();
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
-            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create datacenters. Contact your administrator.").build();
+            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create locations. Contact your administrator.").build();
         }
     }
     @GET
     @Path("/delete")
-    public Response deleteDatacenter(@QueryParam("id")Long id) {
+    public Response deleteLocation(@QueryParam("id") Long id) {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] delete datacenter : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
+            log.debug("[{}-{}] delete location : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwLOC:delete") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Location entity = findDatacenterById(em, id);
+                Location entity = findLocationById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
@@ -413,14 +413,14 @@ public class DatacenterEndpoint {
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
-                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while deleting datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while deleting location " + entity.getName() + " : " + t.getMessage()).build();
                     }
                 } else {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete datacenters. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete locations. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define this parameter.").build();
@@ -429,15 +429,15 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/update/name")
-    public Response updateDatacenterName(@QueryParam("id")Long id, @QueryParam("name")String name) {
+    public Response updateLocationName(@QueryParam("id") Long id, @QueryParam("name") String name) {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update datacenter {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
+            log.debug("[{}-{}] update location {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwLOC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Location entity = findDatacenterById(em, id);
+                Location entity = findLocationById(em, id);
                 if (entity != null) {
                     em.getTransaction().begin();
                     entity.setName(name);
@@ -449,7 +449,7 @@ public class DatacenterEndpoint {
                     return Response.status(Status.NOT_FOUND).build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
@@ -458,17 +458,17 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/update/fullAddress")
-    public Response updateDatacenterFullAddress(@QueryParam("id")Long id, @QueryParam("address")String address, @QueryParam("zipCode")Long zipCode,
-                                                @QueryParam("town")String town, @QueryParam("country")String country) {
+    public Response updateLocationFullAddress(@QueryParam("id") Long id, @QueryParam("address") String address, @QueryParam("zipCode") Long zipCode,
+                                              @QueryParam("town") String town, @QueryParam("country") String country) {
         if (id!=0 && address!=null && zipCode!=null && town != null && country!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update datacenter {} full address : ({},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id,
+            log.debug("[{}-{}] update location {} full address : ({},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id,
                                                                                                 address, zipCode, town, country});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwLOC:update") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Location entity = findDatacenterById(em, id);
+                Location entity = findLocationById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
@@ -481,14 +481,14 @@ public class DatacenterEndpoint {
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
-                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating location " + entity.getName() + " : " + t.getMessage()).build();
                     }
                 } else {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or address and/or zipCode and/or town and/or country are not defined. " +
@@ -498,16 +498,16 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/update/gpsCoord")
-    public Response updateDatacenterGPSCoord(@QueryParam("id")Long id, @QueryParam("gpsLatitude")Double gpsLat, @QueryParam("gpsLongitude")Double gpsLng) {
+    public Response updateLocationGPSCoord(@QueryParam("id") Long id, @QueryParam("gpsLatitude") Double gpsLat, @QueryParam("gpsLongitude") Double gpsLng) {
         if (id!=0 && gpsLat!=null && gpsLat!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update datacenter {} gps coord : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id,
+            log.debug("[{}-{}] update location {} gps coord : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id,
                                                                                        gpsLat, gpsLng});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwLOC:update") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Location entity = findDatacenterById(em, id);
+                Location entity = findLocationById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
@@ -518,14 +518,14 @@ public class DatacenterEndpoint {
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
-                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating location " + entity.getName() + " : " + t.getMessage()).build();
                     }
                 } else {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or gpsLatitude and/or gpsLongitude are not defined. " +
@@ -535,15 +535,15 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/update/description")
-    public Response updateDatacenterDescription(@QueryParam("id")Long id, @QueryParam("description")String description) {
+    public Response updateLocationDescription(@QueryParam("id") Long id, @QueryParam("description") String description) {
         if (id!=0 && description!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update datacenter {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, description});
+            log.debug("[{}-{}] update location {} description : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, description});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwLOC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Location entity = findDatacenterById(em, id);
+                Location entity = findLocationById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
@@ -554,14 +554,14 @@ public class DatacenterEndpoint {
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
-                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating location " + entity.getName() + " : " + t.getMessage()).build();
                     }
                 } else {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
@@ -570,15 +570,15 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/update/subnets/add")
-    public Response updateDatacenterAddSubnet(@QueryParam("id")Long id, @QueryParam("subnetID")Long subnetID) {
+    public Response updateLocationAddSubnet(@QueryParam("id") Long id, @QueryParam("subnetID") Long subnetID) {
         if (id!=0 && subnetID!=0) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update datacenter {} by adding subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetID});
+            log.debug("[{}-{}] update location {} by adding subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwLOC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Location entity = findDatacenterById(em, id);
+                Location entity = findLocationById(em, id);
                 if (entity != null) {
                     Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetID);
                     if (subnet!=null) {
@@ -593,7 +593,7 @@ public class DatacenterEndpoint {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating location " + entity.getName() + " : " + t.getMessage()).build();
                         }
                     } else {
                         em.close();
@@ -604,7 +604,7 @@ public class DatacenterEndpoint {
                     return Response.status(Status.NOT_FOUND).entity("Location " + id + " not found.").build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or subnetID are not defined. You must define these parameters.").build();
@@ -613,15 +613,15 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/update/subnets/delete")
-    public Response updateDatacenterDeleteSubnet(@QueryParam("id")Long id, @QueryParam("subnetID")Long subnetID) {
+    public Response updateLocationDeleteSubnet(@QueryParam("id") Long id, @QueryParam("subnetID") Long subnetID) {
         if (id!=0 && subnetID!=0) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update datacenter {} by deleting subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetID});
+            log.debug("[{}-{}] update location {} by deleting subnet : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, subnetID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwLOC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Location entity = findDatacenterById(em, id);
+                Location entity = findLocationById(em, id);
                 if (entity != null) {
                     Subnet subnet = SubnetEndpoint.findSubnetById(em, subnetID);
                     if (subnet!=null) {
@@ -636,7 +636,7 @@ public class DatacenterEndpoint {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating location " + entity.getName() + " : " + t.getMessage()).build();
                         }
                     } else {
                         em.close();
@@ -647,7 +647,7 @@ public class DatacenterEndpoint {
                     return Response.status(Status.NOT_FOUND).entity("Location " + id + " not found.").build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or subnetID are not defined. You must define these parameters.").build();
@@ -656,15 +656,15 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/update/routingareas/add")
-    public Response updateDatacenterAddRoutingAreas(@QueryParam("id") Long id, @QueryParam("routingareaID") Long rareaID) {
+    public Response updateLocationAddRoutingAreas(@QueryParam("id") Long id, @QueryParam("routingareaID") Long rareaID) {
         if (id!=0 && rareaID!=0) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update datacenter {} by adding routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, rareaID});
+            log.debug("[{}-{}] update location {} by adding routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, rareaID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwLOC:update") ||
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Location entity = findDatacenterById(em, id);
+                Location entity = findLocationById(em, id);
                 if (entity != null) {
                     RoutingArea rarea = RoutingAreaEndpoint.findRoutingAreaById(em, rareaID);
                     if (rarea!=null) {
@@ -679,7 +679,7 @@ public class DatacenterEndpoint {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating location " + entity.getName() + " : " + t.getMessage()).build();
                         }
                     } else {
                         em.close();
@@ -690,7 +690,7 @@ public class DatacenterEndpoint {
                     return Response.status(Status.NOT_FOUND).entity("Location " + id + " not found.").build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or routingareaID are not defined. You must define these parameters.").build();
@@ -699,15 +699,15 @@ public class DatacenterEndpoint {
 
     @GET
     @Path("/update/routingareas/delete")
-    public Response updateDatacenterDeleteRoutingAreas(@QueryParam("id") Long id, @QueryParam("routingareaID") Long mareaID) {
+    public Response updateLocationDeleteRoutingAreas(@QueryParam("id") Long id, @QueryParam("routingareaID") Long mareaID) {
         if (id!=0 && mareaID!=0) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update datacenter {} by deleting routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
+            log.debug("[{}-{}] update location {} by deleting routing area : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mareaID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwLOC:update") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                Location entity = findDatacenterById(em, id);
+                Location entity = findLocationById(em, id);
                 if (entity != null) {
                     RoutingArea marea = RoutingAreaEndpoint.findRoutingAreaById(em, mareaID);
                     if (marea!=null) {
@@ -722,7 +722,7 @@ public class DatacenterEndpoint {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating datacenter " + entity.getName() + " : " + t.getMessage()).build();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating location " + entity.getName() + " : " + t.getMessage()).build();
                         }
                     } else {
                         em.close();
@@ -733,7 +733,7 @@ public class DatacenterEndpoint {
                     return Response.status(Status.NOT_FOUND).entity("Location " + id + " not found.").build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update datacenters. Contact your administrator.").build();
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or routingareaID are not defined. You must define these parameters.").build();
