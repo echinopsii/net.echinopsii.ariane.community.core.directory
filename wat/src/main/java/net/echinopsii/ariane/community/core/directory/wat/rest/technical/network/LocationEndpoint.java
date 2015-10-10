@@ -128,6 +128,9 @@ public class LocationEndpoint {
             if (jsonFriendlyLocation.getLocationTown() != null) {
                 entity.setTown(jsonFriendlyLocation.getLocationTown());
             }
+            if (jsonFriendlyLocation.getLocationType() != null) {
+                entity.setType(jsonFriendlyLocation.getLocationType());
+            }
             if(jsonFriendlyLocation.getLocationRoutingAreasID() != null) {
                 if (!jsonFriendlyLocation.getLocationRoutingAreasID().isEmpty()) {
                     for (RoutingArea routingArea : entity.getRoutingAreas()) {
@@ -187,7 +190,7 @@ public class LocationEndpoint {
             entity = new Location();
             entity.setNameR(jsonFriendlyLocation.getLocationName()).setCountryR(jsonFriendlyLocation.getLocationCountry()).setDescriptionR(jsonFriendlyLocation.getLocationDescription()).
                    setGpsLatitudeR(jsonFriendlyLocation.getLocationGPSLat()).setGpsLongitudeR(jsonFriendlyLocation.getLocationGPSLat()).
-                    setTownR(jsonFriendlyLocation.getLocationTown()).setZipCodeR(jsonFriendlyLocation.getLocationZipCode()).setAddressR(jsonFriendlyLocation.getLocationAddress());
+                    setTownR(jsonFriendlyLocation.getLocationTown()).setZipCodeR(jsonFriendlyLocation.getLocationZipCode()).setAddressR(jsonFriendlyLocation.getLocationAddress()).setTypeR(jsonFriendlyLocation.getLocationType());
 
             if (jsonFriendlyLocation.getLocationRoutingAreasID() != null) {
                 if (!jsonFriendlyLocation.getLocationRoutingAreasID().isEmpty()) {
@@ -313,7 +316,7 @@ public class LocationEndpoint {
     @Path("/create")
     public Response createLocation(@QueryParam("name") String name, @QueryParam("address") String address, @QueryParam("zipCode") Long zipCode, @QueryParam("town") String town,
                                    @QueryParam("country") String country, @QueryParam("gpsLatitude") Double gpsLat, @QueryParam("gpsLongitude") Double gpsLng,
-                                   @QueryParam("description") String description) {
+                                   @QueryParam("description") String description, @QueryParam("type") String type) {
         if (name!=null && address!=null && zipCode!=null && town!=null && country!=null && gpsLat!=null && gpsLng!=null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create location : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name});
@@ -324,7 +327,7 @@ public class LocationEndpoint {
                 Location entity = findLocationByName(em, name);
                 if (entity==null) {
                     entity = new Location().setNameR(name).setAddressR(address).setZipCodeR(zipCode).setTownR(town).setCountryR(country).setGpsLatitudeR(gpsLat).setGpsLongitudeR(gpsLng).
-                                     setDescriptionR(description);
+                                     setDescriptionR(description).setTypeR(type);
                     try {
                         em.getTransaction().begin();
                         em.persist(entity);
@@ -565,6 +568,44 @@ public class LocationEndpoint {
             }
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
+        }
+    }
+
+    @GET
+    @Path("/update/type")
+    public Response updateLocationType(@QueryParam("id") Long id, @QueryParam("type") String type) {
+        if (id!=0 && type!=null) {
+            Subject subject = SecurityUtils.getSubject();
+            log.debug("[{}-{}] update location {} full address : ({},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id,
+                    type});
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwLOC:update") ||
+                    subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
+            {
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                Location entity = findLocationById(em, id);
+                if (entity != null) {
+                    try {
+                        em.getTransaction().begin();
+                        entity.setType(type);
+                        em.getTransaction().commit();
+                        em.close();
+                        return Response.status(Status.OK).entity("Location " + id + " has been successfully updated with type " + type).build();
+                    } catch (Throwable t) {
+                        if(em.getTransaction().isActive())
+                            em.getTransaction().rollback();
+                        em.close();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating location " + entity.getName() + " : " + t.getMessage()).build();
+                    }
+                } else {
+                    em.close();
+                    return Response.status(Status.NOT_FOUND).build();
+                }
+            } else {
+                return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
+            }
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or type are not defined. " +
+                    "You must define these parameters.").build();
         }
     }
 
