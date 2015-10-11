@@ -124,7 +124,6 @@ public class OSInstanceJSON {
 
     public static class JSONFriendlyOSInstance {
         private long osInstanceID;
-        private long osInstanceVersion;
         private String osInstanceName;
         private String osInstanceAdminGateURI;
         private String osInstanceDescription;
@@ -232,14 +231,6 @@ public class OSInstanceJSON {
 
         public void setOsInstanceName(String osInstanceName) {
             this.osInstanceName = osInstanceName;
-        }
-
-        public long getOsInstanceVersion() {
-            return osInstanceVersion;
-        }
-
-        public void setOsInstanceVersion(long osInstanceVersion) {
-            this.osInstanceVersion = osInstanceVersion;
         }
 
         public long getOsInstanceID() {
