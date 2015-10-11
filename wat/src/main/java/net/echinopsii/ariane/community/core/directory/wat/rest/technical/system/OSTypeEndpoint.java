@@ -149,7 +149,7 @@ public class OSTypeEndpoint {
                 } else {
                     for (OSInstance osInstance: entity.getOsInstances()) {
                         entity.getOsInstances().remove(osInstance);
-                        osInstance.setOsType(entity);
+                        osInstance.setOsType(null);
                     }
                 }
             }

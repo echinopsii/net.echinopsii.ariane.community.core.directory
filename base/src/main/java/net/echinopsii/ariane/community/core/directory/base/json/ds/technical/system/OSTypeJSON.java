@@ -84,7 +84,6 @@ public class OSTypeJSON {
 
     public static class JSONFriendlyOSType {
         private long osTypeID;
-        private long osTypeVersion;
         private String osTypeName;
         private String osTypeArchitecture;
         private long osTypeCompanyID;
@@ -120,14 +119,6 @@ public class OSTypeJSON {
 
         public void setOsTypeName(String osTypeName) {
             this.osTypeName = osTypeName;
-        }
-
-        public long getOsTypeVersion() {
-            return osTypeVersion;
-        }
-
-        public void setOsTypeVersion(long osTypeVersion) {
-            this.osTypeVersion = osTypeVersion;
         }
 
         public long getOsTypeID() {
