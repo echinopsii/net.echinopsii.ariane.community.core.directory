@@ -87,7 +87,6 @@ public class NICardJSON {
 
     public static class JSONFriendlyNICard{
         private long niCardID;
-        private long niCardVersion;
         private String niCardName;
         private String niCardMacAddress;
         private String niCardDuplex;
@@ -150,14 +149,6 @@ public class NICardJSON {
 
         public void setNiCardName(String niCardName) {
             this.niCardName = niCardName;
-        }
-
-        public long getNiCardVersion() {
-            return niCardVersion;
-        }
-
-        public void setNiCardVersion(long niCardVersion) {
-            this.niCardVersion = niCardVersion;
         }
 
         public long getNiCardID() {

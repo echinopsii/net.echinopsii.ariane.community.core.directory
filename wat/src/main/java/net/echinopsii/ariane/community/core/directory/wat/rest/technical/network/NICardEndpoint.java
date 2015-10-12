@@ -349,6 +349,8 @@ public class NICardEndpoint {
                         em.getTransaction().begin();
                         if (entity.getRosInstance() != null)
                             entity.getRosInstance().getNiCards().remove(entity);
+                        if (entity.getRipAddress() != null)
+                            entity.getRipAddress().setNiCard(null);
                         em.remove(entity);
                         em.getTransaction().commit();
                         em.close();
