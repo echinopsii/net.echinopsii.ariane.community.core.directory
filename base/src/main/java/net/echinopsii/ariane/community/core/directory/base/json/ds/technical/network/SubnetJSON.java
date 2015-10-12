@@ -106,7 +106,6 @@ public class SubnetJSON {
 
     public static class JSONFriendlySubnet {
         private long subnetID;
-        private long subnetVersion;
         private String subnetName;
         private String subnetDescription;
         private String subnetIP;
@@ -179,14 +178,6 @@ public class SubnetJSON {
 
         public void setSubnetName(String subnetName) {
             this.subnetName = subnetName;
-        }
-
-        public long getSubnetVersion() {
-            return subnetVersion;
-        }
-
-        public void setSubnetVersion(long subnetVersion) {
-            this.subnetVersion = subnetVersion;
         }
 
         public long getSubnetID() {
