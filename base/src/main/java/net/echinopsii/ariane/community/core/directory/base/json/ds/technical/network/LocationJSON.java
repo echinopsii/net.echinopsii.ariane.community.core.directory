@@ -101,7 +101,6 @@ public class LocationJSON {
 
     public static class JSONFriendlyLocation {
         private long locationID;
-        private long locationVersion;
         private String locationName;
         private String locationAddress;
         private long locationZipCode;
@@ -200,14 +199,6 @@ public class LocationJSON {
 
         public void setLocationName(String locationName) {
             this.locationName = locationName;
-        }
-
-        public long getLocationVersion() {
-            return locationVersion;
-        }
-
-        public void setLocationVersion(long locationVersion) {
-            this.locationVersion = locationVersion;
         }
 
         public long getLocationID() {
