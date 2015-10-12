@@ -83,7 +83,6 @@ public class IPAddressJSON {
 
     public static class JSONFriendlyIPAddress {
         private long ipAddressID;
-        private long ipAddressVersion;
         private String ipAddressIPA;
         private String ipAddressFQDN;
         private long ipAddressSubnetID;
@@ -128,14 +127,6 @@ public class IPAddressJSON {
 
         public void setIpAddressIPA(String ipAddressIPA) {
             this.ipAddressIPA = ipAddressIPA;
-        }
-
-        public long getIpAddressVersion() {
-            return ipAddressVersion;
-        }
-
-        public void setIpAddressVersion(long ipAddressVersion) {
-            this.ipAddressVersion = ipAddressVersion;
         }
 
         public long getIpAddressID() {
