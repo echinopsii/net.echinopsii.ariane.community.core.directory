@@ -53,6 +53,7 @@ public class LocationJSON {
     public final static String LOC_DESCRIPTION = "locationDescription";
     public final static String LOC_SUBNETS_ID  = "locationSubnetsID";
     public final static String LOC_MAREAS_ID   = "locationRoutingAreasID";
+    public final static String LOC_TYPE        = "locationType";
 
     public final static void location2JSON(Location location, JsonGenerator jgenerator) throws IOException {
         jgenerator.writeStartObject();
@@ -66,6 +67,7 @@ public class LocationJSON {
         jgenerator.writeNumberField(LOC_GPSLAT, location.getGpsLatitude());
         jgenerator.writeNumberField(LOC_GPSLNG, location.getGpsLongitude());
         jgenerator.writeStringField(LOC_DESCRIPTION, location.getDescription());
+        jgenerator.writeStringField(LOC_TYPE, location.getType());
         jgenerator.writeArrayFieldStart(LOC_SUBNETS_ID);
         for (Subnet subnet : location.getSubnets())
             jgenerator.writeNumber(subnet.getId());
@@ -105,11 +107,20 @@ public class LocationJSON {
         private long locationZipCode;
         private String locationTown;
         private String locationCountry;
+        private String locationType;
         private double locationGPSLat;
         private double locationGPSLng;
         private String locationDescription;
         private List<Long> locationSubnetsID;
         private List<Long> locationRoutingAreasID;
+
+        public String getLocationType() {
+            return locationType;
+        }
+
+        public void setLocationType(String locationType) {
+            this.locationType = locationType;
+        }
 
         public String getLocationTown() {
             return locationTown;
