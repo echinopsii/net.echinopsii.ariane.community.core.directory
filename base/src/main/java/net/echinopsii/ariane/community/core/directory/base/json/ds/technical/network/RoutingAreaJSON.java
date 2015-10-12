@@ -91,7 +91,6 @@ public class RoutingAreaJSON {
 
     public static class JSONFriendlyRoutingArea{
         private long routingAreaID;
-        private long routingAreaVersion;
         private String routingAreaName;
         private String routingAreaType;
         private String routingAreaMulticast;
@@ -145,14 +144,6 @@ public class RoutingAreaJSON {
 
         public void setRoutingAreaName(String routingAreaName) {
             this.routingAreaName = routingAreaName;
-        }
-
-        public long getRoutingAreaVersion() {
-            return routingAreaVersion;
-        }
-
-        public void setRoutingAreaVersion(long routingAreaVersion) {
-            this.routingAreaVersion = routingAreaVersion;
         }
 
         public long getRoutingAreaID() {
