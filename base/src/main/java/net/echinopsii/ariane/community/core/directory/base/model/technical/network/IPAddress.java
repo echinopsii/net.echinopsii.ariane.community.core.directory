@@ -64,8 +64,7 @@ public class IPAddress implements Serializable {
     @JoinColumn
     private OSInstance osInstance;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn
+    @OneToOne(fetch = FetchType.EAGER, mappedBy="ripAddress")
     private NICard niCard;
 
     public Long getId() {
