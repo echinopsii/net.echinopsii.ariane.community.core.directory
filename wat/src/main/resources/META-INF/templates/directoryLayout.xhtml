@@ -3,6 +3,9 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/templates/mainLayout.xhtml">
+    <ui:define name="moduleHeader">
+        <ui:insert name="directoryHeader"></ui:insert>
+    </ui:define>
     <ui:define name="moduleContent">
         <div id="directoryBg" class="backgroundDirectory">
             <p:layout widgetVar="directoriesLW">

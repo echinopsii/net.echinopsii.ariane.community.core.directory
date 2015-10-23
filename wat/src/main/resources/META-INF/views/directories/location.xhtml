@@ -8,6 +8,9 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:arianeidm="http://echinopsii.net/ariane/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
+    <ui:define name="directoryHeader">
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+    </ui:define>
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:display')}">
 
