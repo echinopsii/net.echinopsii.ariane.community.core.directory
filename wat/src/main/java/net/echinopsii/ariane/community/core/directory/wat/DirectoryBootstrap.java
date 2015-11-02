@@ -214,11 +214,11 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/routingArea.jsf").
                                                                               setDescription("Your routing areas definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                               addDisplayPermission("dirComITiNtwRarea:display")).
-                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("ipAddressTreeID").setValue("IP Address").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-ellipsis-horizontal").
+                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("ipAddressTreeID").setValue("IP Address").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-ip").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/ipAddress.jsf").
                                                                               setDescription("Your IP Addresses definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                               addDisplayPermission("dirComITiNtwIPAddress:display")).
-                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("nicTreeID").setValue("NIC").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-external-link").
+                                  addChildTreeMenuEntity(new TreeMenuEntity().setId("nicTreeID").setValue("NIC").setParentTreeMenuEntity(networkTreeMenuEntity).setIcon("icon-nic").
                                                                               setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/nic.jsf").
                                                                               setDescription("Your Network interface card definitions").addDisplayRole("ntwreviewer").addDisplayRole("ntwadmin").
                                                                               addDisplayPermission("dirComITiNtwNIC:display"));
@@ -240,11 +240,11 @@ public class DirectoryBootstrap implements FaceletsResourceResolverService {
                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/OSType.jsf").
                                                                              setDescription("Your OS types definitions").addDisplayRole("sysreviewer").addDisplayRole("sysadmin").
                                                                              addDisplayPermission("dirComITiSysOst:display")).
-                                 addChildTreeMenuEntity(new TreeMenuEntity().setId("SysIPAddressTreeID").setValue("IP Address").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-ellipsis-horizontal").
+                                 addChildTreeMenuEntity(new TreeMenuEntity().setId("SysIPAddressTreeID").setValue("IP Address").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-ip").
                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/ipAddress.jsf").
                                                                              setDescription("Your IP Addresses definitions").addDisplayRole("sysreviewer").addDisplayRole("sysadmin").
                                                                              addDisplayPermission("dirComITiNtwIPAddress:display")).
-                                 addChildTreeMenuEntity(new TreeMenuEntity().setId("SysNICTreeID").setValue("NIC").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-external-link").
+                                 addChildTreeMenuEntity(new TreeMenuEntity().setId("SysNICTreeID").setValue("NIC").setParentTreeMenuEntity(systemTreeMenuEntity).setIcon("icon-nic").
                                                                              setType(MenuEntityType.TYPE_MENU_ITEM).setContextAddress(MAIN_MENU_DIRECTORY_CONTEXT + "views/directories/nic.jsf").
                                                                              setDescription("Your Network interface card definitions").addDisplayRole("sysreviewer").addDisplayRole("sysadmin").
                                                                              addDisplayPermission("dirComITiSysNIC:display"));
