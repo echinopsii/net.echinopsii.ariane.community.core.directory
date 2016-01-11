@@ -301,10 +301,14 @@ public class RoutingAreaEndpoint {
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
-                        for (Location location : entity.getLocations())
+                        for (Location location : entity.getLocations()) {
                             location.getRoutingAreas().remove(entity);
-                        for (Subnet subnet : entity.getSubnets())
-                            subnet.setRarea(null);
+                            for (Subnet subnet : entity.getSubnets()) {
+                                location.getSubnets().remove(subnet);
+                                subnet.getLocations().remove(location);
+                                subnet.setRarea(null);
+                            }
+                        }
                         em.remove(entity);
                         em.getTransaction().commit();
                         return Response.status(Status.OK).entity("Routing area " + id + " has been successfully deleted").build();

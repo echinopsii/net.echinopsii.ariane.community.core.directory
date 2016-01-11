@@ -326,10 +326,15 @@ public class RoutingAreasListController implements Serializable {
             rarea2BeRemoved = em.find(rarea2BeRemoved.getClass(), rarea2BeRemoved.getId());
             try {
                 em.getTransaction().begin();
-                for (Subnet subnet : rarea2BeRemoved.getSubnets())
-                    subnet.setRarea(null);
-                for (Location loc : rarea2BeRemoved.getLocations())
+                for (Location loc : rarea2BeRemoved.getLocations()) {
                     loc.getRoutingAreas().remove(rarea2BeRemoved);
+                    for (Subnet subnet : rarea2BeRemoved.getSubnets()) {
+                        loc.getSubnets().remove(subnet);
+                        subnet.getLocations().remove(loc);
+                        subnet.setRarea(null);
+                    }
+                }
+
                 em.remove(rarea2BeRemoved);
                 em.flush();
                 em.getTransaction().commit();
