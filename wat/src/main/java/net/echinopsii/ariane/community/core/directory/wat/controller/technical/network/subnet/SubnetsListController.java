@@ -18,6 +18,7 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location.LocationsListController;
@@ -396,6 +397,10 @@ public class SubnetsListController implements Serializable {
                     subnet2BeRemoved.getRarea().getSubnets().remove(subnet2BeRemoved);
                 for (Location loc : subnet2BeRemoved.getLocations())
                     loc.getSubnets().remove(subnet2BeRemoved);
+                for (IPAddress ipAddress : subnet2BeRemoved.getIpAddresses()) {
+                    ipAddress.getNiCard().setIpAddressR(null);
+                    ipAddress.setNiCard(null);
+                }
                 em.remove(subnet2BeRemoved);
                 em.flush();
                 em.getTransaction().commit();

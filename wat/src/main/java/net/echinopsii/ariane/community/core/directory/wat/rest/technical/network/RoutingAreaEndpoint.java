@@ -18,6 +18,7 @@
  */
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
@@ -307,6 +308,10 @@ public class RoutingAreaEndpoint {
                                 location.getSubnets().remove(subnet);
                                 subnet.getLocations().remove(location);
                                 subnet.setRarea(null);
+                                for (IPAddress ipAddress : subnet.getIpAddresses()) {
+                                    ipAddress.getNiCard().setIpAddressR(null);
+                                    ipAddress.setNiCard(null);
+                                }
                             }
                         }
                         em.remove(entity);

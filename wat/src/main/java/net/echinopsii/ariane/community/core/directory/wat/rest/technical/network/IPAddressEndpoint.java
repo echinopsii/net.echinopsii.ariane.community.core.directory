@@ -418,6 +418,8 @@ public class IPAddressEndpoint {
                         em.getTransaction().begin();
                         if (entity.getNetworkSubnet()!=null)
                             entity.getNetworkSubnet().getIpAddresses().remove(entity);
+                        if (entity.getNiCard()!=null)
+                            entity.getNiCard().setRipAddress(null);
                         em.remove(entity);
                         em.getTransaction().commit();
                         em.close();

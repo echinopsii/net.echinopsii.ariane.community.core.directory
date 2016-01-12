@@ -497,6 +497,10 @@ public class SubnetEndpoint {
                             loc.getSubnets().remove(entity);
                         for (OSInstance osi : entity.getOsInstances())
                             osi.getNetworkSubnets().remove(entity);
+                        for (IPAddress ipAddress : entity.getIpAddresses()) {
+                            ipAddress.getNiCard().setIpAddressR(null);
+                            ipAddress.setNiCard(null);
+                        }
                         if (entity.getRarea()!=null)
                             entity.getRarea().getSubnets().remove(entity);
                         em.remove(entity);

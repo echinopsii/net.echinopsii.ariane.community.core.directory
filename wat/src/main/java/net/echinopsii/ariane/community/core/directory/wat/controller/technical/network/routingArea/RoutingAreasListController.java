@@ -19,6 +19,7 @@
 
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.routingArea;
 
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Location;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.RoutingArea;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.location.LocationsListController;
@@ -332,6 +333,10 @@ public class RoutingAreasListController implements Serializable {
                         loc.getSubnets().remove(subnet);
                         subnet.getLocations().remove(loc);
                         subnet.setRarea(null);
+                        for (IPAddress ipAddress : subnet.getIpAddresses()) {
+                            ipAddress.getNiCard().setIpAddressR(null);
+                            ipAddress.setNiCard(null);
+                        }
                     }
                 }
 
