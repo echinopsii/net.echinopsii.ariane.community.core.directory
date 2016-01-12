@@ -20,6 +20,8 @@
 package net.echinopsii.ariane.community.core.directory.base.model.technical.network;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +65,7 @@ public class NICard {
     @JoinColumn
     private IPAddress ripAddress;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     private OSInstance rosInstance;
 
