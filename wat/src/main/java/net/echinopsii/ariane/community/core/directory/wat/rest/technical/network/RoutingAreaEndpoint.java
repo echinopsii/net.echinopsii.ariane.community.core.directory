@@ -122,7 +122,7 @@ public class RoutingAreaEndpoint {
             }
             if(jsonFriendlyRoutingArea.getRoutingAreaLocationsID() != null) {
                 if (!jsonFriendlyRoutingArea.getRoutingAreaLocationsID().isEmpty()) {
-                    for (Location location : entity.getLocations()) {
+                    for (Location location : new HashSet<>(entity.getLocations())) {
                         if (!jsonFriendlyRoutingArea.getRoutingAreaLocationsID().contains(location.getId())) {
                             entity.getLocations().remove(location);
                             location.getRoutingAreas().remove(entity);
@@ -141,7 +141,7 @@ public class RoutingAreaEndpoint {
                         }
                     }
                 } else {
-                    for (Location location : entity.getLocations()) {
+                    for (Location location : new HashSet<>(entity.getLocations())) {
                         entity.getLocations().remove(location);
                         location.getRoutingAreas().remove(entity);
                     }

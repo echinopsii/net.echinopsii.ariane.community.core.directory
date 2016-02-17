@@ -118,7 +118,7 @@ public class EnvironmentEndpoint {
             }
             if(jsonFriendlyEnvironment.getEnvironmentOSInstancesID() != null) {
                 if (!jsonFriendlyEnvironment.getEnvironmentOSInstancesID().isEmpty()) {
-                    for (OSInstance osInstance: entity.getOsInstances()) {
+                    for (OSInstance osInstance: new HashSet<>(entity.getOsInstances())) {
                         if (!jsonFriendlyEnvironment.getEnvironmentOSInstancesID().contains(osInstance.getId())) {
                             entity.getOsInstances().remove(osInstance);
                             osInstance.getEnvironments().remove(entity);
@@ -137,7 +137,7 @@ public class EnvironmentEndpoint {
                         }
                     }
                 } else {
-                    for (OSInstance osInstance : entity.getOsInstances()) {
+                    for (OSInstance osInstance : new HashSet<>(entity.getOsInstances())) {
                         entity.getOsInstances().remove(osInstance);
                         osInstance.getEnvironments().remove(entity);
                     }

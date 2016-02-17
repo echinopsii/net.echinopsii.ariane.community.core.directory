@@ -133,7 +133,7 @@ public class LocationEndpoint {
             }
             if(jsonFriendlyLocation.getLocationRoutingAreasID() != null) {
                 if (!jsonFriendlyLocation.getLocationRoutingAreasID().isEmpty()) {
-                    for (RoutingArea routingArea : entity.getRoutingAreas()) {
+                    for (RoutingArea routingArea : new HashSet<>(entity.getRoutingAreas())) {
                         if (!jsonFriendlyLocation.getLocationRoutingAreasID().contains(routingArea.getId())) {
                             entity.getRoutingAreas().remove(routingArea);
                             routingArea.getLocations().remove(entity);
@@ -152,7 +152,7 @@ public class LocationEndpoint {
                         }
                     }
                 } else {
-                    for (RoutingArea routingArea : entity.getRoutingAreas()) {
+                    for (RoutingArea routingArea : new HashSet<>(entity.getRoutingAreas())) {
                         entity.getRoutingAreas().remove(routingArea);
                         routingArea.getLocations().remove(entity);
                     }
@@ -160,7 +160,7 @@ public class LocationEndpoint {
             }
             if(jsonFriendlyLocation.getLocationSubnetsID() != null) {
                 if (!jsonFriendlyLocation.getLocationSubnetsID().isEmpty()) {
-                    for (Subnet subnet: entity.getSubnets()) {
+                    for (Subnet subnet: new HashSet<>(entity.getSubnets())) {
                         if (!jsonFriendlyLocation.getLocationSubnetsID().contains(subnet.getId())) {
                             entity.getSubnets().remove(subnet);
                             subnet.getLocations().remove(entity);
@@ -179,7 +179,7 @@ public class LocationEndpoint {
                         }
                     }
                 } else {
-                    for (Subnet subnet : entity.getSubnets()) {
+                    for (Subnet subnet : new HashSet<>(entity.getSubnets())) {
                         entity.getSubnets().remove(subnet);
                         subnet.getLocations().remove(entity);
                     }

@@ -119,7 +119,7 @@ public class TeamEndpoint {
             }
             if(jsonFriendlyTeam.getTeamApplicationsID() != null) {
                 if (!jsonFriendlyTeam.getTeamApplicationsID().isEmpty()) {
-                    for (Application application : entity.getApplications()) {
+                    for (Application application : new HashSet<>(entity.getApplications())) {
                         if (!jsonFriendlyTeam.getTeamApplicationsID().contains(application.getId())) {
                             entity.getApplications().remove(application);
                             application.setTeam(null);
@@ -146,7 +146,7 @@ public class TeamEndpoint {
             }
             if(jsonFriendlyTeam.getTeamOSInstancesID() != null) {
                 if (!jsonFriendlyTeam.getTeamOSInstancesID().isEmpty()) {
-                    for (OSInstance osInstance: entity.getOsInstances()) {
+                    for (OSInstance osInstance: new HashSet<>(entity.getOsInstances())) {
                         if (!jsonFriendlyTeam.getTeamOSInstancesID().contains(osInstance.getId())) {
                             entity.getOsInstances().remove(osInstance);
                             osInstance.getTeams().remove(entity);
@@ -165,7 +165,7 @@ public class TeamEndpoint {
                         }
                     }
                 } else {
-                    for (OSInstance osInstance : entity.getOsInstances()) {
+                    for (OSInstance osInstance : new HashSet<>(entity.getOsInstances())) {
                         entity.getOsInstances().remove(osInstance);
                         osInstance.getTeams().remove(entity);
                     }

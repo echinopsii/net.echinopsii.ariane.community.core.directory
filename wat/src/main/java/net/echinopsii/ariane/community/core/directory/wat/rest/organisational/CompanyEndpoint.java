@@ -116,7 +116,7 @@ public class CompanyEndpoint {
             }
             if(jsonFriendlyCompany.getCompanyApplicationsID() != null) {
                 if (!jsonFriendlyCompany.getCompanyApplicationsID().isEmpty()) {
-                    for (Application application : entity.getApplications()) {
+                    for (Application application : new HashSet<>(entity.getApplications())) {
                         if (!jsonFriendlyCompany.getCompanyApplicationsID().contains(application.getId())) {
                             entity.getApplications().remove(application);
                             application.setCompany(null);
@@ -135,7 +135,7 @@ public class CompanyEndpoint {
                         }
                     }
                 } else {
-                    for (Application application : entity.getApplications()) {
+                    for (Application application : new HashSet<>(entity.getApplications())) {
                         entity.getApplications().remove(application);
                         application.setCompany(null);
                     }
@@ -143,7 +143,7 @@ public class CompanyEndpoint {
             }
             if(jsonFriendlyCompany.getCompanyOSTypesID() != null) {
                 if (!jsonFriendlyCompany.getCompanyOSTypesID().isEmpty()) {
-                    for (OSType osType: entity.getOsTypes()) {
+                    for (OSType osType: new HashSet<>(entity.getOsTypes())) {
                         if (!jsonFriendlyCompany.getCompanyOSTypesID().contains(osType.getId())) {
                             entity.getOsTypes().remove(osType);
                             osType.setCompany(null);
@@ -162,7 +162,7 @@ public class CompanyEndpoint {
                         }
                     }
                 } else {
-                    for (OSType osType: entity.getOsTypes()) {
+                    for (OSType osType: new HashSet<>(entity.getOsTypes())) {
                         entity.getOsTypes().remove(osType);
                         osType.setCompany(null);
                     }

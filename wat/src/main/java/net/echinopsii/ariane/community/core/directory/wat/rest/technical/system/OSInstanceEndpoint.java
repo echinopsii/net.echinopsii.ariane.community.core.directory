@@ -153,7 +153,7 @@ public class OSInstanceEndpoint {
             }
             if(jsonFriendlyOSInstance.getOsInstanceSubnetsID() != null) {
                 if (!jsonFriendlyOSInstance.getOsInstanceSubnetsID().isEmpty()) {
-                    for (Subnet subnet : entity.getNetworkSubnets()) {
+                    for (Subnet subnet : new HashSet<>(entity.getNetworkSubnets())) {
                         if (!jsonFriendlyOSInstance.getOsInstanceSubnetsID().contains(subnet.getId())) {
                             entity.getNetworkSubnets().remove(subnet);
                             subnet.getOsInstances().remove(entity);
@@ -172,7 +172,7 @@ public class OSInstanceEndpoint {
                         }
                     }
                 } else {
-                    for (Subnet subnet: entity.getNetworkSubnets()) {
+                    for (Subnet subnet: new HashSet<>(entity.getNetworkSubnets())) {
                         entity.getNetworkSubnets().remove(subnet);
                         subnet.getOsInstances().remove(entity);
                     }
@@ -180,7 +180,7 @@ public class OSInstanceEndpoint {
             }
             if(jsonFriendlyOSInstance.getOsInstanceApplicationsID() != null) {
                 if (!jsonFriendlyOSInstance.getOsInstanceApplicationsID().isEmpty()) {
-                    for (Application application: entity.getApplications()) {
+                    for (Application application: new HashSet<>(entity.getApplications())) {
                         if (!jsonFriendlyOSInstance.getOsInstanceApplicationsID().contains(application.getId())) {
                             entity.getApplications().remove(application);
                             application.getOsInstances().remove(entity);
@@ -199,7 +199,7 @@ public class OSInstanceEndpoint {
                         }
                     }
                 } else {
-                    for (Application application: entity.getApplications()) {
+                    for (Application application: new HashSet<>(entity.getApplications())) {
                         entity.getApplications().remove(application);
                         application.getOsInstances().remove(entity);
                     }
@@ -207,7 +207,7 @@ public class OSInstanceEndpoint {
             }
             if(jsonFriendlyOSInstance.getOsInstanceEnvironmentsID() != null) {
                 if (!jsonFriendlyOSInstance.getOsInstanceEnvironmentsID().isEmpty()) {
-                    for (Environment environment: entity.getEnvironments()) {
+                    for (Environment environment: new HashSet<>(entity.getEnvironments())) {
                         if (!jsonFriendlyOSInstance.getOsInstanceEnvironmentsID().contains(environment.getId())) {
                             entity.getEnvironments().remove(environment);
                             environment.getOsInstances().remove(entity);
@@ -226,7 +226,7 @@ public class OSInstanceEndpoint {
                         }
                     }
                 } else {
-                    for (Environment environment: entity.getEnvironments()) {
+                    for (Environment environment: new HashSet<>(entity.getEnvironments())) {
                         entity.getEnvironments().remove(environment);
                         environment.getOsInstances().remove(entity);
                     }
@@ -234,7 +234,7 @@ public class OSInstanceEndpoint {
             }
             if(jsonFriendlyOSInstance.getOsInstanceIPAddressesID() != null) {
                 if (!jsonFriendlyOSInstance.getOsInstanceIPAddressesID().isEmpty()) {
-                    for (IPAddress ipAddress: entity.getIpAddresses()) {
+                    for (IPAddress ipAddress: new HashSet<>(entity.getIpAddresses())) {
                         if (!jsonFriendlyOSInstance.getOsInstanceIPAddressesID().contains(ipAddress.getId())) {
                             entity.getIpAddresses().remove(ipAddress);
                             ipAddress.setOsInstance(null);
@@ -253,7 +253,7 @@ public class OSInstanceEndpoint {
                         }
                     }
                 } else {
-                    for (IPAddress ipAddress: entity.getIpAddresses()) {
+                    for (IPAddress ipAddress: new HashSet<>(entity.getIpAddresses())) {
                         entity.getIpAddresses().remove(ipAddress);
                         ipAddress.setOsInstance(null);
                     }
@@ -261,7 +261,7 @@ public class OSInstanceEndpoint {
             }
             if(jsonFriendlyOSInstance.getOsInstanceNICardsID() != null) {
                 if (!jsonFriendlyOSInstance.getOsInstanceNICardsID().isEmpty()) {
-                    for (NICard niCard : entity.getNiCards()) {
+                    for (NICard niCard : new HashSet<>(entity.getNiCards())) {
                         if (!jsonFriendlyOSInstance.getOsInstanceNICardsID().contains(niCard.getId())) {
                             entity.getNiCards().remove(niCard);
                             niCard.setRosInstance(null);
@@ -280,7 +280,7 @@ public class OSInstanceEndpoint {
                         }
                     }
                 } else {
-                    for (NICard niCard : entity.getNiCards()) {
+                    for (NICard niCard : new HashSet<>(entity.getNiCards())) {
                         entity.getNiCards().remove(niCard);
                         niCard.setRosInstance(null);
                     }
@@ -288,7 +288,7 @@ public class OSInstanceEndpoint {
             }
             if(jsonFriendlyOSInstance.getOsInstanceTeamsID() != null) {
                 if (!jsonFriendlyOSInstance.getOsInstanceTeamsID().isEmpty()) {
-                    for (Team team: entity.getTeams()) {
+                    for (Team team: new HashSet<>(entity.getTeams())) {
                         if (!jsonFriendlyOSInstance.getOsInstanceTeamsID().contains(team.getId())) {
                             entity.getTeams().remove(team);
                             team.getOsInstances().remove(entity);
@@ -307,7 +307,7 @@ public class OSInstanceEndpoint {
                         }
                     }
                 } else {
-                    for (Team team : entity.getTeams()) {
+                    for (Team team : new HashSet<>(entity.getTeams())) {
                         entity.getTeams().remove(team);
                         team.getOsInstances().remove(entity);
                     }
@@ -315,7 +315,7 @@ public class OSInstanceEndpoint {
             }
             if(jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID() != null) {
                 if (!jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID().isEmpty()) {
-                    for (OSInstance embeddedOSI : entity.getEmbeddedOSInstances()) {
+                    for (OSInstance embeddedOSI : new HashSet<>(entity.getEmbeddedOSInstances())) {
                         if (!jsonFriendlyOSInstance.getOsInstanceEmbeddedOSInstancesID().contains(embeddedOSI.getId())) {
                             embeddedOSI.setEmbeddingOSInstance(null);
                             entity.getEmbeddedOSInstances().remove(entity);
@@ -334,7 +334,7 @@ public class OSInstanceEndpoint {
                         }
                     }
                 } else {
-                    for (OSInstance embeddedOSI: entity.getEmbeddedOSInstances()) {
+                    for (OSInstance embeddedOSI: new HashSet<>(entity.getEmbeddedOSInstances())) {
                         entity.getEmbeddedOSInstances().remove(embeddedOSI);
                         embeddedOSI.setEmbeddingOSInstance(null);
                     }

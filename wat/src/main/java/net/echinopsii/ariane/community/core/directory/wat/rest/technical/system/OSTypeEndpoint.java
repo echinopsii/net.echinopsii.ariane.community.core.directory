@@ -128,7 +128,7 @@ public class OSTypeEndpoint {
             }
             if(jsonFriendlyOSType.getOsTypeOSInstancesID() != null) {
                 if (!jsonFriendlyOSType.getOsTypeOSInstancesID().isEmpty()) {
-                    for (OSInstance osInstance : entity.getOsInstances()) {
+                    for (OSInstance osInstance : new HashSet<>(entity.getOsInstances())) {
                         if (!jsonFriendlyOSType.getOsTypeOSInstancesID().contains(osInstance.getId())) {
                             entity.getOsInstances().remove(osInstance);
                             osInstance.setOsType(null);
@@ -147,7 +147,7 @@ public class OSTypeEndpoint {
                         }
                     }
                 } else {
-                    for (OSInstance osInstance: entity.getOsInstances()) {
+                    for (OSInstance osInstance: new HashSet<>(entity.getOsInstances())) {
                         entity.getOsInstances().remove(osInstance);
                         osInstance.setOsType(null);
                     }

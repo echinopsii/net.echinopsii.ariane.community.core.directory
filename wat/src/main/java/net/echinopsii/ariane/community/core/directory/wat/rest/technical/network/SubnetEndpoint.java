@@ -161,7 +161,7 @@ public class SubnetEndpoint {
             }
             if(jsonFriendlySubnet.getSubnetOSInstancesID() != null) {
                 if (!jsonFriendlySubnet.getSubnetOSInstancesID().isEmpty()) {
-                    for (OSInstance osInstance : entity.getOsInstances()) {
+                    for (OSInstance osInstance : new HashSet<>(entity.getOsInstances())) {
                         if (!jsonFriendlySubnet.getSubnetOSInstancesID().contains(osInstance.getId())) {
                             entity.getOsInstances().remove(osInstance);
                             osInstance.getNetworkSubnets().remove(entity);
@@ -180,7 +180,7 @@ public class SubnetEndpoint {
                         }
                     }
                 } else {
-                    for (OSInstance osInstance: entity.getOsInstances()) {
+                    for (OSInstance osInstance: new HashSet<>(entity.getOsInstances())) {
                         entity.getOsInstances().remove(osInstance);
                         osInstance.getNetworkSubnets().remove(entity);
                     }
@@ -188,7 +188,7 @@ public class SubnetEndpoint {
             }
             if(jsonFriendlySubnet.getSubnetLocationsID() != null) {
                 if (!jsonFriendlySubnet.getSubnetLocationsID().isEmpty()) {
-                    for (Location location : entity.getLocations()) {
+                    for (Location location : new HashSet<>(entity.getLocations())) {
                         if (!jsonFriendlySubnet.getSubnetLocationsID().contains(location.getId())) {
                             entity.getLocations().remove(location);
                             location.getSubnets().remove(entity);
@@ -207,7 +207,7 @@ public class SubnetEndpoint {
                         }
                     }
                 } else {
-                    for (Location location : entity.getLocations()) {
+                    for (Location location : new HashSet<>(entity.getLocations())) {
                         entity.getLocations().remove(location);
                         location.getSubnets().remove(entity);
                     }
@@ -215,7 +215,7 @@ public class SubnetEndpoint {
             }
             if(jsonFriendlySubnet.getSubnetIPAddressesID() != null) {
                 if (!jsonFriendlySubnet.getSubnetIPAddressesID().isEmpty()) {
-                    for (IPAddress ipAddress : entity.getIpAddresses()) {
+                    for (IPAddress ipAddress : new HashSet<>(entity.getIpAddresses())) {
                         if (!jsonFriendlySubnet.getSubnetIPAddressesID().contains(ipAddress.getId())) {
                             entity.getIpAddresses().remove(ipAddress);
                             ipAddress.setNetworkSubnet(null);
@@ -234,7 +234,7 @@ public class SubnetEndpoint {
                         }
                     }
                 } else {
-                    for (IPAddress ipAddress : entity.getIpAddresses()) {
+                    for (IPAddress ipAddress : new HashSet<>(entity.getIpAddresses())) {
                         entity.getIpAddresses().remove(ipAddress);
                         ipAddress.setNetworkSubnet(null);
                     }
