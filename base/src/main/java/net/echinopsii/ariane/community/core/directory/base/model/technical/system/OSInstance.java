@@ -325,7 +325,8 @@ public class OSInstance implements Serializable {
     public HashMap<String,Object> toMappingProperties() {
         HashMap<String,Object> ret = new HashMap<String,Object>();
         ret.put(OSI_NAME_MAPPING_FIELD,name);
-        ret.put(OSI_TYPE_MAPPING_FIELD,osType.getName()+" - "+osType.getArchitecture());
+        if (osType != null)
+            ret.put(OSI_TYPE_MAPPING_FIELD,osType.getName()+" - "+osType.getArchitecture());
         return ret;
     }
 }
