@@ -123,28 +123,37 @@ public class OSTypeNewController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        OSType osType = new OSType().setNameR(name).setArchitectureR(architecture).setCompanyR(company);
 
-        try {
-            em.getTransaction().begin();
-            if (this.company!=null) {this.company.getOsTypes().add(osType);}
-            em.persist(osType);
-            em.flush();
-            em.getTransaction().commit();
-            log.debug("Save new OSType {} !", new Object[]{name});
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                       "OS type created successfully !",
-                                                       "OS type name : " + osType.getName());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        } catch (Throwable t) {
-            log.debug("Throwable catched !");
-            t.printStackTrace();
+        if (OSType.findOSTypeByNameAndArc(em, name, architecture) == null) {
+            OSType osType = new OSType().setNameR(name).setArchitectureR(architecture).setCompanyR(company);
+            try {
+                em.getTransaction().begin();
+                if (this.company != null) {
+                    this.company.getOsTypes().add(osType);
+                }
+                em.persist(osType);
+                em.flush();
+                em.getTransaction().commit();
+                log.debug("Save new OSType {} !", new Object[]{name});
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "OS type created successfully !",
+                        "OS type name : " + osType.getName());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            } catch (Throwable t) {
+                log.debug("Throwable catched !");
+                t.printStackTrace();
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Throwable raised while creating OS type " + osType.getName() + " !",
+                        "Throwable message : " + t.getMessage());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+            }
+        } else {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                                       "Throwable raised while creating OS type " + osType.getName() + " !",
-                                                       "Throwable message : " + t.getMessage());
+                    "OS type already exists !",
+                    "OS type (" + name + ", " + architecture + ") already exists!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
         }
     }
 }

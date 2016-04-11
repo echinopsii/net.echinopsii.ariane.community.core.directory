@@ -140,7 +140,7 @@ public class OSInstanceEndpoint {
                 }
             }
             if (jsonFriendlyOSInstance.getOsInstanceOSTypeID() != 0) {
-                OSType osType = OSTypeEndpoint.findOSTypeById(em, jsonFriendlyOSInstance.getOsInstanceOSTypeID());
+                OSType osType = OSType.findOSTypeById(em, jsonFriendlyOSInstance.getOsInstanceOSTypeID());
                 if (osType != null) {
                     if (entity.getOsType() != null)
                         entity.getOsType().getOsInstances().remove(entity);
@@ -358,7 +358,7 @@ public class OSInstanceEndpoint {
                 }
             }
             if (jsonFriendlyOSInstance.getOsInstanceOSTypeID() != 0) {
-                OSType osType = OSTypeEndpoint.findOSTypeById(em, jsonFriendlyOSInstance.getOsInstanceOSTypeID());
+                OSType osType = OSType.findOSTypeById(em, jsonFriendlyOSInstance.getOsInstanceOSTypeID());
                 if (osType != null) {
                     if (entity.getOsType() != null)
                         entity.getOsType().getOsInstances().remove(entity);
@@ -819,7 +819,7 @@ public class OSInstanceEndpoint {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSInstance entity = findOSInstanceById(em, id);
                 if (entity!=null) {
-                    OSType osType = OSTypeEndpoint.findOSTypeById(em, ostID);
+                    OSType osType = OSType.findOSTypeById(em, ostID);
                     if (osType!=null) {
                         try {
                             em.getTransaction().begin();

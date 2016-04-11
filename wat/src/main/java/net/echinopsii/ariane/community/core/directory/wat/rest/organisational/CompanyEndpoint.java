@@ -150,7 +150,7 @@ public class CompanyEndpoint {
                         }
                     }
                     for (Long osTypeid : jsonFriendlyCompany.getCompanyOSTypesID()) {
-                        OSType osType = OSTypeEndpoint.findOSTypeById(em, osTypeid);
+                        OSType osType = OSType.findOSTypeById(em, osTypeid);
                         if (osType != null) {
                             if (!entity.getOsTypes().contains(osType)) {
                                 entity.getOsTypes().add(osType);
@@ -192,7 +192,7 @@ public class CompanyEndpoint {
             if (jsonFriendlyCompany.getCompanyOSTypesID() != null) {
                 if (!jsonFriendlyCompany.getCompanyOSTypesID().isEmpty()) {
                     for (Long osTypeid : jsonFriendlyCompany.getCompanyOSTypesID()) {
-                        OSType osType = OSTypeEndpoint.findOSTypeById(em, osTypeid);
+                        OSType osType = OSType.findOSTypeById(em, osTypeid);
                         if (osType != null) {
                             if (!entity.getOsTypes().contains(osType)) {
                                 entity.getOsTypes().add(osType);
@@ -580,7 +580,7 @@ public class CompanyEndpoint {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Company entity = findCompanyById(em, id);
                 if (entity != null) {
-                    OSType osType = OSTypeEndpoint.findOSTypeById(em, ostypeID);
+                    OSType osType = OSType.findOSTypeById(em, ostypeID);
                     if (osType!=null) {
                         try {
                             em.getTransaction().begin();
@@ -623,7 +623,7 @@ public class CompanyEndpoint {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Company entity = findCompanyById(em, id);
                 if (entity != null) {
-                    OSType osType = OSTypeEndpoint.findOSTypeById(em, ostypeID);
+                    OSType osType = OSType.findOSTypeById(em, ostypeID);
                     if (osType!=null) {
                         try {
                             em.getTransaction().begin();

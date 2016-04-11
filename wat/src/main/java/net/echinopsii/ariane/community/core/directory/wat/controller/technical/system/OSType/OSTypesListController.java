@@ -234,14 +234,22 @@ public class OSTypesListController implements Serializable {
     public void update(OSType osType) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
-            em.getTransaction().begin();
-            osType = em.find(osType.getClass(), osType.getId()).setArchitectureR(osType.getArchitecture()).setNameR(osType.getName());
-            em.flush();
-            em.getTransaction().commit();
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                                                "OS Type updated successfully !",
-                                                "OS Type name : " + osType.getName());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            OSType existingOSType = OSType.findOSTypeByNameAndArc(em, osType.getName(), osType.getArchitecture());
+            if (existingOSType == null || existingOSType.getId().equals(osType.getId())) {
+                em.getTransaction().begin();
+                osType = em.find(osType.getClass(), osType.getId()).setArchitectureR(osType.getArchitecture()).setNameR(osType.getName());
+                em.flush();
+                em.getTransaction().commit();
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "OS Type updated successfully !",
+                        "OS Type name : " + osType.getName());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            } else {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "OS type already exists !",
+                        "OS type (" + osType.getName() + ", " + osType.getArchitecture() + ") already exists!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
         } catch (Throwable t) {
             log.debug("Throwable catched !");
             t.printStackTrace();

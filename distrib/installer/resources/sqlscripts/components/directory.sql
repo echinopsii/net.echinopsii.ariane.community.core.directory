@@ -79,6 +79,8 @@ CREATE TABLE IF NOT EXISTS `osType` (
   CONSTRAINT `FK_28swxpviq8cw0hd8wnnxnt5kq` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
+ALTER TABLE `osType` DROP INDEX `UK_crf1osblyu69u2qm2wqjjf24p`;
+
 
 --
 -- Table structure for table `team`

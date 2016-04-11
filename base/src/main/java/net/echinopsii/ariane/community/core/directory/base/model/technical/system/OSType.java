@@ -43,7 +43,7 @@ public class OSType implements Serializable
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name="osTypeName",unique=true,nullable=false)
+    @Column(name="osTypeName",nullable=false)
     @NotNull
     private String name;
 
@@ -174,5 +174,30 @@ public class OSType implements Serializable
     public OSType clone() {
         return new OSType().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setArchitectureR(this.architecture).setCompanyR(this.company).
                             setOsInstancesR(new HashSet<OSInstance>(this.osInstances));
+    }
+
+    public static OSType findOSTypeById(EntityManager em, long id) {
+        TypedQuery<OSType> findByIdQuery = em.createQuery("SELECT DISTINCT o FROM OSType o LEFT JOIN FETCH o.osInstances WHERE o.id = :entityId ORDER BY o.id", OSType.class);
+        findByIdQuery.setParameter("entityId", id);
+        OSType entity;
+        try {
+            entity = findByIdQuery.getSingleResult();
+        } catch (NoResultException nre) {
+            entity = null;
+        }
+        return entity;
+    }
+
+    public static OSType findOSTypeByNameAndArc(EntityManager em, String name, String arc) {
+        TypedQuery<OSType> findByNameAndArcQuery = em.createQuery("SELECT DISTINCT o FROM OSType o LEFT JOIN FETCH o.osInstances WHERE o.name = :entityName AND o.architecture = :entityArc ORDER BY o.name", OSType.class);
+        findByNameAndArcQuery.setParameter("entityName", name);
+        findByNameAndArcQuery.setParameter("entityArc", arc);
+        OSType entity;
+        try {
+            entity = findByNameAndArcQuery.getSingleResult();
+        } catch (NoResultException nre) {
+            entity = null;
+        }
+        return entity;
     }
 }

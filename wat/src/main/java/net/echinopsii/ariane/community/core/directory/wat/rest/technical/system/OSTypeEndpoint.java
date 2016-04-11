@@ -68,43 +68,19 @@ public class OSTypeEndpoint {
         return ret;
     }
 
-    public static OSType findOSTypeById(EntityManager em, long id) {
-        TypedQuery<OSType> findByIdQuery = em.createQuery("SELECT DISTINCT o FROM OSType o LEFT JOIN FETCH o.osInstances WHERE o.id = :entityId ORDER BY o.id", OSType.class);
-        findByIdQuery.setParameter("entityId", id);
-        OSType entity;
-        try {
-            entity = findByIdQuery.getSingleResult();
-        } catch (NoResultException nre) {
-            entity = null;
-        }
-        return entity;
-    }
-
-    public static OSType findOSTypeByName(EntityManager em, String name) {
-        TypedQuery<OSType> findByNameQuery = em.createQuery("SELECT DISTINCT o FROM OSType o LEFT JOIN FETCH o.osInstances WHERE o.name = :entityName ORDER BY o.name", OSType.class);
-        findByNameQuery.setParameter("entityName", name);
-        OSType entity;
-        try {
-            entity = findByNameQuery.getSingleResult();
-        } catch (NoResultException nre) {
-            entity = null;
-        }
-        return entity;
-    }
-
     public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyOSType jsonFriendlyOSType) {
         OSType entity = null;
         CommonRestResponse commonRestResponse = new CommonRestResponse();
 
         if(jsonFriendlyOSType.getOsTypeID() !=0)
-            entity = findOSTypeById(em, jsonFriendlyOSType.getOsTypeID());
+            entity = OSType.findOSTypeById(em, jsonFriendlyOSType.getOsTypeID());
         if(entity == null && jsonFriendlyOSType.getOsTypeID()!=0){
             commonRestResponse.setErrorMessage("Request Error : provided OSType ID " + jsonFriendlyOSType.getOsTypeID() +" was not found.");
             return commonRestResponse;
         }
         if(entity == null){
-            if(jsonFriendlyOSType.getOsTypeName() != null){
-                entity = findOSTypeByName(em, jsonFriendlyOSType.getOsTypeName());
+            if(jsonFriendlyOSType.getOsTypeName() != null && jsonFriendlyOSType.getOsTypeArchitecture() != null){
+                entity = OSType.findOSTypeByNameAndArc(em, jsonFriendlyOSType.getOsTypeName(), jsonFriendlyOSType.getOsTypeArchitecture());
             }
         }
         if(entity != null) {
@@ -199,7 +175,7 @@ public class OSTypeEndpoint {
             subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
         {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            OSType entity = findOSTypeById(em, id);
+            OSType entity = OSType.findOSTypeById(em, id);
             if (entity == null) {
                 em.close();
                 return Response.status(Status.NOT_FOUND).build();
@@ -246,7 +222,7 @@ public class OSTypeEndpoint {
 
     @GET
     @Path("/get")
-    public Response getOSType(@QueryParam("name")String name, @QueryParam("id")long id) {
+    public Response getOSType(@QueryParam("name")String name, @QueryParam("arc")String arc, @QueryParam("id")long id) {
         if (id!=0) {
             return displayOSType(id);
         } else if (name != null) {
@@ -256,7 +232,7 @@ public class OSTypeEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                OSType entity = findOSTypeByName(em, name);
+                OSType entity = OSType.findOSTypeByNameAndArc(em, name, arc);
                 if (entity == null) {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
@@ -283,7 +259,7 @@ public class OSTypeEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                OSType entity = findOSTypeByName(em, name);
+                OSType entity = OSType.findOSTypeByNameAndArc(em, name, arc);
                 if (entity == null) {
                     entity = new OSType().setNameR(name).setArchitectureR(arc);
                     try {
@@ -361,7 +337,7 @@ public class OSTypeEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                OSType entity = findOSTypeById(em, id);
+                OSType entity = OSType.findOSTypeById(em, id);
                 if (entity!=null) {
                     try {
                         em.getTransaction().begin();
@@ -402,20 +378,24 @@ public class OSTypeEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                OSType entity = findOSTypeById(em, id);
+                OSType entity = OSType.findOSTypeById(em, id);
                 if (entity!=null) {
-                    try {
-                        em.getTransaction().begin();
-                        entity.setName(name);
-                        em.flush();
-                        em.getTransaction().commit();
-                        em.close();
-                        return Response.status(Status.OK).entity("OS Type " + id + " has been successfully update with name " + name).build();
-                    } catch (Throwable t) {
-                        if(em.getTransaction().isActive())
-                            em.getTransaction().rollback();
-                        em.close();
-                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating OS Type " + entity.getName() + " : " + t.getMessage()).build();
+                    if (OSType.findOSTypeByNameAndArc(em, name, entity.getArchitecture()) == null) {
+                        try {
+                            em.getTransaction().begin();
+                            entity.setName(name);
+                            em.flush();
+                            em.getTransaction().commit();
+                            em.close();
+                            return Response.status(Status.OK).entity("OS Type " + id + " has been successfully update with name " + name).build();
+                        } catch (Throwable t) {
+                            if(em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating OS Type " + entity.getName() + " : " + t.getMessage()).build();
+                        }
+                    } else {
+                        return Response.status(Status.BAD_REQUEST).entity("OS Type (" + name + ", " + entity.getArchitecture() + ") already exists !").build();
                     }
                 } else {
                     em.close();
@@ -439,20 +419,24 @@ public class OSTypeEndpoint {
                         subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                OSType entity = findOSTypeById(em, id);
+                OSType entity = OSType.findOSTypeById(em, id);
                 if (entity!=null) {
-                    try {
-                        em.getTransaction().begin();
-                        entity.setArchitecture(arc);
-                        em.flush();
-                        em.getTransaction().commit();
-                        em.close();
-                        return Response.status(Status.OK).entity("OS Type " + id + " has been successfully update with architecture " + arc).build();
-                    } catch (Throwable t) {
-                        if(em.getTransaction().isActive())
-                            em.getTransaction().rollback();
-                        em.close();
-                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating OS Type " + entity.getName() + " : " + t.getMessage()).build();
+                    if (OSType.findOSTypeByNameAndArc(em, entity.getName(), arc) == null) {
+                        try {
+                            em.getTransaction().begin();
+                            entity.setArchitecture(arc);
+                            em.flush();
+                            em.getTransaction().commit();
+                            em.close();
+                            return Response.status(Status.OK).entity("OS Type " + id + " has been successfully update with architecture " + arc).build();
+                        } catch (Throwable t) {
+                            if (em.getTransaction().isActive())
+                                em.getTransaction().rollback();
+                            em.close();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating OS Type " + entity.getName() + " : " + t.getMessage()).build();
+                        }
+                    } else {
+                        return Response.status(Status.BAD_REQUEST).entity("OS Type (" + entity.getName() + ", " + arc + ") already exists !").build();
                     }
                 } else {
                     em.close();
@@ -476,7 +460,7 @@ public class OSTypeEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                OSType entity = findOSTypeById(em, id);
+                OSType entity = OSType.findOSTypeById(em, id);
                 if (entity!=null) {
                     Company company = CompanyEndpoint.findCompanyById(em, companyID);
                     if (company!=null) {
@@ -522,7 +506,7 @@ public class OSTypeEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                OSType entity = findOSTypeById(em, id);
+                OSType entity = OSType.findOSTypeById(em, id);
                 if (entity!=null) {
                     OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiID);
                     if (osInstance!=null) {
@@ -568,7 +552,7 @@ public class OSTypeEndpoint {
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                OSType entity = findOSTypeById(em, id);
+                OSType entity = OSType.findOSTypeById(em, id);
                 if (entity!=null) {
                     OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osiID);
                     if (osInstance!=null) {
