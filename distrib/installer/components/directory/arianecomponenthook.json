@@ -2,7 +2,7 @@
     "order": 3,
     "hook": {
         "package": "components.directory",
-        "module": "directoryProcessor",
-        "class": "directoryProcessor"
+        "module": "DirectoryProcessor",
+        "class": "DirectoryProcessor"
     }
 }
