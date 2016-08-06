@@ -198,7 +198,7 @@ public class NICEndpoint {
     public Response displayNIC(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get NICs : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwNICard:display") ||
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwNIC:display") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             NIC entity = findNICById(em, id);
@@ -220,7 +220,7 @@ public class NICEndpoint {
         Subject subject = SecurityUtils.getSubject();
         System.out.print("in display");
         log.debug("[{}-{}] get NICs", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
-        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwNICard:display") ||
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwNIC:display") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             final HashSet<NIC> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM NIC l LEFT JOIN FETCH l.osInstance LEFT JOIN FETCH l.ipAddress ORDER BY l.id", NIC.class).getResultList());
@@ -251,7 +251,7 @@ public class NICEndpoint {
     public Response getNIC(@QueryParam("id") long id, @QueryParam("macAddress") String macAddress, @QueryParam("name") String name) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get NIC : {}", new Object[]{Thread.currentThread().getId()});
-        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwNICard:display") ||
+        if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwNIC:display") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             if (id != 0) {
                 return displayNIC(id);
@@ -275,7 +275,7 @@ public class NICEndpoint {
         if (macAddress != null && name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] create NIC : ({},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, macAddress});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:create") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNIC:create") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 NIC entity = findNICByName(em, name);
@@ -308,7 +308,7 @@ public class NICEndpoint {
 
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] create/update NIC : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
-        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwNICard:create") ||
+        if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwNIC:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             JSONFriendlyNIC jsonFriendlyNIC = NICJSON.JSON2NIC(payload);
@@ -350,7 +350,7 @@ public class NICEndpoint {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] delete NIC : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:delete") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNIC:delete") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 NIC entity = findNICById(em, id);
@@ -397,7 +397,7 @@ public class NICEndpoint {
         if (id != 0 && name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNIC:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 NIC entity = findNICById(em, id);
@@ -432,7 +432,7 @@ public class NICEndpoint {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} macAddress : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, macAddress});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNIC:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 NIC entity = findNICById(em, id);
@@ -467,7 +467,7 @@ public class NICEndpoint {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} duplex : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, duplex});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNIC:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 NIC entity = findNICById(em, id);
@@ -502,7 +502,7 @@ public class NICEndpoint {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} speed : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, speed});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNIC:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 NIC entity = findNICById(em, id);
@@ -537,7 +537,7 @@ public class NICEndpoint {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} mtu : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mtu});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNIC:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 NIC entity = findNICById(em, id);
@@ -572,7 +572,7 @@ public class NICEndpoint {
         if (id != 0 && ipAddressID != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} ipAddress : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, ipAddressID});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNIC:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 NIC entity = findNICById(em, id);
@@ -616,7 +616,7 @@ public class NICEndpoint {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} osInstance : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osInstanceID});
-            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
+            if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNIC:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 NIC entity = findNICById(em, id);

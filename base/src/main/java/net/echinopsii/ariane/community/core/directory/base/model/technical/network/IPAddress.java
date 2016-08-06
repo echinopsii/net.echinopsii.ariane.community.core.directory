@@ -35,7 +35,7 @@ import java.util.HashMap;
 
 @Entity
 @XmlRootElement
-@Table(name="ipaddress", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
+@Table(name="ipAddress", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
 public class IPAddress implements Serializable {
     private static final Logger log = LoggerFactory.getLogger(IPAddress.class);
 
