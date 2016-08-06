@@ -498,8 +498,8 @@ public class SubnetEndpoint {
                         for (OSInstance osi : entity.getOsInstances())
                             osi.getNetworkSubnets().remove(entity);
                         for (IPAddress ipAddress : entity.getIpAddresses()) {
-                            ipAddress.getNiCard().setIpAddressR(null);
-                            ipAddress.setNiCard(null);
+                            ipAddress.getNic().setIpAddressR(null);
+                            ipAddress.setNic(null);
                         }
                         if (entity.getRarea()!=null)
                             entity.getRarea().getSubnets().remove(entity);

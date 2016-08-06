@@ -1,6 +1,6 @@
 /**
  * Directory wat
- * Directories NICard PrimeFaces Lazy Model
+ * Directories NIC PrimeFaces Lazy Model
  * Copyright (C) 2015 Echinopsii
  * Author : Sagar Ghuge
  *
@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard;
+package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.nic;
 
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NIC;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
@@ -39,14 +39,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class provide lazy loading stuff for our NICard PrimeFaces datatable implementation
+ * This class provide lazy loading stuff for our NIC PrimeFaces datatable implementation
  */
-public class NICardLazyModel extends LazyDataModel<NICard> {
+public class NICLazyModel extends LazyDataModel<NIC> {
 
-    private static final Logger log = LoggerFactory.getLogger(NICardLazyModel.class);
+    private static final Logger log = LoggerFactory.getLogger(NICLazyModel.class);
 
     private int          rowCount ;
-    private List<NICard> pageItems ;
+    private List<NIC> pageItems ;
 
     /**`
      * Add search predicate to the JPA query
@@ -56,7 +56,7 @@ public class NICardLazyModel extends LazyDataModel<NICard> {
      * @param filters the provided filters
      * @return the generated JPA predicate
      */
-    private Predicate[] getSearchPredicates(EntityManager entityManager, Root<NICard> root, Map<String,String> filters) {
+    private Predicate[] getSearchPredicates(EntityManager entityManager, Root<NIC> root, Map<String,String> filters) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         List<Predicate> predicatesList = new ArrayList<Predicate>();
 
@@ -74,7 +74,7 @@ public class NICardLazyModel extends LazyDataModel<NICard> {
     /**
      * Generate a JPA query and push the result into pageItems
      *
-     * @param first first result of the query (the NICard id)
+     * @param first first result of the query (the NIC id)
      * @param sortField the sort field of the query
      * @param sortOrder the sort order of the query
      * @param filters the provided filters
@@ -86,17 +86,17 @@ public class NICardLazyModel extends LazyDataModel<NICard> {
 
         // Populate this.count
         CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
-        Root<NICard> root = countCriteria.from(NICard.class);
+        Root<NIC> root = countCriteria.from(NIC.class);
         countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(entityManager, root,filters));
         this.rowCount = (int) (long) entityManager.createQuery(countCriteria).getSingleResult();
 
         // Populate this.pageItems
-        CriteriaQuery<NICard> criteria = builder.createQuery(NICard.class);
-        root = criteria.from(NICard.class);
+        CriteriaQuery<NIC> criteria = builder.createQuery(NIC.class);
+        root = criteria.from(NIC.class);
         criteria.select(root).where(getSearchPredicates(entityManager, root,filters));
         if (sortOrder!=null && sortField!=null)
             criteria.orderBy(sortOrder.toString().equals("DESCENDING") ? builder.desc(root.get(sortField)) : builder.asc(root.get(sortField)));
-        TypedQuery<NICard> query = entityManager.createQuery(criteria);
+        TypedQuery<NIC> query = entityManager.createQuery(criteria);
         query.setFirstResult(first).setMaxResults(getPageSize());
         log.debug("Query: {}", new Object[]{query.toString()});
         this.pageItems = query.getResultList();
@@ -105,46 +105,46 @@ public class NICardLazyModel extends LazyDataModel<NICard> {
     }
 
     /**
-     * Return the NICard assigned to a table row
+     * Return the NIC assigned to a table row
      *
      * @param rowKey the row ipAddress id
      *
-     * @return NICard object according to provided NICard id
+     * @return NIC object according to provided NIC id
      */
     @Override
-    public NICard getRowData(String rowKey) {
-        for(NICard niCard : pageItems) {
-            if(niCard.getId().equals(rowKey))
-                return niCard;
+    public NIC getRowData(String rowKey) {
+        for(NIC nic : pageItems) {
+            if(nic.getId().equals(rowKey))
+                return nic;
         }
         return null;
     }
 
     /**
-     * Return the NICard id assigned to a table row
+     * Return the NIC id assigned to a table row
      *
-     * @param niCard the row NICard
+     * @param nic the row NIC
      *
-     * @return the NICard id
+     * @return the NIC id
      */
     @Override
-    public Object getRowKey(NICard niCard) {
-        return niCard.getId();
+    public Object getRowKey(NIC nic) {
+        return nic.getId();
     }
 
     /**
-     * Return the NICard list for the PrimeFaces table
+     * Return the NIC list for the PrimeFaces table
      *
-     * @param first first result of the query (the NICard id)
+     * @param first first result of the query (the NIC id)
      * @param pageSize the page size
      * @param sortField the sort field of the query
      * @param sortOrder the sort order of the query
      * @param filters the provided filters
      *
-     * @return queried NICard list
+     * @return queried NIC list
      */
     @Override
-    public List<NICard> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,String> filters) {
+    public List<NIC> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,String> filters) {
         this.setPageSize(pageSize);
         paginate(first,sortField,sortOrder,filters);
         this.setRowCount(rowCount);

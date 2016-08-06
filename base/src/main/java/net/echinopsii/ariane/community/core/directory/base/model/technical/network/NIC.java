@@ -1,6 +1,6 @@
 /**
  * Directory base
- * Model technical/network/NICard
+ * Model technical/network/NIC
  * Copyright (C) 2015 Echinopsii
  * Author : Sagar Ghuge
  *
@@ -20,8 +20,6 @@
 package net.echinopsii.ariane.community.core.directory.base.model.technical.network;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +29,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @XmlRootElement
-@Table(name="niCard", uniqueConstraints = @UniqueConstraint(columnNames = {"macAddress"}))
-public class NICard {
-    private static final Logger log = LoggerFactory.getLogger(NICard.class);
+@Table(name="nic", uniqueConstraints = @UniqueConstraint(columnNames = {"macAddress"}))
+public class NIC {
+    private static final Logger log = LoggerFactory.getLogger(NIC.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -44,11 +42,11 @@ public class NICard {
     @Column(name = "version")
     private int version = 0;
 
-    @Column(name = "macAddress",unique = true, nullable = false)
+    @Column(name = "macAddress", unique = true, nullable = false)
     @NotNull
     private String macAddress;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true, nullable = false)
     @NotNull
     private String name;
 
@@ -63,35 +61,35 @@ public class NICard {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn
-    private IPAddress ripAddress;
+    private IPAddress ipAddress;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
-    private OSInstance rosInstance;
+    private OSInstance osInstance;
 
-    public OSInstance getRosInstance() {
-        return rosInstance;
+    public OSInstance getOsInstance() {
+        return osInstance;
     }
 
-    public void setRosInstance(OSInstance osInstance) {
-        this.rosInstance = osInstance;
+    public void setOsInstance(OSInstance osInstance) {
+        this.osInstance = osInstance;
     }
 
-    public NICard setOsInstanceR(OSInstance osInstance){
-        this.rosInstance = osInstance;
+    public NIC setOsInstanceR(OSInstance osInstance){
+        this.osInstance = osInstance;
         return this;
     }
 
-    public IPAddress getRipAddress() {
-        return ripAddress;
+    public IPAddress getIpAddress() {
+        return ipAddress;
     }
 
-    public void setRipAddress(IPAddress ipAddress) {
-        this.ripAddress = ipAddress;
+    public void setIpAddress(IPAddress ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
-    public NICard setIpAddressR(IPAddress ipAddress){
-        this.ripAddress = ipAddress;
+    public NIC setIpAddressR(IPAddress ipAddress){
+        this.ipAddress = ipAddress;
         return this;
     }
 
@@ -103,7 +101,7 @@ public class NICard {
         this.mtu = mtu;
     }
 
-    public NICard setMtuR(int mtu){
+    public NIC setMtuR(int mtu){
         this.mtu = mtu;
         return this;
     }
@@ -116,7 +114,7 @@ public class NICard {
         this.speed = speed;
     }
 
-    public NICard setSpeedR(int speed){
+    public NIC setSpeedR(int speed){
         this.speed = speed;
         return this;
     }
@@ -129,7 +127,7 @@ public class NICard {
         this.duplex = duplex;
     }
 
-    public  NICard setDuplexR(String duplex)
+    public NIC setDuplexR(String duplex)
     {
         this.duplex = duplex;
         return this;
@@ -143,7 +141,7 @@ public class NICard {
         this.name = name;
     }
 
-    public NICard setNameR(String name){
+    public NIC setNameR(String name){
         this.name = name;
         return this;
     }
@@ -156,7 +154,7 @@ public class NICard {
         this.macAddress = macAddress;
     }
 
-    public NICard setMacAddressR(String macAddress){
+    public NIC setMacAddressR(String macAddress){
         this.macAddress = macAddress;
         return this;
     }
@@ -169,7 +167,7 @@ public class NICard {
         this.id = id;
     }
 
-    public NICard setIdR(Long id){
+    public NIC setIdR(Long id){
         this.id = id;
         return this;
     }
@@ -182,7 +180,7 @@ public class NICard {
         this.version = version;
     }
 
-    public NICard setVersionR(int version) {
+    public NIC setVersionR(int version) {
         this.version = version;
         return this;
     }
@@ -199,7 +197,7 @@ public class NICard {
             return false;
         }
         if (id != null) {
-            return id.equals(((NICard) that).id);
+            return id.equals(((NIC) that).id);
         }
         return super.equals(that);
     }
@@ -220,8 +218,8 @@ public class NICard {
         return result;
     }
 
-    public NICard clone() {
-        return new NICard().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setIpAddressR(this.ripAddress).
-                setDuplexR(this.duplex).setMacAddressR(this.macAddress).setMtuR(this.mtu).setSpeedR(this.speed).setOsInstanceR(this.rosInstance);
+    public NIC clone() {
+        return new NIC().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setIpAddressR(this.ipAddress).
+                setDuplexR(this.duplex).setMacAddressR(this.macAddress).setMtuR(this.mtu).setSpeedR(this.speed).setOsInstanceR(this.osInstance);
     }
 }

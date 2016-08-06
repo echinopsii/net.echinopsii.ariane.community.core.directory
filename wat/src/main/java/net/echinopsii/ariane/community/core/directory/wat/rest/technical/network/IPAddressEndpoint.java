@@ -22,7 +22,7 @@ package net.echinopsii.ariane.community.core.directory.wat.rest.technical.networ
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
 import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.IPAddressJSON;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NIC;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
@@ -150,15 +150,15 @@ public class IPAddressEndpoint {
                     return commonRestResponse;
                 }
             }
-            if (jsonFriendlyIPAddress.getIpAddressNICardID() != 0) {
-                NICard niCard = NICardEndpoint.findNICardById(em, jsonFriendlyIPAddress.getIpAddressNICardID());
-                if (niCard!= null) {
-                    if (entity.getNiCard() != null)
-                        entity.getNiCard().setRipAddress(null);
-                    entity.setNiCard(niCard);
-                    niCard.setRipAddress(entity);
+            if (jsonFriendlyIPAddress.getIpAddressNICID() != 0) {
+                NIC nic = NICEndpoint.findNICById(em, jsonFriendlyIPAddress.getIpAddressNICID());
+                if (nic!= null) {
+                    if (entity.getNic() != null)
+                        entity.getNic().setIpAddress(null);
+                    entity.setNic(nic);
+                    nic.setIpAddress(entity);
                 } else {
-                    commonRestResponse.setErrorMessage("Fail to create IPAddress. Reason : provided NIC ID " + jsonFriendlyIPAddress.getIpAddressNICardID() +" was not found.");
+                    commonRestResponse.setErrorMessage("Fail to create IPAddress. Reason : provided NIC ID " + jsonFriendlyIPAddress.getIpAddressNICID() +" was not found.");
                     return commonRestResponse;
                 }
             }
@@ -190,15 +190,15 @@ public class IPAddressEndpoint {
                     return commonRestResponse;
                 }
             }
-            if (jsonFriendlyIPAddress.getIpAddressNICardID() != 0) {
-                NICard niCard = NICardEndpoint.findNICardById(em, jsonFriendlyIPAddress.getIpAddressNICardID());
-                if (niCard!= null) {
-                    if (entity.getNiCard() != null)
-                        entity.getNiCard().setRipAddress(null);
-                    entity.setNiCard(niCard);
-                    niCard.setRipAddress(entity);
+            if (jsonFriendlyIPAddress.getIpAddressNICID() != 0) {
+                NIC nic = NICEndpoint.findNICById(em, jsonFriendlyIPAddress.getIpAddressNICID());
+                if (nic!= null) {
+                    if (entity.getNic() != null)
+                        entity.getNic().setIpAddress(null);
+                    entity.setNic(nic);
+                    nic.setIpAddress(entity);
                 } else {
-                    commonRestResponse.setErrorMessage("Fail to create IPAddress. Reason : provided NIC ID " + jsonFriendlyIPAddress.getIpAddressNICardID() +" was not found.");
+                    commonRestResponse.setErrorMessage("Fail to create IPAddress. Reason : provided NIC ID " + jsonFriendlyIPAddress.getIpAddressNICID() +" was not found.");
                     return commonRestResponse;
                 }
             }
@@ -418,8 +418,8 @@ public class IPAddressEndpoint {
                         em.getTransaction().begin();
                         if (entity.getNetworkSubnet()!=null)
                             entity.getNetworkSubnet().getIpAddresses().remove(entity);
-                        if (entity.getNiCard()!=null)
-                            entity.getNiCard().setRipAddress(null);
+                        if (entity.getNic()!=null)
+                            entity.getNic().setIpAddress(null);
                         em.remove(entity);
                         em.getTransaction().commit();
                         em.close();
@@ -605,28 +605,28 @@ public class IPAddressEndpoint {
     }
 
     @GET
-    @Path("/update/niCard")
-    public Response updateIPAddressNICard(@QueryParam("id") Long id, @QueryParam("niCardID") Long niCardID) {
+    @Path("/update/nic")
+    public Response updateIPAddressNIC(@QueryParam("id") Long id, @QueryParam("nicID") Long nicID) {
         if (id!=0) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update ipAddress {} niCardID : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, niCardID});
+            log.debug("[{}-{}] update ipAddress {} nicID : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, nicID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwIPAddress:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 IPAddress entity = findIPAddressById(em, id);
                 if (entity!=null) {
-                    NICard niCard = NICardEndpoint.findNICardById(em, niCardID);
-                    if (niCard!=null) {
+                    NIC nic = NICEndpoint.findNICById(em, nicID);
+                    if (nic!=null) {
                         try {
                             em.getTransaction().begin();
-                            if (entity.getNiCard()!=null)
-                                entity.getNiCard().setRipAddress(null);
-                            niCard.setIpAddressR(entity);
-                            entity.setNiCard(niCard);
+                            if (entity.getNic()!=null)
+                                entity.getNic().setIpAddress(null);
+                            nic.setIpAddressR(entity);
+                            entity.setNic(nic);
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with NIC " + niCardID).build();
+                            return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with NIC " + nicID).build();
                         } catch (Throwable t) {
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -635,7 +635,7 @@ public class IPAddressEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("NIC " + niCardID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("NIC " + nicID + " not found.").build();
                     }
                 } else {
                     em.close();
@@ -645,7 +645,7 @@ public class IPAddressEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update ipAddress. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define these parameters.").build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id or nicID is not defined. You must define these parameters.").build();
         }
     }
 }

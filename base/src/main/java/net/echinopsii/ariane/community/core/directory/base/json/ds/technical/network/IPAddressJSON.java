@@ -45,7 +45,7 @@ public class IPAddressJSON {
     public final static String IPADDRESS_FQDN           = "ipAddressFQDN";
     public final static String IPADDRESS_SUBNET_ID      = "ipAddressSubnetID";
     public final static String IPADDRESS_OSI_ID         = "ipAddressOSInstanceID";
-    public final static String IPADDRESS_NIC_ID         = "ipAddressNICardID";
+    public final static String IPADDRESS_NIC_ID         = "ipAddressNICID";
 
 
     public final static void ipAddress2JSON(IPAddress ipAddress, JsonGenerator jgenerator) throws IOException {
@@ -55,7 +55,7 @@ public class IPAddressJSON {
         jgenerator.writeStringField(IPADDRESS_IPA, ipAddress.getIpAddress());
         jgenerator.writeStringField(IPADDRESS_FQDN, ipAddress.getFqdn());
         jgenerator.writeNumberField(IPADDRESS_OSI_ID, ((ipAddress.getOsInstance()!=null)?ipAddress.getOsInstance().getId():-1));
-        jgenerator.writeNumberField(IPADDRESS_NIC_ID, ((ipAddress.getNiCard()!=null)?ipAddress.getNiCard().getId():-1));
+        jgenerator.writeNumberField(IPADDRESS_NIC_ID, ((ipAddress.getNic()!=null)?ipAddress.getNic().getId():-1));
         jgenerator.writeNumberField(IPADDRESS_SUBNET_ID, ((ipAddress.getNetworkSubnet()!=null)?ipAddress.getNetworkSubnet().getId():-1));
 
         jgenerator.writeEndObject();
@@ -87,14 +87,14 @@ public class IPAddressJSON {
         private String ipAddressFQDN;
         private long ipAddressSubnetID;
         private long ipAddressOSInstanceID;
-        private long ipAddressNICardID;
+        private long ipAddressNICID;
 
-        public long getIpAddressNICardID() {
-            return ipAddressNICardID;
+        public long getIpAddressNICID() {
+            return ipAddressNICID;
         }
 
-        public void setIpAddressNICardID(long ipAddressNICardID) {
-            this.ipAddressNICardID = ipAddressNICardID;
+        public void setIpAddressNICID(long ipAddressNICID) {
+            this.ipAddressNICID = ipAddressNICID;
         }
 
         public long getIpAddressOSInstanceID() {

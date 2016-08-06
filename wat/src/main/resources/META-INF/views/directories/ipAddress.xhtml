@@ -43,7 +43,7 @@
                     </p:column>
 
                     <p:column headerText="NICs">
-                        <h:outputText value="#{ipa.niCard.macAddress}" />
+                        <h:outputText value="#{ipa.nic.macAddress}" />
                     </p:column>
 
                     <p:rowExpansion>
@@ -85,22 +85,22 @@
                                     <f:selectItems value="#{OSInstancesListController.getAllOSIFromSubnet(ipa.networkSubnet)}"  var="osi"
                                                    itemLabel="#{osi.name}" itemValue="#{osi.name}"/>
                                 </h:selectOneMenu>
-                                <p:ajax event="save" listener="#{ipAddressListController.syncRosInstance(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages"/>
+                                <p:ajax event="save" listener="#{ipAddressListController.syncOsInstance(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages"/>
                             </p:inplace>
                         </h:form>
                         <h:outputText value="#{ipAddressListController.getIPAddressOSInstanceName(ipa)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
 
                         <h:outputText value="NICs: " styleClass="arianeDialogLabel"/>
                         <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwIPAddress:update')}">
-                            <p:inplace label="#{ipAddressListController.getIPAddressNICardName(ipa)}" effectSpeed="fast" editor="true">
-                                <h:selectOneMenu value="#{ipAddressListController.changedNICard[ipa.id]}">
-                                    <f:selectItems value="#{OSInstancesListController.getAllNICards(ipa.osInstance)}"  var="nic"
+                            <p:inplace label="#{ipAddressListController.getIPAddressNICName(ipa)}" effectSpeed="fast" editor="true">
+                                <h:selectOneMenu value="#{ipAddressListController.changedNIC[ipa.id]}">
+                                    <f:selectItems value="#{OSInstancesListController.getAllNICs(ipa.osInstance)}"  var="nic"
                                                    itemLabel="#{nic.macAddress}" itemValue="#{nic.macAddress}"/>
                                 </h:selectOneMenu>
-                                <p:ajax event="save" listener="#{ipAddressListController.syncRNICard(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages"/>
+                                <p:ajax event="save" listener="#{ipAddressListController.syncNIC(ipa)}" update="@form,:ipAddressTableForm:ipAddressTableMessages"/>
                             </p:inplace>
                         </h:form>
-                        <h:outputText value="#{ipAddressListController.getIPAddressNICardName(ipa)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
+                        <h:outputText value="#{ipAddressListController.getIPAddressNICName(ipa)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwIPAddress:update'))}"/>
                     </h:panelGrid>
 
                     </p:rowExpansion>
@@ -158,14 +158,14 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new nic" widgetVar="niCardCreateDialog"
+            <p:dialog styleClass="airaneDialog arianeDialogTitleBar arianeDialogCloseButton" header="Create a new nic" widgetVar="nicCreateDialog"
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createNicDialogForm">
                     <ui:insert name="createNic" >
-                        <ui:include src="/templates/niCardNewForm.xhtml" />
+                        <ui:include src="/templates/nicNewForm.xhtml" />
                     </ui:insert>
                     <p:commandButton value="Save this nic" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
-                                     actionListener="#{niCardNewController.save}" oncomplete="niCardCreateDialog.hide();"
+                                     actionListener="#{nicNewController.save}" oncomplete="nicCreateDialog.hide();"
                                      update=":createIPAddressDialogForm:ipAddressNewGrid,:ipAddressTableForm:ipAddressTable,:ipAddressTableForm:ipAddressTableMessages"/>
                 </h:form>
             </p:dialog>

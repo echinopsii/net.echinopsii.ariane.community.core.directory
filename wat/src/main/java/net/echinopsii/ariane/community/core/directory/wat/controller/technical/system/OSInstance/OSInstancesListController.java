@@ -19,9 +19,9 @@
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NIC;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressListController;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard.NICardsListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.nic.NICsListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.controller.organisational.application.ApplicationsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.organisational.environment.EnvironmentsListController;
@@ -73,8 +73,8 @@ public class OSInstancesListController implements Serializable{
     private HashMap<Long,String>       addedIPAddress    = new HashMap<Long, String>();
     private HashMap<Long,List<IPAddress>> removedIPAddresses = new HashMap<Long, List<IPAddress>>();
 
-    private HashMap<Long,String>       addedNICards = new HashMap<Long, String>();
-    private HashMap<Long,List<NICard>> removedNICards = new HashMap<Long, List<NICard>>();
+    private HashMap<Long,String> addedNICs = new HashMap<Long, String>();
+    private HashMap<Long,List<NIC>> removedNICs = new HashMap<Long, List<NIC>>();
 
     private HashMap<Long,String>            addedEnv    = new HashMap<Long, String>();
     private HashMap<Long,List<Environment>> removedEnvs = new HashMap<Long, List<Environment>>();
@@ -381,31 +381,31 @@ public class OSInstancesListController implements Serializable{
         }
     }
 
-    public HashMap<Long, String> getAddedNICards() {
-        return addedNICards;
+    public HashMap<Long, String> getAddedNICs() {
+        return addedNICs;
     }
 
-    public void setAddedNICards(HashMap<Long, String> addedNICards) {
-        this.addedNICards = addedNICards;
+    public void setAddedNICs(HashMap<Long, String> addedNICs) {
+        this.addedNICs = addedNICs;
     }
 
     /**
-     * Synchronize added niCards into an OS instance to database
+     * Synchronize added NICs into an OS instance to database
      *
      * @param osInstance bean UI is working on
      */
-    public void syncAddedNICards(OSInstance osInstance) {
+    public void syncAddedNICs(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
-            for (NICard niCard : NICardsListController.getAll())
-                if (niCard.getMacAddress().equals(this.addedNICards.get(osInstance.getId()))) {
+            for (NIC nic : NICsListController.getAll())
+                if (nic.getMacAddress().equals(this.addedNICs.get(osInstance.getId()))) {
                     em.getTransaction().begin();
                     osInstance = em.find(osInstance.getClass(), osInstance.getId());
-                    niCard = em.find(niCard.getClass(), niCard.getId());
-                    osInstance.getNiCards().add(niCard);
-                    if (niCard.getRosInstance()!=null)
-                        niCard.getRosInstance().getNiCards().remove(niCard);
-                    niCard.setRosInstance(osInstance);
+                    nic = em.find(nic.getClass(), nic.getId());
+                    osInstance.getNics().add(nic);
+                    if (nic.getOsInstance()!=null)
+                        nic.getOsInstance().getNics().remove(nic);
+                    nic.setOsInstance(osInstance);
                     em.flush();
                     em.getTransaction().commit();
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -428,29 +428,29 @@ public class OSInstancesListController implements Serializable{
         }
     }
 
-    public HashMap<Long, List<NICard>> getRemovedNICards() {
-        return removedNICards;
+    public HashMap<Long, List<NIC>> getRemovedNICs() {
+        return removedNICs;
     }
 
-    public void setRemovedNICards(HashMap<Long, List<NICard>> removedNICards) {
-        this.removedNICards = removedNICards;
+    public void setRemovedNICs(HashMap<Long, List<NIC>> removedNICs) {
+        this.removedNICs = removedNICs;
     }
 
     /**
-     * Synchronize removed niCard from an OS instance to database
+     * Synchronize removed NICs from an OS instance to database
      *
      * @param osInstance bean UI is working on
      */
-    public void syncRemovedNICards(OSInstance osInstance) {
+    public void syncRemovedNICs(OSInstance osInstance) {
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         try {
             em.getTransaction().begin();
             osInstance = em.find(osInstance.getClass(), osInstance.getId());
-            List<NICard> niCards = this.removedNICards.get(osInstance.getId());
-            for (NICard niCard : niCards) {
-                niCard = em.find(niCard.getClass(), niCard.getId());
-                osInstance.getNiCards().remove(niCard);
-                niCard.setRosInstance(null);
+            List<NIC> NICs = this.removedNICs.get(osInstance.getId());
+            for (NIC nic : NICs) {
+                nic = em.find(nic.getClass(), nic.getId());
+                osInstance.getNics().remove(nic);
+                nic.setOsInstance(null);
             }
             em.flush();
             em.getTransaction().commit();
@@ -851,8 +851,8 @@ public class OSInstancesListController implements Serializable{
             removedSubnets.remove(osInstance.getId());
             addedIPAddress.remove(osInstance.getId());
             removedIPAddresses.remove(osInstance.getId());
-            addedNICards.remove(osInstance.getId());
-            removedNICards.remove(osInstance.getId());
+            addedNICs.remove(osInstance.getId());
+            removedNICs.remove(osInstance.getId());
             addedEmbeddedOSI.remove(osInstance.getId());
             removedEmbeddedOSI.remove(osInstance.getId());
             addedEnv.remove(osInstance.getId());
@@ -868,8 +868,8 @@ public class OSInstancesListController implements Serializable{
             removedSubnets.put(osInstance.getId(), new ArrayList<Subnet>());
             addedIPAddress.put(osInstance.getId(), "");
             removedIPAddresses.put(osInstance.getId(), new ArrayList<IPAddress>());
-            addedNICards.put(osInstance.getId(), "");
-            removedNICards.put(osInstance.getId(), new ArrayList<NICard>());
+            addedNICs.put(osInstance.getId(), "");
+            removedNICs.put(osInstance.getId(), new ArrayList<NIC>());
             addedEmbeddedOSI.put(osInstance.getId(),"");
             removedEmbeddedOSI.put(osInstance.getId(),new ArrayList<OSInstance>());
             addedEnv.put(osInstance.getId(),"");
@@ -938,8 +938,8 @@ public class OSInstancesListController implements Serializable{
                     application.getOsInstances().remove(osInstance);
                 for (Team team: osInstance.getTeams())
                     team.getOsInstances().remove(osInstance);
-                for (NICard niCard : osInstance.getNiCards())
-                    niCard.setRosInstance(null);
+                for (NIC nic : osInstance.getNics())
+                    nic.setOsInstance(null);
                 em.remove(osInstance);
                 em.flush();
                 em.getTransaction().commit();
@@ -996,7 +996,7 @@ public class OSInstancesListController implements Serializable{
     public static List<IPAddress> getAllFromSubnet(OSInstance osInstance){
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         osInstance = em.find(osInstance.getClass(), osInstance.getId());
-        List<IPAddress> ret = new ArrayList<IPAddress>();
+        List<IPAddress> ret = new ArrayList<>();
         for (Subnet subnet : osInstance.getNetworkSubnets()){
             for (IPAddress ipAddress : subnet.getIpAddresses()){
                 ret.add(ipAddress);
@@ -1010,23 +1010,17 @@ public class OSInstancesListController implements Serializable{
     public static List<IPAddress> getAllIPAddresses(OSInstance osInstance){
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         osInstance = em.find(osInstance.getClass(), osInstance.getId());
-        List<IPAddress> ret = new ArrayList<IPAddress>();
-
-        for (IPAddress ipAddress: osInstance.getIpAddresses()){
-            ret.add(ipAddress);
-        }
+        List<IPAddress> ret = new ArrayList<>();
+        for (IPAddress ipAddress: osInstance.getIpAddresses()) ret.add(ipAddress);
         em.close();
         return ret;
     }
 
-    public static List<NICard> getAllNICards(OSInstance osInstance){
+    public static List<NIC> getAllNICs(OSInstance osInstance){
         EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
         osInstance = em.find(osInstance.getClass(), osInstance.getId());
-        List<NICard> ret = new ArrayList<NICard>();
-
-        for (NICard niCard: osInstance.getNiCards()){
-            ret.add(niCard);
-        }
+        List<NIC> ret = new ArrayList<>();
+        for (NIC nic: osInstance.getNics()) ret.add(nic);
         em.close();
         return ret;
     }

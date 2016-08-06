@@ -7,5 +7,5 @@ net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSInsta
 net.echinopsii.ariane.community.core.directory.wat.rest.technical.system.OSTypeEndpoint
 net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.SubnetEndpoint
 net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.IPAddressEndpoint
-net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.NICardEndpoint
+net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.NICEndpoint
 net.echinopsii.ariane.community.core.directory.wat.rest.organisational.TeamEndpoint

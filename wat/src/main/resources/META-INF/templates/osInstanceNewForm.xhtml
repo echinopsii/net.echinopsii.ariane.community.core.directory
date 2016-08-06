@@ -112,8 +112,8 @@
                             <h:outputText value=" create new nics"/>
                         </p:commandLink><br/>
                         <h:form>
-                            <p:selectManyMenu id="osInstNICSelect" value="#{OSInstanceNewController.niCardsToBind}" style="width:100%;height:100px">
-                                <f:selectItems value="#{niCardsListController.getAllUnlinked()}"  var="nic"
+                            <p:selectManyMenu id="osInstNICSelect" value="#{OSInstanceNewController.nicsToBind}" style="width:100%;height:100px">
+                                <f:selectItems value="#{nicsListController.getAllUnlinked()}"  var="nic"
                                                itemLabel="#{nic.macAddress}" itemValue="#{nic.macAddress}"/>
                             </p:selectManyMenu>
                         </h:form>

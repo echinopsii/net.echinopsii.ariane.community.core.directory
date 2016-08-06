@@ -1,6 +1,6 @@
 /**
  * Directory wat
- * Directories NICard Create Controller
+ * Directories NIC Create Controller
  * Copyright (C) 2015 Echinopsii
  * Author : Sagar Ghuge
  *
@@ -18,10 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard;
+package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.nic;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NIC;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress.IPAddressListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
@@ -39,11 +39,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class provide stuff to create and save a new NICard from the UI form
+ * This class provide stuff to create and save a new NIC from the UI form
  */
-public class NICardNewController implements Serializable {
+public class NICNewController implements Serializable {
 
-    private static final Logger log = LoggerFactory.getLogger(NICardNewController.class);
+    private static final Logger log = LoggerFactory.getLogger(NICNewController.class);
 
     private EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
 
@@ -59,11 +59,11 @@ public class NICardNewController implements Serializable {
     private int mtu;
     private int speed;
 
-    private String rIPAddress = "";
-    private IPAddress ripAddress;
+    private String ipAddress = "";
+    private IPAddress ipaddress;
 
-    private String rOsInstance = "";
-    private OSInstance rosInstance;
+    private String osInstance = "";
+    private OSInstance osi;
 
     private List<IPAddress> ipaList = new ArrayList<IPAddress>();
 
@@ -75,36 +75,36 @@ public class NICardNewController implements Serializable {
         this.ipaList = ipaList;
     }
 
-    public OSInstance getRosInstance() {
-        return rosInstance;
+    public OSInstance getOsi() {
+        return osi;
     }
 
-    public void setRosInstance(OSInstance rosInstance) {
-        this.rosInstance = rosInstance;
+    public void setOsi(OSInstance osi) {
+        this.osi = osi;
     }
 
-    public String getrOsInstance() {
-        return rOsInstance;
+    public String getOsInstance() {
+        return osInstance;
     }
 
-    public void setrOsInstance(String rOsInstance) {
-        this.rOsInstance = rOsInstance;
+    public void setOsInstance(String osInstance) {
+        this.osInstance = osInstance;
     }
 
-    public IPAddress getRipAddress() {
-        return ripAddress;
+    public IPAddress getIpaddress() {
+        return ipaddress;
     }
 
-    public void setRipAddress(IPAddress ripAddress) {
-        this.ripAddress = ripAddress;
+    public void setIpaddress(IPAddress ipaddress) {
+        this.ipaddress = ipaddress;
     }
 
-    public String getrIPAddress() {
-        return rIPAddress;
+    public String getIpAddress() {
+        return ipAddress;
     }
 
-    public void setrIPAddress(String rIPAddress) {
-        this.rIPAddress = rIPAddress;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
     public int getSpeed() {
@@ -150,7 +150,7 @@ public class NICardNewController implements Serializable {
     private void syncIPAddress() throws NotSupportedException, SystemException {
         IPAddress ripAddress= null;
         for (IPAddress ipAddress : IPAddressListController.getAllIPAddress()) {
-            if (ipAddress.getIpAddress().equals(this.rIPAddress)) {
+            if (ipAddress.getIpAddress().equals(this.ipAddress)) {
                 ipAddress = em.find(ipAddress.getClass(), ipAddress.getId());
                 ripAddress = ipAddress;
                 break;
@@ -158,15 +158,15 @@ public class NICardNewController implements Serializable {
         }
 
         if (ripAddress!=null) {
-            this.ripAddress = ripAddress;
-            log.debug("Synced IPAddress : {} {}", new Object[]{this.ripAddress.getId(), this.ripAddress.getIpAddress()});
+            this.ipaddress = ripAddress;
+            log.debug("Synced IPAddress : {} {}", new Object[]{this.ipaddress.getId(), this.ipaddress.getIpAddress()});
         }
     }
 
     private void syncOSInstance() throws NotSupportedException, SystemException {
         OSInstance rOsInstance = null;
         for (OSInstance osInstance : OSInstancesListController.getAll()) {
-            if (osInstance.getName().equals(this.rOsInstance)) {
+            if (osInstance.getName().equals(this.osInstance)) {
                 osInstance = em.find(osInstance.getClass(), osInstance.getId());
                 rOsInstance = osInstance;
                 break;
@@ -174,15 +174,15 @@ public class NICardNewController implements Serializable {
         }
 
         if (rOsInstance != null) {
-            this.rosInstance = rOsInstance;
-            log.debug("Synced OS Instances : {} {}", new Object[]{this.rosInstance.getId(), this.rosInstance.getName()});
+            this.osi = rOsInstance;
+            log.debug("Synced OS Instances : {} {}", new Object[]{this.osi.getId(), this.osi.getName()});
         }
     }
 
     public void handleSelectedOSInstance() {
         OSInstance osInstanceObj = null;
         for (OSInstance osInstance : OSInstancesListController.getAll()) {
-            if (osInstance.getName().equals(rOsInstance)) {
+            if (osInstance.getName().equals(this.osInstance)) {
                 osInstanceObj = osInstance;
                 break;
             }
@@ -194,7 +194,7 @@ public class NICardNewController implements Serializable {
     }
 
     /**
-     * save a new nicard data provided through UI form
+     * save a new NIC data provided through UI form
      */
     public void save() {
         try {
@@ -203,35 +203,35 @@ public class NICardNewController implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Exception raise while creating NICard " + name + " !",
+                    "Exception raise while creating NIC " + name + " !",
                     "Exception message : " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        NICard niCard = new NICard();
-        niCard.setName(name);
-        niCard.setDuplex(duplex);
-        niCard.setRipAddress(ripAddress);
-        niCard.setRosInstance(rosInstance);
-        niCard.setMacAddress(macAddress);
-        niCard.setMtu(mtu);
-        niCard.setSpeed(speed);
+        NIC nic = new NIC();
+        nic.setName(name);
+        nic.setDuplex(duplex);
+        nic.setIpAddress(ipaddress);
+        nic.setOsInstance(osi);
+        nic.setMacAddress(macAddress);
+        nic.setMtu(mtu);
+        nic.setSpeed(speed);
 
         try {
             em.getTransaction().begin();
-            em.persist(niCard);
+            em.persist(nic);
             em.flush();
             em.getTransaction().commit();
-            log.debug("Save new NICard {} !", new Object[]{name});
+            log.debug("Save new NIC {} !", new Object[]{name});
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                    "NICard created successfully !",
-                    "NICard name : " + niCard.getName());
+                    "NIC created successfully !",
+                    "NIC name : " + nic.getName());
             FacesContext.getCurrentInstance().addMessage(null, msg);
         } catch (Throwable t) {
             log.debug("Throwable catched !");
             t.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Throwable raised while creating network interface card" + niCard.getName() + " !",
+                    "Throwable raised while creating network interface card" + nic.getName() + " !",
                     "Throwable message : " + t.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (em.getTransaction().isActive())

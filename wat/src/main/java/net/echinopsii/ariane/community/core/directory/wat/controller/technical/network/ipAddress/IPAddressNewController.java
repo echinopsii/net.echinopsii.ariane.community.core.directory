@@ -21,9 +21,9 @@
 package net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.ipAddress;
 
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NIC;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
-import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.niCard.NICardsListController;
+import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.nic.NICsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.network.subnet.SubnetsListController;
 import net.echinopsii.ariane.community.core.directory.wat.controller.technical.system.OSInstance.OSInstancesListController;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
@@ -64,34 +64,34 @@ public class IPAddressNewController implements Serializable {
     private String rOsInstance = "";
     private OSInstance rosinstance;
 
-    private String rNiCard = "";
-    private NICard niCard;
+    private String NIC = "";
+    private NIC nic;
 
     private List<OSInstance> osiList = new ArrayList<OSInstance>();
-    private List<NICard> nicList = new ArrayList<NICard>();
+    private List<NIC> nicList = new ArrayList<NIC>();
 
-    public List<NICard> getNicList() {
+    public List<NIC> getNicList() {
         return nicList;
     }
 
-    public void setNicList(List<NICard> nicList) {
+    public void setNicList(List<NIC> nicList) {
         this.nicList = nicList;
     }
 
-    public NICard getNiCard() {
-        return niCard;
+    public NIC getNic() {
+        return nic;
     }
 
-    public void setNiCard(NICard niCard) {
-        this.niCard = niCard;
+    public void setNic(NIC nic) {
+        this.nic = nic;
     }
 
-    public String getrNiCard() {
-        return rNiCard;
+    public String getNIC() {
+        return NIC;
     }
 
-    public void setrNiCard(String rNiCard) {
-        this.rNiCard = rNiCard;
+    public void setNIC(String NIC) {
+        this.NIC = NIC;
     }
 
     public String getIpAddress() {
@@ -195,24 +195,24 @@ public class IPAddressNewController implements Serializable {
     }
 
     /**
-     * synchronize this.niCard from DB
+     * synchronize this.nic from DB
      *
      * @throws NotSupportedException
      * @throws SystemException
      */
-    private void syncNICard() throws NotSupportedException, SystemException {
-        NICard rNiCard = null;
-        for (NICard niCard1: NICardsListController.getAll()) {
-            if (niCard1.getMacAddress().equals(this.rNiCard)) {
-                niCard1 = em.find(niCard1.getClass(), niCard1.getId());
-                rNiCard = niCard1;
+    private void syncNIC() throws NotSupportedException, SystemException {
+        NIC nic = null;
+        for (NIC nicLoop: NICsListController.getAll()) {
+            if (nicLoop.getMacAddress().equals(this.NIC)) {
+                nicLoop = em.find(nicLoop.getClass(), nicLoop.getId());
+                nic = nicLoop;
                 break;
             }
         }
 
-        if (rNiCard!=null) {
-            this.niCard = rNiCard;
-            log.debug("Synced NIC : {} {}", new Object[]{this.niCard.getId(), this.niCard.getName()});
+        if (nic!=null) {
+            this.nic = nic;
+            log.debug("Synced NIC : {} {}", new Object[]{this.nic.getId(), this.nic.getName()});
         }
     }
 
@@ -242,7 +242,7 @@ public class IPAddressNewController implements Serializable {
             }
             this.nicList.clear();
             if (osInstanceObj != null) {
-                this.nicList = OSInstancesListController.getAllNICards(osInstanceObj);
+                this.nicList = OSInstancesListController.getAllNICs(osInstanceObj);
             }
         }
     }
@@ -254,7 +254,7 @@ public class IPAddressNewController implements Serializable {
         try {
             syncSubnet();
             syncOSInstance();
-            syncNICard();
+            syncNIC();
         } catch (Exception e) {
             e.printStackTrace();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -269,7 +269,7 @@ public class IPAddressNewController implements Serializable {
         newIPAddress.setFqdn(this.fqdn);
         newIPAddress.setNetworkSubnet(this.rsubnet);
         newIPAddress.setOsInstance(this.rosinstance);
-        newIPAddress.setNiCard(this.niCard);
+        newIPAddress.setNic(this.nic);
 
         Boolean isBindToSubnet = newIPAddress.isBindToSubnet();
         Boolean isValid = newIPAddress.isValid();
@@ -286,9 +286,9 @@ public class IPAddressNewController implements Serializable {
                     rosinstance.getIpAddresses().add(newIPAddress);
                     em.merge(rosinstance);
                 }
-                if (niCard != null) {
-                    niCard.setRipAddress(newIPAddress);
-                    em.merge(niCard);
+                if (nic != null) {
+                    nic.setIpAddress(newIPAddress);
+                    em.merge(nic);
                 }
 
                 em.flush();

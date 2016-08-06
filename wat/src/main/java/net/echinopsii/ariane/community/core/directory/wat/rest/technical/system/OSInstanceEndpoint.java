@@ -22,7 +22,7 @@ import net.echinopsii.ariane.community.core.directory.base.model.organisational.
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Team;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NIC;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSType;
@@ -34,7 +34,7 @@ import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.Ap
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.EnvironmentEndpoint;
 import net.echinopsii.ariane.community.core.directory.wat.rest.organisational.TeamEndpoint;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.IPAddressEndpoint;
-import net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.NICardEndpoint;
+import net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.NICEndpoint;
 import net.echinopsii.ariane.community.core.directory.wat.rest.technical.network.SubnetEndpoint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -259,20 +259,20 @@ public class OSInstanceEndpoint {
                     }
                 }
             }
-            if(jsonFriendlyOSInstance.getOsInstanceNICardsID() != null) {
-                if (!jsonFriendlyOSInstance.getOsInstanceNICardsID().isEmpty()) {
-                    for (NICard niCard : new HashSet<>(entity.getNiCards())) {
-                        if (!jsonFriendlyOSInstance.getOsInstanceNICardsID().contains(niCard.getId())) {
-                            entity.getNiCards().remove(niCard);
-                            niCard.setRosInstance(null);
+            if(jsonFriendlyOSInstance.getOsInstanceNICsID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceNICsID().isEmpty()) {
+                    for (NIC nic : new HashSet<>(entity.getNics())) {
+                        if (!jsonFriendlyOSInstance.getOsInstanceNICsID().contains(nic.getId())) {
+                            entity.getNics().remove(nic);
+                            nic.setOsInstance(null);
                         }
                     }
-                    for (Long nicId : jsonFriendlyOSInstance.getOsInstanceNICardsID()) {
-                        NICard niCard = NICardEndpoint.findNICardById(em, nicId);
-                        if (niCard != null) {
-                            if (!entity.getNiCards().contains(niCard)) {
-                                entity.getNiCards().add(niCard);
-                                niCard.setRosInstance(entity);
+                    for (Long nicId : jsonFriendlyOSInstance.getOsInstanceNICsID()) {
+                        NIC nic = NICEndpoint.findNICById(em, nicId);
+                        if (nic != null) {
+                            if (!entity.getNics().contains(nic)) {
+                                entity.getNics().add(nic);
+                                nic.setOsInstance(entity);
                             }
                         } else {
                             commonRestResponse.setErrorMessage("Fail to update OS Instance. Reason : provided NIC ID " + nicId +" was not found.");
@@ -280,9 +280,9 @@ public class OSInstanceEndpoint {
                         }
                     }
                 } else {
-                    for (NICard niCard : new HashSet<>(entity.getNiCards())) {
-                        entity.getNiCards().remove(niCard);
-                        niCard.setRosInstance(null);
+                    for (NIC nic : new HashSet<>(entity.getNics())) {
+                        entity.getNics().remove(nic);
+                        nic.setOsInstance(null);
                     }
                 }
             }
@@ -449,14 +449,14 @@ public class OSInstanceEndpoint {
                     }
                 }
             }
-            if(jsonFriendlyOSInstance.getOsInstanceNICardsID() != null) {
-                if (!jsonFriendlyOSInstance.getOsInstanceNICardsID().isEmpty()) {
-                    for (Long nicId : jsonFriendlyOSInstance.getOsInstanceNICardsID()) {
-                        NICard niCard = NICardEndpoint.findNICardById(em, nicId);
-                        if (niCard != null) {
-                            if (!entity.getNiCards().contains(niCard)) {
-                                entity.getNiCards().add(niCard);
-                                niCard.setRosInstance(entity);
+            if(jsonFriendlyOSInstance.getOsInstanceNICsID() != null) {
+                if (!jsonFriendlyOSInstance.getOsInstanceNICsID().isEmpty()) {
+                    for (Long nicId : jsonFriendlyOSInstance.getOsInstanceNICsID()) {
+                        NIC nic = NICEndpoint.findNICById(em, nicId);
+                        if (nic != null) {
+                            if (!entity.getNics().contains(nic)) {
+                                entity.getNics().add(nic);
+                                nic.setOsInstance(entity);
                             }
                         } else {
                             commonRestResponse.setErrorMessage("Fail to create OS Instance. Reason : provided NIC ID " + nicId + " was not found.");
@@ -1431,27 +1431,27 @@ public class OSInstanceEndpoint {
     }
 
     @GET
-    @Path("/update/niCards/add")
-    public Response updateOSInstanceAddNICard(@QueryParam("id")Long id, @QueryParam("niCardID")Long niCardID) {
-        if (id!=0 && niCardID!=null) {
+    @Path("/update/nics/add")
+    public Response updateOSInstanceAddNIC(@QueryParam("id") Long id, @QueryParam("nicID") Long nicID) {
+        if (id!=0 && nicID!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update os instance {} by adding nic : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, niCardID});
+            log.debug("[{}-{}] update os instance {} by adding nic : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, nicID});
             if (subject.hasRole("sysadmin") || subject.isPermitted("dirComITiSysOsi:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSInstance entity = findOSInstanceById(em, id);
                 if (entity!=null) {
-                    NICard niCard = NICardEndpoint.findNICardById(em, niCardID);
-                    if (niCard!=null) {
+                    NIC nic = NICEndpoint.findNICById(em, nicID);
+                    if (nic!=null) {
                         try {
                             em.getTransaction().begin();
-                            niCard.setRosInstance(entity);
-                            entity.getNiCards().add(niCard);
+                            nic.setOsInstance(entity);
+                            entity.getNics().add(nic);
                             em.flush();
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("OS Instance " + id + " has been successfully updated by adding NIC " + niCardID).build();
+                            return Response.status(Status.OK).entity("OS Instance " + id + " has been successfully updated by adding NIC " + nicID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -1460,7 +1460,7 @@ public class OSInstanceEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("NIC  " + niCardID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("NIC  " + nicID + " not found.").build();
                     }
                 } else {
                     em.close();
@@ -1470,32 +1470,32 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update NIC. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or niCardID are not defined. You must define these parameters.").build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or nicID are not defined. You must define these parameters.").build();
         }
     }
 
     @GET
-    @Path("/update/niCards/delete")
-    public Response updateOSInstanceDeleteNICard(@QueryParam("id")Long id, @QueryParam("niCardID")Long niCardID) {
-        if (id!=0 && niCardID!=null) {
+    @Path("/update/nics/delete")
+    public Response updateOSInstanceDeleteNIC(@QueryParam("id")Long id, @QueryParam("nicID")Long nicID) {
+        if (id!=0 && nicID!=null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update os instance {} by deleting nic : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, niCardID});
+            log.debug("[{}-{}] update os instance {} by deleting nic : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, nicID});
             if (subject.hasRole("sysadmin") || subject.isPermitted("dirComITiSysOsi:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone"))
             {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 OSInstance entity = findOSInstanceById(em, id);
                 if (entity!=null) {
-                    NICard niCard = NICardEndpoint.findNICardById(em, niCardID);
-                    if (niCard!=null) {
+                    NIC nic = NICEndpoint.findNICById(em, nicID);
+                    if (nic!=null) {
                         try {
                             em.getTransaction().begin();
-                            niCard.setRosInstance(null);
-                            entity.getIpAddresses().remove(niCard);
+                            nic.setOsInstance(null);
+                            entity.getIpAddresses().remove(nic);
                             em.flush();
                             em.getTransaction().commit();
                             em.close();
-                            return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting NIC " + niCardID).build();
+                            return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting NIC " + nicID).build();
                         } catch (Throwable t) {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
@@ -1504,7 +1504,7 @@ public class OSInstanceEndpoint {
                         }
                     } else {
                         em.close();
-                        return Response.status(Status.NOT_FOUND).entity("NIC " + niCardID + " not found.").build();
+                        return Response.status(Status.NOT_FOUND).entity("NIC " + nicID + " not found.").build();
                     }
                 } else {
                     em.close();
@@ -1514,7 +1514,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update NIC. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or niCardID are not defined. You must define these parameters.").build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or nicID are not defined. You must define these parameters.").build();
         }
     }
 }

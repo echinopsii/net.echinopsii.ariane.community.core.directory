@@ -13,15 +13,15 @@
 
             <h:form id="nicTableForm" styleClass="arianeTransparentBg0-uiwc-noi">
                 <p:growl id="nicTableMessages" showDetail="true" />
-                <p:dataTable id="nicTable" styleClass="arianeTableRow" var="nic" value="#{niCardsListController.lazyModel}"
-                             selectionMode="multiple" selection="#{niCardsListController.selectedNICardList}" rowKey="#{nic.id}"
+                <p:dataTable id="nicTable" styleClass="arianeTableRow" var="nic" value="#{nicsListController.lazyModel}"
+                             selectionMode="multiple" selection="#{nicsListController.selectedNICList}" rowKey="#{nic.id}"
                              paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                              rowsPerPageTemplate="5,10,15,20,25" lazy="true" rows="25" paginator="true">
                     <f:facet name="header">
                         Network Interface Card
                     </f:facet>
 
-                    <p:ajax event="rowToggle" listener="#{niCardsListController.onRowToggle}" />
+                    <p:ajax event="rowToggle" listener="#{nicsListController.onRowToggle}" />
 
                     <p:column style="width:2%">
                         <p:rowToggler/>
@@ -37,11 +37,11 @@
 
 
                     <p:column headerText="OS Instance">
-                        <h:outputText value="#{nic.rosInstance.name}" />
+                        <h:outputText value="#{nic.osInstance.name}" />
                     </p:column>
 
                     <p:column headerText="IPAddress">
-                        <h:outputText value="#{nic.ripAddress.ipAddress}" />
+                        <h:outputText value="#{nic.ipAddress.ipAddress}" />
                     </p:column>
 
                     <p:rowExpansion>
@@ -50,7 +50,7 @@
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwNICard:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="Name" value="#{nic.name}"/>
-                                    <p:ajax event="save" listener="#{niCardsListController.update(nic)}" update="@form,:nicTableForm:nicTableMessages" />
+                                    <p:ajax event="save" listener="#{nicsListController.update(nic)}" update="@form,:nicTableForm:nicTableMessages" />
                                 </p:inplace>
                             </h:form>
                             <h:outputText value="#{nic.name}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwNICard:update'))}"/>
@@ -59,7 +59,7 @@
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwNICard:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="MAC Address" value="#{nic.macAddress}"/>
-                                    <p:ajax event="save" listener="#{niCardsListController.update(nic)}" update="@form,:nicTableForm:nicTableMessages" />
+                                    <p:ajax event="save" listener="#{nicsListController.update(nic)}" update="@form,:nicTableForm:nicTableMessages" />
                                 </p:inplace>
                             </h:form>
                             <h:outputText value="#{nic.macAddress}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwNICard:update'))}"/>
@@ -68,7 +68,7 @@
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwNICard:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="Duplex" value="#{nic.duplex}"/>
-                                    <p:ajax event="save" listener="#{niCardsListController.update(nic)}" update="@form,:nicTableForm:nicTableMessages" />
+                                    <p:ajax event="save" listener="#{nicsListController.update(nic)}" update="@form,:nicTableForm:nicTableMessages" />
                                 </p:inplace>
                             </h:form>
                             <h:outputText value="#{nic.duplex}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwNICard:update'))}"/>
@@ -77,7 +77,7 @@
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwNICard:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="Speed" value="#{nic.speed}"/>
-                                    <p:ajax event="save" listener="#{niCardsListController.update(nic)}" update="@form,:nicTableForm:nicTableMessages" />
+                                    <p:ajax event="save" listener="#{nicsListController.update(nic)}" update="@form,:nicTableForm:nicTableMessages" />
                                 </p:inplace>
                             </h:form>
                             <h:outputText value="#{nic.speed}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwNICard:update'))}"/>
@@ -86,35 +86,35 @@
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwNICard:update')}">
                                 <p:inplace editor="true">
                                     <p:inputText required="true" label="MTU" value="#{nic.mtu}"/>
-                                    <p:ajax event="save" listener="#{niCardsListController.update(nic)}" update="@form,:nicTableForm:nicTableMessages" />
+                                    <p:ajax event="save" listener="#{nicsListController.update(nic)}" update="@form,:nicTableForm:nicTableMessages" />
                                 </p:inplace>
                             </h:form>
                             <h:outputText value="#{nic.mtu}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwNICard:update'))}"/>
 
                             <h:outputText value="IP Address: " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwNICard:update')}">
-                                <p:inplace label="#{niCardsListController.getNICardIPAddress(nic)}" effectSpeed="fast" editor="true">
-                                    <h:selectOneMenu value="#{niCardsListController.changedIPAddress[nic.id]}">
-                                        <f:selectItems value="#{OSInstancesListController.getAllIPAddresses(nic.rosInstance)}"  var="ipa"
+                                <p:inplace label="#{nicsListController.getNICIPAddress(nic)}" effectSpeed="fast" editor="true">
+                                    <h:selectOneMenu value="#{nicsListController.changedIPAddress[nic.id]}">
+                                        <f:selectItems value="#{OSInstancesListController.getAllIPAddresses(nic.osInstance)}"  var="ipa"
                                                        itemLabel="#{ipa.ipAddress}" itemValue="#{ipa.ipAddress}"/>
                                     </h:selectOneMenu>
-                                    <p:ajax event="save" listener="#{niCardsListController.syncRIPAddress(nic)}" update="@form,:nicTableForm:nicTableMessages"/>
+                                    <p:ajax event="save" listener="#{nicsListController.syncIPAddress(nic)}" update="@form,:nicTableForm:nicTableMessages"/>
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{niCardsListController.getNICardIPAddress(nic)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwNICard:update'))}"/>
+                            <h:outputText value="#{nicsListController.getNICIPAddress(nic)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwNICard:update'))}"/>
 
 
                             <h:outputText value="OS Instance: " styleClass="arianeDialogLabel"/>
                             <h:form rendered="#{arianeidm:hasPermission('dirComITiNtwNICard:update')}">
-                                <p:inplace label="#{niCardsListController.getNICardOSInstance(nic)}" effectSpeed="fast" editor="true">
-                                    <h:selectOneMenu value="#{niCardsListController.changedOSInstance[nic.id]}">
+                                <p:inplace label="#{nicsListController.getNICOSInstance(nic)}" effectSpeed="fast" editor="true">
+                                    <h:selectOneMenu value="#{nicsListController.changedOSInstance[nic.id]}">
                                         <f:selectItems value="#{OSInstancesListController.getAll()}"  var="osi"
                                                        itemLabel="#{osi.name}" itemValue="#{osi.name}"/>
                                     </h:selectOneMenu>
-                                    <p:ajax event="save" listener="#{niCardsListController.syncROSInstance(nic)}" update="@form,:nicTableForm:nicTableMessages"/>
+                                    <p:ajax event="save" listener="#{nicsListController.syncOSInstance(nic)}" update="@form,:nicTableForm:nicTableMessages"/>
                                 </p:inplace>
                             </h:form>
-                            <h:outputText value="#{niCardsListController.getNICardOSInstance(nic)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwNICard:update'))}"/>
+                            <h:outputText value="#{nicsListController.getNICOSInstance(nic)}" rendered="#{!(arianeidm:hasPermission('dirComITiNtwNICard:update'))}"/>
                         </h:panelGrid>
 
                     </p:rowExpansion>
@@ -133,19 +133,19 @@
                 <h:form id="removeNicDialogForm">
                     <h:outputText value="Are you sure you want delete following NIC ?" styleClass="arianeDialogLabel text-marginForMessage"/><br/>
                     <p:commandButton value="Yes" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
-                                     actionListener="#{niCardsListController.delete}" oncomplete="nicRemoveDialog.hide();"
+                                     actionListener="#{nicsListController.delete}" oncomplete="nicRemoveDialog.hide();"
                                      update=":nicTableForm:nicTable,:nicTableForm:nicTableMessages"/>
                     <p:commandButton value="No" styleClass="arianeDialogButtonNo" icon="ui-icon-close" onclick="nicRemoveDialog.hide();"/>
                     <p:separator/>
                     <p:dataList id="display"
-                                value="#{niCardsListController.selectedNICardList}"
+                                value="#{nicsListController.selectedNICList}"
                                 var="selectedNICs" type="definition">
                         <h:panelGrid columns="2" cellpadding="5">
                             <h:outputText value="Name : " styleClass="arianeDialogLabel"/>
                             <h:outputText value="#{selectedNICs.name}"/>
 
                             <h:outputText value="IPAddress : " styleClass="arianeDialogLabel"/>
-                            <p:dataTable  value="#{selectedNICs.ripAddress}" var="_item"
+                            <p:dataTable  value="#{selectedNICs.ipAddress}" var="_item"
                                           rows="5" paginator="true">
                                 <p:column headerText="IP Address">
                                     <h:outputText id="ipaIPAddress" value="#{_item.ipAddress}"/>
@@ -188,10 +188,10 @@
                       width="450" showEffect="fade" hideEffect="explode" closeOnEscape="true">
                 <h:form id="createNicDialogForm">
                     <ui:insert name="createNIC" >
-                        <ui:include src="/templates/niCardNewForm.xhtml" />
+                        <ui:include src="/templates/nicNewForm.xhtml" />
                     </ui:insert>
                     <p:commandButton value="Save this NIC" styleClass="arianeDialogButtonYes" icon="ui-icon-check"
-                                     actionListener="#{niCardNewController.save}" oncomplete="nicCreateDialog.hide();"
+                                     actionListener="#{nicNewController.save}" oncomplete="nicCreateDialog.hide();"
                                      update=":createNicDialogForm:nicNewGrid,:nicTableForm:nicTableMessages,:nicTableForm:nicTable"/>
                 </h:form>
             </p:dialog>

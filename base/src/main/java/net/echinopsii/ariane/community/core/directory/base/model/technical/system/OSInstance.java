@@ -22,7 +22,7 @@ import net.echinopsii.ariane.community.core.directory.base.model.organisational.
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Team;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NIC;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -60,37 +60,37 @@ public class OSInstance implements Serializable {
     private String description;
 
     @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
-    private Set<Subnet> networkSubnets = new HashSet<Subnet>();
+    private Set<Subnet> networkSubnets = new HashSet<>();
 
     @OneToMany(mappedBy = "osInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private Set<IPAddress> ipAddresses = new HashSet<IPAddress>();
+    private Set<IPAddress> ipAddresses = new HashSet<>();
 
-    @OneToMany(mappedBy = "rosInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "osInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private Set<NICard> niCards = new HashSet<NICard>();
+    private Set<NIC> nics = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     private OSInstance embeddingOSInstance;
 
     @OneToMany(mappedBy = "embeddingOSInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private Set<OSInstance> embeddedOSInstances = new HashSet<OSInstance>();
+    private Set<OSInstance> embeddedOSInstances = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     private OSType osType;
 
     @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private Set<Application> applications = new HashSet<Application>();
+    private Set<Application> applications = new HashSet<>();
 
     @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private Set<Team> teams = new HashSet<Team>();
+    private Set<Team> teams = new HashSet<>();
 
     @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private Set<Environment> environments = new HashSet<Environment>();
+    private Set<Environment> environments = new HashSet<>();
 
     public Long getId() {
         return this.id;
@@ -207,16 +207,16 @@ public class OSInstance implements Serializable {
         return this;
     }
 
-    public Set<NICard> getNiCards() {
-        return niCards;
+    public Set<NIC> getNics() {
+        return nics;
     }
 
-    public void setNiCards(Set<NICard> niCards) {
-        this.niCards = niCards;
+    public void setNics(Set<NIC> nics) {
+        this.nics = nics;
     }
 
-    public OSInstance setNiCardsR(Set<NICard> niCards){
-        this.niCards = niCards;
+    public OSInstance setNiCsR(Set<NIC> nics){
+        this.nics = nics;
         return this;
     }
 
@@ -242,7 +242,7 @@ public class OSInstance implements Serializable {
     }
 
     public OSInstance setEmbeddingOSInstanceR(final OSInstance embeddingOSInstance) {
-        this.embeddingOSInstance = embeddingOSInstance;
+        this.setEmbeddingOSInstance(embeddingOSInstance);
         return this;
     }
 
@@ -255,7 +255,7 @@ public class OSInstance implements Serializable {
     }
 
     public OSInstance setEmbeddedOSInstancesR(final Set<OSInstance> embeddedOSInstances) {
-        this.embeddedOSInstances = embeddedOSInstances;
+        this.setEmbeddedOSInstances(embeddedOSInstances);
         return this;
     }
 
@@ -313,9 +313,9 @@ public class OSInstance implements Serializable {
 
     public OSInstance clone() {
         return new OSInstance().setIdR(this.id).setVersionR(this.version).setNameR(this.name).setDescriptionR(this.description).setAdminGateURIR(this.adminGateURI).setOsTypeR(this.osType).
-                   setApplicationsR(new HashSet<Application>(this.applications)).setEmbeddedOSInstancesR(new HashSet<OSInstance>(this.embeddedOSInstances)).setEmbeddingOSInstanceR(this.embeddingOSInstance).
-                   setEnvironementsR(new HashSet<Environment>(this.environments)).setNetworkSubnetsR(new HashSet<Subnet>(networkSubnets)).setIpAddressR(new HashSet<IPAddress>(ipAddresses)).setTeamsR(new HashSet<Team>(this.teams))
-                   .setNiCardsR(new HashSet<NICard>(this.niCards));
+                   setApplicationsR(new HashSet<>(this.applications)).setEmbeddedOSInstancesR(new HashSet<>(this.embeddedOSInstances)).setEmbeddingOSInstanceR(this.embeddingOSInstance).
+                   setEnvironementsR(new HashSet<>(this.environments)).setNetworkSubnetsR(new HashSet<>(networkSubnets)).setIpAddressR(new HashSet<>(ipAddresses)).setTeamsR(new HashSet<>(this.teams))
+                   .setNiCsR(new HashSet<>(this.nics));
     }
 
     public final static String OSI_MAPPING_PROPERTIES = "Server";
@@ -323,7 +323,7 @@ public class OSInstance implements Serializable {
     private final static String OSI_TYPE_MAPPING_FIELD = "os";
 
     public HashMap<String,Object> toMappingProperties() {
-        HashMap<String,Object> ret = new HashMap<String,Object>();
+        HashMap<String,Object> ret = new HashMap<>();
         ret.put(OSI_NAME_MAPPING_FIELD,name);
         if (osType != null)
             ret.put(OSI_TYPE_MAPPING_FIELD,osType.getName()+" - "+osType.getArchitecture());

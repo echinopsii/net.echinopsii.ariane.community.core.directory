@@ -1,6 +1,6 @@
 /**
  * Directory wat
- * NICard REST endpoint
+ * NIC REST endpoint
  * Copyright (C) 2015 Echinopsii
  * Author : Sagar Ghuge
  *
@@ -20,9 +20,9 @@
 package net.echinopsii.ariane.community.core.directory.wat.rest.technical.network;
 
 import net.echinopsii.ariane.community.core.directory.base.json.ToolBox;
-import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.NICardJSON;
+import net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.NICJSON;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NIC;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 import net.echinopsii.ariane.community.core.directory.wat.plugin.DirectoryJPAProviderConsumer;
 import net.echinopsii.ariane.community.core.directory.wat.rest.CommonRestResponse;
@@ -42,20 +42,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 
-import static net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.NICardJSON.JSONFriendlyNICard;
+import static net.echinopsii.ariane.community.core.directory.base.json.ds.technical.network.NICJSON.JSONFriendlyNIC;
 
 @SuppressWarnings("ALL")
-@Path("/directories/common/infrastructure/network/niCard")
-public class NICardEndpoint {
+@Path("/directories/common/infrastructure/network/nic")
+public class NICEndpoint {
     private static final Logger log = LoggerFactory.getLogger(RoutingAreaEndpoint.class);
     private EntityManager em;
 
-    public static Response niCardToJSON(NICard entity) {
+    public static Response nicToJSON(NIC entity) {
         Response ret = null;
         String result;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         try {
-            NICardJSON.oneNICard2JSON(entity, outStream);
+            NICJSON.oneNIC2JSON(entity, outStream);
             result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
             ret = Response.status(Status.OK).entity(result).build();
         } catch (Exception e) {
@@ -67,11 +67,11 @@ public class NICardEndpoint {
         return ret;
     }
 
-    public static NICard findNICardById(EntityManager em, long id) {
-        TypedQuery<NICard> findByIdQuery;
-        findByIdQuery = em.createQuery("SELECT DISTINCT l FROM NICard l LEFT JOIN FETCH l.rosInstance LEFT JOIN FETCH l.ripAddress WHERE l.id = :entityId ORDER BY l.id", NICard.class);
+    public static NIC findNICById(EntityManager em, long id) {
+        TypedQuery<NIC> findByIdQuery;
+        findByIdQuery = em.createQuery("SELECT DISTINCT n FROM NIC n LEFT JOIN FETCH n.osInstance LEFT JOIN FETCH n.ipAddress WHERE n.id = :entityId ORDER BY n.id", NIC.class);
         findByIdQuery.setParameter("entityId", id);
-        NICard entity;
+        NIC entity;
         try {
             entity = findByIdQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -80,10 +80,22 @@ public class NICardEndpoint {
         return entity;
     }
 
-    public static NICard findNICardByName(EntityManager em, String name) {
-        TypedQuery<NICard> findByNameQuery = em.createQuery("SELECT DISTINCT l FROM NICard l LEFT JOIN FETCH l.rosInstance LEFT JOIN FETCH l.ripAddress WHERE l.name = :entityNAME ORDER BY l.macAddress", NICard.class);
+    public static NIC findNICByMacAddress(EntityManager em, String macAddress) {
+        TypedQuery<NIC> findByMacAddressQuery = em.createQuery("SELECT DISTINCT n FROM NIC n LEFT JOIN FETCH n.osInstance LEFT JOIN FETCH n.ipAddress WHERE n.macAddress = :entityMADDR ORDER BY n.macAddress", NIC.class);
+        findByMacAddressQuery.setParameter("entityMADDR", macAddress);
+        NIC entity;
+        try {
+            entity = findByMacAddressQuery.getSingleResult();
+        } catch (NoResultException nre) {
+            entity = null;
+        }
+        return entity;
+    }
+
+    public static NIC findNICByName(EntityManager em, String name) {
+        TypedQuery<NIC> findByNameQuery = em.createQuery("SELECT DISTINCT n FROM NIC n LEFT JOIN FETCH n.osInstance LEFT JOIN FETCH n.ipAddress WHERE n.name = :entityNAME ORDER BY n.name", NIC.class);
         findByNameQuery.setParameter("entityNAME", name);
-        NICard entity;
+        NIC entity;
         try {
             entity = findByNameQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -92,87 +104,87 @@ public class NICardEndpoint {
         return entity;
     }
 
-    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyNICard jsonFriendlyNICard) {
-        NICard entity = null;
+    public static CommonRestResponse jsonFriendlyToHibernateFriendly(EntityManager em, JSONFriendlyNIC jsonFriendlyNIC) {
+        NIC entity = null;
         CommonRestResponse commonRestResponse = new CommonRestResponse();
 
-        if (jsonFriendlyNICard.getNiCardID() != 0)
-            entity = findNICardById(em, jsonFriendlyNICard.getNiCardID());
-        if (entity == null && jsonFriendlyNICard.getNiCardID() != 0) {
-            commonRestResponse.setErrorMessage("Request Error : provided NICard ID " + jsonFriendlyNICard.getNiCardID() + " was not found.");
+        if (jsonFriendlyNIC.getNicID() != 0)
+            entity = findNICById(em, jsonFriendlyNIC.getNicID());
+        if (entity == null && jsonFriendlyNIC.getNicID() != 0) {
+            commonRestResponse.setErrorMessage("Request Error : provided NIC ID " + jsonFriendlyNIC.getNicID() + " was not found.");
             return commonRestResponse;
         }
         if (entity == null) {
-            if (jsonFriendlyNICard.getNiCardName() != null) {
-                entity = findNICardByName(em, jsonFriendlyNICard.getNiCardName());
+            if (jsonFriendlyNIC.getNicName() != null) {
+                entity = findNICByName(em, jsonFriendlyNIC.getNicName());
             }
         }
         if (entity != null) {
-            if (jsonFriendlyNICard.getNiCardName() != null) {
-                entity.setName(jsonFriendlyNICard.getNiCardName());
+            if (jsonFriendlyNIC.getNicName() != null) {
+                entity.setName(jsonFriendlyNIC.getNicName());
             }
-            if (jsonFriendlyNICard.getNiCardMacAddress() != null) {
-                entity.setMacAddress(jsonFriendlyNICard.getNiCardMacAddress());
+            if (jsonFriendlyNIC.getNicMacAddress() != null) {
+                entity.setMacAddress(jsonFriendlyNIC.getNicMacAddress());
             }
-            if (jsonFriendlyNICard.getNiCardDuplex() != null) {
-                entity.setDuplex(jsonFriendlyNICard.getNiCardDuplex());
+            if (jsonFriendlyNIC.getNicDuplex() != null) {
+                entity.setDuplex(jsonFriendlyNIC.getNicDuplex());
             }
-            if (jsonFriendlyNICard.getNiCardSpeed() != -1) {
-                entity.setSpeed(jsonFriendlyNICard.getNiCardSpeed());
+            if (jsonFriendlyNIC.getNicSpeed() != -1) {
+                entity.setSpeed(jsonFriendlyNIC.getNicSpeed());
             }
-            if (jsonFriendlyNICard.getNiCardMtu() != -1) {
-                entity.setMtu(jsonFriendlyNICard.getNiCardMtu());
+            if (jsonFriendlyNIC.getNicMtu() != -1) {
+                entity.setMtu(jsonFriendlyNIC.getNicMtu());
             }
-            if (jsonFriendlyNICard.getNiCardOSInstanceID() != 0) {
-                OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, jsonFriendlyNICard.getNiCardOSInstanceID());
+            if (jsonFriendlyNIC.getNicOSInstanceID() != 0) {
+                OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, jsonFriendlyNIC.getNicOSInstanceID());
                 if (osInstance != null) {
-                    if (entity.getRosInstance() != null)
-                        entity.getRosInstance().getNiCards().remove(entity);
-                    entity.setRosInstance(osInstance);
-                    osInstance.getNiCards().add(entity);
+                    if (entity.getOsInstance() != null)
+                        entity.getOsInstance().getNics().remove(entity);
+                    entity.setOsInstance(osInstance);
+                    osInstance.getNics().add(entity);
                 } else {
-                    commonRestResponse.setErrorMessage("Fail to create NIC. Reason : provided OS Instance ID " + jsonFriendlyNICard.getNiCardOSInstanceID() + " was not found.");
+                    commonRestResponse.setErrorMessage("Fail to create NIC. Reason : provided OS Instance ID " + jsonFriendlyNIC.getNicOSInstanceID() + " was not found.");
                     return commonRestResponse;
                 }
             }
-            if (jsonFriendlyNICard.getNiCardIPAddressID() != 0) {
-                IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, jsonFriendlyNICard.getNiCardIPAddressID());
+            if (jsonFriendlyNIC.getNicIPAddressID() != 0) {
+                IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, jsonFriendlyNIC.getNicIPAddressID());
                 if (ipAddress != null) {
-                    if (entity.getRipAddress() != null)
-                        entity.getRipAddress().setNiCard(null);
-                    entity.setRipAddress(ipAddress);
-                    ipAddress.setNiCard(entity);
+                    if (entity.getIpAddress() != null)
+                        entity.getIpAddress().setNic(null);
+                    entity.setIpAddress(ipAddress);
+                    ipAddress.setNic(entity);
                 } else {
-                    commonRestResponse.setErrorMessage("Fail to update NIC. Reason : provided IPAddress ID " + jsonFriendlyNICard.getNiCardIPAddressID() + " was not found.");
+                    commonRestResponse.setErrorMessage("Fail to update NIC. Reason : provided IPAddress ID " + jsonFriendlyNIC.getNicIPAddressID() + " was not found.");
                     return commonRestResponse;
                 }
             }
             commonRestResponse.setDeserializedObject(entity);
         } else {
-            entity = new NICard();
-            entity.setNameR(jsonFriendlyNICard.getNiCardName()).setMacAddressR(jsonFriendlyNICard.getNiCardMacAddress())
-            .setDuplexR(jsonFriendlyNICard.getNiCardDuplex()).setMtuR(jsonFriendlyNICard.getNiCardMtu()).setSpeedR(jsonFriendlyNICard.getNiCardSpeed());
-            if (jsonFriendlyNICard.getNiCardOSInstanceID() != 0) {
-                OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, jsonFriendlyNICard.getNiCardOSInstanceID());
+            entity = new NIC();
+            entity.setNameR(jsonFriendlyNIC.getNicName()).setMacAddressR(jsonFriendlyNIC.getNicMacAddress())
+            .setDuplexR(jsonFriendlyNIC.getNicDuplex()).setMtuR(jsonFriendlyNIC.getNicMtu()).setSpeedR(jsonFriendlyNIC.getNicSpeed());
+            if (jsonFriendlyNIC.getNicOSInstanceID() != 0) {
+                OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, jsonFriendlyNIC.getNicOSInstanceID());
                 if (osInstance != null) {
-                    if (entity.getRosInstance() != null)
-                        entity.getRosInstance().getNiCards().remove(entity);
-                    entity.setRosInstance(osInstance);
-                    osInstance.getNiCards().add(entity);
+                    if (entity.getOsInstance() != null)
+                        entity.getOsInstance().getNics().remove(entity);
+                    entity.setOsInstance(osInstance);
+                    osInstance.getNics().add(entity);
                 } else {
-                    commonRestResponse.setErrorMessage("Fail to create NIC. Reason : provided OS Instance ID " + jsonFriendlyNICard.getNiCardOSInstanceID() + " was not found.");
+                    commonRestResponse.setErrorMessage("Fail to create NIC. Reason : provided OS Instance ID " + jsonFriendlyNIC.getNicOSInstanceID() + " was not found.");
                     return commonRestResponse;
                 }
             }
-            if (jsonFriendlyNICard.getNiCardIPAddressID() != 0) {
-                IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, jsonFriendlyNICard.getNiCardIPAddressID());
+            if (jsonFriendlyNIC.getNicIPAddressID() != 0) {
+                IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, jsonFriendlyNIC.getNicIPAddressID());
                 if (ipAddress != null) {
-                    if (entity.getRipAddress() != null)
-                        entity.getRipAddress().setNiCard(null);
-                    entity.setRipAddress(ipAddress);
-                    ipAddress.setNiCard(entity);
+                    if (entity.getIpAddress() != null)
+                        entity.getIpAddress().setNic(null);
+                    entity.setIpAddress(ipAddress);
+                    ipAddress.setNic(entity);
                 } else {
-                    commonRestResponse.setErrorMessage("Fail to update NIC. Reason : provided IPAddress ID " + jsonFriendlyNICard.getNiCardIPAddressID() + " was not found.");
+                    commonRestResponse.setErrorMessage("Fail to update NIC. Reason : provided IPAddress ID " + jsonFriendlyNIC.getNicIPAddressID() + " was not found.");
                     return commonRestResponse;
                 }
             }
@@ -183,19 +195,19 @@ public class NICardEndpoint {
 
     @GET
     @Path("/{id:[0-9][0-9]*}")
-    public Response displayNICard(@PathParam("id") Long id) {
+    public Response displayNIC(@PathParam("id") Long id) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] get NICs : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
         if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwNICard:display") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            NICard entity = findNICardById(em, id);
+            NIC entity = findNICById(em, id);
             if (entity == null) {
                 em.close();
                 return Response.status(Status.NOT_FOUND).build();
             }
 
-            Response ret = niCardToJSON(entity);
+            Response ret = nicToJSON(entity);
             em.close();
             return ret;
         } else {
@@ -204,20 +216,20 @@ public class NICardEndpoint {
     }
 
     @GET
-    public Response displayAllNICard() {
+    public Response displayAllNIC() {
         Subject subject = SecurityUtils.getSubject();
         System.out.print("in display");
-        log.debug("[{}-{}] get niCards", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
+        log.debug("[{}-{}] get NICs", new Object[]{Thread.currentThread().getId(), subject.getPrincipal()});
         if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwNICard:display") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            final HashSet<NICard> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM NICard l LEFT JOIN FETCH l.rosInstance LEFT JOIN FETCH l.ripAddress ORDER BY l.id", NICard.class).getResultList());
+            final HashSet<NIC> results = new HashSet(em.createQuery("SELECT DISTINCT l FROM NIC l LEFT JOIN FETCH l.osInstance LEFT JOIN FETCH l.ipAddress ORDER BY l.id", NIC.class).getResultList());
 
             Response ret = null;
             String result;
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
             try {
-                NICardJSON.manyNICards2JSON(results, outStream);
+                NICJSON.manyNICs2JSON(results, outStream);
                 result = ToolBox.getOuputStreamContent(outStream, "UTF-8");
                 ret = Response.status(Status.OK).entity(result).build();
             } catch (Exception e) {
@@ -236,41 +248,39 @@ public class NICardEndpoint {
 
     @GET
     @Path("/get")
-    public Response getNICard(@QueryParam("name") String name, @QueryParam("id") long id) {
+    public Response getNIC(@QueryParam("id") long id, @QueryParam("macAddress") String macAddress, @QueryParam("name") String name) {
         Subject subject = SecurityUtils.getSubject();
-        log.debug("[{}-{}] get niCard : {}", new Object[]{Thread.currentThread().getId()});
+        log.debug("[{}-{}] get NIC : {}", new Object[]{Thread.currentThread().getId()});
         if (subject.hasRole("ntwadmin") || subject.hasRole("ntwreviewer") || subject.isPermitted("dirComITiNtwNICard:display") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             if (id != 0) {
-                return displayNICard(id);
-            } else if (name != null) {
-                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                return displayNIC(id);
+            } else if (macAddress != null || name != null) {
                 Response ret;
-                NICard entity = findNICardByName(em, name);
-                if (entity == null)
-                    ret = Response.status(Status.NOT_FOUND).build();
-                else
-                    ret = niCardToJSON(entity);
+                NIC entity;
+                em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
+                if (macAddress != null) entity = findNICByMacAddress(em, macAddress);
+                else entity = findNICByName(em, name);
                 em.close();
+                if (entity == null) ret = Response.status(Status.NOT_FOUND).build();
+                else ret = nicToJSON(entity);
                 return ret;
-            } else
-                return Response.status(Status.BAD_REQUEST).entity("Bad request. You should provide at least: NIC id or NIC name.").build();
-        } else
-            return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display NIC. Contact your administrator.").build();
+            } else return Response.status(Status.BAD_REQUEST).entity("Bad request. You should provide at least: NIC id or NIC mac address or NIC name.").build();
+        } else return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display NIC. Contact your administrator.").build();
     }
 
     @GET
     @Path("/create")
-    public Response createNICard(@QueryParam("name") String name, @QueryParam("macAddress") String macAddress) {
+    public Response createNIC(@QueryParam("name") String name, @QueryParam("macAddress") String macAddress) {
         if (macAddress != null && name != null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] create niCard : ({},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, macAddress});
+            log.debug("[{}-{}] create NIC : ({},{},{},{})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), name, macAddress});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:create") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                NICard entity = findNICardByName(em, name);
+                NIC entity = findNICByName(em, name);
                 if (entity == null) {
-                    entity = new NICard().setNameR(name).setMacAddressR(macAddress);
+                    entity = new NIC().setNameR(name).setMacAddressR(macAddress);
                     try {
                         em.getTransaction().begin();
                         em.persist(entity);
@@ -281,7 +291,7 @@ public class NICardEndpoint {
                         return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating NIC" + entity.getName() + " : " + t.getMessage()).build();
                     }
                 }
-                Response ret = niCardToJSON(entity);
+                Response ret = nicToJSON(entity);
                 em.close();
                 return ret;
             } else {
@@ -294,16 +304,16 @@ public class NICardEndpoint {
     }
 
     @POST
-    public Response postNICard(@QueryParam("payload") String payload) throws IOException {
+    public Response postNIC(@QueryParam("payload") String payload) throws IOException {
 
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] create/update NIC : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwNICard:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            JSONFriendlyNICard jsonFriendlyNICard = NICardJSON.JSON2NICard(payload);
-            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyNICard);
-            NICard entity = (NICard) commonRestResponse.getDeserializedObject();
+            JSONFriendlyNIC jsonFriendlyNIC = NICJSON.JSON2NIC(payload);
+            CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyNIC);
+            NIC entity = (NIC) commonRestResponse.getDeserializedObject();
             if (entity != null) {
                 try {
                     em.getTransaction().begin();
@@ -316,7 +326,7 @@ public class NICardEndpoint {
                         em.flush();
                         em.getTransaction().commit();
                     }
-                    Response ret = niCardToJSON(entity);
+                    Response ret = nicToJSON(entity);
                     em.close();
                     return ret;
                 } catch (Throwable t) {
@@ -336,23 +346,27 @@ public class NICardEndpoint {
 
     @GET
     @Path("/delete")
-    public Response deleteNICard(@QueryParam("id") Long id) {
+    public Response deleteNIC(@QueryParam("id") Long id) {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] delete niCard : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
+            log.debug("[{}-{}] delete NIC : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:delete") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                NICard entity = findNICardById(em, id);
+                NIC entity = findNICById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
-                        if (entity.getRosInstance() != null) {
-                            entity.getRosInstance().getNiCards().remove(entity);
-                            entity.setRosInstance(null);
+                        if (entity.getOsInstance() != null) {
+                            entity.getOsInstance().getNics().remove(entity);
+                            if (entity.getIpAddress()!=null) {
+                                entity.getOsInstance().getIpAddresses().remove(entity.getIpAddress());
+                                entity.getIpAddress().setOsInstance(null);
+                            }
+                            entity.setOsInstance(null);
                         }
-                        if (entity.getRipAddress() != null) {
-                            entity.getRipAddress().setNiCard(null);
+                        if (entity.getIpAddress() != null) {
+                            entity.getIpAddress().setNic(null);
                             entity.setIpAddressR(null);
                         }
                         em.remove(entity);
@@ -379,14 +393,14 @@ public class NICardEndpoint {
 
     @GET
     @Path("/update/name")
-    public Response updateNICardName(@QueryParam("id") Long id, @QueryParam("name") String name) {
+    public Response updateNICName(@QueryParam("id") Long id, @QueryParam("name") String name) {
         if (id != 0 && name != null) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} name : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, name});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                NICard entity = findNICardById(em, id);
+                NIC entity = findNICById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
@@ -414,14 +428,14 @@ public class NICardEndpoint {
 
     @GET
     @Path("/update/macAddress")
-    public Response updateNICardMacAddress(@QueryParam("id") Long id, @QueryParam("macAddress") String macAddress) {
+    public Response updateNICMacAddress(@QueryParam("id") Long id, @QueryParam("macAddress") String macAddress) {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} macAddress : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, macAddress});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                NICard entity = findNICardById(em, id);
+                NIC entity = findNICById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
@@ -449,14 +463,14 @@ public class NICardEndpoint {
 
     @GET
     @Path("/update/duplex")
-    public Response updateNICardDuplex(@QueryParam("id") Long id, @QueryParam("duplex") String duplex) {
+    public Response updateNICDuplex(@QueryParam("id") Long id, @QueryParam("duplex") String duplex) {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} duplex : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, duplex});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                NICard entity = findNICardById(em, id);
+                NIC entity = findNICById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
@@ -484,14 +498,14 @@ public class NICardEndpoint {
 
     @GET
     @Path("/update/speed")
-    public Response updateNICardSpeed(@QueryParam("id") Long id, @QueryParam("speed") int speed) {
+    public Response updateNICSpeed(@QueryParam("id") Long id, @QueryParam("speed") int speed) {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} speed : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, speed});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                NICard entity = findNICardById(em, id);
+                NIC entity = findNICById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
@@ -519,14 +533,14 @@ public class NICardEndpoint {
 
     @GET
     @Path("/update/mtu")
-    public Response updateNICardMtu(@QueryParam("id") Long id, @QueryParam("mtu") int mtu) {
+    public Response updateNICMtu(@QueryParam("id") Long id, @QueryParam("mtu") int mtu) {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} mtu : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, mtu});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                NICard entity = findNICardById(em, id);
+                NIC entity = findNICById(em, id);
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
@@ -554,23 +568,23 @@ public class NICardEndpoint {
 
     @GET
     @Path("/update/ipAddress")
-    public Response updateNICardIPAddres(@QueryParam("id") Long id, @QueryParam("ipAddressID") Long ipAddressID) {
+    public Response updateNICIPAddress(@QueryParam("id") Long id, @QueryParam("ipAddressID") Long ipAddressID) {
         if (id != 0 && ipAddressID != null) {
             Subject subject = SecurityUtils.getSubject();
-            log.debug("[{}-{}] update NICard {} ipAddress : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, ipAddressID});
+            log.debug("[{}-{}] update NIC {} ipAddress : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, ipAddressID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                NICard entity = findNICardById(em, id);
+                NIC entity = findNICById(em, id);
                 if (entity != null) {
                     IPAddress ipAddress = IPAddressEndpoint.findIPAddressById(em, ipAddressID);
                     if (ipAddress != null) {
                         try {
                             em.getTransaction().begin();
-                            if (entity.getRipAddress() != null)
-                                entity.getRipAddress().setNiCard(null);
-                            ipAddress.setNiCard(entity);
-                            entity.setRipAddress(ipAddress);
+                            if (entity.getIpAddress() != null)
+                                entity.getIpAddress().setNic(null);
+                            ipAddress.setNic(entity);
+                            entity.setIpAddress(ipAddress);
                             em.getTransaction().commit();
                             em.close();
                             return Response.status(Status.OK).entity("NIC " + id + " has been successfully updated with ipAddress " + ipAddressID).build();
@@ -578,7 +592,7 @@ public class NICardEndpoint {
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
-                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating NIC " + entity.getRipAddress() + " : " + t.getMessage()).build();
+                            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating NIC " + entity.getIpAddress() + " : " + t.getMessage()).build();
                         }
                     } else {
                         em.close();
@@ -598,23 +612,23 @@ public class NICardEndpoint {
 
     @GET
     @Path("/update/osInstance")
-    public Response updateNICardOSInstance(@QueryParam("id") Long id, @QueryParam("osInstanceID") Long osInstanceID) {
+    public Response updateNICOSInstance(@QueryParam("id") Long id, @QueryParam("osInstanceID") Long osInstanceID) {
         if (id != 0) {
             Subject subject = SecurityUtils.getSubject();
             log.debug("[{}-{}] update NIC {} osInstance : {}", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), id, osInstanceID});
             if (subject.hasRole("ntwadmin") || subject.isPermitted("dirComITiNtwNICard:update") ||
                     subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-                NICard entity = findNICardById(em, id);
+                NIC entity = findNICById(em, id);
                 if (entity != null) {
                     OSInstance osInstance = OSInstanceEndpoint.findOSInstanceById(em, osInstanceID);
                     if (osInstance != null) {
                         try {
                             em.getTransaction().begin();
-                            if (entity.getRosInstance() != null)
-                                entity.getRosInstance().getNiCards().remove(entity);
-                            osInstance.getNiCards().add(entity);
-                            entity.setRosInstance(osInstance);
+                            if (entity.getOsInstance() != null)
+                                entity.getOsInstance().getNics().remove(entity);
+                            osInstance.getNics().add(entity);
+                            entity.setOsInstance(osInstance);
                             em.getTransaction().commit();
                             em.close();
                             return Response.status(Status.OK).entity("NIC " + id + " has been successfully updated with osInstnace " + osInstanceID).build();

@@ -64,8 +64,8 @@ public class IPAddress implements Serializable {
     @JoinColumn
     private OSInstance osInstance;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy="ripAddress")
-    private NICard niCard;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy="ipAddress")
+    private NIC nic;
 
     public Long getId() {
         return this.id;
@@ -80,16 +80,16 @@ public class IPAddress implements Serializable {
         return this;
     }
 
-    public NICard getNiCard() {
-        return niCard;
+    public NIC getNic() {
+        return nic;
     }
 
-    public void setNiCard(NICard niCard) {
-        this.niCard = niCard;
+    public void setNic(NIC nic) {
+        this.nic = nic;
     }
 
-    public IPAddress setNiCardR(NICard niCard){
-        this.niCard = niCard;
+    public IPAddress setNICR(NIC nic){
+        this.nic = nic;
         return this;
     }
     public int getVersion() {
@@ -192,7 +192,7 @@ public class IPAddress implements Serializable {
 
     public IPAddress clone() {
         return new IPAddress().setIdR(this.id).setVersionR(this.version).setFqdnR(this.fqdn).setIpAddressR(this.ipAddress).
-                               setNetworkSubnetR(this.networkSubnet).setOsInstancesR(this.osInstance).setNiCardR(this.niCard);
+                               setNetworkSubnetR(this.networkSubnet).setOsInstancesR(this.osInstance).setNICR(this.nic);
     }
 
     public final static String SUBNET_SUBNET_MAPPING_FIELD = "networkSubnet";

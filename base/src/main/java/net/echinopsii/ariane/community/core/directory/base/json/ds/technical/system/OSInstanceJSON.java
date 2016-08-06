@@ -28,7 +28,7 @@ import net.echinopsii.ariane.community.core.directory.base.model.organisational.
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Environment;
 import net.echinopsii.ariane.community.core.directory.base.model.organisational.Team;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.IPAddress;
-import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NICard;
+import net.echinopsii.ariane.community.core.directory.base.model.technical.network.NIC;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.network.Subnet;
 import net.echinopsii.ariane.community.core.directory.base.model.technical.system.OSInstance;
 
@@ -58,7 +58,7 @@ public class OSInstanceJSON {
     public final static String OSI_TEAMS_ID         = "osInstanceTeamsID";
     public final static String OSI_ENVS_ID          = "osInstanceEnvironmentsID";
     public final static String OSI_IPADDRESSES_ID   = "osInstanceIPAddressesID";
-    public final static String OSI_NICS_ID          = "osInstanceNICardsID";
+    public final static String OSI_NICS_ID          = "osInstanceNICsID";
 
     public final static void osInstance2JSON(OSInstance osInstance, JsonGenerator jgenerator) throws IOException {
         jgenerator.writeStartObject();
@@ -95,8 +95,8 @@ public class OSInstanceJSON {
             jgenerator.writeNumber(ipAddress.getId());
         jgenerator.writeEndArray();
         jgenerator.writeArrayFieldStart(OSI_NICS_ID);
-        for (NICard niCard : osInstance.getNiCards())
-            jgenerator.writeNumber(niCard.getId());
+        for (NIC nic : osInstance.getNics())
+            jgenerator.writeNumber(nic.getId());
         jgenerator.writeEndArray();
 
         jgenerator.writeEndObject();
@@ -135,14 +135,14 @@ public class OSInstanceJSON {
         private List<Long> osInstanceTeamsID;
         private List<Long> osInstanceEnvironmentsID;
         private List<Long> osInstanceIPAddressesID;
-        private List<Long> osInstanceNICardsID;
+        private List<Long> osInstanceNICsID;
 
-        public List<Long> getOsInstanceNICardsID() {
-            return osInstanceNICardsID;
+        public List<Long> getOsInstanceNICsID() {
+            return osInstanceNICsID;
         }
 
-        public void setOsInstanceNICardsID(List<Long> osInstanceNICardsID) {
-            this.osInstanceNICardsID = osInstanceNICardsID;
+        public void setOsInstanceNICsID(List<Long> osInstanceNICsID) {
+            this.osInstanceNICsID = osInstanceNICsID;
         }
 
         public List<Long> getOsInstanceIPAddressesID() {
