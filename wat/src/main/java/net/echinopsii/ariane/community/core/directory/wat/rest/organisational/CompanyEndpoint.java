@@ -330,14 +330,21 @@ public class CompanyEndpoint {
     }
 
     @POST
-    public Response postCompany(@QueryParam("payload") String payload) throws IOException {
+    public Response postCompany(@QueryParam("payload") String payload) {
 
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] create/update company : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgCompany:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            JSONFriendlyCompany jsonFriendlyCompany = CompanyJSON.JSON2Company(payload);
+            JSONFriendlyCompany jsonFriendlyCompany = null;
+            try {
+                jsonFriendlyCompany = CompanyJSON.JSON2Company(payload);
+            } catch (IOException e) {
+                log.error("Problem while deserializing payload : " + payload);
+                e.printStackTrace();
+                return Response.status(Status.BAD_REQUEST).entity("Problem while deserializing payload : " + payload).build();
+            }
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyCompany);
             Company entity = (Company) commonRestResponse.getDeserializedObject();
             if (entity != null) {

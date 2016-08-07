@@ -160,7 +160,6 @@ public class NICJSON {
     public final static JSONFriendlyNIC JSON2NIC(String payload) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        JSONFriendlyNIC jsonFriendlyNIC = mapper.readValue(payload, JSONFriendlyNIC.class);
-        return jsonFriendlyNIC;
+        return mapper.readValue(payload, JSONFriendlyNIC.class);
     }
 }

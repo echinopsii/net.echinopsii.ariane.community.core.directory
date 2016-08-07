@@ -606,14 +606,21 @@ public class OSInstanceEndpoint {
     }
 
     @POST
-    public Response postOSInstance(@QueryParam("payload") String payload) throws IOException {
+    public Response postOSInstance(@QueryParam("payload") String payload) {
 
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] create/update OS Instance : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiSysOsi:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            JSONFriendlyOSInstance jsonFriendlyOSInstance = OSInstanceJSON.JSON2OSInstance(payload);
+            JSONFriendlyOSInstance jsonFriendlyOSInstance = null;
+            try {
+                jsonFriendlyOSInstance = OSInstanceJSON.JSON2OSInstance(payload);
+            } catch (IOException e) {
+                log.error("Problem while deserializing payload : " + payload);
+                e.printStackTrace();
+                return Response.status(Status.BAD_REQUEST).entity("Problem while deserializing payload : " + payload).build();
+            }
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyOSInstance);
             OSInstance entity = (OSInstance) commonRestResponse.getDeserializedObject();
             if (entity != null) {

@@ -333,14 +333,21 @@ public class TeamEndpoint {
     }
 
     @POST
-    public Response postTeam(@QueryParam("payload") String payload) throws IOException {
+    public Response postTeam(@QueryParam("payload") String payload) {
 
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] create/update Team : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgTeam:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            JSONFriendlyTeam jsonFriendlyTeam = TeamJSON.JSON2Team(payload);
+            JSONFriendlyTeam jsonFriendlyTeam = null;
+            try {
+                jsonFriendlyTeam = TeamJSON.JSON2Team(payload);
+            } catch (IOException e) {
+                log.error("Problem while deserializing payload : " + payload);
+                e.printStackTrace();
+                return Response.status(Status.BAD_REQUEST).entity("Problem while deserializing payload : " + payload).build();
+            }
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyTeam);
             Team entity = (Team) commonRestResponse.getDeserializedObject();
             if (entity != null) {

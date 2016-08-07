@@ -47,7 +47,7 @@ import static net.echinopsii.ariane.community.core.directory.base.json.ds.techni
 @SuppressWarnings("ALL")
 @Path("/directories/common/infrastructure/network/nic")
 public class NICEndpoint {
-    private static final Logger log = LoggerFactory.getLogger(RoutingAreaEndpoint.class);
+    private static final Logger log = LoggerFactory.getLogger(NICEndpoint.class);
     private EntityManager em;
 
     public static Response nicToJSON(NIC entity) {
@@ -304,14 +304,21 @@ public class NICEndpoint {
     }
 
     @POST
-    public Response postNIC(@QueryParam("payload") String payload) throws IOException {
+    public Response postNIC(@QueryParam("payload") String payload) {
 
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] create/update NIC : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwNIC:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            JSONFriendlyNIC jsonFriendlyNIC = NICJSON.JSON2NIC(payload);
+            JSONFriendlyNIC jsonFriendlyNIC = null;
+            try {
+                jsonFriendlyNIC = NICJSON.JSON2NIC(payload);
+            } catch (IOException e) {
+                log.error("Problem while deserializing payload : " + payload);
+                e.printStackTrace();
+                return Response.status(Status.BAD_REQUEST).entity("Problem while deserializing payload : " + payload).build();
+            }
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyNIC);
             NIC entity = (NIC) commonRestResponse.getDeserializedObject();
             if (entity != null) {

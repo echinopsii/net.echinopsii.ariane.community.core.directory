@@ -334,13 +334,20 @@ public class RoutingAreaEndpoint {
     }
 
     @POST
-    public Response postRoutingarea(@QueryParam("payload") String payload) throws IOException {
+    public Response postRoutingarea(@QueryParam("payload") String payload) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] create/update routing area : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwRarea:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            JSONFriendlyRoutingArea jsonFriendlyRoutingArea  = RoutingAreaJSON.JSON2Routingarea(payload);
+            JSONFriendlyRoutingArea jsonFriendlyRoutingArea  = null;
+            try {
+                jsonFriendlyRoutingArea = RoutingAreaJSON.JSON2Routingarea(payload);
+            } catch (IOException e) {
+                log.error("Problem while deserializing payload : " + payload);
+                e.printStackTrace();
+                return Response.status(Status.BAD_REQUEST).entity("Problem while deserializing payload : " + payload).build();
+            }
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyRoutingArea);
             RoutingArea entity = (RoutingArea) commonRestResponse.getDeserializedObject();
             if (entity != null) {

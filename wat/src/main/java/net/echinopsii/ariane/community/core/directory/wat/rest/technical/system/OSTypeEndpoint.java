@@ -287,14 +287,21 @@ public class OSTypeEndpoint {
     }
 
     @POST
-    public Response postOSType(@QueryParam("payload") String payload) throws IOException {
+    public Response postOSType(@QueryParam("payload") String payload) {
 
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] create/update OSType : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiSysOst:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            JSONFriendlyOSType jsonFriendlyOSType = OSTypeJSON.JSON2OSType(payload);
+            JSONFriendlyOSType jsonFriendlyOSType = null;
+            try {
+                jsonFriendlyOSType = OSTypeJSON.JSON2OSType(payload);
+            } catch (IOException e) {
+                log.error("Problem while deserializing payload : " + payload);
+                e.printStackTrace();
+                return Response.status(Status.BAD_REQUEST).entity("Problem while deserializing payload : " + payload).build();
+            }
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyOSType);
             OSType entity = (OSType) commonRestResponse.getDeserializedObject();
             if (entity != null) {

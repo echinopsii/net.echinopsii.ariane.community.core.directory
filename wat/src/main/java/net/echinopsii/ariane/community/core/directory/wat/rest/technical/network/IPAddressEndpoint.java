@@ -48,7 +48,7 @@ import static net.echinopsii.ariane.community.core.directory.base.json.ds.techni
 @SuppressWarnings("ALL")
 @Path("/directories/common/infrastructure/network/ipAddress")
 public class IPAddressEndpoint {
-    private static final Logger log = LoggerFactory.getLogger(RoutingAreaEndpoint.class);
+    private static final Logger log = LoggerFactory.getLogger(IPAddressEndpoint.class);
     private EntityManager em;
 
     public static Response ipAddressToJSON(IPAddress entity) {
@@ -362,14 +362,21 @@ public class IPAddressEndpoint {
     }
 
     @POST
-    public Response postIPAddress(@QueryParam("payload") String payload) throws IOException {
+    public Response postIPAddress(@QueryParam("payload") String payload) {
 
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] create/update IPAddress : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComITiNtwIPAddress:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            JSONFriendlyIPAddress jsonFriendlyIPAddress  = IPAddressJSON.JSON2IPAddress(payload);
+            JSONFriendlyIPAddress jsonFriendlyIPAddress  = null;
+            try {
+                jsonFriendlyIPAddress = IPAddressJSON.JSON2IPAddress(payload);
+            } catch (IOException e) {
+                log.error("Problem while deserializing payload : " + payload);
+                e.printStackTrace();
+                return Response.status(Status.BAD_REQUEST).entity("Problem while deserializing payload : " + payload).build();
+            }
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyIPAddress);
             IPAddress entity = (IPAddress) commonRestResponse.getDeserializedObject();
             if (entity != null) {

@@ -291,13 +291,20 @@ public class EnvironmentEndpoint {
     }
 
     @POST
-    public Response postEnvironment(@QueryParam("payload") String payload) throws IOException {
+    public Response postEnvironment(@QueryParam("payload") String payload) {
         Subject subject = SecurityUtils.getSubject();
         log.debug("[{}-{}] create/update Environment : ({})", new Object[]{Thread.currentThread().getId(), subject.getPrincipal(), payload});
         if (subject.hasRole("orgadmin") || subject.isPermitted("dirComOrgEnvironment:create") ||
                 subject.hasRole("Jedi") || subject.isPermitted("universe:zeone")) {
             em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
-            JSONFriendlyEnvironment jsonFriendlyEnvironment = EnvironmentJSON.JSON2Environment(payload);
+            JSONFriendlyEnvironment jsonFriendlyEnvironment = null;
+            try {
+                jsonFriendlyEnvironment = EnvironmentJSON.JSON2Environment(payload);
+            } catch (IOException e) {
+                log.error("Problem while deserializing payload : " + payload);
+                e.printStackTrace();
+                return Response.status(Status.BAD_REQUEST).entity("Problem while deserializing payload : " + payload).build();
+            }
             CommonRestResponse commonRestResponse = jsonFriendlyToHibernateFriendly(em, jsonFriendlyEnvironment);
             Environment entity = (Environment) commonRestResponse.getDeserializedObject();
             if (entity != null) {
