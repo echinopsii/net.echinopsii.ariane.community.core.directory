@@ -420,6 +420,7 @@ public class LocationEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Location " + id + " has been successfully deleted").build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();

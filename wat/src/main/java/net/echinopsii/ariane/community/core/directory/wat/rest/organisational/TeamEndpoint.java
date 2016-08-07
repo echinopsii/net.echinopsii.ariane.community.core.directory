@@ -402,6 +402,7 @@ public class TeamEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Team " + id + " has been successfully removed").build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();

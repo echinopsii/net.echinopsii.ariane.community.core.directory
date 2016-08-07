@@ -432,6 +432,7 @@ public class IPAddressEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully deleted").build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();

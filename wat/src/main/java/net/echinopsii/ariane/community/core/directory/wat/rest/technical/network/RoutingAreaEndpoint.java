@@ -309,8 +309,10 @@ public class RoutingAreaEndpoint {
                                 subnet.getLocations().remove(location);
                                 subnet.setRarea(null);
                                 for (IPAddress ipAddress : subnet.getIpAddresses()) {
-                                    ipAddress.getNic().setIpAddressR(null);
-                                    ipAddress.setNic(null);
+                                    if (ipAddress.getNic()!=null) {
+                                        ipAddress.getNic().setIpAddressR(null);
+                                        ipAddress.setNic(null);
+                                    }
                                 }
                             }
                         }
@@ -318,6 +320,7 @@ public class RoutingAreaEndpoint {
                         em.getTransaction().commit();
                         return Response.status(Status.OK).entity("Routing area " + id + " has been successfully deleted").build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();

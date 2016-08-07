@@ -413,6 +413,7 @@ public class ApplicationEndpoint {
                         em.getTransaction().commit();
                         return Response.status(Status.OK).entity("Application " + id + " has been successfully deleted").build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();

@@ -334,8 +334,10 @@ public class RoutingAreasListController implements Serializable {
                         subnet.getLocations().remove(loc);
                         subnet.setRarea(null);
                         for (IPAddress ipAddress : subnet.getIpAddresses()) {
-                            ipAddress.getNic().setIpAddressR(null);
-                            ipAddress.setNic(null);
+                            if (ipAddress.getNic()!=null) {
+                                ipAddress.getNic().setIpAddressR(null);
+                                ipAddress.setNic(null);
+                            }
                         }
                     }
                 }

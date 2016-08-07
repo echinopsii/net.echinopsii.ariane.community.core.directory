@@ -362,6 +362,7 @@ public class EnvironmentEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Environment " + id + " has been successfully removed").build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();

@@ -505,8 +505,10 @@ public class SubnetEndpoint {
                         for (OSInstance osi : entity.getOsInstances())
                             osi.getNetworkSubnets().remove(entity);
                         for (IPAddress ipAddress : entity.getIpAddresses()) {
-                            ipAddress.getNic().setIpAddressR(null);
-                            ipAddress.setNic(null);
+                            if (ipAddress.getNic() != null) {
+                                ipAddress.getNic().setIpAddressR(null);
+                                ipAddress.setNic(null);
+                            }
                         }
                         if (entity.getRarea()!=null)
                             entity.getRarea().getSubnets().remove(entity);
@@ -515,6 +517,7 @@ public class SubnetEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Subnet " + id + " has been successfully deleted").build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();

@@ -398,8 +398,10 @@ public class SubnetsListController implements Serializable {
                 for (Location loc : subnet2BeRemoved.getLocations())
                     loc.getSubnets().remove(subnet2BeRemoved);
                 for (IPAddress ipAddress : subnet2BeRemoved.getIpAddresses()) {
-                    ipAddress.getNic().setIpAddressR(null);
-                    ipAddress.setNic(null);
+                    if (ipAddress.getNic()!=null) {
+                        ipAddress.getNic().setIpAddressR(null);
+                        ipAddress.setNic(null);
+                    }
                 }
                 em.remove(subnet2BeRemoved);
                 em.flush();
