@@ -300,7 +300,7 @@ public class ApplicationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display applications. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -324,6 +324,7 @@ public class ApplicationEndpoint {
                         em.flush();
                         em.getTransaction().commit();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -338,7 +339,7 @@ public class ApplicationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create applications. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or short name and/or color code are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: name and/or short name and/or color code are not defined. You must define these parameters.").build();
         }
     }
 
@@ -376,6 +377,7 @@ public class ApplicationEndpoint {
                     em.close();
                     return ret;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
@@ -383,6 +385,7 @@ public class ApplicationEndpoint {
                 }
             } else{
                 em.close();
+                log.error(commonRestResponse.getErrorMessage());
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
@@ -427,7 +430,7 @@ public class ApplicationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete applications. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define this parameter.").build();
         }
     }
 
@@ -451,6 +454,7 @@ public class ApplicationEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Application " + id + " has been successfully updated with name " + name).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -463,7 +467,7 @@ public class ApplicationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update applications. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -487,6 +491,7 @@ public class ApplicationEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Application " + id + " has been successfully updated with short name " + shortName).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -499,7 +504,7 @@ public class ApplicationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update applications. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or shortName are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or shortName are not defined. You must define these parameters.").build();
         }
     }
 
@@ -523,6 +528,7 @@ public class ApplicationEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Application " + id + " has been successfully updated with description " + description).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -535,7 +541,7 @@ public class ApplicationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update applications. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
         }
     }
 
@@ -559,6 +565,7 @@ public class ApplicationEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Application " + id + " has been successfully updated with color code " + colorCode).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -571,7 +578,7 @@ public class ApplicationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update applications. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or colorCode are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or colorCode are not defined. You must define these parameters.").build();
         }
     }
 
@@ -600,6 +607,7 @@ public class ApplicationEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Application " + id + " has been successfully updated with company " + companyID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -615,7 +623,7 @@ public class ApplicationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update applications. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or companyID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or companyID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -643,6 +651,7 @@ public class ApplicationEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Application " + id + " has been successfully updated with team " + teamID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -658,7 +667,7 @@ public class ApplicationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update applications. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or teamID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or teamID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -685,6 +694,7 @@ public class ApplicationEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Application " + id + " has been suessfully updated by adding os instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -700,7 +710,7 @@ public class ApplicationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update applications. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or teamID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or teamID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -727,6 +737,7 @@ public class ApplicationEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Application " + id + " has been suessfully updated by adding os instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -742,7 +753,7 @@ public class ApplicationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update applications. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or teamID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or teamID are not defined. You must define these parameters.").build();
         }
     }
 }

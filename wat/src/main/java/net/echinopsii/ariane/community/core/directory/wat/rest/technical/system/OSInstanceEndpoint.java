@@ -564,7 +564,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -587,6 +587,7 @@ public class OSInstanceEndpoint {
                         em.flush();
                         em.getTransaction().commit();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -601,7 +602,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or adminGateURI are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: name and/or adminGateURI are not defined. You must define these parameters.").build();
         }
     }
 
@@ -639,6 +640,7 @@ public class OSInstanceEndpoint {
                     em.close();
                     return ret;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
@@ -646,6 +648,7 @@ public class OSInstanceEndpoint {
                 }
             } else{
                 em.close();
+                log.error(commonRestResponse.getErrorMessage());
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
@@ -700,7 +703,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define this parameter.").build();
         }
     }
 
@@ -724,6 +727,7 @@ public class OSInstanceEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated with name " + name).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -737,7 +741,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -761,6 +765,7 @@ public class OSInstanceEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated with admin gate uri " + uri).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -774,7 +779,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or adminGateURI are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or adminGateURI are not defined. You must define these parameters.").build();
         }
     }
 
@@ -798,6 +803,7 @@ public class OSInstanceEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated with description " + description).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -811,7 +817,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
         }
     }
 
@@ -841,6 +847,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated with OS type " + ostID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -858,7 +865,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ostID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or ostID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -887,6 +894,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated with embedding OS instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -904,7 +912,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or osiID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or osiID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -931,6 +939,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by adding subnet " + subnetID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -948,7 +957,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or subnetID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or subnetID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -975,6 +984,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting subnet " + subnetID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -992,7 +1002,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or subnetID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or subnetID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1021,6 +1031,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by adding embedded OS instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1038,7 +1049,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or osiID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or osiID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1065,6 +1076,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting embedded OS instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1082,7 +1094,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or osiID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or osiID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1109,6 +1121,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by adding application " + applicationID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1126,7 +1139,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or applicationID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or applicationID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1153,6 +1166,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting application " + applicationID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1170,7 +1184,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or applicationID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or applicationID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1197,6 +1211,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by adding team " + teamID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1214,7 +1229,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or teamID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or teamID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1241,6 +1256,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting team " + teamID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1258,7 +1274,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or teamID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or teamID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1285,6 +1301,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by adding environment " + environmentID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1302,7 +1319,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or environmentID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or environmentID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1329,6 +1346,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting environment " + environmentID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1346,7 +1364,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Instances. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or environmentID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or environmentID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1373,6 +1391,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS Instance " + id + " has been successfully updated by adding IP Address " + ipAddressID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1390,7 +1409,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update IP Address. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ipAddressID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or ipAddressID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1417,6 +1436,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting IP Address " + ipAddressID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1434,7 +1454,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update IP Addresses. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ipAddressID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or ipAddressID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1461,6 +1481,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS Instance " + id + " has been successfully updated by adding NIC " + nicID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1478,7 +1499,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update NIC. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or nicID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or nicID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -1505,6 +1526,7 @@ public class OSInstanceEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS instance " + id + " has been successfully updated by deleting NIC " + nicID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -1522,7 +1544,7 @@ public class OSInstanceEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update NIC. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or nicID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or nicID are not defined. You must define these parameters.").build();
         }
     }
 }

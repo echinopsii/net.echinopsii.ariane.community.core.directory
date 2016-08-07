@@ -286,6 +286,7 @@ public class NICEndpoint {
                         em.persist(entity);
                         em.getTransaction().commit();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating NIC" + entity.getName() + " : " + t.getMessage()).build();
@@ -298,7 +299,7 @@ public class NICEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create NIC. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or macAddress are not defined. " +
+            return Response.status(Status.BAD_REQUEST).entity("Request error: name and/or macAddress are not defined. " +
                     "You must define these parameters.").build();
         }
     }
@@ -337,6 +338,7 @@ public class NICEndpoint {
                     em.close();
                     return ret;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
@@ -344,6 +346,7 @@ public class NICEndpoint {
                 }
             } else {
                 em.close();
+                log.error(commonRestResponse.getErrorMessage());
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
@@ -395,7 +398,7 @@ public class NICEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete NIC. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is no defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is no defined. You must define this parameter.").build();
         }
     }
 
@@ -417,6 +420,7 @@ public class NICEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("NIC " + id + " has been successfully updated with name " + name).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -430,7 +434,7 @@ public class NICEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update NIC. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -452,6 +456,7 @@ public class NICEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("NIC " + id + " has been successfully updated with MacAddress " + macAddress).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -465,7 +470,7 @@ public class NICEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update MacAddress. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define these parameters.").build();
         }
     }
 
@@ -487,6 +492,7 @@ public class NICEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("NIC " + id + " has been successfully updated with Duplex " + duplex).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -500,7 +506,7 @@ public class NICEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update Duplex. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define these parameters.").build();
         }
     }
 
@@ -522,6 +528,7 @@ public class NICEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("NIC " + id + " has been successfully updated with Speed " + speed).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -535,7 +542,7 @@ public class NICEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update Speed. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define these parameters.").build();
         }
     }
 
@@ -557,6 +564,7 @@ public class NICEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("NIC " + id + " has been successfully updated with MTU " + mtu).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -570,7 +578,7 @@ public class NICEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update MTU. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define these parameters.").build();
         }
     }
 
@@ -597,6 +605,7 @@ public class NICEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("NIC " + id + " has been successfully updated with ipAddress " + ipAddressID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -614,7 +623,7 @@ public class NICEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update NIC. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ipAddress are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or ipAddress are not defined. You must define these parameters.").build();
         }
     }
 
@@ -641,6 +650,7 @@ public class NICEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("NIC " + id + " has been successfully updated with osInstnace " + osInstanceID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -658,7 +668,7 @@ public class NICEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update NIC. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define these parameters.").build();
         }
     }
 }

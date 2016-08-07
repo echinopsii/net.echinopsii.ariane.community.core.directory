@@ -245,7 +245,7 @@ public class OSTypeEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display OS Types. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -268,6 +268,7 @@ public class OSTypeEndpoint {
                         em.flush();
                         em.getTransaction().commit();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -282,7 +283,7 @@ public class OSTypeEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create OS Types. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or architecture are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: name and/or architecture are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -320,12 +321,14 @@ public class OSTypeEndpoint {
                     em.close();
                     return ret;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating osType " + payload + " : " + t.getMessage()).build();
                 }
             } else{
+                log.error(commonRestResponse.getErrorMessage());
                 em.close();
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
@@ -372,7 +375,7 @@ public class OSTypeEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete OS Types. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define one of this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define one of this parameter.").build();
         }
     }
 
@@ -397,6 +400,7 @@ public class OSTypeEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS Type " + id + " has been successfully update with name " + name).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -413,7 +417,7 @@ public class OSTypeEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Types. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -438,6 +442,7 @@ public class OSTypeEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS Type " + id + " has been successfully update with architecture " + arc).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -454,7 +459,7 @@ public class OSTypeEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Types. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or arc are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or arc are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -483,6 +488,7 @@ public class OSTypeEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS Type " + id + " has been successfully update with company " + companyID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -500,7 +506,7 @@ public class OSTypeEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Types. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or companyID are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or companyID are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -529,6 +535,7 @@ public class OSTypeEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS Type " + id + " has been successfully update by adding os instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -546,7 +553,7 @@ public class OSTypeEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Types. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or osiID are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or osiID are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -574,6 +581,7 @@ public class OSTypeEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("OS Type " + id + " has been successfully update by deleting os instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -591,7 +599,7 @@ public class OSTypeEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update OS Types. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or osiID are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or osiID are not defined. You must define one of these parameters.").build();
         }
     }
 }

@@ -247,7 +247,7 @@ public class RoutingAreaEndpoint {
             } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display routing areas. Contact your administrator.").build();
         } else
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
     }
 
     @GET
@@ -270,6 +270,7 @@ public class RoutingAreaEndpoint {
                                 em.persist(entity);
                                 em.getTransaction().commit();
                             } catch (Throwable t) {
+                                t.printStackTrace();
                                 if (em.getTransaction().isActive())
                                     em.getTransaction().rollback();
                                 em.close();
@@ -286,7 +287,7 @@ public class RoutingAreaEndpoint {
             } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create routing areas. Contact your administrator.").build();
         } else
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name is not defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: name is not defined. You must define this parameter.").build();
     }
 
     @GET
@@ -333,7 +334,7 @@ public class RoutingAreaEndpoint {
             } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete routing areas. Contact your administrator.").build();
         } else
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define this parameter.").build();
     }
 
     @POST
@@ -369,6 +370,7 @@ public class RoutingAreaEndpoint {
                     em.close();
                     return ret;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
@@ -376,6 +378,7 @@ public class RoutingAreaEndpoint {
                 }
             } else{
                 em.close();
+                log.error(commonRestResponse.getErrorMessage());
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
@@ -400,6 +403,7 @@ public class RoutingAreaEndpoint {
                         em.getTransaction().commit();
                         return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated with name " + name).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -412,7 +416,7 @@ public class RoutingAreaEndpoint {
             } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
         } else
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
     }
 
     @GET
@@ -432,6 +436,7 @@ public class RoutingAreaEndpoint {
                         em.getTransaction().commit();
                         return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated with description " + description).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -444,7 +449,7 @@ public class RoutingAreaEndpoint {
             } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
         } else
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
     }
 
     @GET
@@ -465,6 +470,7 @@ public class RoutingAreaEndpoint {
                             em.getTransaction().commit();
                             return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated with type " + type).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -479,7 +485,7 @@ public class RoutingAreaEndpoint {
             } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
         } else
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or type are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or type are not defined. You must define these parameters.").build();
     }
 
     @GET
@@ -500,6 +506,7 @@ public class RoutingAreaEndpoint {
                             em.getTransaction().commit();
                             return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated with multicast " + multicast).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -514,7 +521,7 @@ public class RoutingAreaEndpoint {
             } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
         } else
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or boolean are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or boolean are not defined. You must define these parameters.").build();
     }
 
     @GET
@@ -537,6 +544,7 @@ public class RoutingAreaEndpoint {
                             em.getTransaction().commit();
                             return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated by adding location " + locID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -553,7 +561,7 @@ public class RoutingAreaEndpoint {
             } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
         } else
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or locID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or locID are not defined. You must define these parameters.").build();
     }
 
     @GET
@@ -576,6 +584,7 @@ public class RoutingAreaEndpoint {
                             em.getTransaction().commit();
                             return Response.status(Status.OK).entity("Routing area " + id + " has been successfully updated by deleting location " + locID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -592,6 +601,6 @@ public class RoutingAreaEndpoint {
             } else
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update routing areas. Contact your administrator.").build();
         } else
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or locID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or locID are not defined. You must define these parameters.").build();
     }
 }

@@ -342,6 +342,7 @@ public class IPAddressEndpoint {
                             em.getTransaction().commit();
                             ret = ipAddressToJSON(entity);
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             ret = Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating IPAddress " + entity.getIpAddress() + " : " + t.getMessage()).build();
@@ -356,7 +357,7 @@ public class IPAddressEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create IPAddress. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: ipAddress and/or FQDN are not defined. " +
+            return Response.status(Status.BAD_REQUEST).entity("Request error: ipAddress and/or FQDN are not defined. " +
                     "You must define these parameters.").build();
         }
     }
@@ -395,12 +396,14 @@ public class IPAddressEndpoint {
                     em.close();
                     return ret;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating ipAddress " + payload + " : " + t.getMessage()).build();
                 }
             } else{
+                log.error(commonRestResponse.getErrorMessage());
                 em.close();
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
@@ -446,7 +449,7 @@ public class IPAddressEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete ipAddress. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is no defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is no defined. You must define this parameter.").build();
         }
     }
 
@@ -469,6 +472,7 @@ public class IPAddressEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with ipAddress " + ipAddress).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -482,7 +486,7 @@ public class IPAddressEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update ipAddress. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ipAddress are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or ipAddress are not defined. You must define these parameters.").build();
         }
     }
 
@@ -505,6 +509,7 @@ public class IPAddressEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with FQDN " + fqdn).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -518,7 +523,7 @@ public class IPAddressEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update FQDN. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define these parameters.").build();
         }
     }
 
@@ -546,6 +551,7 @@ public class IPAddressEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with subnet " + subnetID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -563,7 +569,7 @@ public class IPAddressEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update ipAddress. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or subnet are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or subnet are not defined. You must define these parameters.").build();
         }
     }
 
@@ -591,6 +597,7 @@ public class IPAddressEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with osInstnace " + osInstanceID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -608,7 +615,7 @@ public class IPAddressEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update ipAddress. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define these parameters.").build();
         }
     }
 
@@ -636,6 +643,7 @@ public class IPAddressEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("IPAddress " + id + " has been successfully updated with NIC " + nicID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -653,7 +661,7 @@ public class IPAddressEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update ipAddress. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id or nicID is not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id or nicID is not defined. You must define these parameters.").build();
         }
     }
 }

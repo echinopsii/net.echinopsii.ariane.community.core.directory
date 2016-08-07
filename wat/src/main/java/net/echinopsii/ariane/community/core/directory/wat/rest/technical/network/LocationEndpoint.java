@@ -308,7 +308,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -333,6 +333,7 @@ public class LocationEndpoint {
                         em.persist(entity);
                         em.getTransaction().commit();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -346,7 +347,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or address and/or zipCode and/or town and/or country and/or gpsLatitude and/or gpsLongiture" +
+            return Response.status(Status.BAD_REQUEST).entity("Request error: name and/or address and/or zipCode and/or town and/or country and/or gpsLatitude and/or gpsLongiture" +
                                                                                 " are not defined. You must define these parameters.").build();
         }
     }
@@ -384,6 +385,7 @@ public class LocationEndpoint {
                     em.close();
                     return ret;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
@@ -434,7 +436,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define this parameter.").build();
         }
     }
 
@@ -450,11 +452,19 @@ public class LocationEndpoint {
                 em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
                 Location entity = findLocationById(em, id);
                 if (entity != null) {
-                    em.getTransaction().begin();
-                    entity.setName(name);
-                    em.getTransaction().commit();
-                    em.close();
-                    return Response.status(Status.OK).entity("Location " + id + " has been successfully updated with name " + name).build();
+                    try {
+                        em.getTransaction().begin();
+                        entity.setName(name);
+                        em.getTransaction().commit();
+                        em.close();
+                        return Response.status(Status.OK).entity("Location " + id + " has been successfully updated with name " + name).build();
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                        if(em.getTransaction().isActive())
+                            em.getTransaction().rollback();
+                        em.close();
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while updating location " + entity.getName() + " : " + t.getMessage()).build();
+                    }
                 } else {
                     em.close();
                     return Response.status(Status.NOT_FOUND).build();
@@ -463,7 +473,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -489,6 +499,7 @@ public class LocationEndpoint {
                         return Response.status(Status.OK).entity("Location " + id + " has been successfully updated with full address " + address + " " + zipCode + " " +
                                                                  town + " " + country).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -502,7 +513,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or address and/or zipCode and/or town and/or country are not defined. " +
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or address and/or zipCode and/or town and/or country are not defined. " +
                                                                         "You must define these parameters.").build();
         }
     }
@@ -526,6 +537,7 @@ public class LocationEndpoint {
                         em.getTransaction().commit();
                         return Response.status(Status.OK).entity("Location " + id + " has been successfully updated with gps coord (" + gpsLat + "," + gpsLng + ")").build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -539,7 +551,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or gpsLatitude and/or gpsLongitude are not defined. " +
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or gpsLatitude and/or gpsLongitude are not defined. " +
                                                                                 "You must define these parameters.").build();
         }
     }
@@ -562,6 +574,7 @@ public class LocationEndpoint {
                         em.getTransaction().commit();
                         return Response.status(Status.OK).entity("Location " + id + " has been successfully updated with description " + description).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if (em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -575,7 +588,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
         }
     }
 
@@ -599,6 +612,7 @@ public class LocationEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Location " + id + " has been successfully updated with type " + type).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -612,7 +626,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or type are not defined. " +
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or type are not defined. " +
                     "You must define these parameters.").build();
         }
     }
@@ -639,6 +653,7 @@ public class LocationEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Location " + id + " has been successfully updated by adding subnet " + subnetID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -656,7 +671,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or subnetID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or locationID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -682,6 +697,7 @@ public class LocationEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Location " + id + " has been successfully updated by deleting subnet " + subnetID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -699,7 +715,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or subnetID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or subnetID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -725,6 +741,7 @@ public class LocationEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Location " + id + " has been successfully updated by adding routing area " + rareaID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -742,7 +759,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or routingareaID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or routingareaID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -768,6 +785,7 @@ public class LocationEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Location " + id + " has been successfully updated by deleting routing area " + mareaID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if (em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -785,7 +803,7 @@ public class LocationEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update locations. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or routingareaID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or routingareaID are not defined. You must define these parameters.").build();
         }
     }
 }

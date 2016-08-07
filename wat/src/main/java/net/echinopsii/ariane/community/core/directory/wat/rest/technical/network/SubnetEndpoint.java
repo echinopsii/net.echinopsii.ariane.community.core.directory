@@ -388,7 +388,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -413,14 +413,16 @@ public class SubnetEndpoint {
                             em.persist(entity);
                             em.getTransaction().commit();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
                             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Throwable raised while creating subnet " + entity.getName() + " : " + t.getMessage()).build();
                         }
                     } else {
+                        log.error("Wrong routing area " + routingAreaID + ". Available routing areas are : " + getAvailableRoutingArea(em));
                         Response ret = Response.status(Status.INTERNAL_SERVER_ERROR).
-                                                entity("Wrong routing area " + routingAreaID + ". Available routing areas are : " + getAvailableRoutingArea(em)).build();
+                                entity("Wrong routing area " + routingAreaID + ". Available routing areas are : " + getAvailableRoutingArea(em)).build();
                         em.close();
                         return ret;
                     }
@@ -433,7 +435,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or subnetIP and/or subnetMask and/or type are not defined. " +
+            return Response.status(Status.BAD_REQUEST).entity("Request error: name and/or subnetIP and/or subnetMask and/or type are not defined. " +
                                                                         "You must define these parameters.").build();
         }
     }
@@ -472,6 +474,7 @@ public class SubnetEndpoint {
                     em.close();
                     return ret;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
@@ -479,6 +482,7 @@ public class SubnetEndpoint {
                 }
             } else{
                 em.close();
+                log.error(commonRestResponse.getErrorMessage());
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
@@ -531,7 +535,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is no defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is no defined. You must define this parameter.").build();
         }
     }
 
@@ -554,6 +558,7 @@ public class SubnetEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with name " + name).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -567,7 +572,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -590,6 +595,7 @@ public class SubnetEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with desription " + description).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -603,7 +609,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
         }
     }
 
@@ -626,6 +632,7 @@ public class SubnetEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with IP " + subnetIP).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -639,7 +646,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -662,6 +669,7 @@ public class SubnetEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with mask " + subnetMask).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -675,7 +683,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -703,6 +711,7 @@ public class SubnetEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated with routing area " + rareaID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -720,7 +729,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -746,6 +755,7 @@ public class SubnetEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by adding os instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -763,7 +773,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -789,6 +799,7 @@ public class SubnetEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by removing os instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -806,7 +817,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -832,6 +843,7 @@ public class SubnetEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by adding location " + locID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -849,7 +861,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -875,6 +887,7 @@ public class SubnetEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Subnet " + id + " has been successfully updated by removing location " + locID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -892,7 +905,7 @@ public class SubnetEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update subnets. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 

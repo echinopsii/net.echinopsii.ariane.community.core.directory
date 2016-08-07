@@ -290,7 +290,7 @@ public class TeamEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display teams. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -314,6 +314,7 @@ public class TeamEndpoint {
                         em.flush();
                         em.getTransaction().commit();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -328,7 +329,7 @@ public class TeamEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create teams. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name and/or colorCode are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: name and/or colorCode are not defined. You must define these parameters.").build();
         }
     }
 
@@ -366,6 +367,7 @@ public class TeamEndpoint {
                     em.close();
                     return ret;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
@@ -373,6 +375,7 @@ public class TeamEndpoint {
                 }
             } else{
                 em.close();
+                log.error(commonRestResponse.getErrorMessage());
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
@@ -416,7 +419,7 @@ public class TeamEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete teams. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define this parameter.").build();
         }
     }
 
@@ -440,6 +443,7 @@ public class TeamEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Team " + id + " has been successfully updated with name " + name).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -453,7 +457,7 @@ public class TeamEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update teams. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -477,6 +481,7 @@ public class TeamEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Team " + id + " has been successfully updated with description " + description).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -490,7 +495,7 @@ public class TeamEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update teams. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
         }
     }
 
@@ -514,6 +519,7 @@ public class TeamEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Team " + id + " has been successfully updated with color code " + colorCode).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -527,7 +533,7 @@ public class TeamEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update teams. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or color code are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or color code are not defined. You must define these parameters.").build();
         }
     }
 
@@ -556,6 +562,7 @@ public class TeamEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Team " + id + " has been successfully updated by adding application " + applicationID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -573,7 +580,7 @@ public class TeamEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update teams. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or application id are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or application id are not defined. You must define these parameters.").build();
         }
     }
 
@@ -600,6 +607,7 @@ public class TeamEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Team " + id + " has been successfully updated by removing application " + applicationID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -617,7 +625,7 @@ public class TeamEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update teams. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or application id are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or application id are not defined. You must define these parameters.").build();
         }
     }
 
@@ -644,6 +652,7 @@ public class TeamEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Team " + id + " has been successfully updated by adding OS instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -661,7 +670,7 @@ public class TeamEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update teams. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or os instance id are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or os instance id are not defined. You must define these parameters.").build();
         }
     }
 
@@ -688,6 +697,7 @@ public class TeamEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Team " + id + " has been successfully updated by removing OS instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -705,7 +715,7 @@ public class TeamEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update teams. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or os instance id are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or os instance id are not defined. You must define these parameters.").build();
         }
     }
 }

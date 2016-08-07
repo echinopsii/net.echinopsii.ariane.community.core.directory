@@ -246,7 +246,7 @@ public class EnvironmentEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display environments. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -272,6 +272,7 @@ public class EnvironmentEndpoint {
                         em.flush();
                         em.getTransaction().commit();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -286,7 +287,7 @@ public class EnvironmentEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create environments. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name is not defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: name is not defined. You must define this parameter.").build();
         }
     }
 
@@ -323,6 +324,7 @@ public class EnvironmentEndpoint {
                     em.close();
                     return ret;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
@@ -330,6 +332,7 @@ public class EnvironmentEndpoint {
                 }
             } else{
                 em.close();
+                log.error(commonRestResponse.getErrorMessage());
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
@@ -373,7 +376,7 @@ public class EnvironmentEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete environments. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define this parameter.").build();
         }
     }
 
@@ -400,6 +403,7 @@ public class EnvironmentEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Environment " + id + " has been successfully updated with name " + name).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -410,7 +414,7 @@ public class EnvironmentEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update environments. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -437,6 +441,7 @@ public class EnvironmentEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Environment " + id + " has been successfully updated with description " + description).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -447,7 +452,7 @@ public class EnvironmentEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update environments. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
         }
     }
 
@@ -474,6 +479,7 @@ public class EnvironmentEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Environment " + id + " has been successfully updated with color code " + colorCode).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -484,7 +490,7 @@ public class EnvironmentEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update environments. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or colorCode are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or colorCode are not defined. You must define these parameters.").build();
         }
     }
 
@@ -517,6 +523,7 @@ public class EnvironmentEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Environment " + id + " has been successfully updated by addind OS instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -528,7 +535,7 @@ public class EnvironmentEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update environments. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or osiID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or osiID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -561,6 +568,7 @@ public class EnvironmentEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Environment " + id + " has been successfully updated by addind OS instance " + osiID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -572,7 +580,7 @@ public class EnvironmentEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update environments. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or osiID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or osiID are not defined. You must define these parameters.").build();
         }
     }
 }

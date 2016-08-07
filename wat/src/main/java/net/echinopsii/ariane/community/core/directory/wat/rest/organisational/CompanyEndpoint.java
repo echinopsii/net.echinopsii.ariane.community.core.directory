@@ -288,7 +288,7 @@ public class CompanyEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to display companies. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and name are not defined. You must define one of these parameters.").build();
         }
     }
 
@@ -311,6 +311,7 @@ public class CompanyEndpoint {
                         em.flush();
                         em.getTransaction().commit();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -325,7 +326,7 @@ public class CompanyEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to create companies. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: name is not defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: name is not defined. You must define this parameter.").build();
         }
     }
 
@@ -363,6 +364,7 @@ public class CompanyEndpoint {
                     em.close();
                     return ret;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (em.getTransaction().isActive())
                         em.getTransaction().rollback();
                     em.close();
@@ -370,6 +372,7 @@ public class CompanyEndpoint {
                 }
             } else{
                 em.close();
+                log.error(commonRestResponse.getErrorMessage());
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(commonRestResponse.getErrorMessage()).build();
             }
         } else {
@@ -415,7 +418,7 @@ public class CompanyEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to delete companies. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id is not defined. You must define this parameter.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id is not defined. You must define this parameter.").build();
         }
     }
 
@@ -439,6 +442,7 @@ public class CompanyEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Company " + id + " has been successfully updated with name " + name).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -451,7 +455,7 @@ public class CompanyEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or name are not defined. You must define these parameters.").build();
         }
     }
 
@@ -475,6 +479,7 @@ public class CompanyEndpoint {
                         em.close();
                         return Response.status(Status.OK).entity("Company " + id + " has been successfully updated with description " + description).build();
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         if(em.getTransaction().isActive())
                             em.getTransaction().rollback();
                         em.close();
@@ -487,7 +492,7 @@ public class CompanyEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or description are not defined. You must define these parameters.").build();
         }
     }
 
@@ -515,6 +520,7 @@ public class CompanyEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Company " + id + " has been successfully updated by adding application " + applicationID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -530,7 +536,7 @@ public class CompanyEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or applicationID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or applicationID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -558,6 +564,7 @@ public class CompanyEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Company " + id + " has been successfully updated by deleting application " + applicationID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -573,7 +580,7 @@ public class CompanyEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or applicationID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or applicationID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -601,6 +608,7 @@ public class CompanyEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Company " + id + " has been successfully updated by adding os type " + ostypeID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -616,7 +624,7 @@ public class CompanyEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ostypeID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or ostypeID are not defined. You must define these parameters.").build();
         }
     }
 
@@ -643,6 +651,7 @@ public class CompanyEndpoint {
                             em.close();
                             return Response.status(Status.OK).entity("Company " + id + " has been successfully updated by deleting os type " + ostypeID).build();
                         } catch (Throwable t) {
+                            t.printStackTrace();
                             if(em.getTransaction().isActive())
                                 em.getTransaction().rollback();
                             em.close();
@@ -658,7 +667,7 @@ public class CompanyEndpoint {
                 return Response.status(Status.UNAUTHORIZED).entity("You're not authorized to update companies. Contact your administrator.").build();
             }
         } else {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Request error: id and/or ostypeID are not defined. You must define these parameters.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Request error: id and/or ostypeID are not defined. You must define these parameters.").build();
         }
     }
 }
