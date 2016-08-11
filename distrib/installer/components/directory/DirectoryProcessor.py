@@ -24,12 +24,13 @@ __author__ = 'mffrench'
 
 class DirectoryProcessor:
 
-    def __init__(self, home_dir_path, directory_db_conf, idm_db_conf, bus_processor, silent):
+    def __init__(self, home_dir_path, dist_dep_type, directory_db_conf, idm_db_conf, bus_processor, silent):
         print("\n%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--%--"
               "%--%--%--%--%--%--%--%--%--\n")
         print("%-- Directory configuration : \n")
         self.silent = silent
         self.homeDirPath = home_dir_path
+        self.dist_dep_type = dist_dep_type
         self.idmDBConfig = idm_db_conf
         self.directoryDBConfig = directory_db_conf
         self.busProcessor = bus_processor

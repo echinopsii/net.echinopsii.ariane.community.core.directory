@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS `subnet` (
 --  Table structure for table `ipAddress`
 --
 
-CREATE TABLE IF NOT EXISTS `ipaddress` (
+CREATE TABLE IF NOT EXISTS `ipAddress` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `fqdn` varchar(255) DEFAULT NULL,
   `ipAddress` varchar(255) NOT NULL,
