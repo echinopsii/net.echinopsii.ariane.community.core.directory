@@ -5,11 +5,13 @@
       xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition>
     <h:panelGrid id="locNewView" columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
-        <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa arianeDialogPanelGrid-td" style="padding-bottom: 17%">
+        <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa arianeDialogPanelGrid-td"
+                     style="padding-bottom: 17%">
             <h:outputText value="Name" styleClass="arianeDialogLabel"/>
             <p:inputText id="newLOCname" label="Name" required="true" value="#{locationNewController.name}"/>
             <h:outputText value="Address" styleClass="arianeDialogLabel"/>
-            <p:inputTextarea id="newLOCaddress" styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{locationNewController.address}"/>
+            <p:inputTextarea id="newLOCaddress" styleClass="arianeDialogInputTitle" label="Description" required="true"
+                             autoResize="false" style="resize:none" value="#{locationNewController.address}"/>
             <h:outputText value="Zip Code" styleClass="arianeDialogLabel"/>
             <p:inputText id="newLOCzipCode" label="ZipCode" required="true" value="#{locationNewController.zipCode}"/>
             <h:outputText value="Town" styleClass="arianeDialogLabel"/>
@@ -22,7 +24,8 @@
                                itemLabel="#{locT}" itemValue="#{locT}"/>
             </h:selectOneMenu>
             <h:outputText value="Description" styleClass="arianeDialogLabel"/>
-            <p:inputTextarea styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false" style="resize:none" value="#{locationNewController.description}"/>
+            <p:inputTextarea styleClass="arianeDialogInputTitle" label="Description" required="true" autoResize="false"
+                             style="resize:none" value="#{locationNewController.description}"/>
         </h:panelGrid>
         <h:panelGrid columns="2" cellpadding="5" styleClass="ui-widget-content grid arianeDialogGrid-noa">
             <h:panelGrid id="newLOCgeoGmap" style="float:right;width:300px;height:300px"/>
