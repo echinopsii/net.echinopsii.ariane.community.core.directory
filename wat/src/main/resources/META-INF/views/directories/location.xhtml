@@ -9,7 +9,7 @@
       xmlns:arianeidm="http://echinopsii.net/ariane/idm">
 <ui:composition template="/templates/directoryLayout.xhtml">
     <ui:define name="directoryHeader">
-        <script async defer type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTP0GdRLlGaxs3ku4_L1iJeXyBnUuZuEA&callback=initMap"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTP0GdRLlGaxs3ku4_L1iJeXyBnUuZuEA&callback=initMap"></script>
     </ui:define>
     <ui:define name="directoryContent">
         <ui:fragment rendered="#{arianeidm:hasPermission('dirComITiNtwLOC:display')}">
