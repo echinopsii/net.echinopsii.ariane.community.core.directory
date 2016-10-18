@@ -73,7 +73,7 @@
 
             var mapOptions = {
                     zoom: 8,
-                    center: latLng,
+                    center: latLng
                 };
 
             map = new google.maps.Map(geoGmap,
@@ -97,8 +97,13 @@
                             var type = item.types[0];
                             setComponentValues(type, item);
                         });
-                        gpsLatitude.value = event.latLng['k'];
-                        gpsLongitude.value = event.latLng['d'];
+                        if (items[0] != null) {
+                            gpsLatitude.value = items[0].geometry.location.lat();
+                            gpsLongitude.value = items[0].geometry.location.lng();
+                        } else {
+                            gpsLatitude.value = 0.0;
+                            gpsLongitude.value = 0.0;
+                        }
                     }
                 });
             });
@@ -112,9 +117,9 @@
             }else if (type == "route"){
                 addresstxtarea.value = itemObj.formatted_address;
             }else if(type == "street_address"){
-                addresstxtarea.value = itemObj.formatted_address;
+                addresstxtarea.value = itemObj.formatted_address.split(",")[0];
             }else if(type == "locality"){
-                town.value = itemObj.formatted_address;
+                town.value = itemObj.formatted_address.split(",")[0];
             }
         }
 
@@ -131,8 +136,8 @@
                         map: map
                     });
                 } else {
-                    gpsLatitude.value = null;
-                    gpsLongitude.value = null;
+                    gpsLatitude.value = 0.0;
+                    gpsLongitude.value = 0.0;
                 }
             });
         }

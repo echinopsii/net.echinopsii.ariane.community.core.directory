@@ -37,9 +37,7 @@ public class LocationNewController implements Serializable {
 
 
     private UIComponent warningMsg;
-    public LocationNewController(){
-        FacesContext.getCurrentInstance().addMessage("warningMsg", new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning! Unable to reach google maps services", ""));
-    }
+
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(LocationsListController.class);
 
