@@ -392,20 +392,30 @@ public class SubnetsListController implements Serializable {
             EntityManager em = DirectoryJPAProviderConsumer.getInstance().getDirectoryJpaProvider().createEM();
             try {
                 em.getTransaction().begin();
-                subnet2BeRemoved = em.find(subnet2BeRemoved.getClass(), subnet2BeRemoved.getId());
-                if (subnet2BeRemoved.getRarea()!=null)
-                    subnet2BeRemoved.getRarea().getSubnets().remove(subnet2BeRemoved);
-                for (Location loc : subnet2BeRemoved.getLocations())
-                    loc.getSubnets().remove(subnet2BeRemoved);
                 for (IPAddress ipAddress : subnet2BeRemoved.getIpAddresses()) {
-                    if (ipAddress.getNic()!=null) {
+                    if (ipAddress.getNic() != null) {
                         ipAddress.getNic().setIpAddressR(null);
                         ipAddress.setNic(null);
                     }
+                    if (ipAddress.getOsInstance()!=null) {
+                        ipAddress.getOsInstance().getIpAddresses().remove(ipAddress);
+                        ipAddress.setOsInstance(null);
+                    }
+                    em.remove(ipAddress);
                 }
-                em.remove(subnet2BeRemoved);
+                subnet2BeRemoved.getIpAddresses().clear();
                 em.flush();
                 em.getTransaction().commit();
+                em.getTransaction().begin();
+                for (Location loc : subnet2BeRemoved.getLocations())
+                    loc.getSubnets().remove(subnet2BeRemoved);
+                for (OSInstance osi : subnet2BeRemoved.getOsInstances())
+                    osi.getNetworkSubnets().remove(subnet2BeRemoved);
+                if (subnet2BeRemoved.getRarea()!=null)
+                    subnet2BeRemoved.getRarea().getSubnets().remove(subnet2BeRemoved);
+                em.remove(subnet2BeRemoved);
+                em.getTransaction().commit();
+                em.close();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "Subnet deleted successfully !",
                                                            "Subnet name : " + subnet2BeRemoved.getName());

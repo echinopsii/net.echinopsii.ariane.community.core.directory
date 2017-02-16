@@ -327,23 +327,32 @@ public class RoutingAreasListController implements Serializable {
             rarea2BeRemoved = em.find(rarea2BeRemoved.getClass(), rarea2BeRemoved.getId());
             try {
                 em.getTransaction().begin();
-                for (Location loc : rarea2BeRemoved.getLocations()) {
-                    loc.getRoutingAreas().remove(rarea2BeRemoved);
-                    for (Subnet subnet : rarea2BeRemoved.getSubnets()) {
-                        loc.getSubnets().remove(subnet);
-                        subnet.getLocations().remove(loc);
-                        subnet.setRarea(null);
-                        for (IPAddress ipAddress : subnet.getIpAddresses()) {
-                            if (ipAddress.getNic()!=null) {
-                                ipAddress.getNic().setIpAddressR(null);
-                                ipAddress.setNic(null);
-                            }
+                for (Subnet subnet : rarea2BeRemoved.getSubnets()) {
+                    for (IPAddress ipAddress : subnet.getIpAddresses()) {
+                        if (ipAddress.getNic()!=null) {
+                            ipAddress.getNic().setIpAddressR(null);
+                            ipAddress.setNic(null);
                         }
+                        if (ipAddress.getOsInstance()!=null) {
+                            ipAddress.getOsInstance().getIpAddresses().remove(ipAddress);
+                            ipAddress.setOsInstance(null);
+                        }
+                        subnet.getIpAddresses().remove(ipAddress);
+                        em.remove(ipAddress);
                     }
                 }
-
-                em.remove(rarea2BeRemoved);
                 em.flush();
+                em.getTransaction().commit();
+                em.getTransaction().begin();
+                for (Location location : rarea2BeRemoved.getLocations()) {
+                    location.getRoutingAreas().remove(rarea2BeRemoved);
+                    for (Subnet subnet : rarea2BeRemoved.getSubnets()) {
+                        location.getSubnets().remove(subnet);
+                        subnet.getLocations().remove(location);
+                        subnet.setRarea(null);
+                    }
+                }
+                em.remove(rarea2BeRemoved);
                 em.getTransaction().commit();
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                                            "Routing area deleted successfully !",

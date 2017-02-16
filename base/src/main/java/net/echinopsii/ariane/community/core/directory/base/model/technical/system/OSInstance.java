@@ -60,21 +60,22 @@ public class OSInstance implements Serializable {
     private String description;
 
     @ManyToMany(mappedBy = "osInstances", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Subnet> networkSubnets = new HashSet<>();
 
     @OneToMany(mappedBy = "osInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.SUBSELECT)
+    @Fetch(FetchMode.JOIN)
     private Set<IPAddress> ipAddresses = new HashSet<>();
 
     @OneToMany(mappedBy = "osInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.SUBSELECT)
+    @Fetch(FetchMode.JOIN)
     private Set<NIC> nics = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     private OSInstance embeddingOSInstance;
 
     @OneToMany(mappedBy = "embeddingOSInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.SUBSELECT)
+    @Fetch(FetchMode.JOIN)
     private Set<OSInstance> embeddedOSInstances = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)

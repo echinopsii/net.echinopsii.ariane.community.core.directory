@@ -504,16 +504,25 @@ public class SubnetEndpoint {
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
-                        for (Location loc : entity.getLocations())
-                            loc.getSubnets().remove(entity);
-                        for (OSInstance osi : entity.getOsInstances())
-                            osi.getNetworkSubnets().remove(entity);
                         for (IPAddress ipAddress : entity.getIpAddresses()) {
                             if (ipAddress.getNic() != null) {
                                 ipAddress.getNic().setIpAddressR(null);
                                 ipAddress.setNic(null);
                             }
+                            if (ipAddress.getOsInstance()!=null) {
+                                ipAddress.getOsInstance().getIpAddresses().remove(ipAddress);
+                                ipAddress.setOsInstance(null);
+                            }
+                            em.remove(ipAddress);
                         }
+                        entity.getIpAddresses().clear();
+                        em.flush();
+                        em.getTransaction().commit();
+                        em.getTransaction().begin();
+                        for (Location loc : entity.getLocations())
+                            loc.getSubnets().remove(entity);
+                        for (OSInstance osi : entity.getOsInstances())
+                            osi.getNetworkSubnets().remove(entity);
                         if (entity.getRarea()!=null)
                             entity.getRarea().getSubnets().remove(entity);
                         em.remove(entity);

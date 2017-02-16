@@ -303,18 +303,29 @@ public class RoutingAreaEndpoint {
                 if (entity != null) {
                     try {
                         em.getTransaction().begin();
+                        for (Subnet subnet : entity.getSubnets()) {
+                            for (IPAddress ipAddress : subnet.getIpAddresses()) {
+                                if (ipAddress.getNic()!=null) {
+                                    ipAddress.getNic().setIpAddressR(null);
+                                    ipAddress.setNic(null);
+                                }
+                                if (ipAddress.getOsInstance()!=null) {
+                                    ipAddress.getOsInstance().getIpAddresses().remove(ipAddress);
+                                    ipAddress.setOsInstance(null);
+                                }
+                                subnet.getIpAddresses().remove(ipAddress);
+                                em.remove(ipAddress);
+                            }
+                        }
+                        em.flush();
+                        em.getTransaction().commit();
+                        em.getTransaction().begin();
                         for (Location location : entity.getLocations()) {
                             location.getRoutingAreas().remove(entity);
                             for (Subnet subnet : entity.getSubnets()) {
                                 location.getSubnets().remove(subnet);
                                 subnet.getLocations().remove(location);
                                 subnet.setRarea(null);
-                                for (IPAddress ipAddress : subnet.getIpAddresses()) {
-                                    if (ipAddress.getNic()!=null) {
-                                        ipAddress.getNic().setIpAddressR(null);
-                                        ipAddress.setNic(null);
-                                    }
-                                }
                             }
                         }
                         em.remove(entity);
