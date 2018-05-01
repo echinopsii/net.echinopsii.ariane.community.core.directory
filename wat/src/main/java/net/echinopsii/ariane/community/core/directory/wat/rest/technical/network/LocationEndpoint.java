@@ -50,7 +50,7 @@ public class LocationEndpoint {
     private static final Logger log = LoggerFactory.getLogger(LocationEndpoint.class);
     private EntityManager em;
 
-    public static Response locationToJSON(Location entity) {
+    private static Response locationToJSON(Location entity) {
         Response ret = null;
         String result;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -67,7 +67,7 @@ public class LocationEndpoint {
         return ret;
     }
 
-    public static Location findLocationById(EntityManager em, long id) {
+    static Location findLocationById(EntityManager em, long id) {
         TypedQuery<Location> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Location d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas WHERE d.id = :entityId ORDER BY d.id", Location.class);
         findByIdQuery.setParameter("entityId", id);
         Location entity;
@@ -79,7 +79,7 @@ public class LocationEndpoint {
         return entity;
     }
 
-    public static Location findLocationByName(EntityManager em, String name) {
+    private static Location findLocationByName(EntityManager em, String name) {
         TypedQuery<Location> findByNameQuery = em.createQuery("SELECT DISTINCT d FROM Location d LEFT JOIN FETCH d.subnets LEFT JOIN FETCH d.routingAreas WHERE d.name = :entityName ORDER BY d.name", Location.class);
         findByNameQuery.setParameter("entityName", name);
         Location entity;

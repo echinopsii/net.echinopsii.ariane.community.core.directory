@@ -27,6 +27,11 @@
             <version>${version.net.echinopsii.ariane.core.portal}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>net.echinopsii.ariane.community.core.portal</groupId>
+            <artifactId>net.echinopsii.ariane.community.core.portal.idmwat</artifactId>
+            <version>0.7.7-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
